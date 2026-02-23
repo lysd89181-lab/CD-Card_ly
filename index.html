@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر MDCard</title>
+    <style>
+        :root { --main-bg: #0d0d0d; --card-bg: #161616; --accent: #00ff88; --text: #ffffff; }
+        body { background-color: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 120px; text-align: center; }
+        
+        .header { padding: 15px; border-bottom: 1px solid #222; margin-bottom: 15px; }
+        .header h1 { color: var(--accent); margin: 0; font-size: 1.4rem; }
+
+        /* طرق الدفع */
+        .payment-section { margin-bottom: 20px; }
+        .payment-methods { display: flex; justify-content: center; gap: 8px; padding: 0 10px; }
+        .pay-card { flex: 1; background: var(--card-bg); border: 1.5px solid #333; border-radius: 12px; padding: 12px 5px; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        .pay-card.active { border-color: var(--accent); background: #1a2e25; }
+
+        /* شبكة المنتجات */
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .product-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #222; padding-bottom: 10px; overflow: hidden; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; background: #222; }
+        h3 { font-size: 0.8rem; margin: 8px 5px; height: 32px; overflow: hidden; }
+        .price-tag { color: var(--accent); font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; }
+        
+        .add-btn { width: 90%; padding: 8px; border-radius: 20px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+        .add-btn:active { background: var(--accent); color: black; }
+
+        /* السلة العائمة */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; border-top: 2px solid var(--accent); padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); z-index: 1000; }
+        .cart-info { text-align: right; }
+        .send-btn { background: var(--accent); color: black; border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>متجر MDCard</h1>
+    </div>
+
+    <div class="payment-section">
+        <p style="text-align:right; margin-right:5%; font-size:0.9rem;">اختر طريقة الدفع (لتحديث الأسعار):</p>
+        <div class="payment-methods">
+            <div class="pay-card active" onclick="setMethod(this, 'كاش', 0)">💵<br>كاش</div>
+            <div class="pay-card" onclick="setMethod(this, 'حوالة', 2)">🏦<br>صرف (+2)</div>
+            <div class="pay-card" onclick="setMethod(this, 'رصيد', 4)">📱<br>رصيد (+4)</div>
+        </div>
+    </div>
+
+    <div class="products-grid" id="product-list"></div>
+
+    <div class="cart-bar">
+        <div class="cart-info">
+            <span id="cart-count" style="font-size:0.8rem; color:#aaa;">الطلبات: 0</span><br>
+            <strong id="cart-total">الإجمالي: 0 د.ل</strong>
+        </div>
+        <button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب (واتساب)</button>
+    </div>
+
+    <script>
+        let currentMethod = "كاش";
+        let pricePlus = 0;
+        let cart = [];
+
+        // قائمة المنتجات مع الروابط التي أرسلتها (تم تحويلها لتعمل كصور)
+        const products = [
+            { name: "نجوم تلجرام", price: 10, img: "https://i.ibb.co/1GZ5t4r9/image.png" },
+            { name: "فري فاير", price: 15, img: "https://i.ibb.co/7d0xzSfN/image.png" },
+            { name: "ببجي كوريا", price: 12, img: "https://i.ibb.co/p6Bs8fQP/image.png" },
+            { name: "فيفا موبايل", price: 20, img: "https://i.ibb.co/FLyBsPL1/image.png" },
+            { name: "FC 25", price: 250, img: "https://i.ibb.co/gLcJ66QP/image.png" },
+            { name: "شدات ببجي", price: 10, img: "https://i.ibb.co/Ps6hKk0Y/image.png" },
+            { name: "سناب بلس", price: 40, img: "https://i.ibb.co/1t0vYKTN/image.png" },
+            { name: "عملات تيك توك", price: 8, img: "https://i.ibb.co/wrRVLLBN/image.png" },
+            { name: "ببجي كوريا", price: 30, img: "https://i.ibb.co/Qj7QsGX0/image.png" },
+            { name: "نتفلكس", price: 25, img: "https://i.ibb.co/zTDysJg0/image.png" }
+        ];
+
+        function render() {
+            const container = document.getElementById('product-list');
+            container.innerHTML = '';
+            products.forEach((p, i) => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150/222/fff?text=Photo'">
+                        <h3>${p.name}</h3>
+                        <span class="price-tag">${p.price + pricePlus} د.ل</span>
+                        <button class="add-btn" onclick="addToCart(${i})">إضافة للطلب +</button>
+                    </div>
+                `;
+            });
+        }
+
+        function setMethod(el, method, plus) {
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentMethod = method;
+            pricePlus = plus;
+            render();
+            // تحديث السلة تلقائياً عند تغيير طريقة الدفع
+            cart.forEach(item => {
+                const base = products.find(p => p.name === item.name).price;
+                item.finalPrice = base + pricePlus;
+            });
+            updateUI();
+        }
+
+        function addToCart(i) {
+            const p = products[i];
+            cart.push({ name: p.name, finalPrice: p.price + pricePlus });
+            updateUI();
+        }
+
+        function updateUI() {
+            let total = cart.reduce((s, item) => s + item.finalPrice, 0);
+            document.getElementById('cart-count').innerText = `الطلبات: ${cart.length}`;
+            document.getElementById('cart-total').innerText = `الإجمالي: ${total} د.ل`;
+        }
+
+        function sendWhatsApp() {
+            if(cart.length === 0) return alert("السلة فارغة! اختر منتجات أولاً.");
+            
+            let itemsText = cart.map(it => `- ${it.name}: ${it.finalPrice}د.ل`).join('%0A');
+            let total = cart.reduce((s, item) => s + item.finalPrice, 0);
+            let phone = "218943190471";
+            
+            let finalMsg = `*طلب جديد من متجر MDCard*%0A` +
+                           `--------------------------%0A` +
+                           `*طريقة الدفع المختارة:* ${currentMethod}%0A` +
+                           `--------------------------%0A` +
+                           `${itemsText}%0A` +
+                           `--------------------------%0A` +
+                           `*الإجمالي النهائي:* ${total} د.ل`;
+            
+            window.open(`https://wa.me/${phone}?text=${finalMsg}`, '_blank');
+        }
+
+        render();
+    </script>
+</body>
+</html>
