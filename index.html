@@ -6,75 +6,74 @@
     <title>متجر CDCARD</title>
     <style>
         :root { --main-bg: #0d0d0d; --card-bg: #161616; --accent: #00ff88; --text: #ffffff; --danger: #ff4444; }
-        body { background-color: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; padding-bottom: 180px; text-align: center; }
+        body { background-color: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; padding-bottom: 150px; text-align: center; overflow-x: hidden; }
         
-        /* المقدمة الاحترافية الجديدة */
+        /* مقدمة المتجر */
         .hero-section { padding: 40px 20px; background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%); border-bottom: 1px solid #222; }
-        .hero-section h1 { font-size: 2rem; color: var(--text); margin-bottom: 10px; }
+        .hero-section h1 { font-size: 1.8rem; color: var(--text); margin-bottom: 10px; }
         .hero-section h1 span { color: var(--accent); }
-        .hero-section p { color: #aaa; font-size: 0.95rem; line-height: 1.6; max-width: 500px; margin: 0 auto 20px; }
-        .hero-btns { display: flex; justify-content: center; gap: 10px; }
-        .btn-outline { padding: 10px 20px; border: 1px solid #444; border-radius: 25px; color: white; text-decoration: none; font-size: 0.9rem; background: #1a1a1a; }
+        .hero-section p { color: #aaa; font-size: 0.9rem; line-height: 1.5; max-width: 500px; margin: 0 auto; }
 
+        /* طرق الدفع */
         .payment-section { padding: 20px 10px; }
         .payment-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
         .pay-card { background: var(--card-bg); border: 1.5px solid #333; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.3s; }
         .pay-card.active { border-color: var(--accent); background: #1a2e25; }
-        .pay-card i { display: block; font-size: 1.5rem; margin-bottom: 5px; }
 
-        .category-title { text-align: right; color: var(--accent); margin: 30px 15px 15px; border-right: 4px solid var(--accent); padding-right: 10px; font-size: 1.3rem; font-weight: bold; }
+        /* أقسام المنتجات */
+        .category-title { text-align: right; color: var(--accent); margin: 30px 15px 10px; border-right: 4px solid var(--accent); padding-right: 10px; font-size: 1.2rem; font-weight: bold; }
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 10px; }
-        .product-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #222; padding-bottom: 12px; overflow: hidden; position: relative; }
-        .product-img { width: 100%; height: 120px; object-fit: cover; background: #222; }
+        .product-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #222; padding-bottom: 12px; overflow: hidden; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; background: #222; }
         h3 { font-size: 0.85rem; margin: 10px 5px; color: #ddd; height: 35px; display: flex; align-items: center; justify-content: center; }
-        .price-tag { color: var(--accent); font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px; }
+        .price-tag { color: var(--accent); font-weight: bold; font-size: 1rem; display: block; margin-bottom: 10px; }
         .add-btn { width: 90%; padding: 8px; border-radius: 20px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: bold; cursor: pointer; }
 
-        /* قسم طريقة الشراء بالأسفل */
-        .how-to-buy { background: #111; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #222; }
-        .how-to-buy h2 { color: white; margin-bottom: 20px; font-size: 1.4rem; }
-        .step-card { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: right; border: 1px solid #222; }
-        .step-card h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 0.95rem; }
-        .step-card p { margin: 0; color: #888; font-size: 0.85rem; }
+        /* طريقة الشراء */
+        .how-to-buy { background: #111; padding: 30px 20px; margin: 30px 0; border-top: 1px solid #222; }
+        .step-card { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; text-align: right; border: 1px solid #222; }
+        .step-card h4 { margin: 0; color: var(--accent); font-size: 0.9rem; }
+        .step-card p { margin: 5px 0 0; color: #888; font-size: 0.8rem; }
 
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 2px solid var(--accent); padding: 15px; z-index: 1000; }
-        .send-btn { background: var(--accent); color: black; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 1.1rem; cursor: pointer; width: 100%; margin-top: 10px; }
-        .order-details { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        /* السلة العائمة */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 2px solid var(--accent); padding: 15px 20px; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        .cart-items-preview { text-align: right; font-size: 0.75rem; color: #888; margin-bottom: 8px; max-height: 50px; overflow-y: auto; }
+        .cart-flex { display: flex; justify-content: space-between; align-items: center; }
+        .total-box { text-align: right; }
+        .send-btn { background: var(--accent); color: black; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="hero-section">
-        <h1>اشتراكات رقمية <span>سريعة وموثوقة</span> في ليبيا</h1>
-        <p>نتفليكس، شاهد، شحن شدات ببجي، عملات تيك توك والمزيد. الدفع نقداً أو رصيد ليبيانا/مدار.</p>
-        <div class="hero-btns">
-            <a href="#shop-container" class="btn-outline">تصفح المنتجات</a>
-            <a href="#how-to-buy" class="btn-outline">طريقة الشراء</a>
-        </div>
+        <h1>CDCARD <span>للاشتراكات الرقمية</span></h1>
+        <p>متابعين، شحن ألعاب، واشتراكات رسمية. تنفيذ سريع بأفضل الأسعار في ليبيا.</p>
     </div>
 
     <div class="payment-section">
         <div class="payment-methods">
-            <div class="pay-card active" onclick="setMethod(this, 'كاش', 0)">💵<br><b>كاش</b><br><small>دفع نقدي</small></div>
-            <div class="pay-card" onclick="setMethod(this, 'رصيد', 2)">📱<br><b>رصيد</b><br><small>ليبيانا/مدار</small></div>
+            <div class="pay-card active" onclick="setMethod(this, 'كاش', 0)">💵<br><b>كاش</b></div>
+            <div class="pay-card" onclick="setMethod(this, 'رصيد', 2)">📱<br><b>رصيد</b></div>
         </div>
     </div>
 
     <div id="shop-container"></div>
 
-    <div class="how-to-buy" id="how-to-buy">
-        <h2>طريقة الشراء</h2>
-        <div class="step-card"><h4>1) أضف المنتجات</h4><p>اختر الخدمة التي تريدها ثم اضغط "إضافة".</p></div>
-        <div class="step-card"><h4>2) اختر الدفع</h4><p>كاش، رصيد، أو حوالة لتحديث الأسعار.</p></div>
-        <div class="step-card"><h4>3) أكمل عبر واتساب</h4><p>نؤكد ونفعل الخدمة لك خلال دقائق.</p></div>
+    <div class="how-to-buy">
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">طريقة الشراء</h2>
+        <div class="step-card"><h4>1) أضف طلبك</h4><p>اختر الخدمات التي تريدها من القائمة.</p></div>
+        <div class="step-card"><h4>2) طريقة الدفع</h4><p>اختر كاش أو رصيد ليبيانا/مدار.</p></div>
+        <div class="step-card"><h4>3) الإرسال</h4><p>اضغط إرسال وسنتواصل معك عبر واتساب فوراً.</p></div>
     </div>
 
     <div class="cart-bar">
-        <div id="cart-items-list" style="max-height: 80px; overflow-y: auto; text-align: right; color: #888; font-size: 0.8rem; margin-bottom: 5px;"></div>
-        <input type="text" id="user-details" class="order-details" placeholder="الآيدي / اسم اللاعب / ملاحظات...">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="text-align: right;"><strong id="cart-total" style="color:var(--accent); font-size: 1.2rem;">الإجمالي: 0 د.ل</strong></div>
-            <button class="send-btn" style="width: auto;" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+        <div id="cart-items-preview" class="cart-items-preview">السلة فارغة..</div>
+        <div class="cart-flex">
+            <div class="total-box">
+                <span style="font-size: 0.8rem; color: #888;">الإجمالي:</span><br>
+                <strong id="cart-total" style="color: var(--accent); font-size: 1.2rem;">0 د.ل</strong>
+            </div>
+            <button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
         </div>
     </div>
 
@@ -83,7 +82,6 @@
         let pricePlus = 0;
         let cart = [];
 
-        // روابط الصور (تأكد من الروابط المباشرة لضمان ظهورها)
         const categoryImages = {
             "تيك توك": "https://i.ibb.co/xKGFXTqg/1000724517.jpg",
             "انستقرام": "https://i.ibb.co/gFb56JcT/1000724518.jpg",
@@ -117,11 +115,10 @@
                 container.innerHTML += `<div class="category-title">${cat}</div>`;
                 let grid = document.createElement('div');
                 grid.className = 'products-grid';
-                let imgUrl = categoryImages[cat] || "https://via.placeholder.com/150";
                 categories[cat].forEach((p) => {
                     grid.innerHTML += `
                         <div class="product-card">
-                            <img src="${imgUrl}" class="product-img">
+                            <img src="${categoryImages[cat]}" class="product-img">
                             <h3>${p.name}</h3>
                             <span class="price-tag">${p.price + pricePlus} د.ل</span>
                             <button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">إضافة +</button>
@@ -152,18 +149,21 @@
         }
 
         function updateUI() {
-            const list = document.getElementById('cart-items-list');
-            list.innerHTML = cart.map(item => `<div>${item.name} <span style="color:red" onclick="removeFromCart(${item.id})">✖</span></div>`).join('');
+            const preview = document.getElementById('cart-items-preview');
+            if(cart.length === 0) {
+                preview.innerHTML = "السلة فارغة..";
+            } else {
+                preview.innerHTML = cart.map(item => `${item.name} <span style="color:red" onclick="removeFromCart(${item.id})">✖</span>`).join(' | ');
+            }
             let total = cart.reduce((s, item) => s + item.finalPrice, 0);
-            document.getElementById('cart-total').innerText = `الإجمالي: ${total} د.ل`;
+            document.getElementById('cart-total').innerText = `${total} د.ل`;
         }
 
         function sendWhatsApp() {
             if(cart.length === 0) return alert("السلة فارغة!");
-            let details = document.getElementById('user-details').value;
             let itemsText = cart.map(it => `- ${it.name}`).join('%0A');
             let total = cart.reduce((s, item) => s + item.finalPrice, 0);
-            window.open(`https://wa.me/218912377291?text=*طلب جديد - CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A*البيانات:* ${details}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي:* ${total} د.ل`, '_blank');
+            window.open(`https://wa.me/218912377291?text=*طلب جديد - متجر CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي النهائي:* ${total} د.ل`, '_blank');
         }
 
         render();
