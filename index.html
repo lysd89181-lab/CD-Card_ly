@@ -5,44 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر CDCARD</title>
     <style>
-        :root { --main-bg: #0d0d0d; --card-bg: #161616; --accent: #00ff88; --text: #ffffff; --danger: #ff4444; }
-        body { background-color: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; padding-bottom: 160px; text-align: center; overflow-x: hidden; }
+        :root { --main-bg: #0d0d0d; --card-bg: #161616; --accent: #00ff88; --text: #ffffff; }
+        body { background-color: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; padding-bottom: 160px; text-align: center; }
         
+        /* المقدمة الاحترافية */
         .hero-section { padding: 45px 20px; background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%); border-bottom: 1px solid #222; }
-        .hero-section h1 { font-size: 1.8rem; color: var(--text); margin-bottom: 10px; }
+        .hero-section h1 { font-size: 1.8rem; margin-bottom: 10px; }
         .hero-section h1 span { color: var(--accent); }
-        .hero-section p { color: #aaa; font-size: 0.9rem; line-height: 1.6; max-width: 500px; margin: 0 auto; }
+        .hero-section p { color: #aaa; font-size: 0.9rem; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
+        /* طرق الدفع */
         .payment-section { padding: 20px 10px; }
         .payment-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
-        .pay-card { background: var(--card-bg); border: 1.5px solid #333; border-radius: 12px; padding: 15px 5px; cursor: pointer; }
+        .pay-card { background: var(--card-bg); border: 1.5px solid #333; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.3s; }
         .pay-card.active { border-color: var(--accent); background: #1a2e25; }
 
+        /* الأقسام والمنتجات */
         .category-title { text-align: right; color: var(--accent); margin: 35px 15px 15px; border-right: 4px solid var(--accent); padding-right: 12px; font-size: 1.3rem; font-weight: bold; }
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 12px; }
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 10px; }
         .product-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #222; padding-bottom: 15px; overflow: hidden; }
-        .product-img { width: 100%; height: 120px; object-fit: cover; background: #222; border-bottom: 1px solid #222; }
-        
-        h3 { font-size: 0.85rem; margin: 12px 5px; color: #eee; height: 35px; display: flex; align-items: center; justify-content: center; }
-        .price-tag { color: var(--accent); font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 12px; }
-        .add-btn { width: 90%; padding: 10px; border-radius: 25px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: bold; cursor: pointer; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; background: #222; }
+        h3 { font-size: 0.8rem; margin: 10px 5px; color: #eee; height: 35px; display: flex; align-items: center; justify-content: center; }
+        .price-tag { color: var(--accent); font-weight: bold; font-size: 1rem; display: block; margin-bottom: 10px; }
+        .add-btn { width: 90%; padding: 8px; border-radius: 20px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: bold; cursor: pointer; }
 
-        .how-to-buy { background: #111; padding: 35px 20px; margin: 40px 0; border-top: 1px solid #222; }
+        /* طريقة الشراء بالأسفل */
+        .how-to-buy { background: #111; padding: 35px 20px; margin-top: 40px; border-top: 1px solid #222; }
         .step-card { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: right; border: 1px solid #222; }
-        .step-card h4 { margin: 0; color: var(--accent); font-size: 1rem; }
-        .step-card p { margin: 6px 0 0; color: #999; font-size: 0.85rem; }
+        .step-card h4 { margin: 0; color: var(--accent); }
+        .step-card p { margin: 5px 0 0; color: #888; font-size: 0.85rem; }
 
+        /* السلة */
         .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 2px solid var(--accent); padding: 15px 20px; z-index: 1000; }
-        .cart-items-preview { text-align: right; font-size: 0.8rem; color: #aaa; margin-bottom: 10px; max-height: 45px; overflow-y: auto; }
+        .cart-items-preview { text-align: right; font-size: 0.8rem; color: #aaa; margin-bottom: 8px; max-height: 45px; overflow-y: auto; }
         .cart-flex { display: flex; justify-content: space-between; align-items: center; }
-        .send-btn { background: var(--accent); color: #000; border: none; padding: 14px 30px; border-radius: 30px; font-weight: bold; cursor: pointer; }
+        .send-btn { background: var(--accent); color: #000; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="hero-section">
         <h1>CDCARD <span>للخدمات الرقمية</span></h1>
-        <p>متابعين، شحن ألعاب، واشتراكات رسمية بأسعار منافسة في ليبيا.</p>
+        <p>نتفليكس، شاهد، شدات ببجي، عملات تيك توك والمزيد. الدفع كاش أو رصيد ليبيانا/مدار.</p>
     </div>
 
     <div class="payment-section">
@@ -55,18 +59,18 @@
     <div id="shop-container"></div>
 
     <div class="how-to-buy">
-        <h2>طريقة الشراء</h2>
-        <div class="step-card"><h4>1) أضف للسلة</h4><p>اختر الخدمة واضغط إضافة.</p></div>
-        <div class="step-card"><h4>2) وسيلة الدفع</h4><p>كاش أو رصيد ليبيانا/مدار.</p></div>
-        <div class="step-card"><h4>3) الإرسال</h4><p>سيتم توجيهك للواتساب لتأكيد الطلب.</p></div>
+        <h2 style="margin-bottom:20px;">طريقة الشراء</h2>
+        <div class="step-card"><h4>1) أضف طلبك</h4><p>اختر الخدمات التي تريدها من القائمة.</p></div>
+        <div class="step-card"><h4>2) وسيلة الدفع</h4><p>اختر كاش أو رصيد لتحديث الأسعار.</p></div>
+        <div class="step-card"><h4>3) واتساب</h4><p>اضغط إرسال الطلب وسنتواصل معك فوراً.</p></div>
     </div>
 
     <div class="cart-bar">
-        <div id="cart-items-preview" class="cart-items-preview">السلة فارغة حالياً..</div>
+        <div id="cart-items-preview" class="cart-items-preview">السلة فارغة..</div>
         <div class="cart-flex">
             <div class="total-box">
-                <span style="font-size: 0.85rem; color: #888;">الإجمالي:</span><br>
-                <strong id="cart-total" style="color: var(--accent); font-size: 1.3rem;">0 د.ل</strong>
+                <span style="font-size: 0.8rem; color: #888;">الإجمالي:</span><br>
+                <strong id="cart-total" style="color: var(--accent); font-size: 1.2rem;">0 د.ل</strong>
             </div>
             <button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
         </div>
@@ -77,7 +81,7 @@
         let pricePlus = 0;
         let cart = [];
 
-        // هنا ربطت كل مجموعة باسم الملف الذي رفعته أنت بالضبط في GitHub
+        // أسماء الصور المرفوعة على GitHub الخاص بك
         const categoryImages = {
             "تيك توك": "imagestiktok-logo.png",
             "انستقرام": "https://i.ibb.co/ccCjLdKn/66f9bb2f905454e839e3eeb7da4f536a.jpg",
@@ -92,15 +96,57 @@
         };
 
         const categories = {
-            "تيك توك": [ { name: "1000 متابع تيك توك", price: 12 }, { name: "1000 لايك تيك توك", price: 3 } ],
-            "انستقرام": [ { name: "1000 متابع انستقرام", price: 8 }, { name: "1000 لايك انستقرام", price: 4 } ],
-            "فيسبوك": [ { name: "1000 متابع صفحة", price: 5 }, { name: "1000 مشاهدة ريلز", price: 1 } ],
-            "ببجي موبايل": [ { name: "ببجي 60 شدة", price: 11 }, { name: "ببجي 120 شدة", price: 22 } ],
-            "نجوم تيليجرام": [ { name: "100 نجمة", price: 25 }, { name: "250 نجمة", price: 59 } ],
-            "روبلكس": [ { name: "40 عملة روبلكس", price: 15 } ],
-            "اشتراكات": [ { name: "شاهد شهر", price: 30 }, { name: "نتفليكس شهر", price: 30 } ],
-            "FC 25": [ { name: "100 نقطة FC", price: 29 } ],
-            "سناب شات بلس": [ { name: "سناب بلس سنوي", price: 240 } ]
+            "تيك توك": [
+                { name: "1000 متابع تيك توك", price: 12 },
+                { name: "1000 لايك تيك توك", price: 3 },
+                { name: "1000 مشاهدة تيك توك", price: 1 },
+                { name: "100 مشاركة تيك توك", price: 1 }
+            ],
+            "انستقرام": [
+                { name: "1000 متابع انستقرام", price: 8 },
+                { name: "1000 لايك انستقرام", price: 4 },
+                { name: "1000 مشاهدة انستقرام", price: 1 }
+            ],
+            "فيسبوك": [
+                { name: "1000 متابع صفحة", price: 5 },
+                { name: "1000 مشاهدة ريلز", price: 1 },
+                { name: "اعجابات منشور فيسبوك", price: 6 }
+            ],
+            "ببجي موبايل": [
+                { name: "ببجي 60 شدة", price: 11 },
+                { name: "ببجي 120 شدة", price: 22 },
+                { name: "ببجي 325 شدة", price: 55 },
+                { name: "ببجي 660 شدة", price: 115 }
+            ],
+            "نجوم تيليجرام": [
+                { name: "100 نجمة", price: 25 },
+                { name: "250 نجمة", price: 59 },
+                { name: "500 نجمة", price: 113 }
+            ],
+            "فري فاير": [
+                { name: "110 جوهرة", price: 20 },
+                { name: "221 جوهرة", price: 32 },
+                { name: "2420 جوهرة", price: 225 }
+            ],
+            "اشتراكات": [
+                { name: "شاهد شهر", price: 30 },
+                { name: "نتفليكس شهر", price: 30 },
+                { name: "كاب كات شخصي", price: 50 }
+            ],
+            "FC 25": [
+                { name: "100 نقطة FC", price: 29 },
+                { name: "520 نقطة FC", price: 71 },
+                { name: "1070 نقطة FC", price: 138 }
+            ],
+            "روبلكس": [
+                { name: "40 عملة روبلكس", price: 15 },
+                { name: "80 عملة روبلكس", price: 29 },
+                { name: "400 عملة روبلكس", price: 98 }
+            ],
+            "سناب شات بلس": [
+                { name: "سناب بلس 3 شهور", price: 70 },
+                { name: "سناب بلس سنوي", price: 240 }
+            ]
         };
 
         function render() {
@@ -145,7 +191,7 @@
 
         function updateUI() {
             const preview = document.getElementById('cart-items-preview');
-            preview.innerHTML = cart.length === 0 ? "السلة فارغة حالياً.." : cart.map(item => `${item.name} <b style="color:red" onclick="removeFromCart(${item.id})">✖</b>`).join(' | ');
+            preview.innerHTML = cart.length === 0 ? "السلة فارغة.." : cart.map(item => `${item.name} <b style="color:red" onclick="removeFromCart(${item.id})">✖</b>`).join(' | ');
             let total = cart.reduce((s, item) => s + item.finalPrice, 0);
             document.getElementById('cart-total').innerText = `${total} د.ل`;
         }
@@ -161,3 +207,4 @@
     </script>
 </body>
 </html>
+
