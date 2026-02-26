@@ -49,6 +49,7 @@ margin-top:5px;
 font-size:0.9rem;
 }
 
+/* تنسيق طرق الدفع في الأعلى */
 .payment-top{
 margin:10px 12px;
 padding:12px;
@@ -62,12 +63,16 @@ padding:12px;
 cursor:pointer;
 transition:0.3s;
 font-weight:bold;
+border-radius:15px; /* إضافة انحناء */
+background: var(--glass);
+border: 1px solid var(--border);
 }
 
 .pay-card.active{
 border:1px solid var(--accent);
 box-shadow:0 0 15px rgba(0,255,166,0.4);
 background:rgba(0,255,166,0.08);
+color: var(--accent);
 }
 
 .category-title{
@@ -183,20 +188,19 @@ box-shadow:0 0 18px rgba(0,255,166,0.5);
 
 <body>
 
-<div class="hero">
+<div class="hero glass">
 <h1>CDCARD</h1>
 <p>متابعين، شحن ألعاب، واشتراكات رقمية بأسعار منافسة</p>
 </div>
 
-<div id="shop-container"></div>
-
-<div class="cart-bar">
-
-<div class="payment-methods">
+<div class="payment-top glass">
 <div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
 <div class="pay-card" onclick="setMethod(this,'رصيد',2)">📱 رصيد (+2)</div>
 </div>
 
+<div id="shop-container"></div>
+
+<div class="cart-bar glass">
 <div class="cart-items-list" id="cart-items-list"></div>
 
 <div class="cart-summary">
@@ -206,7 +210,6 @@ box-shadow:0 0 18px rgba(0,255,166,0.5);
 </div>
 <button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
 </div>
-
 </div>
 
 <script>
@@ -215,42 +218,36 @@ let pricePlus=0;
 let cart=[];
 
 const categories={
-
 "تيك توك":[
 {name:"1000 متابع تيك توك",price:12,img:"tiktok.jpg"},
 {name:"1000 لايك تيك توك",price:3,img:"tiktok.jpg"},
 {name:"1000 مشاهدة تيك توك",price:1,img:"tiktok.jpg"},
 {name:"100 مشاركة تيك توك",price:1,img:"tiktok.jpg"}
 ],
-
 "عملات تيك توك":[
 {name:"30 عملة تيك توك",price:4,img:"etonz.jpg"},
 {name:"50 عملة تيك توك",price:7,img:"etonz.jpg"},
 {name:"100 عملة تيك توك",price:14,img:"etonz.jpg"},
 {name:"200 عملة تيك توك",price:28,img:"etonz.jpg"}
 ],
-
 "انستقرام":[
 {name:"1000 متابع انستقرام",price:8,img:"instagram.jpg"},
 {name:"1000 لايك انستقرام",price:4,img:"instagram.jpg"},
 {name:"1000 مشاهدة انستقرام",price:1,img:"instagram.jpg"},
 {name:"100 مشاركة انستقرام",price:1,img:"instagram.jpg"}
 ],
-
 "فيسبوك":[
 {name:"1000 متابع صفحة",price:5,img:"facebook.jpg"},
 {name:"1000 مشاهدة ريلز",price:1,img:"facebook.jpg"},
 {name:"اعجابات منشور فيسبوك",price:6,img:"facebook.jpg"},
 {name:"1000 متابع مجموعة",price:8,img:"facebook.jpg"}
 ],
-
 "ببجي موبايل":[
 {name:"ببجي 60 شدة",price:11,img:"pubg.jpg"},
 {name:"ببجي 120 شدة",price:22,img:"pubg.jpg"},
 {name:"ببجي 325 شدة",price:55,img:"pubg.jpg"},
 {name:"ببجي 660 شدة",price:115,img:"pubg.jpg"}
 ],
-
 "نجوم تيليجرام":[
 {name:"100 نجمة",price:25,img:"telegram.jpg"},
 {name:"150 نجمة",price:37,img:"telegram.jpg"},
@@ -258,13 +255,11 @@ const categories={
 {name:"350 نجمة",price:80,img:"telegram.jpg"},
 {name:"500 نجمة",price:113,img:"telegram.jpg"}
 ],
-
 "فري فاير":[
 {name:"110 جوهرة",price:20,img:"freefire.jpg"},
 {name:"221 جوهرة",price:32,img:"freefire.jpg"},
 {name:"2420 جوهرة",price:225,img:"freefire.jpg"}
 ],
-
 "اشتراكات":[
 {name:"اشتراك شات جي بي تي - شهري",price:250,img:"shats.jpg"},
 {name:"شاهد شهر",price:30,img:"shahid.jpg"},
@@ -272,26 +267,22 @@ const categories={
 {name:"كاب كات شخصي",price:50,img:"capcut.jpg"},
 {name:"تروكولر سنوي",price:160,img:"truecaller.jpg"}
 ],
-
 "سناب شات بلس":[
 {name:"سناب بلس 3 شهور",price:70,img:"snapchat.jpg"},
 {name:"سناب بلس 6 شهور",price:130,img:"snapchat.jpg"},
 {name:"سناب بلس سنوي",price:240,img:"snapchat.jpg"}
 ],
-
 "روبلكس":[
 {name:"40 عملة روبلكس",price:15,img:"roblox.jpg"},
 {name:"80 عملة روبلكس",price:29,img:"roblox.jpg"},
 {name:"400 عملة روبلكس",price:98,img:"roblox.jpg"}
 ],
-
 "FC 25":[
 {name:"40 نقطة FC",price:15,img:"fc.jpg"},
 {name:"100 نقطة FC",price:29,img:"fc.jpg"},
 {name:"520 نقطة FC",price:71,img:"fc.jpg"},
 {name:"1070 نقطة FC",price:138,img:"fc.jpg"}
 ]
-
 };
 
 function render(){
@@ -305,7 +296,7 @@ grid.className="products-grid";
 
 categories[cat].forEach(p=>{
 grid.innerHTML+=`
-<div class="product-card">
+<div class="product-card glass">
 <img src="${p.img}" class="product-img" onerror="this.src='tiktok.jpg'">
 <h3>${p.name}</h3>
 <span class="price-tag">${p.price+pricePlus} د.ل</span>
