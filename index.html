@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -12,6 +13,7 @@
 --accent:#00ffa6;
 --text:#ffffff;
 --danger:#ff4d4d;
+--out-of-stock: #444;
 }
 
 body{
@@ -49,7 +51,6 @@ margin-top:5px;
 font-size:0.9rem;
 }
 
-/* تنسيق طرق الدفع في الأعلى */
 .payment-top{
 margin:10px 12px;
 padding:12px;
@@ -63,7 +64,7 @@ padding:12px;
 cursor:pointer;
 transition:0.3s;
 font-weight:bold;
-border-radius:15px; /* إضافة انحناء */
+border-radius:15px;
 background: var(--glass);
 border: 1px solid var(--border);
 }
@@ -95,11 +96,13 @@ padding:0 10px;
 .product-card{
 padding:10px;
 transition:0.3s;
+position: relative;
+overflow: hidden;
 }
 
-.product-card:hover{
-transform:translateY(-4px) scale(1.02);
-box-shadow:0 10px 25px rgba(0,255,166,0.15);
+.product-card.sold-out{
+opacity: 0.6;
+filter: grayscale(0.5);
 }
 
 .product-img{
@@ -132,6 +135,14 @@ color:black;
 font-weight:bold;
 cursor:pointer;
 box-shadow:0 0 12px rgba(0,255,166,0.4);
+transition: 0.2s;
+}
+
+.add-btn.disabled{
+background: var(--out-of-stock);
+color: #888;
+cursor: not-allowed;
+box-shadow: none;
 }
 
 .cart-bar{
@@ -228,7 +239,8 @@ const categories={
 {name:"30 عملة تيك توك",price:4,img:"etonz.jpg"},
 {name:"50 عملة تيك توك",price:7,img:"etonz.jpg"},
 {name:"100 عملة تيك توك",price:14,img:"etonz.jpg"},
-{name:"200 عملة تيك توك",price:28,img:"etonz.jpg"}
+// تم تحديد هذا المنتج كـ "نفذت الكمية"
+{name:"200 عملة تيك توك",price:28,img:"etonz.jpg", outOfStock: true} 
 ],
 "انستقرام":[
 {name:"1000 متابع انستقرام",price:8,img:"instagram.jpg"},
@@ -295,12 +307,18 @@ let grid=document.createElement("div");
 grid.className="products-grid";
 
 categories[cat].forEach(p=>{
+const isOut = p.outOfStock === true;
+const btnClass = isOut ? "add-btn disabled" : "add-btn";
+const btnText = isOut ? "نفذت الكمية" : "إضافة +";
+const priceText = isOut ? "غير متوفر" : `${p.price+pricePlus} د.ل`;
+const clickHandler = isOut ? "" : `onclick="addToCart('${p.name}',${p.price})"`;
+
 grid.innerHTML+=`
-<div class="product-card glass">
+<div class="product-card glass ${isOut ? 'sold-out' : ''}">
 <img src="${p.img}" class="product-img" onerror="this.src='tiktok.jpg'">
 <h3>${p.name}</h3>
-<span class="price-tag">${p.price+pricePlus} د.ل</span>
-<button class="add-btn" onclick="addToCart('${p.name}',${p.price})">إضافة +</button>
+<span class="price-tag">${priceText}</span>
+<button class="${btnClass}" ${clickHandler}>${btnText}</button>
 </div>
 `;
 });
@@ -368,4 +386,3 @@ render();
 </script>
 </body>
 </html>
-
