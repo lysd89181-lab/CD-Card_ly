@@ -13,7 +13,6 @@
 --accent:#00ffa6;
 --text:#ffffff;
 --danger:#ff4d4d;
---out-of-stock: #444;
 }
 
 body{
@@ -96,13 +95,11 @@ padding:0 10px;
 .product-card{
 padding:10px;
 transition:0.3s;
-position: relative;
-overflow: hidden;
 }
 
-.product-card.sold-out{
-opacity: 0.6;
-filter: grayscale(0.5);
+.product-card:hover{
+transform:translateY(-4px) scale(1.02);
+box-shadow:0 10px 25px rgba(0,255,166,0.15);
 }
 
 .product-img{
@@ -135,14 +132,6 @@ color:black;
 font-weight:bold;
 cursor:pointer;
 box-shadow:0 0 12px rgba(0,255,166,0.4);
-transition: 0.2s;
-}
-
-.add-btn.disabled{
-background: var(--out-of-stock);
-color: #888;
-cursor: not-allowed;
-box-shadow: none;
 }
 
 .cart-bar{
@@ -239,8 +228,7 @@ const categories={
 {name:"30 عملة تيك توك",price:4,img:"etonz.jpg"},
 {name:"50 عملة تيك توك",price:7,img:"etonz.jpg"},
 {name:"100 عملة تيك توك",price:14,img:"etonz.jpg"},
-// تم تحديد هذا المنتج كـ "نفذت الكمية"
-{name:"200 عملة تيك توك",price:28,img:"etonz.jpg", outOfStock: true} 
+{name:"200 عملة تيك توك",price:28,img:"etonz.jpg"}
 ],
 "انستقرام":[
 {name:"1000 متابع انستقرام",price:8,img:"instagram.jpg"},
@@ -254,18 +242,23 @@ const categories={
 {name:"اعجابات منشور فيسبوك",price:6,img:"facebook.jpg"},
 {name:"1000 متابع مجموعة",price:8,img:"facebook.jpg"}
 ],
+"شحن حزم الأوهام ببجي":[
+{name:"صندوق الأوهام الأبيض",price:22,img:"crot.jpg"},
+{name:"صندوق الأوهام الذهبي",price:48,img:"crot.jpg"},
+{name:"صندوق الأوهام الأحمر",price:79,img:"crot.jpg"}
+],
 "ببجي موبايل":[
 {name:"ببجي 60 شدة",price:11,img:"pubg.jpg"},
 {name:"ببجي 120 شدة",price:22,img:"pubg.jpg"},
-{name:"ببجي 325 شدة",price:56,img:"pubg.jpg"},
-{name:"ببجي 660 شدة",price:117,img:"pubg.jpg"}
+{name:"ببجي 325 شدة",price:55,img:"pubg.jpg"},
+{name:"ببجي 660 شدة",price:115,img:"pubg.jpg"}
 ],
 "نجوم تيليجرام":[
-{name:"100 نجمة",price:15,img:"telegram.jpg"},
-{name:"150 نجمة",price:25,img:"telegram.jpg"},
-{name:"250 نجمة",price:37,img:"telegram.jpg" , outOfStock: true},
-{name:"350 نجمة",price:60,img:"telegram.jpg" , outOfStock: true},
-{name:"500 نجمة",price:80,img:"telegram.jpg" , outOfStock: true}
+{name:"100 نجمة",price:25,img:"telegram.jpg"},
+{name:"150 نجمة",price:37,img:"telegram.jpg"},
+{name:"250 نجمة",price:59,img:"telegram.jpg"},
+{name:"350 نجمة",price:80,img:"telegram.jpg"},
+{name:"500 نجمة",price:113,img:"telegram.jpg"}
 ],
 "فري فاير":[
 {name:"110 جوهرة",price:20,img:"freefire.jpg"},
@@ -307,18 +300,12 @@ let grid=document.createElement("div");
 grid.className="products-grid";
 
 categories[cat].forEach(p=>{
-const isOut = p.outOfStock === true;
-const btnClass = isOut ? "add-btn disabled" : "add-btn";
-const btnText = isOut ? "نفذت الكمية" : "إضافة +";
-const priceText = isOut ? "غير متوفر" : `${p.price+pricePlus} د.ل`;
-const clickHandler = isOut ? "" : `onclick="addToCart('${p.name}',${p.price})"`;
-
 grid.innerHTML+=`
-<div class="product-card glass ${isOut ? 'sold-out' : ''}">
+<div class="product-card glass">
 <img src="${p.img}" class="product-img" onerror="this.src='tiktok.jpg'">
 <h3>${p.name}</h3>
-<span class="price-tag">${priceText}</span>
-<button class="${btnClass}" ${clickHandler}>${btnText}</button>
+<span class="price-tag">${p.price+pricePlus} د.ل</span>
+<button class="add-btn" onclick="addToCart('${p.name}',${p.price})">إضافة +</button>
 </div>
 `;
 });
@@ -386,3 +373,4 @@ render();
 </script>
 </body>
 </html>
+
