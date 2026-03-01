@@ -3,226 +3,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>متجر CDCARD</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
---bg:#06080f;
---glass:rgba(255,255,255,0.05);
---border:rgba(255,255,255,0.15);
---accent:#00ffa6;
---text:#ffffff;
---danger:#ff4d4d;
+:root {
+    --main-bg: #0d0d0d;
+    --card-bg: #161616;
+    --accent: #2ecc71; 
+    --text-color: #ffffff;
+    --muted-text: #888;
+    --border-color: #222;
 }
 
-body{
-margin:0;
-font-family:'Cairo',sans-serif;
-background:linear-gradient(120deg,#02040a,#0a0f1f,#02040a);
-color:var(--text);
-text-align:center;
-padding-bottom:170px;
+body {
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding-bottom: 180px;
 }
 
-.glass{
-background:var(--glass);
-backdrop-filter:blur(14px);
-border:1px solid var(--border);
-border-radius:20px;
-box-shadow:0 8px 30px rgba(0,255,166,0.08);
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #000;
 }
 
-.hero{
-padding:30px 15px;
-margin:12px;
+.hero-section {
+    padding: 20px;
+    text-align: right;
 }
 
-.hero h1{
-margin:0;
-font-size:2rem;
-color:var(--accent);
-text-shadow:0 0 15px rgba(0,255,166,0.4);
+.hero-section h1 { font-size: 22px; margin-bottom: 5px; color: var(--accent); }
+.hero-section p { color: var(--muted-text); font-size: 14px; }
+
+.payment-methods { display: flex; gap: 10px; padding: 0 20px 20px; }
+.pay-card {
+    flex: 1; background: var(--card-bg); border: 1px solid var(--border-color);
+    color: var(--muted-text); padding: 10px; border-radius: 10px;
+    cursor: pointer; font-weight: bold; transition: 0.3s; text-align: center;
+}
+.pay-card.active { border-color: var(--accent); color: var(--accent); background: rgba(46, 204, 113, 0.1); }
+
+.category-title {
+    padding: 10px 20px; font-size: 18px; font-weight: bold;
+    color: var(--accent); border-right: 4px solid var(--accent); margin: 25px 0 15px;
 }
 
-.hero p{
-color:#aaa;
-margin-top:5px;
-font-size:0.9rem;
+.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 15px; }
+.product-card {
+    background: var(--card-bg); border-radius: 15px; overflow: hidden;
+    border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: 0.3s;
 }
 
-.payment-top{
-margin:10px 12px;
-padding:12px;
-display:flex;
-gap:8px;
-flex-wrap: wrap;
+.img-container { position: relative; width: 100%; height: 110px; }
+.product-img { width: 100%; height: 100%; object-fit: cover; }
+.badge {
+    position: absolute; top: 8px; right: 8px; background: var(--accent);
+    color: #000; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold;
 }
 
-.pay-card{
-flex:1;
-min-width: 80px;
-padding:10px;
-cursor:pointer;
-transition:0.3s;
-font-weight:bold;
-border-radius:15px;
-background: var(--glass);
-border: 1px solid var(--border);
-font-size: 0.85rem;
+.product-info { padding: 12px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
+.product-name { font-size: 13px; font-weight: bold; margin-bottom: 8px; height: 35px; color: #eee; overflow: hidden; }
+.desc-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid #333; color: #eee;
+    padding: 5px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; width: 100%;
 }
 
-.pay-card.active{
-border:1px solid var(--accent);
-box-shadow:0 0 15px rgba(0,255,166,0.4);
-background:rgba(0,255,166,0.08);
-color: var(--accent);
+.price-box { color: var(--accent); font-size: 17px; font-weight: bold; margin: 8px 0; }
+.qty-input {
+    width: 100%; background: #000; color: #fff; border: 1px solid #333;
+    padding: 8px; border-radius: 8px; font-size: 12px; margin-bottom: 10px; text-align: center;
 }
 
-.category-title{
-text-align:right;
-margin:25px 15px 10px;
-color:var(--accent);
-font-weight:bold;
-font-size:1.2rem;
-border-right:4px solid var(--accent);
-padding-right:10px;
+.add-to-cart-btn {
+    background: #fff; color: #000; border: none; padding: 10px;
+    border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px; margin-top: auto;
 }
 
-.products-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-padding:0 10px;
+.cart-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #000;
+    padding: 20px; border-top: 1px solid #222; z-index: 1000;
 }
-
-.product-card{
-padding:10px;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-min-height: 220px;
-}
-
-.product-img{
-width:100%;
-height:90px;
-border-radius:12px;
-object-fit:cover;
-}
-
-h3{
-font-size:0.8rem;
-margin:8px 0;
-min-height: 30px;
-}
-
-.price-tag{
-color:var(--accent);
-font-weight:bold;
-font-size:0.9rem;
-margin-bottom: 5px;
-display: block;
-}
-
-.qty-input{
-width: 90%;
-background: rgba(255,255,255,0.1);
-border: 1px solid var(--border);
-color: white;
-border-radius: 8px;
-padding: 5px;
-text-align: center;
-margin: 5px auto;
-font-size: 0.8rem;
-outline: none;
-}
-
-.add-btn{
-margin-top:5px;
-width:100%;
-padding:8px;
-border-radius:20px;
-border:none;
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-color:black;
-font-weight:bold;
-cursor:pointer;
-font-size: 0.8rem;
-}
-
-.cart-bar{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-padding:15px;
-margin:10px;
-z-index: 1000;
-}
-
-.cart-items-list{
-max-height:100px;
-overflow:auto;
-text-align:right;
-font-size:0.8rem;
-margin-bottom:10px;
-}
-
-.cart-item{
-display:flex;
-justify-content:space-between;
-background:rgba(255,255,255,0.05);
-padding:6px 10px;
-margin-bottom:5px;
-border-radius:8px;
-}
-
-.remove-btn{
-color:var(--danger);
-cursor:pointer;
-}
-
-.cart-summary{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.send-btn{
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-color:black;
-border:none;
-padding:12px 20px;
-border-radius:30px;
-font-weight:bold;
-cursor:pointer;
+.cart-items-list { max-height: 80px; overflow-y: auto; text-align: right; font-size: 12px; color: #888; margin-bottom: 10px; }
+.total-row { display: flex; justify-content: space-between; align-items: center; }
+.send-order {
+    background: var(--accent); color: #000; padding: 12px 30px;
+    border-radius: 25px; font-weight: bold; border: none; cursor: pointer;
 }
 </style>
 </head>
-
 <body>
 
-<div class="hero glass">
-<h1>CDCARD</h1>
-<p>متابعين، شحن ألعاب، واشتراكات رقمية بأسعار منافسة</p>
+<div class="header">
+    <div style="font-weight:bold; color:var(--accent);">CDCARD</div>
+    <div style="background:#222; padding:5px 12px; border-radius:8px; font-size:12px; cursor:pointer;">القائمة ☰</div>
 </div>
 
-<div class="payment-top glass">
-<div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
-<div class="pay-card" onclick="setMethod(this,'لبيانا',2)">📱 لبيانا (+2)</div>
-<div class="pay-card" onclick="setMethod(this,'مدار',2)">📡 مدار (+2)</div>
+<div class="hero-section">
+    <h1>متجر CDCARD الرقمي</h1>
+    <p>متابعين، شحن ألعاب، واشتراكات بأفضل الأسعار</p>
+</div>
+
+<div class="payment-methods">
+    <div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
+    <div class="pay-card" onclick="setMethod(this,'لبيانا',2)">📱 لبيانا (+2)</div>
+    <div class="pay-card" onclick="setMethod(this,'مدار',2)">📡 مدار (+2)</div>
 </div>
 
 <div id="shop-container"></div>
 
-<div class="cart-bar glass">
-<div class="cart-items-list" id="cart-items-list"></div>
-<div class="cart-summary">
-<div style="text-align:right;">
-<span id="cart-count" style="font-size:0.75rem;color:#aaa;">المنتجات: 0</span><br>
-<strong id="cart-total">الإجمالي: 0 د.ل</strong>
-</div>
-<button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
-</div>
+<div class="cart-footer">
+    <div id="cart-items-list" class="cart-items-list"></div>
+    <div class="total-row">
+        <div>
+            <span style="font-size: 12px; color: #888;">الإجمالي:</span><br>
+            <strong id="cart-total" style="font-size: 20px; color: var(--accent);">0.00 د.ل</strong>
+        </div>
+        <button class="send-order" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+    </div>
 </div>
 
 <script>
@@ -232,10 +133,10 @@ let cart=[];
 
 const categories={
 "تيك توك":[
-{name:"متابعين تيك توك",pricePer1000:12,img:"tiktok.jpg",isSocial:true},
-{name:"لايكات تيك توك",pricePer1000:3,img:"tiktok.jpg",isSocial:true},
-{name:"مشاهدات تيك توك",pricePer1000:1,img:"tiktok.jpg",isSocial:true},
-{name:"مشاركات تيك توك",pricePer1000:1,img:"tiktok.jpg",isSocial:true}
+{name:"1000 متابع تيك توك",price:12,img:"tiktok.jpg",isSocial:true},
+{name:"1000 لايك تيك توك",price:3,img:"tiktok.jpg",isSocial:true},
+{name:"1000 مشاهدة تيك توك",price:1,img:"tiktok.jpg",isSocial:true},
+{name:"100 مشاركة تيك توك",price:1,img:"tiktok.jpg",isSocial:true}
 ],
 "عملات تيك توك":[
 {name:"30 عملة تيك توك",price:4,img:"etonz.jpg"},
@@ -244,16 +145,16 @@ const categories={
 {name:"200 عملة تيك توك",price:28,img:"etonz.jpg"}
 ],
 "انستقرام":[
-{name:"متابعين انستقرام",pricePer1000:8,img:"instagram.jpg",isSocial:true},
-{name:"لايكات انستقرام",pricePer1000:4,img:"instagram.jpg",isSocial:true},
-{name:"مشاهدات انستقرام",pricePer1000:1,img:"instagram.jpg",isSocial:true},
-{name:"مشاركات انستقرام",pricePer1000:1,img:"instagram.jpg",isSocial:true}
+{name:"1000 متابع انستقرام",price:8,img:"instagram.jpg",isSocial:true},
+{name:"1000 لايك انستقرام",price:4,img:"instagram.jpg",isSocial:true},
+{name:"1000 مشاهدة انستقرام",price:1,img:"instagram.jpg",isSocial:true},
+{name:"100 مشاركة انستقرام",price:1,img:"instagram.jpg",isSocial:true}
 ],
 "فيسبوك":[
-{name:"متابعين صفحة",pricePer1000:5,img:"facebook.jpg",isSocial:true},
-{name:"مشاهدات ريلز",pricePer1000:1,img:"facebook.jpg",isSocial:true},
-{name:"اعجابات منشور",pricePer1000:6,img:"facebook.jpg",isSocial:true},
-{name:"متابعين مجموعة",pricePer1000:8,img:"facebook.jpg",isSocial:true}
+{name:"1000 متابع صفحة",price:5,img:"facebook.jpg",isSocial:true},
+{name:"1000 مشاهدة ريلز",price:1,img:"facebook.jpg",isSocial:true},
+{name:"اعجابات منشور فيسبوك",price:6,img:"facebook.jpg",isSocial:true},
+{name:"1000 متابع مجموعة",price:8,img:"facebook.jpg",isSocial:true}
 ],
 "ببجي موبايل":[
 {name:"ببجي 60 شدة",price:11,img:"pubg.jpg"},
@@ -274,7 +175,7 @@ const categories={
 {name:"2420 جوهرة",price:225,img:"freefire.jpg"}
 ],
 "اشتراكات":[
-{name:"شات جي بي تي شهر",price:250,img:"shats.jpg"},
+{name:"اشتراك شات جي بي تي - شهري",price:250,img:"shats.jpg"},
 {name:"شاهد شهر",price:30,img:"shahid.jpg"},
 {name:"نتفليكس شهر",price:30,img:"netflix.jpg"},
 {name:"كاب كات شخصي",price:50,img:"capcut.jpg"},
@@ -299,125 +200,71 @@ const categories={
 };
 
 function render(){
-const container=document.getElementById("shop-container");
-container.innerHTML="";
-
-for(let cat in categories){
-container.innerHTML+=`<div class="category-title">${cat}</div>`;
-let grid=document.createElement("div");
-grid.className="products-grid";
-
-categories[cat].forEach((p, index)=>{
-    let cardHTML = '';
-    if(p.isSocial){
-        cardHTML = `
-        <div class="product-card glass">
-            <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
-            <h3>${p.name}</h3>
-            <span class="price-tag">${p.pricePer1000 + pricePlus} د.ل / 1000</span>
-            <input type="number" class="qty-input" id="qty-${cat}-${index}" value="200" min="200" placeholder="الكمية (أقل شيء 200)">
-            <button class="add-btn" onclick="addSocialToCart('${cat}', ${index})">إضافة +</button>
-        </div>`;
-    } else {
-        cardHTML = `
-        <div class="product-card glass">
-            <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
-            <h3>${p.name}</h3>
-            <span class="price-tag">${p.price + pricePlus} د.ل</span>
-            <button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">إضافة +</button>
-        </div>`;
+    const container=document.getElementById("shop-container");
+    container.innerHTML="";
+    for(let cat in categories){
+        container.innerHTML+=`<div class="category-title">${cat}</div>`;
+        let grid=document.createElement("div");
+        grid.className="products-grid";
+        categories[cat].forEach((p, index)=>{
+            grid.innerHTML+=`
+                <div class="product-card">
+                    <div class="img-container">
+                        <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="badge">${p.isSocial ? 'سريع' : 'حصري'}</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <button class="desc-btn">📋 عرض الوصف</button>
+                        <div class="price-box">LYD ${p.price + pricePlus}</div>
+                        ${p.isSocial ? `
+                            <input type="number" class="qty-input" id="qty-${cat}-${index}" value="1000" min="200" placeholder="الكمية">
+                        ` : '<div style="height:42px"></div>'}
+                        <button class="add-to-cart-btn" onclick="addClick('${cat}', ${index})">إضافة للسلة</button>
+                    </div>
+                </div>`;
+        });
+        container.appendChild(grid);
     }
-    grid.innerHTML += cardHTML;
-});
-container.appendChild(grid);
-}
 }
 
 function setMethod(el,method,plus){
-document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
-el.classList.add("active");
-currentMethod=method;
-pricePlus=plus;
-// تحديث الأسعار في السلة الحالية
-cart.forEach(item => {
-    if(item.isSocial) {
-        item.finalPrice = ((item.unitPrice + pricePlus) * item.qty) / 1000;
-    } else {
-        item.finalPrice = item.basePrice + pricePlus;
-    }
-});
-render();
-updateUI();
+    document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
+    el.classList.add("active");
+    currentMethod=method; pricePlus=plus;
+    render(); updateUI();
 }
 
-function addToCart(name, basePrice){
-cart.push({
-    id: Date.now() + Math.random(),
-    name: name,
-    basePrice: basePrice,
-    finalPrice: basePrice + pricePlus,
-    isSocial: false
-});
-updateUI();
-}
-
-function addSocialToCart(cat, index){
+function addClick(cat, index) {
     const p = categories[cat][index];
-    const qtyInput = document.getElementById(`qty-${cat}-${index}`);
-    const qty = parseInt(qtyInput.value);
-
-    if(isNaN(qty) || qty < 200){
-        alert("الحد الأدنى للطلب هو 200");
-        return;
+    if(p.isSocial) {
+        const qty = parseInt(document.getElementById(`qty-${cat}-${index}`).value);
+        if(qty < 200) return alert("الحد الأدنى 200");
+        const finalPrice = ((p.price + pricePlus) * qty) / 1000;
+        cart.push({name: `${p.name} (${qty})`, finalPrice});
+    } else {
+        cart.push({name: p.name, finalPrice: p.price + pricePlus});
     }
-
-    const currentUnitPrice = p.pricePer1000 + pricePlus;
-    const finalPrice = (currentUnitPrice * qty) / 1000;
-
-    cart.push({
-        id: Date.now() + Math.random(),
-        name: `${p.name} (${qty})`,
-        unitPrice: p.pricePer1000,
-        qty: qty,
-        finalPrice: finalPrice,
-        isSocial: true
-    });
     updateUI();
 }
 
-function removeFromCart(id){
-cart=cart.filter(item=>item.id!==id);
-updateUI();
-}
-
 function updateUI(){
-const list=document.getElementById("cart-items-list");
-list.innerHTML="";
-let total=0;
-
-cart.forEach(item=>{
-total+=item.finalPrice;
-list.innerHTML+=`
-<div class="cart-item">
-<span>${item.name} (${item.finalPrice.toFixed(2)} د.ل)</span>
-<span class="remove-btn" onclick="removeFromCart(${item.id})">✖</span>
-</div>
-`;
-});
-
-document.getElementById("cart-count").innerText=`المنتجات: ${cart.length}`;
-document.getElementById("cart-total").innerText=`الإجمالي: ${total.toFixed(2)} د.ل`;
+    const list=document.getElementById("cart-items-list");
+    list.innerHTML="";
+    let total=0;
+    cart.forEach((item, i)=>{
+        total+=item.finalPrice;
+        list.innerHTML+=`<div>- ${item.name} (${item.finalPrice.toFixed(2)}) <span onclick="cart.splice(${i},1);updateUI()" style="color:red;cursor:pointer">✖</span></div>`;
+    });
+    document.getElementById("cart-total").innerText=total.toFixed(2)+" د.ل";
 }
 
 function sendWhatsApp(){
-if(cart.length===0) return alert("السلة فارغة!");
-let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice.toFixed(2)} د.ل`).join('%0A');
-let total=cart.reduce((s,item)=>s+item.finalPrice,0);
-let phone="218912377291";
-
-let msg=`*طلب جديد - متجر CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي:* ${total.toFixed(2)} د.ل`;
-
-window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
+    if(cart.length===0)return alert("السلة فارغة!");
+    let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice.toFixed(2)} د.ل`).join('%0A');
+    let total=cart.reduce((s,item)=>s+item.finalPrice,0);
+    let msg=`*طلب جديد - CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A${itemsText}%0A*الإجمالي:* ${total.toFixed(2)} د.ل`;
+    window.open(`https://wa.me/218912377291?text=${msg}`);
 }
 
 render();
