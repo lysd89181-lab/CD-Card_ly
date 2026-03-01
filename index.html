@@ -3,226 +3,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>متجر CDCARD</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
---bg:#06080f;
---glass:rgba(255,255,255,0.05);
---border:rgba(255,255,255,0.15);
---accent:#00ffa6;
---text:#ffffff;
---danger:#ff4d4d;
+:root {
+    --main-bg: #0d0d0d;
+    --card-bg: #161616;
+    --accent: #2ecc71; 
+    --text-color: #ffffff;
+    --muted-text: #888;
+    --border-color: #222;
 }
 
-body{
-margin:0;
-font-family:'Cairo',sans-serif;
-background:linear-gradient(120deg,#02040a,#0a0f1f,#02040a);
-color:var(--text);
-text-align:center;
-padding-bottom:170px;
+body {
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding-bottom: 180px;
+    scroll-behavior: smooth;
 }
 
-.glass{
-background:var(--glass);
-backdrop-filter:blur(14px);
-border:1px solid var(--border);
-border-radius:20px;
-box-shadow:0 8px 30px rgba(0,255,166,0.08);
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #000;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.hero{
-padding:30px 15px;
-margin:12px;
+.hero-section {
+    padding: 30px 20px;
+    text-align: center;
+    background: linear-gradient(to bottom, #111, #0d0d0d);
 }
 
-.hero h1{
-margin:0;
-font-size:2rem;
-color:var(--accent);
-text-shadow:0 0 15px rgba(0,255,166,0.4);
+.hero-section h1 { font-size: 24px; margin-bottom: 5px; color: var(--accent); }
+.hero-section p { color: var(--muted-text); font-size: 14px; }
+
+.nav-scroll {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 15px;
+    gap: 10px;
+    background: #0d0d0d;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    border-bottom: 1px solid var(--border-color);
+}
+.nav-scroll::-webkit-scrollbar { display: none; }
+.nav-item {
+    background: var(--card-bg);
+    padding: 7px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
 }
 
-.hero p{
-color:#aaa;
-margin-top:5px;
-font-size:0.9rem;
+.payment-methods { display: flex; gap: 10px; padding: 15px 20px; }
+.pay-card {
+    flex: 1; background: var(--card-bg); border: 1px solid var(--border-color);
+    color: var(--muted-text); padding: 12px; border-radius: 12px;
+    cursor: pointer; font-weight: bold; text-align: center; font-size: 13px;
+}
+.pay-card.active { border-color: var(--accent); color: var(--accent); background: rgba(46, 204, 113, 0.1); }
+
+.category-title {
+    padding: 10px 20px; font-size: 18px; font-weight: bold;
+    color: var(--accent); border-right: 4px solid var(--accent); margin: 20px 0 10px;
 }
 
-/* تنسيق طرق الدفع الجديدة */
-.payment-top{
-margin:10px 12px;
-padding:12px;
-display:flex;
-gap:10px;
-flex-wrap: wrap;
+.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 12px; }
+.product-card {
+    background: var(--card-bg); border-radius: 15px; overflow: hidden;
+    border: 1px solid var(--border-color); display: flex; flex-direction: column;
 }
 
-.pay-card{
-flex:1;
-min-width: 80px;
-padding:12px;
-cursor:pointer;
-transition:0.3s;
-font-weight:bold;
-border-radius:15px;
-background: var(--glass);
-border: 1px solid var(--border);
-font-size: 0.9rem;
+.img-container { position: relative; width: 100%; height: 110px; }
+.product-img { width: 100%; height: 100%; object-fit: cover; }
+.badge {
+    position: absolute; top: 8px; right: 8px; background: var(--accent);
+    color: #000; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold;
 }
 
-.pay-card.active{
-border:1px solid var(--accent);
-box-shadow:0 0 15px rgba(0,255,166,0.4);
-background:rgba(0,255,166,0.08);
-color: var(--accent);
+.product-info { padding: 12px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
+.product-name { font-size: 13px; font-weight: bold; margin-bottom: 8px; min-height: 35px; color: #eee; }
+
+.desc-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid #333; color: #eee;
+    padding: 6px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; width: 100%; cursor: pointer;
 }
 
-.category-title{
-text-align:right;
-margin:25px 15px 10px;
-color:var(--accent);
-font-weight:bold;
-font-size:1.2rem;
-border-right:4px solid var(--accent);
-padding-right:10px;
+.price-box { color: var(--accent); font-size: 17px; font-weight: bold; margin: 5px 0; }
+.qty-input {
+    width: 100%; background: #000; color: #fff; border: 1px solid #333;
+    padding: 8px; border-radius: 8px; font-size: 12px; margin-bottom: 10px; text-align: center;
 }
 
-.products-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-padding:0 10px;
+.add-to-cart-btn {
+    background: #fff; color: #000; border: none; padding: 10px;
+    border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px;
 }
 
-.product-card{
-padding:10px;
-transition:0.3s;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
+.cart-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #000;
+    padding: 20px; border-top: 1px solid #222; z-index: 1000;
+}
+.cart-items-list { max-height: 60px; overflow-y: auto; text-align: right; font-size: 12px; color: #888; margin-bottom: 10px; }
+.total-row { display: flex; justify-content: space-between; align-items: center; }
+.send-order {
+    background: var(--accent); color: #000; padding: 12px 30px;
+    border-radius: 25px; font-weight: bold; border: none; cursor: pointer;
 }
 
-.product-img{
-width:100%;
-height:100px;
-border-radius:15px;
-object-fit:cover;
+/* Modal */
+.modal {
+    display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
 }
-
-h3{
-font-size:0.85rem;
-margin:8px 0;
+.modal-content {
+    background: var(--card-bg); margin: 25% auto; padding: 25px; border-radius: 20px;
+    width: 85%; max-width: 400px; text-align: center; border: 1px solid var(--accent);
 }
-
-.price-tag{
-color:var(--accent);
-font-weight:bold;
-font-size:0.9rem;
-display: block;
-margin-bottom: 5px;
-}
-
-/* تنسيق حقل الكمية */
-.qty-input{
-width: 80%;
-background: rgba(255,255,255,0.1);
-border: 1px solid var(--border);
-color: white;
-border-radius: 5px;
-padding: 5px;
-text-align: center;
-margin: 5px auto;
-font-size: 0.8rem;
-}
-
-.add-btn{
-margin-top:8px;
-width:95%;
-padding:9px;
-border-radius:25px;
-border:none;
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-color:black;
-font-weight:bold;
-cursor:pointer;
-}
-
-.cart-bar{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-padding:15px;
-margin:10px;
-z-index: 1000;
-}
-
-.cart-items-list{
-max-height:120px;
-overflow:auto;
-text-align:right;
-font-size:0.85rem;
-margin-bottom:10px;
-}
-
-.cart-item{
-display:flex;
-justify-content:space-between;
-background:rgba(255,255,255,0.05);
-padding:6px 10px;
-margin-bottom:5px;
-border-radius:8px;
-}
-
-.remove-btn{
-color:var(--danger);
-cursor:pointer;
-font-weight:bold;
-}
-
-.cart-summary{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.send-btn{
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-color:black;
-border:none;
-padding:12px 25px;
-border-radius:30px;
-font-weight:bold;
-cursor:pointer;
-}
+.close-modal { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 10px; margin-top: 20px; cursor: pointer; font-weight: bold; }
 </style>
 </head>
-
 <body>
 
-<div class="hero glass">
-<h1>CDCARD</h1>
-<p>متابعين، شحن ألعاب، واشتراكات رقمية بأسعار منافسة</p>
+<div class="header">
+    <div style="font-weight:bold; color:var(--accent); font-size: 20px;">CDCARD</div>
+    <div style="font-size: 20px;">☰</div>
 </div>
 
-<div class="payment-top glass">
-<div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
-<div class="pay-card" onclick="setMethod(this,'لبيانا',2)">📱 لبيانا (+2)</div>
-<div class="pay-card" onclick="setMethod(this,'مدار',2)">📡 مدار (+2)</div>
+<div class="hero-section">
+    <h1>متجر CDCARD الرقمي</h1>
+    <p>متابعين، شحن ألعاب، واشتراكات بأفضل الأسعار</p>
+</div>
+
+<div class="nav-scroll" id="nav-scroll"></div>
+
+<div class="payment-methods">
+    <div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
+    <div class="pay-card" onclick="setMethod(this,'لبيانا',2)">📱 لبيانا (+2)</div>
+    <div class="pay-card" onclick="setMethod(this,'مدار',2)">📡 مدار (+2)</div>
 </div>
 
 <div id="shop-container"></div>
 
-<div class="cart-bar glass">
-<div class="cart-items-list" id="cart-items-list"></div>
-<div class="cart-summary">
-<div style="text-align:right;">
-<span id="cart-count" style="font-size:0.8rem;color:#aaa;">المنتجات: 0</span><br>
-<strong id="cart-total">الإجمالي: 0 د.ل</strong>
+<div class="cart-footer">
+    <div id="cart-items-list" class="cart-items-list"></div>
+    <div class="total-row">
+        <div>
+            <span style="font-size: 12px; color: #888;">الإجمالي:</span><br>
+            <strong id="cart-total" style="font-size: 20px; color: var(--accent);">0.00 د.ل</strong>
+        </div>
+        <button class="send-order" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+    </div>
 </div>
-<button class="send-btn" onclick="sendWhatsApp()">إرسال عبر واتساب ✅</button>
-</div>
+
+<div id="descModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="color: var(--accent);"></h3>
+        <p id="modalDesc" style="font-size: 14px; line-height: 1.6;"></p>
+        <button class="close-modal" onclick="closeModal()">إغلاق</button>
+    </div>
 </div>
 
 <script>
@@ -230,192 +178,145 @@ let currentMethod="كاش";
 let pricePlus=0;
 let cart=[];
 
-// التعديل الثاني: إضافة خاصية isSocial لتمييز المنتجات التي تتطلب كمية
 const categories={
 "تيك توك":[
-{name:"1000 متابع تيك توك",price:12,img:"tiktok.jpg"},
-{name:"1000 لايك تيك توك",price:3,img:"tiktok.jpg"},
-{name:"1000 مشاهدة تيك توك",price:1,img:"tiktok.jpg"},
-{name:"100 مشاركة تيك توك",price:1,img:"tiktok.jpg"}
+{name:"1000 متابع تيك توك",price:12,img:"tiktok.jpg",isSocial:true, desc:"متابعين جودة عالية، ضمان 30 يوم."},
+{name:"1000 لايك تيك توك",price:3,img:"tiktok.jpg",isSocial:true, desc:"لايكات حقيقية وسريعة."},
+{name:"1000 مشاهدة تيك توك",price:1,img:"tiktok.jpg",isSocial:true, desc:"مشاهدات ترفع رانك الفيديو."},
+{name:"100 مشاركة تيك توك",price:1,img:"tiktok.jpg",isSocial:true, desc:"زيادة إكسبلور ومشاركات."}
 ],
 "عملات تيك توك":[
-{name:"30 عملة تيك توك",price:4,img:"etonz.jpg"},
-{name:"50 عملة تيك توك",price:7,img:"etonz.jpg"},
-{name:"100 عملة تيك توك",price:14,img:"etonz.jpg"},
-{name:"200 عملة تيك توك",price:28,img:"etonz.jpg"}
+{name:"30 عملة تيك توك",price:4,img:"etonz.jpg", desc:"شحن رسمي عن طريق الايدي."},
+{name:"50 عملة تيك توك",price:7,img:"etonz.jpg", desc:"شحن فوري ومضمون."},
+{name:"100 عملة تيك توك",price:14,img:"etonz.jpg", desc:"تصلك العملات في ثواني."},
+{name:"200 عملة تيك توك",price:28,img:"etonz.jpg", desc:"أفضل سعر للعملات."}
 ],
 "انستقرام":[
-{name:"1000 متابع انستقرام",price:8,img:"instagram.jpg"},
-{name:"1000 لايك انستقرام",price:4,img:"instagram.jpg"},
-{name:"1000 مشاهدة انستقرام",price:1,img:"instagram.jpg"},
-{name:"100 مشاركة انستقرام",price:1,img:"instagram.jpg"}
+{name:"1000 متابع انستقرام",price:8,img:"instagram.jpg",isSocial:true, desc:"متابعين ثابتين، جودة ممتازة."},
+{name:"1000 لايك انستقرام",price:4,img:"instagram.jpg",isSocial:true, desc:"لايكات فورية لصورك وفيديوهاتك."},
+{name:"1000 مشاهدة انستقرام",price:1,img:"instagram.jpg",isSocial:true, desc:"مشاهدات ريلز وفيديو."},
+{name:"100 مشاركة انستقرام",price:1,img:"instagram.jpg",isSocial:true, desc:"زيادة انتشار المنشور."}
 ],
 "فيسبوك":[
-{name:"1000 متابع صفحة",price:5,img:"facebook.jpg"},
-{name:"1000 مشاهدة ريلز",price:1,img:"facebook.jpg"},
-{name:"اعجابات منشور فيسبوك",price:6,img:"facebook.jpg"},
-{name:"1000 متابع مجموعة",price:8,img:"facebook.jpg"}
+{name:"1000 متابع صفحة",price:5,img:"facebook.jpg",isSocial:true, desc:"متابعين لصفحات الفيسبوك العامة."},
+{name:"1000 مشاهدة ريلز",price:1,img:"facebook.jpg",isSocial:true, desc:"مشاهدات فيديوهات ريلز."},
+{name:"اعجابات منشور فيسبوك",price:6,img:"facebook.jpg",isSocial:true, desc:"تفاعل قوي على منشوراتك."},
+{name:"1000 متابع مجموعة",price:8,img:"facebook.jpg",isSocial:true, desc:"زيادة أعضاء قروبات فيسبوك."}
 ],
 "ببجي موبايل":[
-{name:"ببجي 60 شدة",price:11,img:"pubg.jpg"},
-{name:"ببجي 120 شدة",price:22,img:"pubg.jpg"},
-{name:"ببجي 325 شدة",price:55,img:"pubg.jpg"},
-{name:"ببجي 660 شدة",price:115,img:"pubg.jpg"}
+{name:"ببجي 60 شدة",price:11,img:"pubg.jpg", desc:"شحن رسمي فوري ID."},
+{name:"ببجي 120 شدة",price:22,img:"pubg.jpg", desc:"شحن آمن ومضمون."},
+{name:"ببجي 325 شدة",price:55,img:"pubg.jpg", desc:"أفضل عرض للشدات."},
+{name:"ببجي 660 شدة",price:115,img:"pubg.jpg", desc:"شحن سريع جداً."}
 ],
 "نجوم تيليجرام":[
-{name:"100 نجمة",price:25,img:"telegram.jpg"},
-{name:"150 نجمة",price:37,img:"telegram.jpg"},
-{name:"250 نجمة",price:59,img:"telegram.jpg"},
-{name:"350 نجمة",price:80,img:"telegram.jpg"},
-{name:"500 نجمة",price:113,img:"telegram.jpg"}
+{name:"100 نجمة",price:25,img:"telegram.jpg", desc:"نجوم تيليجرام لدعم القنوات."},
+{name:"150 نجمة",price:37,img:"telegram.jpg", desc:"شحن رسمي من تيليجرام."},
+{name:"250 نجمة",price:59,img:"telegram.jpg", desc:"تفعيل مميزات النجوم."},
+{name:"500 نجمة",price:113,img:"telegram.jpg", desc:"أعلى باقة نجوم متوفرة."}
 ],
 "فري فاير":[
-{name:"110 جوهرة",price:20,img:"freefire.jpg"},
-{name:"221 جوهرة",price:32,img:"freefire.jpg"},
-{name:"2420 جوهرة",price:225,img:"freefire.jpg"}
+{name:"110 جوهرة",price:20,img:"freefire.jpg", desc:"شحن جواهر فري فاير ID."},
+{name:"221 جوهرة",price:32,img:"freefire.jpg", desc:"شحن فوري لآيدي اللاعب."},
+{name:"2420 جوهرة",price:225,img:"freefire.jpg", desc:"باقة الجواهر الكبيرة."}
 ],
 "اشتراكات":[
-{name:"اشتراك شات جي بي تي - شهري",price:250,img:"shats.jpg"},
-{name:"شاهد شهر",price:30,img:"shahid.jpg"},
-{name:"نتفليكس شهر",price:30,img:"netflix.jpg"},
-{name:"كاب كات شخصي",price:50,img:"capcut.jpg"},
-{name:"تروكولر سنوي",price:160,img:"truecaller.jpg"}
+{name:"اشتراك GPT - شهري",price:250,img:"shats.jpg", desc:"حساب شات جي بي تي بلس."},
+{name:"شاهد شهر",price:30,img:"shahid.jpg", desc:"اشتراك شاهد VIP رسمي."},
+{name:"نتفليكس شهر",price:30,img:"netflix.jpg", desc:"حساب نتفليكس 4K مشترك."},
+{name:"كاب كات شخصي",price:50,img:"capcut.jpg", desc:"مميزات كاب كات برو."},
+{name:"تروكولر سنوي",price:160,img:"truecaller.jpg", desc:"اشتراك تروكولر جولد."}
 ],
-"سناب شات بلس":[
-{name:"سناب بلس 3 شهور",price:70,img:"snapchat.jpg"},
-{name:"سناب بلس 6 شهور",price:130,img:"snapchat.jpg"},
-{name:"سناب بلس سنوي",price:240,img:"snapchat.jpg"}
+"سناب شات":[
+{name:"سناب بلس 3 شهور",price:70,img:"snapchat.jpg", desc:"مميزات سناب بلس الحصرية."},
+{name:"سناب بلس 6 شهور",price:130,img:"snapchat.jpg", desc:"اشتراك سناب بلس نصف سنوي."},
+{name:"سناب بلس سنوي",price:240,img:"snapchat.jpg", desc:"أفضل قيمة لسناب بلس."}
 ],
 "روبلكس":[
-{name:"40 عملة روبلكس",price:15,img:"roblox.jpg"},
-{name:"80 عملة روبلكس",price:29,img:"roblox.jpg"},
-{name:"400 عملة روبلكس",price:98,img:"roblox.jpg"}
+{name:"40 عملة روبلكس",price:15,img:"roblox.jpg", desc:"شحن روبوكس رسمي."},
+{name:"80 عملة روبلكس",price:29,img:"roblox.jpg", desc:"شحن فوري لحسابك."},
+{name:"400 عملة روبلكس",price:98,img:"roblox.jpg", desc:"باقة 400 روبوكس."}
 ],
 "FC 25":[
-{name:"40 نقطة FC",price:15,img:"fc.jpg"},
-{name:"100 نقطة FC",price:29,img:"fc.jpg"},
-{name:"520 نقطة FC",price:71,img:"fc.jpg"},
-{name:"1070 نقطة FC",price:138,img:"fc.jpg"}
+{name:"40 نقطة FC",price:15,img:"fc.jpg", desc:"نقاط فيفا موبايل FC."},
+{name:"100 نقطة FC",price:29,img:"fc.jpg", desc:"شحن نقاط FC فوري."},
+{name:"520 نقطة FC",price:71,img:"fc.jpg", desc:"باقة نقاط FC المتوسطة."},
+{name:"1070 نقطة FC",price:138,img:"fc.jpg", desc:"أفضل باقة نقاط FC."}
 ]
 };
 
 function render(){
-const container=document.getElementById("shop-container");
-container.innerHTML="";
+    const container=document.getElementById("shop-container");
+    const navScroll=document.getElementById("nav-scroll");
+    container.innerHTML=""; navScroll.innerHTML="";
+    for(let cat in categories){
+        navScroll.innerHTML += `<div class="nav-item" onclick="document.getElementById('${cat}').scrollIntoView()">${cat}</div>`;
+        container.innerHTML+=`<div class="category-title" id="${cat}">${cat}</div>`;
+        let grid=document.createElement("div"); grid.className="products-grid";
+        categories[cat].forEach((p, index)=>{
+            grid.innerHTML+=`
+                <div class="product-card">
+                    <div class="img-container">
+                        <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="badge">${p.isSocial ? 'سريع' : 'رسمي'}</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <button class="desc-btn" onclick="showDesc('${p.name}', '${p.desc || "لا يوجد وصف."}')">📋 عرض الوصف</button>
+                        <div class="price-box">LYD ${p.price + pricePlus}</div>
+                        ${p.isSocial ? `<input type="number" class="qty-input" id="qty-${cat}-${index}" value="1000" min="200">` : '<div style="height:42px"></div>'}
+                        <button class="add-to-cart-btn" onclick="addClick('${cat}', ${index})">إضافة للسلة</button>
+                    </div>
+                </div>`;
+        });
+        container.appendChild(grid);
+    }
+}
 
-for(let cat in categories){
-container.innerHTML+=`<div class="category-title">${cat}</div>`;
-let grid=document.createElement("div");
-grid.className="products-grid";
-
-categories[cat].forEach((p, index)=>{
-let cardContent = '';
-if(p.isSocial) {
-    // منتج بSystem كمية (سوشيال ميديا)
-    cardContent = `
-    <div class="product-card glass">
-        <img src="${p.img}" class="product-img">
-        <h3>${p.name}</h3>
-        <small style="font-size:0.7rem; color:#00ffa6">السعر لكل 1000: ${p.pricePer1000 + pricePlus} د.ل</small>
-        <input type="number" class="qty-input" id="qty-${cat}-${index}" value="200" min="200" step="100">
-        <button class="add-btn" onclick="addSocialToCart('${p.name}', ${p.pricePer1000}, 'qty-${cat}-${index}')">إضافة +</button>
-    </div>`;
-} else {
-    // منتج عادي (شدات، اشتراكات)
-    cardContent = `
-    <div class="product-card glass">
-        <img src="${p.img}" class="product-img">
-        <h3>${p.name}</h3>
-        <span class="price-tag">${p.price+pricePlus} د.ل</span>
-        <button class="add-btn" onclick="addToCart('${p.name}',${p.price})">إضافة +</button>
-    </div>`;
+function showDesc(title, text) {
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalDesc").innerText = text;
+    document.getElementById("descModal").style.display = "block";
 }
-grid.innerHTML += cardContent;
-});
-container.appendChild(grid);
-}
-}
+function closeModal() { document.getElementById("descModal").style.display = "none"; }
 
 function setMethod(el,method,plus){
-document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
-el.classList.add("active");
-currentMethod=method;
-pricePlus=plus;
-// تحديث الأسعار في السلة عند تغيير طريقة الدفع
-cart.forEach(item => {
-    item.finalPrice = (item.isSocial ? (item.unitPrice + pricePlus) * (item.qty/1000) : (item.basePrice + pricePlus));
-});
-render();
-updateUI();
+    document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
+    el.classList.add("active");
+    currentMethod=method; pricePlus=plus;
+    render(); updateUI();
 }
 
-// إضافة منتج عادي
-function addToCart(name,basePrice){
-cart.push({
-    id:Date.now(),
-    name:name,
-    basePrice:basePrice,
-    finalPrice:basePrice+pricePlus,
-    isSocial: false
-});
-updateUI();
-}
-
-// إضافة منتج سوشيال ميديا بكمية مخصصة
-function addSocialToCart(name, pricePer1000, inputId){
-    let qty = parseInt(document.getElementById(inputId).value);
-    if(qty < 200) return alert("الحد الأدنى للطلب هو 200");
-    
-    let currentUnitPrice = pricePer1000 + pricePlus;
-    let finalPrice = (currentUnitPrice * qty) / 1000;
-
-    cart.push({
-        id: Date.now(),
-        name: `${name} (كمية: ${qty})`,
-        unitPrice: pricePer1000,
-        qty: qty,
-        finalPrice: finalPrice,
-        isSocial: true
-    });
+function addClick(cat, index) {
+    const p = categories[cat][index];
+    let fPrice = p.price + pricePlus;
+    let finalName = p.name;
+    if(p.isSocial) {
+        const qty = parseInt(document.getElementById(`qty-${cat}-${index}`).value);
+        if(qty < 200) return alert("الحد الأدنى 200");
+        fPrice = (fPrice * qty) / 1000;
+        finalName = `${p.name} (${qty})`;
+    }
+    cart.push({name: finalName, finalPrice: fPrice});
     updateUI();
 }
 
-function removeFromCart(id){
-cart=cart.filter(item=>item.id!==id);
-updateUI();
-}
-
 function updateUI(){
-const list=document.getElementById("cart-items-list");
-list.innerHTML="";
-let total=0;
-
-cart.forEach(item=>{
-total+=item.finalPrice;
-list.innerHTML+=`
-<div class="cart-item">
-<span>${item.name} - ${item.finalPrice.toFixed(2)} د.ل</span>
-<span class="remove-btn" onclick="removeFromCart(${item.id})">✖</span>
-</div>
-`;
-});
-
-document.getElementById("cart-count").innerText=`المنتجات: ${cart.length}`;
-document.getElementById("cart-total").innerText=`الإجمالي: ${total.toFixed(2)} د.ل`;
+    const list=document.getElementById("cart-items-list");
+    list.innerHTML=cart.map((item, i)=> `<div>- ${item.name} <span onclick="cart.splice(${i},1);updateUI()" style="color:red;cursor:pointer">✖</span></div>`).join('');
+    let total=cart.reduce((s,item)=>s+item.finalPrice,0);
+    document.getElementById("cart-total").innerText=total.toFixed(2)+" د.ل";
 }
 
 function sendWhatsApp(){
-if(cart.length===0)return alert("السلة فارغة!");
-let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice.toFixed(2)} د.ل`).join('%0A');
-let total=cart.reduce((s,item)=>s+item.finalPrice,0);
-let phone="218912377291";
-
-let msg=`*طلب جديد - متجر CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي:* ${total.toFixed(2)} د.ل`;
-
-window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
+    if(cart.length===0) return alert("السلة فارغة!");
+    let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice.toFixed(2)}`).join('%0A');
+    let total=cart.reduce((s,item)=>s+item.finalPrice,0);
+    let msg=`*طلب جديد - CDCARD*%0A*طريقة الدفع:* ${currentMethod}%0A${itemsText}%0A*الإجمالي:* ${total.toFixed(2)} د.ل`;
+    window.open(`https://wa.me/218912377291?text=${msg}`);
 }
-
 render();
 </script>
 </body>
 </html>
+
