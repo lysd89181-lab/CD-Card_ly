@@ -120,6 +120,7 @@
             border-radius: 25px; font-weight: bold; border: none; cursor: pointer;
         }
 
+        /* تعديلات المودال لتناسب الدفع الآلي */
         .modal {
             display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
@@ -128,7 +129,9 @@
             background: var(--card-bg); margin: 25% auto; padding: 25px; border-radius: 20px;
             width: 85%; max-width: 400px; text-align: center; border: 1px solid var(--accent);
         }
-        .close-modal { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 10px; margin-top: 20px; cursor: pointer; font-weight: bold; }
+        .close-modal { background: #555; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; margin-top: 20px; cursor: pointer; font-weight: bold; }
+        .verify-btn { background: var(--accent); color: #000; border: none; padding: 12px 20px; border-radius: 10px; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; }
+        .v-input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--accent); color: #fff; border-radius: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -160,19 +163,19 @@
             <span style="font-size: 12px; color: #888;">الإجمالي:</span><br>
             <strong id="cart-total" style="font-size: 20px; color: var(--accent);">0.00 د.ل</strong>
         </div>
-        <button class="send-order" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+        <button class="send-order" onclick="initOrder()">إرسال الطلب ✅</button>
     </div>
 </div>
 
-<div id="descModal" class="modal">
-    <div class="modal-content">
-        <h3 id="modalTitle" style="color: var(--accent);"></h3>
-        <p id="modalDesc" style="font-size: 14px; line-height: 1.6;"></p>
-        <button class="close-modal" onclick="closeModal()">إغلاق</button>
-    </div>
+<div id="mainModal" class="modal">
+    <div class="modal-content" id="modal-content-area">
+        </div>
 </div>
 
 <script>
+// إعدادات البوت - ضع الـ Token الخاص بك هنا
+const TELEGRAM_TOKEN = 'ضع_هنا_توكن_البوت_الخاص_بك'; 
+
 let currentMethod = "كاش";
 let pricePlus = 0;
 let cart = [];
@@ -183,66 +186,24 @@ const categories = {
         {name: "1000 لايك تيك توك", price: 3, img: "tiktok.jpg", isSocial: true, desc: "لايكات حقيقية وسريعة."},
         {name: "1000 مشاهدة تيك توك", price: 1, img: "tiktok.jpg", isSocial: true, desc: "مشاهدات ترفع رانك الفيديو."},
         {name: "100 مشاركة تيك توك", price: 1, img: "tiktok.jpg", isSocial: true, desc: "زيادة إكسبلور ومشاركات."},
-        {name: "🚀 خدمة إعادة النشر (إكسبلور)", price: 100, img: "eat.jpg", isSocial: true, desc: "سر الظهور في الإكسبلور! ترفع هذه الخدمة من تقييم الخوارزميات لمحتواك وتضعه أمام جمهور جديد كلياً. استثمر في انتشارك الآن."}
+        {name: "🚀 خدمة إعادة النشر (إكسبلور)", price: 100, img: "eat.jpg", isSocial: true, desc: "سر الظهور في الإكسبلور! ترفع هذه الخدمة من تقييم الخوارزميات لمحتواك وتضعه أمام جمهور جديد كلياً."}
     ],
     "عملات تيك توك": [
         {name: "30 عملة تيك توك", price: 4, img: "etonz.jpg", desc: "شحن رسمي عن طريق الايدي."},
         {name: "50 عملة تيك توك", price: 9, img: "etonz.jpg", desc: "باقة 50 عملة تيك توك."},
-        {name: "100 عملة تيك توك", price: 15, img: "etonz.jpg", desc: "باقة 100 عملة تيك توك."},
-        {name: "150 عملة تيك توك", price: 23, img: "etonz.jpg", desc: "باقة 150 عملة تيك توك."},
-        {name: "200 عملة تيك توك", price: 28, img: "etonz.jpg", desc: "أفضل سعر للعملات."}
+        {name: "100 عملة تيك توك", price: 15, img: "etonz.jpg", desc: "باقة 100 عملة تيك توك."}
     ],
     "انستقرام": [
         {name: "1000 متابع انستقرام", price: 8, img: "instagram.jpg", isSocial: true, desc: "متابعين ثابتين، جودة ممتازة."},
-        {name: "1000 لايك انستقرام", price: 4, img: "instagram.jpg", isSocial: true, desc: "لايكات فورية لصورك وفيديوهاتك."},
-        {name: "1000 مشاهدة انستقرام", price: 1, img: "instagram.jpg", isSocial: true, desc: "مشاهدات ريلز وفيديو."},
-        {name: "100 مشاركة انستقرام", price: 1, img: "instagram.jpg", isSocial: true, desc: "زيادة انتشار المنشور."}
-    ],
-    "فيسبوك": [
-        {name: "1000 متابع صفحة", price: 5, img: "facebook.jpg", isSocial: true, desc: "متابعين لصفحات الفيسبوك العامة."},
-        {name: "1000 مشاهدة ريلز", price: 1, img: "facebook.jpg", isSocial: true, desc: "مشاهدات فيديوهات ريلز."},
-        {name: "اعجابات منشور فيسبوك", price: 6, img: "facebook.jpg", isSocial: true, desc: "تفاعل قوي على منشوراتك."},
-        {name: "1000 متابع مجموعة", price: 8, img: "facebook.jpg", isSocial: true, desc: "زيادة أعضاء قروبات فيسبوك."}
+        {name: "1000 لايك انستقرام", price: 4, img: "instagram.jpg", isSocial: true, desc: "لايكات فورية لصورك وفيديوهاتك."}
     ],
     "ببجي موبايل": [
-        {name: "ببجي 60 شدة", price: 14, img: "pubg.jpg", desc: "شحن رسمي فوري ID."},
-        {name: "ببجي 120 شدة", price: 28, img: "pubg.jpg", desc: "شحن آمن ومضمون."},
-        {name: "ببجي 325 شدة", price: 69, img: "pubg.jpg", desc: "أفضل عرض للشدات."},
-        {name: "ببجي 660 شدة", price: 140, img: "pubg.jpg", desc: "شحن سريع جداً."}
-    ],
-    "نجوم تيليجرام": [
-        {name: "100 نجمة", price: 25, img: "telegram.jpg", desc: "نجوم تيليجرام لدعم القنوات."},
-        {name: "150 نجمة", price: 37, img: "telegram.jpg", desc: "شحن رسمي من تيليجرام."},
-        {name: "250 نجمة", price: 59, img: "telegram.jpg", desc: "تفعيل مميزات النجوم."},
-        {name: "500 نجمة", price: 113, img: "telegram.jpg", desc: "أعلى باقة نجوم متوفرة."}
-    ],
-    "فري فاير": [
-        {name: "110 جوهرة", price: 20, img: "freefire.jpg", desc: "شحن جواهر فري فاير ID."},
-        {name: "221 جوهرة", price: 32, img: "freefire.jpg", desc: "شحن فوري لآيدي اللاعب."},
-        {name: "2420 جوهرة", price: 225, img: "freefire.jpg", desc: "باقة الجواهر الكبيرة."}
+        {name: "ببجي 60 شدة", price: 11, img: "pubg.jpg", desc: "شحن رسمي فوري ID."},
+        {name: "ببجي 120 شدة", price: 22, img: "pubg.jpg", desc: "شحن آمن ومضمون."}
     ],
     "اشتراكات": [
-        {name: "اشتراك GPT - شهري", price: 250, img: "shats.jpg", desc: "حساب شات جي بي تي بلس."},
         {name: "شاهد شهر", price: 30, img: "shahid.jpg", desc: "اشتراك شاهد VIP رسمي."},
-        {name: "نتفليكس شهر", price: 30, img: "netflix.jpg", desc: "حساب نتفليكس 4K مشترك."},
-        {name: "كاب كات شخصي", price: 50, img: "capcut.jpg", desc: "مميزات كاب كات برو."},
-        {name: "تروكولر سنوي", price: 160, img: "truecaller.jpg", desc: "اشتراك تروكولر جولد."}
-    ],
-    "سناب شات": [
-        {name: "سناب بلس 3 شهور", price: 70, img: "snapchat.jpg", desc: "مميزات سناب بلس الحصرية."},
-        {name: "سناب بلس 6 شهور", price: 130, img: "snapchat.jpg", desc: "اشتراك سناب بلس نصف سنوي."},
-        {name: "سناب بلس سنوي", price: 240, img: "snapchat.jpg", desc: "أفضل قيمة لسناب بلس."}
-    ],
-    "روبلكس": [
-        {name: "40 عملة روبلكس", price: 15, img: "roblox.jpg", desc: "شحن روبوكس رسمي."},
-        {name: "80 عملة روبلكس", price: 29, img: "roblox.jpg", desc: "شحن فوري لحسابك."},
-        {name: "400 عملة روبلكس", price: 98, img: "roblox.jpg", desc: "باقة 400 روبوكس."}
-    ],
-    "FC 25": [
-        {name: "40 نقطة FC", price: 15, img: "fc.jpg", desc: "نقاط فيفا موبايل FC."},
-        {name: "100 نقطة FC", price: 29, img: "fc.jpg", desc: "شحن نقاط FC فوري."},
-        {name: "520 نقطة FC", price: 71, img: "fc.jpg", desc: "باقة نقاط FC المتوسطة."},
-        {name: "1070 نقطة FC", price: 138, img: "fc.jpg", desc: "أفضل باقة نقاط FC."}
+        {name: "نتفليكس شهر", price: 30, img: "netflix.jpg", desc: "حساب نتفليكس 4K مشترك."}
     ]
 };
 
@@ -262,8 +223,6 @@ function render() {
             let basePrice = p.price + pricePlus;
             let defaultQty = (p.name.includes("إعادة النشر")) ? 10 : 1000;
             let minQty = (p.name.includes("إعادة النشر")) ? 10 : 200;
-            
-            // حساب السعر الأولي بناءً على الكمية الافتراضية
             let initialPrice = p.isSocial ? (basePrice * defaultQty / 1000) : basePrice;
 
             grid.innerHTML += `
@@ -285,7 +244,6 @@ function render() {
     }
 }
 
-// دالة تحديث السعر لحظياً عند تغيير الكمية
 function updateLivePrice(cat, index, basePrice) {
     const qtyInput = document.getElementById(`qty-${cat}-${index}`);
     const priceDisplay = document.getElementById(`display-price-${cat}-${index}`);
@@ -304,15 +262,10 @@ function addClick(cat, index) {
         const qtyInput = document.getElementById(`qty-${cat}-${index}`);
         const qty = parseInt(qtyInput.value);
         let minLimit = (p.name.includes("إعادة النشر")) ? 10 : 200;
-
-        if (qty < minLimit) { 
-            alert("الحد الأدنى لهذا المنتج هو " + minLimit); 
-            return; 
-        }
+        if (qty < minLimit) return alert("الحد الأدنى هو " + minLimit); 
         fPrice = (basePrice * qty) / 1000;
         finalName = `${p.name} (كمية: ${qty})`;
     }
-    
     cart.push({name: finalName, price: fPrice});
     updateUI();
 }
@@ -321,18 +274,11 @@ function updateUI() {
     let total = 0;
     const list = document.getElementById("cart-items-list");
     list.innerHTML = "";
-    
     cart.forEach((item, i) => {
         total += item.price;
-        list.innerHTML += `<span>${item.name} (${item.price.toFixed(2)} د.ل) <button onclick="removeItem(${i})" style="background:none; border:none; color:red; cursor:pointer;">X</button> | </span>`;
+        list.innerHTML += `<span>${item.name} | </span>`;
     });
-    
     document.getElementById("cart-total").innerText = total.toFixed(2) + " د.ل";
-}
-
-function removeItem(index) {
-    cart.splice(index, 1);
-    updateUI();
 }
 
 function setMethod(el, method, plus) {
@@ -344,26 +290,75 @@ function setMethod(el, method, plus) {
 }
 
 function showDesc(title, text) {
-    document.getElementById("modalTitle").innerText = title;
-    document.getElementById("modalDesc").innerText = text;
-    document.getElementById("descModal").style.display = "block";
+    const modalArea = document.getElementById("modal-content-area");
+    modalArea.innerHTML = `
+        <h3 style="color: var(--accent);">${title}</h3>
+        <p style="font-size: 14px; line-height: 1.6;">${text}</p>
+        <button class="close-modal" onclick="closeModal()">إغلاق</button>
+    `;
+    document.getElementById("mainModal").style.display = "block";
 }
 
-function closeModal() { document.getElementById("descModal").style.display = "none"; }
-
-function sendWhatsApp() {
+// نظام التأكيد الآلي
+function initOrder() {
     if (cart.length === 0) return alert("السلة فارغة!");
-    let msg = `طلب جديد من متجر CDCARD%0A---%0Aطريقة الدفع: ${currentMethod}%0Aالطلبات:%0A`;
-    cart.forEach(item => {
-        msg += `- ${item.name} : ${item.price.toFixed(2)} د.ل%0A`;
-    });
+    let total = cart.reduce((a, b) => a + b.price, 0);
+
+    if (currentMethod === "كاش") {
+        sendWhatsApp(); // الكاش يرسل مباشرة للواتساب
+    } else {
+        const modalArea = document.getElementById("modal-content-area");
+        modalArea.innerHTML = `
+            <h3 style="color: var(--accent);">تأكيد الدفع (رصيد ${currentMethod})</h3>
+            <p>يرجى تحويل مبلغ <b>${total.toFixed(2)} د.ل</b> إلى رقمنا ثم أدخل رقمك هنا للتأكد:</p>
+            <input type="text" id="v-phone" class="v-input" placeholder="091XXXXXXX">
+            <button class="verify-btn" onclick="verifyAndSend()">تأكيد الدفع الآن ✅</button>
+            <button class="close-modal" onclick="closeModal()">إلغاء</button>
+            <div id="v-status" style="margin-top:10px; font-size:12px; color:var(--accent);"></div>
+        `;
+        document.getElementById("mainModal").style.display = "block";
+    }
+}
+
+async function verifyAndSend() {
+    const phone = document.getElementById("v-phone").value.trim();
+    const status = document.getElementById("v-status");
+    let total = cart.reduce((a, b) => a + b.price, 0).toFixed(2);
+
+    if(!phone) return alert("أدخل رقم الهاتف!");
+    status.innerText = "🔄 جاري فحص الرسائل في هاتفك...";
+
+    try {
+        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getUpdates`);
+        const data = await res.json();
+        
+        // فحص هل توجد رسالة تحتوي على الرقم والمبلغ
+        const found = data.result.find(m => m.message.text.includes(phone) && m.message.text.includes(total));
+
+        if (found) {
+            status.innerText = "✅ تم التأكد! جاري إرسال الطلب...";
+            setTimeout(() => sendWhatsApp(phone, true), 1500);
+        } else {
+            status.innerText = "❌ لم نجد رسالة التحويل، تأكد من المبلغ وحاول مجدداً بعد دقيقة.";
+        }
+    } catch (e) {
+        status.innerText = "⚠️ خطأ في الاتصال، يرجى المحاولة لاحقاً.";
+    }
+}
+
+function sendWhatsApp(phone = "", verified = false) {
+    let msg = `طلب جديد CDCARD%0A---%0Aطريقة الدفع: ${currentMethod}%0Aالتحقق الآلي: ${verified ? 'تم بنجاح ✅' : 'يدوي/كاش'}%0Aالرقم المحول منه: ${phone}%0Aالطلبات:%0A`;
+    cart.forEach(item => msg += `- ${item.name}%0A`);
     let total = cart.reduce((a, b) => a + b.price, 0);
     msg += `---%0Aالإجمالي: ${total.toFixed(2)} د.ل`;
-    window.open(`https://wa.me/218911234567?text=${msg}`); 
+    window.open(`https://wa.me/218910000000?text=${msg}`); // ضع رقمك هنا
 }
+
+function closeModal() { document.getElementById("mainModal").style.display = "none"; }
 
 window.onload = render;
 </script>
 
 </body>
 </html>
+
