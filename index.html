@@ -183,7 +183,7 @@ const categories = {
         {name: "1000 لايك تيك توك", price: 3, img: "tiktok.jpg", isSocial: true, desc: "لايكات حقيقية وسريعة."},
         {name: "1000 مشاهدة تيك توك", price: 1, img: "tiktok.jpg", isSocial: true, desc: "مشاهدات ترفع رانك الفيديو."},
         {name: "100 مشاركة تيك توك", price: 1, img: "tiktok.jpg", isSocial: true, desc: "زيادة إكسبلور ومشاركات."},
-        {name: "20 اعادات نشر تيك توك", price: 2, img: "eat.jpg", isSocial: true, desc: "إعادة نشر الفيديوهات بسرعة. الحد الأدنى 20"}
+        {name: "🚀 خدمة إعادة النشر (إكسبلور)", price: 100, img: "eat.jpg", isSocial: true, desc: "سر الظهور في الإكسبلور! ترفع هذه الخدمة من تقييم الخوارزميات لمحتواك وتضعه أمام جمهور جديد كلياً. استثمر في انتشارك الآن."}
     ],
     "عملات تيك توك": [
         {name: "30 عملة تيك توك", price: 4, img: "etonz.jpg", desc: "شحن رسمي عن طريق الايدي."},
@@ -259,7 +259,13 @@ function render() {
         grid.className = "products-grid";
         
         categories[cat].forEach((p, index) => {
-            let displayedPrice = p.price + pricePlus;
+            let basePrice = p.price + pricePlus;
+            let defaultQty = (p.name.includes("إعادة النشر")) ? 10 : 1000;
+            let minQty = (p.name.includes("إعادة النشر")) ? 10 : 200;
+            
+            // حساب السعر الأولي بناءً على الكمية الافتراضية
+            let initialPrice = p.isSocial ? (basePrice * defaultQty / 1000) : basePrice;
+
             grid.innerHTML += `
                 <div class="product-card">
                     <div class="img-container">
@@ -269,8 +275,8 @@ function render() {
                     <div class="product-info">
                         <div class="product-name">${p.name}</div>
                         <button class="desc-btn" onclick="showDesc('${p.name}', '${p.desc || "لا يوجد وصف."}')">📋 عرض الوصف</button>
-                        <div class="price-box">LYD ${displayedPrice}</div>
-                        ${p.isSocial ? `<input type="number" class="qty-input" id="qty-${cat}-${index}" value="1000" min="200">` : '<div style="height:42px"></div>'}
+                        <div class="price-box" id="display-price-${cat}-${index}">LYD ${initialPrice.toFixed(2)}</div>
+                        ${p.isSocial ? `<input type="number" class="qty-input" id="qty-${cat}-${index}" value="${defaultQty}" min="${minQty}" oninput="updateLivePrice('${cat}', ${index}, ${basePrice})">` : '<div style="height:42px"></div>'}
                         <button class="add-to-cart-btn" onclick="addClick('${cat}', ${index})">إضافة للسلة</button>
                     </div>
                 </div>`;
@@ -279,16 +285,31 @@ function render() {
     }
 }
 
+// دالة تحديث السعر لحظياً عند تغيير الكمية
+function updateLivePrice(cat, index, basePrice) {
+    const qtyInput = document.getElementById(`qty-${cat}-${index}`);
+    const priceDisplay = document.getElementById(`display-price-${cat}-${index}`);
+    let qty = parseInt(qtyInput.value) || 0;
+    let newPrice = (basePrice * qty) / 1000;
+    priceDisplay.innerText = `LYD ${newPrice.toFixed(2)}`;
+}
+
 function addClick(cat, index) {
     const p = categories[cat][index];
-    let fPrice = p.price + pricePlus;
+    let basePrice = p.price + pricePlus;
+    let fPrice = basePrice;
     let finalName = p.name;
     
     if (p.isSocial) {
         const qtyInput = document.getElementById(`qty-${cat}-${index}`);
         const qty = parseInt(qtyInput.value);
-        if (qty < 200) { alert("الحد الأدنى 200"); return; }
-        fPrice = (fPrice * qty) / 1000;
+        let minLimit = (p.name.includes("إعادة النشر")) ? 10 : 200;
+
+        if (qty < minLimit) { 
+            alert("الحد الأدنى لهذا المنتج هو " + minLimit); 
+            return; 
+        }
+        fPrice = (basePrice * qty) / 1000;
         finalName = `${p.name} (كمية: ${qty})`;
     }
     
@@ -303,7 +324,7 @@ function updateUI() {
     
     cart.forEach((item, i) => {
         total += item.price;
-        list.innerHTML += `<span>${item.name} (${item.price} د.ل) <button onclick="removeItem(${i})" style="background:none; border:none; color:red; cursor:pointer;">X</button> | </span>`;
+        list.innerHTML += `<span>${item.name} (${item.price.toFixed(2)} د.ل) <button onclick="removeItem(${i})" style="background:none; border:none; color:red; cursor:pointer;">X</button> | </span>`;
     });
     
     document.getElementById("cart-total").innerText = total.toFixed(2) + " د.ل";
@@ -334,17 +355,15 @@ function sendWhatsApp() {
     if (cart.length === 0) return alert("السلة فارغة!");
     let msg = `طلب جديد من متجر CDCARD%0A---%0Aطريقة الدفع: ${currentMethod}%0Aالطلبات:%0A`;
     cart.forEach(item => {
-        msg += `- ${item.name} : ${item.price} د.ل%0A`;
+        msg += `- ${item.name} : ${item.price.toFixed(2)} د.ل%0A`;
     });
     let total = cart.reduce((a, b) => a + b.price, 0);
     msg += `---%0Aالإجمالي: ${total.toFixed(2)} د.ل`;
-    window.open(`https://wa.me/218911234567?text=${msg}`); // استبدل الرقم برقمك الخاص
+    window.open(`https://wa.me/218911234567?text=${msg}`); 
 }
 
-// استدعاء الدالة فور تحميل الصفحة
 window.onload = render;
 </script>
 
 </body>
 </html>
-
