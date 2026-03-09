@@ -3,178 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-Card | عالم الخدمات الرقمية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>CD-Card | متجر الخدمات الرقمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #050a18;
-            --card-bg: #0d162d;
+            --card-bg: rgba(13, 22, 45, 0.7);
             --primary-blue: #007aff;
             --accent-glow: #00d4ff;
             --text-color: #ffffff;
-            --shadow-3d: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
-
-        body::before, body::after {
-            content: ''; position: fixed; width: 300px; height: 300px;
-            background: var(--primary-blue); filter: blur(150px); opacity: 0.15; z-index: -1;
+        
+        /* تأثير الإضاءة الخلفية */
+        body::before {
+            content: ''; position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(0,122,255,0.2) 0%, transparent 70%); z-index: -1;
         }
-        body::before { top: -50px; left: -50px; }
-        body::after { bottom: -50px; right: -50px; }
 
         header {
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(13, 22, 45, 0.85); backdrop-filter: blur(12px);
-            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(13, 22, 45, 0.8); backdrop-filter: blur(15px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass-border);
         }
-
-        .logo-section h1 { font-size: 20px; color: var(--accent-glow); text-shadow: 0 0 10px var(--primary-blue); }
-        .logo-section p { font-size: 10px; opacity: 0.7; }
-
-        .menu-btn { cursor: pointer; font-size: 24px; color: var(--accent-glow); }
-        
-        .sidebar {
-            position: fixed; top: 0; right: -100%; width: 260px; height: 100%;
-            background: var(--card-bg); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding: 40px 20px;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.8); border-left: 1px solid rgba(255,255,255,0.05);
-        }
-        .sidebar.active { right: 0; }
-        .sidebar-link {
-            display: block; padding: 15px; color: white; text-decoration: none;
-            border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); transition: 0.3s;
-        }
-        .sidebar-link:hover { background: var(--primary-blue); transform: scale(1.02); }
 
         .container { padding: 20px; max-width: 500px; margin: auto; }
+        
+        /* تصميم الكرت الزجاجي 3D */
         .card {
-            background: var(--card-bg); border-radius: 24px; padding: 25px; margin-bottom: 20px;
-            box-shadow: var(--shadow-3d); border: 1px solid rgba(255,255,255,0.03);
+            background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 24px; padding: 25px; 
+            margin-bottom: 20px; border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
         }
 
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent-glow); opacity: 0.9; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent-glow); }
         input, select {
-            width: 100%; padding: 14px; border-radius: 14px; border: none;
-            background: #16223f; color: white; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05); color: white; outline: none; transition: 0.3s;
         }
+        input:focus { border-color: var(--primary-blue); box-shadow: 0 0 10px rgba(0,122,255,0.3); }
 
         .btn-3d {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
             background: linear-gradient(145deg, #007aff, #0056b3); color: white;
-            font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 5px 0 #004494;
-            transition: 0.2s; margin-top: 10px;
+            font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #004494; transition: 0.1s;
         }
-        .btn-3d:active { transform: translateY(3px); box-shadow: 0 2px 0 #004494; }
+        .btn-3d:active { transform: translateY(2px); box-shadow: 0 2px 0 #004494; }
 
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .stat-box { background: rgba(255,255,255,0.02); padding: 18px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-box span { display: block; font-size: 12px; opacity: 0.6; margin-bottom: 5px; }
-        .stat-box b { font-size: 20px; color: var(--accent-glow); }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--glass-border); }
+        .stat-box b { font-size: 20px; color: var(--accent-glow); display: block; }
 
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .auth-toggle { text-align: center; margin-top: 20px; font-size: 13px; color: #8a99af; cursor: pointer; }
-        .auth-toggle span { color: var(--accent-glow); font-weight: bold; }
+        .sidebar {
+            position: fixed; top: 0; right: -100%; width: 260px; height: 100%;
+            background: #0d162d; z-index: 1000; padding: 40px 20px; transition: 0.4s;
+        }
+        .sidebar.active { right: 0; }
+        .nav-link { display: block; padding: 15px; color: white; text-decoration: none; margin-bottom: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="menu-btn" onclick="toggleMenu()">☰</div>
-    <div class="logo-section">
-        <h1>CD-Card</h1>
-        <p>عالم الخدمات الرقمية المتكاملة</p>
+    <div style="cursor:pointer; font-size:24px;" onclick="toggleMenu()">☰</div>
+    <div style="text-align: center;">
+        <h1 style="font-size: 18px; color: var(--accent-glow);">CD-CARD</h1>
     </div>
-    <div style="width: 24px;"></div>
+    <div id="user-head-balance" style="font-size: 12px; color: #4cd137;">$0.00</div>
 </header>
 
 <div class="sidebar" id="sidebar">
-    <div style="text-align: left; cursor: pointer; margin-bottom: 30px; font-size: 20px;" onclick="toggleMenu()">✕</div>
-    <a href="#" class="sidebar-link" onclick="showPage('dashboard')">🏠 الرئيسية</a>
-    <a href="#" class="sidebar-link" onclick="showPage('add-funds')">💰 شحن الرصيد</a>
-    <a href="#" class="sidebar-link" onclick="showPage('affiliate')">🤝 اكسب مالاً</a>
-    <a href="#" class="sidebar-link" style="color: #ff4757; margin-top: 50px;" id="logout-btn">🚪 تسجيل الخروج</a>
+    <div style="text-align:left; cursor:pointer;" onclick="toggleMenu()">✕</div><br>
+    <a href="#" class="nav-link" onclick="showPage('dashboard')">🏠 الرئيسية</a>
+    <a href="#" class="nav-link" onclick="showPage('add-funds')">💰 شحن الرصيد</a>
+    <a href="#" class="nav-link" style="color:#ff4757;" onclick="logout()">🚪 خروج</a>
 </div>
 
 <div class="container">
-    
     <div id="auth-page" class="page active">
         <div class="card">
-            <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">تسجيل الدخول</h2>
-            
-            <div id="reg-only-fields" style="display: none;">
-                <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name" placeholder="أدخل اسمك"></div>
-                <div class="input-group"><label>رقم الهاتف</label><input type="tel" id="reg-phone" placeholder="09XXXXXXXX"></div>
+            <h2 id="auth-title" style="text-align:center; margin-bottom:20px;">تسجيل دخول</h2>
+            <div id="reg-fields" style="display:none;">
+                <div class="input-group"><label>الاسم</label><input type="text" id="reg-name"></div>
             </div>
-
-            <div class="input-group"><label>البريد الإلكتروني</label><input type="email" id="auth-email" placeholder="example@mail.com"></div>
-            <div class="input-group"><label>كلمة السر</label><input type="password" id="auth-password" placeholder="••••••••"></div>
-            
-            <button class="btn-3d" id="auth-action-btn">دخول</button>
-            
-            <div class="auth-toggle" onclick="toggleAuthMode()">
-                <p id="toggle-text">ليس لديك حساب؟ <span>إنشاء حساب جديد</span></p>
-            </div>
+            <div class="input-group"><label>الايميل</label><input type="email" id="auth-email"></div>
+            <div class="input-group"><label>كلمة السر</label><input type="password" id="auth-password"></div>
+            <button class="btn-3d" id="auth-btn">دخول</button>
+            <p onclick="toggleAuth()" style="text-align:center; margin-top:15px; font-size:12px; cursor:pointer;">ليس لديك حساب؟ <span style="color:var(--accent-glow);">سجل الآن</span></p>
         </div>
     </div>
 
     <div id="dashboard" class="page">
-        <div class="card user-welcome">
-            <h2 id="user-display-name">...</h2>
-            <p>مرحباً بك، رصيدك جاهز للعمل!</p>
+        <div class="card">
+            <h2 id="welcome-name">مرحباً ..</h2>
             <div class="stat-grid">
-                <div class="stat-box"><span>رصيد الحساب</span><b id="user-balance">$0.00</b></div>
-                <div class="stat-box"><span>إجمالي المنفق</span><b id="user-spent">$0.00</b></div>
+                <div class="stat-box"><span>رصيدك</span><b id="balance-val">$0.00</b></div>
+                <div class="stat-box"><span>المنفق</span><b id="spent-val">$0.00</b></div>
             </div>
         </div>
-
         <div class="card">
-            <h3 style="margin-bottom: 15px; color: var(--accent-glow);">طلب خدمة جديدة</h3>
-            <div class="input-group">
-                <label>الفئة</label>
-                <select id="category-select" onchange="updateServicesList()">
-                    <option value="">إختر الفئة...</option>
-                    <option value="tk">خدمات تيك توك</option>
-                </select>
-            </div>
+            <h3>طلب خدمة</h3><br>
             <div class="input-group">
                 <label>الخدمة</label>
                 <select id="service-select">
-                    <option value="">إختر الفئة أولاً...</option>
+                    <option value="1.10">إعادة نشر تيك توك ($1.10 لكل 1000)</option>
+                    <option value="2.50">متابعين تيك توك ($2.50 لكل 1000)</option>
                 </select>
             </div>
-            <div class="input-group"><label>الرابط</label><input type="url" id="order-link" placeholder="رابط الحساب أو الفيديو"></div>
-            <div class="input-group"><label>الكمية</label><input type="number" id="order-qty" placeholder="أقل كمية 100"></div>
-            <div id="cost-display" style="font-size: 12px; color: var(--accent-glow); margin-bottom: 10px; display: none;"></div>
-            <button class="btn-3d" id="place-order-btn">إرسال الطلب</button>
+            <div class="input-group"><label>الرابط</label><input type="text" id="order-link"></div>
+            <div class="input-group"><label>الكمية</label><input type="number" id="order-qty" value="1000"></div>
+            <button class="btn-3d" id="order-btn">تأكيد الطلب</button>
         </div>
     </div>
 
     <div id="add-funds" class="page">
         <div class="card">
-            <h3>شحن الرصيد (يدوي)</h3>
-            <p style="font-size: 12px; margin: 10px 0; color: #4cd137;">حول المبلغ للأرقام التالية ثم أدخل البيانات:</p>
-            <div class="stat-box" style="background: rgba(0, 122, 255, 0.05); margin-bottom: 15px;">
-                <span style="font-size: 14px; color: #fff;">ليبيانا: 0920414760</span>
-                <span style="font-size: 14px; color: #fff;">مدار: 0912377291</span>
-            </div>
-            <div class="input-group"><label>رقمك الذي حولت منه</label><input type="tel" id="sender-phone"></div>
-            <div class="input-group"><label>القيمة المحولة (بالدينار)</label><input type="number" id="amount-lyd"></div>
-            <button class="btn-3d" onclick="alert('تم إرسال طلبك للإدارة، سيتم الشحن فور التأكد!')">إرسال إشعار الدفع</button>
+            <h3>شحن رصيد تلقائي</h3>
+            <p style="font-size:11px; color:#4cd137; margin:10px 0;">حول الرصيد للمدار (0912377291) ثم أكد البيانات:</p>
+            <div class="input-group"><label>رقم الهاتف الذي حولت منه</label><input type="tel" id="sender-phone" placeholder="091XXXXXXX"></div>
+            <div class="input-group"><label>القيمة بالدينار</label><input type="number" id="amount-lyd" placeholder="10"></div>
+            <button class="btn-3d" id="confirm-pay-btn">تأكيد الشحن الفوري</button>
         </div>
     </div>
-
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
@@ -189,111 +153,71 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let isLoginMode = true;
-    let userProfile = null;
-
-    // تبديل بين الدخول والتسجيل
-    window.toggleAuthMode = () => {
-        isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? "تسجيل الدخول" : "إنشاء حساب جديد";
-        document.getElementById('reg-only-fields').style.display = isLoginMode ? "none" : "block";
-        document.getElementById('auth-action-btn').innerText = isLoginMode ? "دخول" : "إنشاء الحساب";
-        document.getElementById('toggle-text').innerHTML = isLoginMode ? "ليس لديك حساب؟ <span>إنشاء حساب جديد</span>" : "لديك حساب؟ <span>سجل دخولك</span>";
+    let isLogin = true;
+    window.toggleAuth = () => {
+        isLogin = !isLogin;
+        document.getElementById('auth-title').innerText = isLogin ? "تسجيل دخول" : "حساب جديد";
+        document.getElementById('reg-fields').style.display = isLogin ? "none" : "block";
+        document.getElementById('auth-btn').innerText = isLogin ? "دخول" : "إنشاء";
     };
 
-    // تنفيذ الدخول أو التسجيل
-    document.getElementById('auth-action-btn').addEventListener('click', async () => {
+    document.getElementById('auth-btn').onclick = async () => {
         const email = document.getElementById('auth-email').value;
         const pass = document.getElementById('auth-password').value;
-        
         try {
-            if (isLoginMode) {
+            if(isLogin) {
                 await signInWithEmailAndPassword(auth, email, pass);
             } else {
                 const name = document.getElementById('reg-name').value;
-                const phone = document.getElementById('reg-phone').value;
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "users", res.user.uid), {
-                    full_name: name, phone: phone, balance: 0.0, spent: 0.0
-                });
+                await setDoc(doc(db, "users", res.user.uid), { full_name: name, balance: 0.0, spent: 0.0 });
             }
-        } catch (error) { alert("خطأ: " + error.message); }
-    });
-
-    // جلب بيانات المستخدم
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) {
-                userProfile = snap.data();
-                document.getElementById('user-display-name').innerText = userProfile.full_name;
-                document.getElementById('user-balance').innerText = `$${userProfile.balance.toFixed(2)}`;
-                document.getElementById('user-spent').innerText = `$${userProfile.spent.toFixed(2)}`;
-                showPage('dashboard');
-                document.getElementById('auth-page').classList.remove('active');
-            }
-        } else {
-            showPage('auth-page');
-        }
-    });
-
-    // إرسال الطلب وربطه بـ Firestore
-    document.getElementById('place-order-btn').onclick = async () => {
-        const service = document.getElementById('service-select').value;
-        const qty = parseInt(document.getElementById('order-qty').value);
-        const link = document.getElementById('order-link').value;
-        
-        if(!service || !qty || !link) return alert("أكمل البيانات");
-        
-        const pricePer1000 = 1.10; // سعر الخدمة 1100
-        const totalCost = (pricePer1000 * qty) / 1000;
-
-        if (userProfile.balance < totalCost) return alert("رصيدك غير كافٍ!");
-
-        if(confirm(`سيتم خصم $${totalCost.toFixed(2)}. تأكيد؟`)) {
-            try {
-                // تحديث رصيد المستخدم
-                await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                    balance: userProfile.balance - totalCost,
-                    spent: userProfile.spent + totalCost
-                });
-                // تسجيل الطلب للإدارة
-                await addDoc(collection(db, "orders"), {
-                    userId: auth.currentUser.uid,
-                    serviceId: "1100",
-                    link: link,
-                    quantity: qty,
-                    cost: totalCost,
-                    status: 'pending'
-                });
-                alert("تم إرسال طلبك بنجاح!");
-                location.reload();
-            } catch(e) { alert("خطأ في تنفيذ الطلب"); }
-        }
+        } catch(e) { alert("خطأ: " + e.message); }
     };
 
-    document.getElementById('logout-btn').onclick = () => signOut(auth);
+    onAuthStateChanged(auth, async (user) => {
+        if(user) {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if(snap.exists()) {
+                const data = snap.data();
+                document.getElementById('welcome-name').innerText = "مرحباً " + data.full_name;
+                document.getElementById('balance-val').innerText = "$" + data.balance.toFixed(2);
+                document.getElementById('user-head-balance').innerText = "$" + data.balance.toFixed(2);
+                document.getElementById('spent-val').innerText = "$" + data.spent.toFixed(2);
+                showPage('dashboard');
+            }
+        } else { showPage('auth-page'); }
+    });
+
+    // --- منطق الشحن التلقائي الرهيب ---
+    document.getElementById('confirm-pay-btn').onclick = async () => {
+        const phone = document.getElementById('sender-phone').value;
+        const amount = parseFloat(document.getElementById('amount-lyd').value);
+        
+        const q = query(collection(db, "incoming_sms"), where("sender_phone", "==", phone), where("amount", "==", amount), where("status", "==", "unused"));
+        const snap = await getDocs(q);
+
+        if(!snap.empty) {
+            const smsDoc = snap.docs[0];
+            const usdAmount = amount / 7.0; // سعر الصرف
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: increment(usdAmount) });
+            await updateDoc(doc(db, "incoming_sms", smsDoc.id), { status: "used", used_by: auth.currentUser.uid });
+            alert("تم الشحن بنجاح!");
+            location.reload();
+        } else { alert("لم نجد رسالة تحويل تطابق هذه البيانات!"); }
+    };
+
+    window.logout = () => signOut(auth);
 </script>
 
 <script>
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    
-    function showPage(pageId) {
+    function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById(pageId);
-        if(target) target.classList.add('active');
-        document.getElementById('sidebar').classList.remove('active');
-    }
-
-    function updateServicesList() {
-        const cat = document.getElementById('category-select').value;
-        const serv = document.getElementById('service-select');
-        if (cat === 'tk') {
-            serv.innerHTML = '<option value="1100">إعادة نشر تيك توك (#1100) - $1.10 لكل 1000</option>';
-        } else {
-            serv.innerHTML = '<option value="">إختر الفئة أولاً...</option>';
-        }
+        document.getElementById(id).classList.add('active');
+        toggleMenu();
     }
 </script>
 </body>
 </html>
+
