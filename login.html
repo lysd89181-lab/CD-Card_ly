@@ -1,73 +1,217 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل دخول | CD-Card</title>
-    <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: #111; padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .logo { width: 120px; margin-bottom: 20px; }
-        h2 { margin-bottom: 25px; font-weight: 300; letter-spacing: 1px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: white; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #fff; }
-        .btn-group { margin-top: 20px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
-        .login-btn { background: #fff; color: #000; }
-        .login-btn:hover { background: #ccc; }
-        .signup-btn { background: transparent; color: #fff; border: 1px solid #fff; }
-        .signup-btn:hover { background: rgba(255,255,255,0.1); }
-        #message { color: #ff4d4d; font-size: 13px; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>تسجيل الدخول | CDCARD</title>
+
+<style>
+
+body{
+background:#000;
+color:white;
+font-family:'Segoe UI',sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.login-card{
+background:#111;
+padding:40px;
+border-radius:20px;
+width:350px;
+text-align:center;
+border:1px solid #333;
+box-shadow:0 10px 30px rgba(0,0,0,0.8);
+}
+
+.logo{
+width:110px;
+margin-bottom:20px;
+}
+
+h2{
+margin-bottom:25px;
+font-weight:300;
+letter-spacing:1px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #444;
+background:#222;
+color:white;
+box-sizing:border-box;
+outline:none;
+}
+
+input:focus{
+border-color:#00ff88;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+margin-top:10px;
+}
+
+.login-btn{
+background:#00ff88;
+color:black;
+}
+
+.login-btn:hover{
+background:#00cc6a;
+}
+
+.signup-btn{
+background:transparent;
+color:white;
+border:1px solid white;
+}
+
+.signup-btn:hover{
+background:rgba(255,255,255,0.1);
+}
+
+#message{
+color:#ff4444;
+font-size:13px;
+margin-top:10px;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="login-card">
-    <img src="1000724306.png" alt="CD Logo" class="logo">
-    <h2>مرحباً بك</h2>
-    
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
-    
-    <div class="btn-group">
-        <button class="login-btn" id="loginBtn">تسجيل الدخول</button>
-        <button class="signup-btn" id="signUpBtn">إنشاء حساب جديد</button>
-    </div>
-    
-    <div id="message"></div>
+
+<img src="1000724306.png" class="logo">
+
+<h2>تسجيل الدخول</h2>
+
+<input type="email" id="email" placeholder="البريد الإلكتروني">
+
+<input type="password" id="password" placeholder="كلمة المرور">
+
+<button class="login-btn" id="loginBtn">
+تسجيل الدخول
+</button>
+
+<button class="signup-btn" id="signUpBtn">
+إنشاء حساب جديد
+</button>
+
+<div id="message"></div>
+
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
-        authDomain: "cd-card-87365.firebaseapp.com",
-        projectId: "cd-card-87365",
-        storageBucket: "cd-card-87365.firebasestorage.app",
-        messagingSenderId: "397926299412",
-        appId: "1:397926299412:web:efbe9ae9aae29df368f401"
-    };
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const msg = document.getElementById('message');
+const firebaseConfig = {
 
-    // تسجيل دخول
-    document.getElementById('loginBtn').onclick = () => {
-        signInWithEmailAndPassword(auth, email.value, password.value)
-            .then(() => window.location.href = "index.html")
-            .catch(err => msg.innerText = "خطأ في البيانات");
-    };
+apiKey:"AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
 
-    // إنشاء حساب
-    document.getElementById('signUpBtn').onclick = () => {
-        createUserWithEmailAndPassword(auth, email.value, password.value)
-            .then(() => alert("تم إنشاء الحساب! سجل دخولك الآن"))
-            .catch(err => msg.innerText = "خطأ في الإنشاء (تأكد من قوة كلمة المرور)");
-    };
+authDomain:"cd-card-87365.firebaseapp.com",
+
+projectId:"cd-card-87365",
+
+storageBucket:"cd-card-87365.firebasestorage.app",
+
+messagingSenderId:"397926299412",
+
+appId:"1:397926299412:web:efbe9ae9aae29df368f401"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const msg = document.getElementById("message");
+
+loginBtn.onclick = () => {
+
+signInWithEmailAndPassword(
+auth,
+email.value,
+password.value
+)
+
+.then(() => {
+
+window.location.href = "index.html";
+
+})
+
+.catch(() => {
+
+msg.innerText = "خطأ في البريد أو كلمة المرور";
+
+});
+
+};
+
+signUpBtn.onclick = () => {
+
+createUserWithEmailAndPassword(
+auth,
+email.value,
+password.value
+)
+
+.then(() => {
+
+msg.style.color="#00ff88";
+
+msg.innerText="تم إنشاء الحساب بنجاح";
+
+})
+
+.catch((err) => {
+
+msg.innerText="كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+
+});
+
+};
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+window.location.href="index.html";
+
+}
+
+});
+
 </script>
+
 </body>
 </html>
