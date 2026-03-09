@@ -3,168 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر الخدمات الرقمية | الفخامة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>ABD CENTER | المتجر المتكامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #050a18;
-            --card-bg: #0d162d;
-            --primary-blue: #007aff;
-            --accent-glow: #00d4ff;
-            --text-color: #ffffff;
-            --shadow-3d: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
-        }
-
+        :root { --bg: #050a18; --card: #0d162d; --blue: #007aff; --glow: #00d4ff; --text: #fff; --red: #ff4757; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
-
-        body::before, body::after {
-            content: ''; position: fixed; width: 300px; height: 300px;
-            background: var(--primary-blue); filter: blur(150px); opacity: 0.2; z-index: -1;
-        }
-        body::before { top: -50px; left: -50px; }
-        body::after { bottom: -50px; right: -50px; }
-
-        header {
-            padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(13, 22, 45, 0.8); backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .logo-section h1 { font-size: 20px; color: var(--accent-glow); }
-        .logo-section p { font-size: 10px; opacity: 0.7; }
-
-        .menu-btn { cursor: pointer; font-size: 24px; }
-        .sidebar {
-            position: fixed; top: 0; right: -100%; width: 250px; height: 100%;
-            background: var(--card-bg); transition: 0.4s; z-index: 1000; padding: 40px 20px;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-        }
-        .sidebar.active { right: 0; }
-        .sidebar-link {
-            display: block; padding: 15px; color: white; text-decoration: none;
-            border-radius: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.03); transition: 0.3s;
-        }
-        .sidebar-link:hover { background: var(--primary-blue); transform: translateX(-5px); }
-
+        body { background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 22, 45, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); sticky; top: 0; z-index: 1000; }
         .container { padding: 20px; max-width: 500px; margin: auto; }
-        .card {
-            background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 20px;
-            box-shadow: var(--shadow-3d); border: 1px solid rgba(255,255,255,0.05);
-        }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--accent-glow); }
-        input, select {
-            width: 100%; padding: 12px; border-radius: 12px; border: none;
-            background: #16223f; color: white; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--glow); }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #1e293b; background: #16223f; color: #fff; outline: none; }
+        
+        .btn-blue { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(145deg, var(--blue), #0056b3); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #004494; transition: 0.2s; }
+        .btn-blue:active { transform: translateY(3px); box-shadow: 0 2px 0 #004494; }
+        .btn-blue:disabled { background: #444; box-shadow: none; cursor: not-allowed; }
 
-        .btn-3d {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: linear-gradient(145deg, #007aff, #0056b3); color: white;
-            font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #004494, 0 8px 15px rgba(0,0,0,0.4);
-            transition: 0.2s; margin-top: 10px;
-        }
-        .btn-3d:active { transform: translateY(3px); box-shadow: 0 2px 0 #004494; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-box b { display: block; font-size: 18px; color: var(--glow); }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; }
-        .stat-box span { display: block; font-size: 12px; opacity: 0.7; }
-        .stat-box b { font-size: 18px; color: var(--accent-glow); }
-
-        .page { display: none; animation: fadeIn 0.5s; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #auth-section, #main-app { display: none; }
+        .active { display: block !important; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="menu-btn" onclick="toggleMenu()">☰</div>
-    <div class="logo-section">
-        <h1>CD-Card</h1>
-        <p>عالم الخدمات الرقمية المتكاملة</p>
+    <div style="font-weight: bold; color: var(--glow);">ABD CENTER</div>
+    <div id="user-nav" style="display:none; font-size: 12px;">
+        <span id="nav-name"></span> | <span id="logout-btn" style="color:var(--red); cursor:pointer;">خروج</span>
     </div>
-    <div style="width: 24px;"></div>
 </header>
 
-<div class="sidebar" id="sidebar">
-    <div style="text-align: left; cursor: pointer; margin-bottom: 20px;" onclick="toggleMenu()">✕</div>
-    <a href="#" class="sidebar-link" onclick="showPage('dashboard')">🏠 الرئيسية</a>
-    <a href="#" class="sidebar-link" onclick="showPage('add-funds')">💰 شحن الرصيد</a>
-    <a href="#" class="sidebar-link" onclick="showPage('affiliate')">🤝 اكسب مالاً</a>
-    <a href="#" class="sidebar-link" style="color: #ff4757;" id="logout-btn">🚪 تسجيل الخروج</a>
-</div>
-
 <div class="container">
-    
-    <div id="auth-page" class="page active">
+    <div id="auth-section">
         <div class="card">
-            <h2 style="text-align: center; margin-bottom: 20px;">إنشاء حساب جديد</h2>
-            <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name" placeholder="أدخل اسمك"></div>
-            <div class="input-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" placeholder="example@mail.com"></div>
-            <div class="input-group"><label>رقم الهاتف</label><input type="tel" id="reg-phone" placeholder="09XXXXXXXX"></div>
-            <div class="input-group"><label>كلمة السر</label><input type="password" id="reg-password" placeholder="••••••••"></div>
-            <button class="btn-3d" id="register-btn">إنشاء الحساب</button>
-            <p style="text-align: center; margin-top: 15px; font-size: 13px;">
-                لديك حساب؟ <a href="#" style="color: var(--accent-glow);" onclick="alert('سجل من خلال البريد وكلمة السر مباشرة')">تسجيل دخول</a>
-            </p>
+            <h2 id="auth-title" style="text-align:center; margin-bottom:20px;">تسجيل الدخول</h2>
+            <div id="name-field" style="display:none;" class="input-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="reg-name" placeholder="ادخل اسمك">
+            </div>
+            <div class="input-group"><label>البريد الإلكتروني</label><input type="email" id="auth-email"></div>
+            <div class="input-group"><label>كلمة المرور</label><input type="password" id="auth-pass"></div>
+            <button class="btn-blue" id="auth-btn">دخول</button>
+            <p style="text-align:center; margin-top:15px; font-size:13px; cursor:pointer;" onclick="toggleAuth()">تبديل (حساب جديد / دخول)</p>
         </div>
     </div>
 
-    <div id="dashboard" class="page">
-        <div class="card user-welcome">
-            <h2 id="user-display-name">جاري التحميل...</h2>
-            <p>مرحباً بك في موقعنا، نسعد بخدمتك!</p>
+    <div id="main-app">
+        <div class="card">
             <div class="stat-grid">
-                <div class="stat-box"><span>خصمك الخاص</span><b id="user-discount">0%</b></div>
-                <div class="stat-box"><span>رصيد الحساب</span><b id="user-balance">$0.00</b></div>
-                <div class="stat-box" style="grid-column: span 2;"><span>إجمالي المنفق</span><b id="user-spent">$0.00</b></div>
+                <div class="stat-box"><span>رصيدك</span><b id="user-balance">$0.00</b></div>
+                <div class="stat-box"><span>المنفق</span><b id="user-spent">$0.00</b></div>
             </div>
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom: 15px;">طلب خدمة جديدة</h3>
+            <h3 style="margin-bottom:15px; font-size:16px;">طلب خدمة جديدة</h3>
             <div class="input-group">
-                <label>الفئة</label>
-                <select id="category-select" onchange="updateServicesList()">
-                    <option value="">إختر الفئة...</option>
-                    <option value="tk">خدمات تيك توك</option>
+                <label>نوع الخدمة</label>
+                <select id="service-type">
+                    <option value="1.5">متابعين تيك توك ($1.5 لكل 1000)</option>
+                    <option value="0.8">لايكات انستقرام ($0.8 لكل 1000)</option>
+                    <option value="5.0">مشاهدات يوتيوب ($5.0 لكل 1000)</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label>الخدمة</label>
-                <select id="service-select"><option>إختر الفئة أولاً...</option></select>
-            </div>
-            <div class="input-group"><label>الرابط</label><input type="url" id="order-link" placeholder="ضع الرابط هنا"></div>
-            <div class="input-group"><label>الكمية</label><input type="number" id="order-qty" placeholder="أقل كمية 100"></div>
-            <button class="btn-3d" id="place-order-btn">إرسال الطلب</button>
+            <div class="input-group"><label>الرابط</label><input type="url" id="order-link" placeholder="https://..."></div>
+            <div class="input-group"><label>الكمية</label><input type="number" id="order-qty" placeholder="مثال: 1000"></div>
+            <div id="order-cost" style="margin-bottom:10px; font-size:12px; color:var(--glow);">التكلفة المحسوبة: $0.00</div>
+            <button class="btn-blue" id="place-order">تأكيد وشراء الآن</button>
         </div>
     </div>
-
-    <div id="add-funds" class="page">
-        <div class="card">
-            <h3>شحن الرصيد (دفع تلقائي)</h3>
-            <p style="font-size: 12px; margin-bottom: 15px; color: #4cd137;">نظام Floword SMS مفعل ⚡</p>
-            <div class="stat-box" style="background: rgba(0, 122, 255, 0.1); margin-bottom: 15px;">
-                <span style="padding:5px;">ليبيانا: 0920414760</span>
-                <span style="padding:5px;">مدار: 0912377291</span>
-            </div>
-            <div class="input-group"><label>الرقم الذي حولت منه</label><input type="tel"></div>
-            <div class="input-group"><label>القيمة المحولة (دينار)</label><input type="number"></div>
-            <button class="btn-3d">تأكيد الإيداع</button>
-        </div>
-    </div>
-
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // إعدادات Firebase الخاصة بك (CD-Card)
     const firebaseConfig = {
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
         authDomain: "cd-card-87365.firebaseapp.com",
@@ -178,68 +98,108 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 1. وظيفة التسجيل وحفظ البيانات
-    document.getElementById('register-btn').addEventListener('click', async () => {
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const phone = document.getElementById('reg-phone').value;
-        const pass = document.getElementById('reg-password').value;
+    let isLogin = true;
+    let currentUserData = null;
 
-        if(!name || !email || !pass) return alert("أكمل البيانات");
+    // 1. تبديل واجهة الدخول
+    window.toggleAuth = () => {
+        isLogin = !isLogin;
+        document.getElementById('auth-title').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب";
+        document.getElementById('name-field').style.display = isLogin ? "none" : "block";
+        document.getElementById('auth-btn').innerText = isLogin ? "دخول" : "إنشاء حساب جديد";
+    };
+
+    // 2. تنفيذ الدخول أو التسجيل
+    document.getElementById('auth-btn').onclick = async () => {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        const name = document.getElementById('reg-name').value;
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-            await setDoc(doc(db, "users", userCredential.user.uid), {
-                full_name: name,
-                phone: phone,
-                balance: 0.0,
-                spent: 0.0,
-                discount: 0
-            });
-            showPage('dashboard');
-        } catch (error) { alert("خطأ: " + error.message); }
-    });
+            if(isLogin) {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } else {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                // إنشاء سجل مالي فوري
+                await setDoc(doc(db, "users", res.user.uid), {
+                    full_name: name, balance: 0.0, spent: 0.0, role: 'user'
+                });
+            }
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
 
-    // 2. مراقبة حالة المستخدم وجلب بياناته (الرصيد/المنفق)
+    // 3. مراقبة حالة المستخدم وجلب بياناته
     onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const userDoc = await getDoc(doc(db, "users", user.uid));
-            if (userDoc.exists()) {
-                const data = userDoc.data();
-                document.getElementById('user-display-name').innerText = data.full_name;
-                document.getElementById('user-balance').innerText = `$${data.balance.toFixed(2)}`;
-                document.getElementById('user-spent').innerText = `$${data.spent.toFixed(2)}`;
-                document.getElementById('user-discount').innerText = `${data.discount}%`;
-                showPage('dashboard');
-                document.getElementById('auth-page').classList.remove('active');
+        if(user) {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if(snap.exists()) {
+                currentUserData = snap.data();
+                updateUI();
+                document.getElementById('auth-section').classList.remove('active');
+                document.getElementById('main-app').classList.add('active');
+                document.getElementById('user-nav').style.display = "block";
+                document.getElementById('nav-name').innerText = currentUserData.full_name;
             }
         } else {
-            showPage('auth-page');
+            document.getElementById('auth-section').classList.add('active');
+            document.getElementById('main-app').classList.remove('active');
+            document.getElementById('user-nav').style.display = "none";
         }
     });
 
-    // 3. تسجيل الخروج
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        signOut(auth).then(() => location.reload());
-    });
-</script>
-
-<script>
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    
-    function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        document.getElementById('sidebar').classList.remove('active');
+    function updateUI() {
+        document.getElementById('user-balance').innerText = "$" + currentUserData.balance.toFixed(2);
+        document.getElementById('user-spent').innerText = "$" + currentUserData.spent.toFixed(2);
     }
 
-    function updateServicesList() {
-        const cat = document.getElementById('category-select').value;
-        const serv = document.getElementById('service-select');
-        serv.innerHTML = (cat === 'tk') ? '<option value="1100">إعادة نشر تيك توك (#1100)</option>' : '<option>إختر الفئة أولاً...</option>';
-    }
-</script>
+    // 4. نظام حساب التكلفة والطلب
+    const calcCost = () => {
+        const price = parseFloat(document.getElementById('service-type').value);
+        const qty = parseInt(document.getElementById('order-qty').value) || 0;
+        const total = (price * qty) / 1000;
+        document.getElementById('order-cost').innerText = "التكلفة المحسوبة: $" + total.toFixed(2);
+        return total;
+    };
 
+    document.getElementById('order-qty').oninput = calcCost;
+    document.getElementById('service-type').onchange = calcCost;
+
+    // 5. زر تأكيد الطلب مع الخصم من الرصيد
+    document.getElementById('place-order').onclick = async () => {
+        const cost = calcCost();
+        const link = document.getElementById('order-link').value;
+        
+        if(!link || cost <= 0) return alert("أكمل بيانات الطلب أولاً");
+        if(currentUserData.balance < cost) return alert("عذراً، رصيدك غير كافٍ. يرجى الشحن أولاً");
+
+        if(confirm(`سيتم خصم $${cost.toFixed(2)} من حسابك. تأكيد؟`)) {
+            try {
+                // أ) خصم الرصيد من Firestore
+                const newBalance = currentUserData.balance - cost;
+                const newSpent = currentUserData.spent + cost;
+                
+                await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                    balance: newBalance,
+                    spent: newSpent
+                });
+
+                // ب) تسجيل الطلب في مجموعة جديدة اسمها orders
+                await addDoc(collection(db, "orders"), {
+                    userId: auth.currentUser.uid,
+                    userEmail: auth.currentUser.email,
+                    link: link,
+                    cost: cost,
+                    status: 'pending',
+                    date: new Date().toISOString()
+                });
+
+                alert("تم إرسال طلبك بنجاح!");
+                location.reload(); // لتحديث البيانات
+            } catch(e) { alert("فشل تنفيذ الطلب: " + e.message); }
+        }
+    };
+
+    document.getElementById('logout-btn').onclick = () => signOut(auth);
+</script>
 </body>
 </html>
-
