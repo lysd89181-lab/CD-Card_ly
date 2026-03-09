@@ -3,55 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CD-CARD - متجر خدمات رقمية</title>
+<title>CD-CARD - متجر خدمات رقمية كامل</title>
 <style>
+/* =================== CSS أساسي =================== */
 :root {
-    --main-bg: #0d0d0d;
-    --card-bg: #161616;
-    --accent: #00ff88;
-    --text: #ffffff;
-    --danger: #ff4444;
+    --main-bg:#0d0d0d;
+    --card-bg:#161616;
+    --accent:#00ff88;
+    --text:#fff;
+    --danger:#ff4444;
+    --admin-bg:#111;
 }
 
-body {
-    background-color: var(--main-bg);
-    color: var(--text);
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+body{
+    background:var(--main-bg);
+    color:var(--text);
+    font-family:'Segoe UI',sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
 }
 
 .container{
     width:90%;
-    max-width:400px;
+    max-width:450px;
     margin:auto;
-    margin-top:30px;
+    margin-top:25px;
 }
 
-input{
+input, select{
     width:100%;
     padding:12px;
     margin:6px 0;
     border-radius:8px;
     border:none;
+    background:#222;
+    color:#fff;
 }
 
 button{
     width:100%;
     padding:12px;
-    background:#2563eb;
+    margin:8px 0;
     border:none;
-    color:white;
     border-radius:8px;
     cursor:pointer;
+    font-weight:bold;
 }
 
 .card{
-    background: var(--card-bg);
+    background:var(--card-bg);
     padding:20px;
     border-radius:12px;
     margin-top:15px;
+}
+
+h1,h2,h3{
+    color:var(--accent);
 }
 
 .balance{
@@ -59,46 +67,38 @@ button{
     color:#22c55e;
 }
 
-h1,h2,h3{
-    color:var(--accent);
-}
-
-#shop-container{
-    margin-top:20px;
-}
-
+/* لوحة المستخدم */
 .products-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    padding:0 10px;
+    gap:10px;
+    padding:0 5px;
 }
 
 .product-card{
-    background: var(--card-bg);
-    border-radius:12px;
-    border:1px solid #222;
-    padding-bottom:12px;
+    background:var(--card-bg);
+    border-radius:10px;
+    padding-bottom:10px;
     overflow:hidden;
+    border:1px solid #222;
 }
 
 .product-img{
     width:100%;
-    height:100px;
-    background:#222;
+    height:90px;
     object-fit:cover;
+    background:#222;
 }
 
 .price-tag{
     color:var(--accent);
     font-weight:bold;
-    margin-bottom:8px;
     display:block;
 }
 
 .add-btn{
     width:90%;
-    padding:8px;
+    padding:6px;
     border-radius:20px;
     border:1px solid var(--accent);
     background:transparent;
@@ -107,7 +107,7 @@ h1,h2,h3{
     cursor:pointer;
 }
 
-/* السلة السفلى */
+/* سلة الطلبات */
 .cart-bar{
     position:fixed;
     bottom:0;
@@ -115,22 +115,22 @@ h1,h2,h3{
     right:0;
     background:#111;
     border-top:2px solid var(--accent);
-    padding:15px;
+    padding:12px;
     z-index:1000;
 }
 
 .payment-methods{
     display:flex;
     gap:10px;
-    margin-bottom:10px;
+    margin-bottom:6px;
 }
 
 .pay-card{
     flex:1;
-    background: var(--card-bg);
+    background:var(--card-bg);
     border:1.5px solid #333;
     border-radius:12px;
-    padding:10px;
+    padding:8px;
     cursor:pointer;
     font-size:0.9rem;
 }
@@ -144,7 +144,7 @@ h1,h2,h3{
     max-height:120px;
     overflow-y:auto;
     text-align:right;
-    margin-bottom:10px;
+    margin-bottom:8px;
     font-size:0.85rem;
 }
 
@@ -152,8 +152,8 @@ h1,h2,h3{
     display:flex;
     justify-content:space-between;
     background:#222;
-    padding:6px 10px;
-    margin-bottom:5px;
+    padding:5px 8px;
+    margin-bottom:4px;
     border-radius:6px;
 }
 
@@ -173,15 +173,71 @@ h1,h2,h3{
     background:var(--accent);
     color:black;
     border:none;
-    padding:12px 25px;
-    border-radius:25px;
+    padding:10px 20px;
+    border-radius:20px;
     font-weight:bold;
     cursor:pointer;
+}
+
+/* لوحة الأدمن */
+.admin-panel{
+    background:var(--admin-bg);
+    border-radius:12px;
+    padding:15px;
+    margin-top:20px;
+}
+
+.admin-panel h3{
+    margin-top:0;
+}
+
+.admin-btn{
+    padding:8px;
+    margin:5px 0;
+    width:100%;
+    background:#333;
+    color:#fff;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    border:1px solid var(--accent);
+}
+
+.user-list, .service-list{
+    max-height:150px;
+    overflow-y:auto;
+    background:#222;
+    border-radius:8px;
+    padding:6px;
+    margin-bottom:8px;
+}
+
+.user-item, .service-item{
+    display:flex;
+    justify-content:space-between;
+    padding:4px 6px;
+    margin-bottom:4px;
+    background:#111;
+    border-radius:6px;
+    font-size:0.85rem;
+}
+
+.remove-user, .remove-service{
+    color:var(--danger);
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* روابط */
+a{
+    color:var(--accent);
+    text-decoration:none;
 }
 </style>
 </head>
 <body>
 
+<!-- تسجيل الدخول / إنشاء حساب -->
 <div class="container" id="auth-container">
 <h1>CD-CARD</h1>
 <p>متابعين، شحن ألعاب، واشتراكات رقمية</p>
@@ -215,19 +271,39 @@ h1,h2,h3{
 
 <div id="shop-container"></div>
 
-<!-- السلة -->
+<!-- سلة الطلبات -->
 <div class="cart-bar">
 <div class="payment-methods">
-    <div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
-    <div class="pay-card" onclick="setMethod(this,'رصيد',2)">📱 رصيد (+2)</div>
+<div class="pay-card active" onclick="setMethod(this,'كاش',0)">💵 كاش</div>
+<div class="pay-card" onclick="setMethod(this,'رصيد',2)">📱 رصيد (+2)</div>
 </div>
 <div class="cart-items-list" id="cart-items-list"></div>
 <div class="cart-summary">
-    <div style="text-align:right;">
-        <span id="cart-count" style="font-size:0.8rem;color:#aaa;">المنتجات: 0</span><br>
-        <strong id="cart-total">الإجمالي: 0 د.ل</strong>
-    </div>
-    <button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+<div style="text-align:right;">
+<span id="cart-count" style="font-size:0.8rem;color:#aaa;">المنتجات: 0</span><br>
+<strong id="cart-total">الإجمالي: 0 د.ل</strong>
+</div>
+<button class="send-btn" onclick="sendWhatsApp()">إرسال الطلب ✅</button>
+</div>
+
+<!-- لوحة الأدمن -->
+<div class="admin-panel" id="admin-panel" style="display:none;">
+<h3>لوحة الأدمن</h3>
+<button class="admin-btn" onclick="logout()">تسجيل خروج</button>
+<h4>إدارة المستخدمين</h4>
+<div class="user-list" id="user-list"></div>
+
+<h4>إدارة الخدمات</h4>
+<input id="new-service-name" placeholder="اسم الخدمة">
+<input id="new-service-price" placeholder="سعر الخدمة">
+<button class="admin-btn" onclick="addService()">إضافة خدمة</button>
+<div class="service-list" id="service-list"></div>
+
+<h4>إنشاء كوبون خصم</h4>
+<input id="coupon-code" placeholder="رمز الكوبون">
+<input id="coupon-value" placeholder="قيمة الخصم">
+<button class="admin-btn" onclick="addCoupon()">إضافة كوبون</button>
+<div class="service-list" id="coupon-list"></div>
 </div>
 </div>
 
@@ -237,7 +313,7 @@ h1,h2,h3{
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
 <script>
-// Firebase Config
+// =================== Firebase ===================
 const firebaseConfig = {
   apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
   authDomain: "cd-card-87365.firebaseapp.com",
@@ -248,121 +324,140 @@ const firebaseConfig = {
   measurementId: "G-NDL36M3W68"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-// التسجيل والدخول
-function showLogin(){ document.getElementById("register-card").style.display="none"; document.getElementById("login-card").style.display="block";}
-function showRegister(){ document.getElementById("register-card").style.display="block"; document.getElementById("login-card").style.display="none";}
+// =================== Auth ===================
+function showLogin(){ document.getElementById("register-card").style.display="none"; document.getElementById("login-card").style.display="block"; }
+function showRegister(){ document.getElementById("register-card").style.display="block"; document.getElementById("login-card").style.display="none"; }
 
 function register(){
-    let name=document.getElementById("name").value;
-    let phone=document.getElementById("phone").value;
-    let email=document.getElementById("email").value;
-    let password=document.getElementById("password").value;
-    let password2=document.getElementById("password2").value;
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+let email=document.getElementById("email").value;
+let password=document.getElementById("password").value;
+let password2=document.getElementById("password2").value;
+if(password!==password2){ alert("كلمتا المرور غير متطابقتين"); return; }
 
-    if(password!==password2){ alert("كلمتا المرور غير متطابقتين"); return; }
-
-    auth.createUserWithEmailAndPassword(email,password)
-    .then(user=>{
-        db.collection("users").doc(user.user.uid).set({
-            name:name,
-            phone:phone,
-            email:email,
-            balance:0,
-            role:"user"
-        });
-        alert("تم إنشاء الحساب");
-        showDashboard(user.user);
-    }).catch(e=>alert(e.message));
+auth.createUserWithEmailAndPassword(email,password)
+.then(user=>{
+    db.collection("users").doc(user.user.uid).set({
+        name:name, phone:phone, email:email, balance:0, role:"user"
+    });
+    alert("تم إنشاء الحساب");
+    showDashboard(user.user);
+}).catch(e=>alert(e.message));
 }
 
 function login(){
-    let email=document.getElementById("login-email").value;
-    let password=document.getElementById("login-password").value;
-    auth.signInWithEmailAndPassword(email,password)
-    .then(res=>{
-        showDashboard(res.user);
-    }).catch(e=>alert(e.message));
+let email=document.getElementById("login-email").value;
+let password=document.getElementById("login-password").value;
+auth.signInWithEmailAndPassword(email,password)
+.then(res=>{ showDashboard(res.user); }).catch(e=>alert(e.message));
 }
 
-// لوحة المستخدم
-const cart=[];
-let currentMethod="كاش";
-let pricePlus=0;
+// =================== لوحة المستخدم ===================
+const cart=[]; let currentMethod="كاش"; let pricePlus=0;
 
 function showDashboard(user){
-    document.getElementById("auth-container").style.display="none";
-    document.getElementById("dashboard").style.display="block";
-
-    db.collection("users").doc(user.uid).get().then(doc=>{
-        document.getElementById("balance").innerText=doc.data().balance;
-    });
-
-    renderShop();
+document.getElementById("auth-container").style.display="none";
+document.getElementById("dashboard").style.display="block";
+db.collection("users").doc(user.uid).get().then(doc=>{
+    document.getElementById("balance").innerText=doc.data().balance;
+    if(doc.data().role==="admin"){ document.getElementById("admin-panel").style.display="block"; loadAdmin(); }
+});
+renderShop();
 }
 
-// خدمات وهمية
-const categories = {
-    "تيك توك":[ {name:"1000 متابع", price:12}, {name:"1000 لايك", price:3} ],
-    "انستقرام":[ {name:"1000 متابع", price:8}, {name:"1000 لايك", price:4} ]
-};
+// =================== خدمات المستخدم ===================
+let categories={"تيك توك":[{name:"1000 متابع",price:12},{name:"1000 لايك",price:3}],
+"انستقرام":[{name:"1000 متابع",price:8},{name:"1000 لايك",price:4}]};
 
 function renderShop(){
-    const container=document.getElementById("shop-container");
-    container.innerHTML="";
-    for(let cat in categories){
-        container.innerHTML+=`<div class="category-title">${cat}</div>`;
-        let grid=document.createElement('div'); grid.className='products-grid';
-        categories[cat].forEach(p=>{
-            grid.innerHTML+=`<div class="product-card">
-                <img class="product-img" src="" onerror="this.src='tiktok.jpg'">
-                <h3>${p.name}</h3>
-                <span class="price-tag">${p.price+pricePlus} د.ل</span>
-                <button class="add-btn" onclick="addToCart('${p.name}',${p.price})">إضافة +</button>
-            </div>`;
-        });
-        container.appendChild(grid);
-    }
+const container=document.getElementById("shop-container"); container.innerHTML="";
+for(let cat in categories){
+container.innerHTML+=`<div class="category-title">${cat}</div>`;
+let grid=document.createElement('div'); grid.className='products-grid';
+categories[cat].forEach(p=>{
+grid.innerHTML+=`<div class="product-card"><img class="product-img" src="" onerror="this.src='tiktok.jpg'"><h3>${p.name}</h3><span class="price-tag">${p.price+pricePlus} د.ل</span><button class="add-btn" onclick="addToCart('${p.name}',${p.price})">إضافة +</button></div>`;
+});
+container.appendChild(grid);
+}
 }
 
-function setMethod(el, method, plus){
-    document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('active'));
-    el.classList.add('active');
-    currentMethod=method;
-    pricePlus=plus;
-    cart.forEach(item=>item.finalPrice=item.basePrice+pricePlus);
-    updateUI();
+function setMethod(el,method,plus){
+document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('active'));
+el.classList.add('active');
+currentMethod=method; pricePlus=plus;
+cart.forEach(item=>item.finalPrice=item.basePrice+pricePlus);
+updateUI();
 }
 
-function addToCart(name, basePrice){
-    cart.push({id:Date.now(), name:name, basePrice:basePrice, finalPrice:basePrice+pricePlus});
-    updateUI();
-}
-
+function addToCart(name,basePrice){ cart.push({id:Date.now(),name:name,basePrice:basePrice,finalPrice:basePrice+pricePlus}); updateUI(); }
 function removeFromCart(id){ cart.splice(cart.findIndex(i=>i.id===id),1); updateUI(); }
-
 function updateUI(){
-    const list=document.getElementById("cart-items-list");
-    list.innerHTML="";
-    let total=0;
-    cart.forEach(item=>{
-        total+=item.finalPrice;
-        list.innerHTML+=`<div class="cart-item"><span>${item.name} (${item.finalPrice} د.ل)</span><span class="remove-btn" onclick="removeFromCart(${item.id})">✖</span></div>`;
-    });
-    document.getElementById("cart-count").innerText=`المنتجات: ${cart.length}`;
-    document.getElementById("cart-total").innerText=`الإجمالي: ${total} د.ل`;
+const list=document.getElementById("cart-items-list"); list.innerHTML=""; let total=0;
+cart.forEach(item=>{ total+=item.finalPrice; list.innerHTML+=`<div class="cart-item"><span>${item.name} (${item.finalPrice} د.ل)</span><span class="remove-btn" onclick="removeFromCart(${item.id})">✖</span></div>`; });
+document.getElementById("cart-count").innerText=`المنتجات: ${cart.length}`;
+document.getElementById("cart-total").innerText=`الإجمالي: ${total} د.ل`;
 }
 
 function sendWhatsApp(){
-    if(cart.length===0){ alert("السلة فارغة"); return; }
-    let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice} د.ل`).join('%0A');
-    let total=cart.reduce((s,it)=>s+it.finalPrice,0);
-    let phone="218912377291";
-    let msg=`*طلب جديد - CD-CARD*%0A*طريقة الدفع:* ${currentMethod}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي:* ${total} د.ل`;
-    window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
+if(cart.length===0){ alert("السلة فارغة"); return; }
+let itemsText=cart.map(it=>`- ${it.name}: ${it.finalPrice} د.ل`).join('%0A');
+let total=cart.reduce((s,it)=>s+it.finalPrice,0);
+let phone="218912377291";
+let msg=`*طلب جديد - CD-CARD*%0A*طريقة الدفع:* ${currentMethod}%0A------------------%0A${itemsText}%0A------------------%0A*الإجمالي:* ${total} د.ل`;
+window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
 }
+
+// =================== لوحة الأدمن ===================
+function logout(){ auth.signOut().then(()=>location.reload()); }
+
+function loadAdmin(){
+loadUsers(); loadServices(); loadCoupons();
+}
+
+// المستخدمين
+function loadUsers(){
+const list=document.getElementById("user-list"); list.innerHTML="";
+db.collection("users").get().then(snapshot=>{
+snapshot.forEach(doc=>{
+let data=doc.data();
+list.innerHTML+=`<div class="user-item">${data.name} (${data.email}) <span class="remove-user" onclick="deleteUser('${doc.id}')">✖</span></div>`;
+});
+});
+}
+function deleteUser(uid){ db.collection("users").doc(uid).delete().then(()=>loadUsers()); }
+
+// الخدمات
+function loadServices(){
+const list=document.getElementById("service-list"); list.innerHTML="";
+db.collection("services").get().then(snap=>{
+snap.forEach(doc=>{ let data=doc.data(); list.innerHTML+=`<div class="service-item">${data.name} (${data.price} د.ل) <span class="remove-service" onclick="deleteService('${doc.id}')">✖</span></div>`; });
+});
+}
+function addService(){
+let name=document.getElementById("new-service-name").value;
+let price=parseInt(document.getElementById("new-service-price").value)||0;
+db.collection("services").add({name:name,price:price}).then(()=>{ document.getElementById("new-service-name").value=""; document.getElementById("new-service-price").value=""; loadServices(); });
+}
+function deleteService(id){ db.collection("services").doc(id).delete().then(()=>loadServices()); }
+
+// الكوبونات
+function addCoupon(){
+let code=document.getElementById("coupon-code").value;
+let value=parseInt(document.getElementById("coupon-value").value)||0;
+db.collection("coupons").add({code:code,value:value}).then(()=>{ document.getElementById("coupon-code").value=""; document.getElementById("coupon-value").value=""; loadCoupons(); });
+}
+function loadCoupons(){
+const list=document.getElementById("coupon-list"); list.innerHTML="";
+db.collection("coupons").get().then(snap=>{
+snap.forEach(doc=>{ let data=doc.data(); list.innerHTML+=`<div class="service-item">${data.code} (${data.value} د.ل) <span class="remove-service" onclick="deleteCoupon('${doc.id}')">✖</span></div>`; });
+});
+}
+function deleteCoupon(id){ db.collection("coupons").doc(id).delete().then(()=>loadCoupons()); }
+
 </script>
 </body>
 </html>
