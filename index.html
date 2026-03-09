@@ -3,116 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABD CENTER | لوحة التحكم</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>متجر الخدمات الرقمية | الفخامة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #12141d; --card: #1c1f2a; --gold: #ffb800; --blue: #007aff; --text: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --bg-color: #050a18;
+            --card-bg: #0d162d;
+            --primary-blue: #007aff;
+            --accent-glow: #00d4ff;
+            --text-color: #ffffff;
+            --shadow-3d: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
         }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); line-height: 1.6; }
 
-        /* الهيدر */
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gold); }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+
+        body::before, body::after {
+            content: ''; position: fixed; width: 300px; height: 300px;
+            background: var(--primary-blue); filter: blur(150px); opacity: 0.2; z-index: -1;
+        }
+        body::before { top: -50px; left: -50px; }
+        body::after { bottom: -50px; right: -50px; }
+
+        header {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(13, 22, 45, 0.8); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo-section h1 { font-size: 20px; color: var(--accent-glow); }
+        .logo-section p { font-size: 10px; opacity: 0.7; }
+
+        .menu-btn { cursor: pointer; font-size: 24px; }
+        .sidebar {
+            position: fixed; top: 0; right: -100%; width: 250px; height: 100%;
+            background: var(--card-bg); transition: 0.4s; z-index: 1000; padding: 40px 20px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .sidebar.active { right: 0; }
+        .sidebar-link {
+            display: block; padding: 15px; color: white; text-decoration: none;
+            border-radius: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.03); transition: 0.3s;
+        }
+        .sidebar-link:hover { background: var(--primary-blue); transform: translateX(-5px); }
 
         .container { padding: 20px; max-width: 500px; margin: auto; }
+        .card {
+            background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 20px;
+            box-shadow: var(--shadow-3d); border: 1px solid rgba(255,255,255,0.05);
+        }
 
-        /* بطاقة اسم المستخدم والرصيد (نفس صورك) */
-        .user-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.05); }
-        .username { color: var(--gold); font-size: 22px; margin-bottom: 5px; font-weight: bold; }
-        .welcome-sub { font-size: 11px; opacity: 0.7; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--accent-glow); }
+        input, select {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            background: #16223f; color: white; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
 
-        .stat-item { background: #12141d; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.02); }
-        .stat-item span { font-size: 12px; opacity: 0.8; }
-        .stat-item b { color: var(--gold); font-size: 18px; }
+        .btn-3d {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: linear-gradient(145deg, #007aff, #0056b3); color: white;
+            font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #004494, 0 8px 15px rgba(0,0,0,0.4);
+            transition: 0.2s; margin-top: 10px;
+        }
+        .btn-3d:active { transform: translateY(3px); box-shadow: 0 2px 0 #004494; }
 
-        /* نموذج الطلب */
-        .order-card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: var(--shadow); }
-        .field { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gold); }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #12141d; color: #fff; outline: none; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-box span { display: block; font-size: 12px; opacity: 0.7; }
+        .stat-box b { font-size: 18px; color: var(--accent-glow); }
 
-        .btn-send { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--gold); color: #000; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
-        .btn-send:hover { background: #e5a600; transform: scale(0.98); }
-
-        /* أيقونات التواصل */
-        .floating-icons { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .page { display: none; animation: fadeIn 0.5s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-size: 24px;">☰</div>
-    <div class="logo-area">
-        <h1>ABD CENTER</h1>
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <div class="logo-section">
+        <h1>CD-Card</h1>
+        <p>عالم الخدمات الرقمية المتكاملة</p>
     </div>
-    <div style="font-size: 20px;">⚙️</div>
+    <div style="width: 24px;"></div>
 </header>
 
-<div class="container">
-    <div class="user-card">
-        <div class="username" id="display-name">جاري التحميل...</div>
-        <p class="welcome-sub">مرحباً بك في عبدو سنتر!</p>
-
-        <div class="stat-item">
-            <span>Account level</span>
-            <b style="color: var(--gold);">NEW</b>
-        </div>
-        <div class="stat-item">
-            <span>Discount</span>
-            <b>0%</b>
-        </div>
-        <div class="stat-item">
-            <span>الرصيد المنفق</span>
-            <b id="display-spent">$0.00</b>
-        </div>
-        <div class="stat-item">
-            <span>رصيد حسابك</span>
-            <b id="display-balance">$0.00</b>
-        </div>
-    </div>
-
-    <div class="order-card">
-        <div class="field">
-            <label>الفئة</label>
-            <select id="category" onchange="updateServices()">
-                <option value="">-- اختر الفئة --</option>
-                <option value="tk">تيك توك</option>
-            </select>
-        </div>
-        <div class="field">
-            <label>الخدمة</label>
-            <select id="service">
-                <option>اختر الفئة أولاً...</option>
-            </select>
-        </div>
-        <div class="field">
-            <label>الرابط</label>
-            <input type="url" id="target-link" placeholder="https://...">
-        </div>
-        <div class="field">
-            <label>الكمية</label>
-            <input type="number" id="target-qty" placeholder="الحد الأدنى 100">
-        </div>
-        <button class="btn-send" onclick="placeOrder()">إرسال الطلب</button>
-    </div>
+<div class="sidebar" id="sidebar">
+    <div style="text-align: left; cursor: pointer; margin-bottom: 20px;" onclick="toggleMenu()">✕</div>
+    <a href="#" class="sidebar-link" onclick="showPage('dashboard')">🏠 الرئيسية</a>
+    <a href="#" class="sidebar-link" onclick="showPage('add-funds')">💰 شحن الرصيد</a>
+    <a href="#" class="sidebar-link" onclick="showPage('affiliate')">🤝 اكسب مالاً</a>
+    <a href="#" class="sidebar-link" style="color: #ff4757;" id="logout-btn">🚪 تسجيل الخروج</a>
 </div>
 
-<div class="floating-icons">
-    <a href="#" class="icon" style="background: #0088cc;">✈️</a>
-    <a href="#" class="icon" style="background: #25d366;">💬</a>
+<div class="container">
+    
+    <div id="auth-page" class="page active">
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 20px;">إنشاء حساب جديد</h2>
+            <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name" placeholder="أدخل اسمك"></div>
+            <div class="input-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" placeholder="example@mail.com"></div>
+            <div class="input-group"><label>رقم الهاتف</label><input type="tel" id="reg-phone" placeholder="09XXXXXXXX"></div>
+            <div class="input-group"><label>كلمة السر</label><input type="password" id="reg-password" placeholder="••••••••"></div>
+            <button class="btn-3d" id="register-btn">إنشاء الحساب</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 13px;">
+                لديك حساب؟ <a href="#" style="color: var(--accent-glow);" onclick="alert('سجل من خلال البريد وكلمة السر مباشرة')">تسجيل دخول</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="dashboard" class="page">
+        <div class="card user-welcome">
+            <h2 id="user-display-name">جاري التحميل...</h2>
+            <p>مرحباً بك في موقعنا، نسعد بخدمتك!</p>
+            <div class="stat-grid">
+                <div class="stat-box"><span>خصمك الخاص</span><b id="user-discount">0%</b></div>
+                <div class="stat-box"><span>رصيد الحساب</span><b id="user-balance">$0.00</b></div>
+                <div class="stat-box" style="grid-column: span 2;"><span>إجمالي المنفق</span><b id="user-spent">$0.00</b></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">طلب خدمة جديدة</h3>
+            <div class="input-group">
+                <label>الفئة</label>
+                <select id="category-select" onchange="updateServicesList()">
+                    <option value="">إختر الفئة...</option>
+                    <option value="tk">خدمات تيك توك</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>الخدمة</label>
+                <select id="service-select"><option>إختر الفئة أولاً...</option></select>
+            </div>
+            <div class="input-group"><label>الرابط</label><input type="url" id="order-link" placeholder="ضع الرابط هنا"></div>
+            <div class="input-group"><label>الكمية</label><input type="number" id="order-qty" placeholder="أقل كمية 100"></div>
+            <button class="btn-3d" id="place-order-btn">إرسال الطلب</button>
+        </div>
+    </div>
+
+    <div id="add-funds" class="page">
+        <div class="card">
+            <h3>شحن الرصيد (دفع تلقائي)</h3>
+            <p style="font-size: 12px; margin-bottom: 15px; color: #4cd137;">نظام Floword SMS مفعل ⚡</p>
+            <div class="stat-box" style="background: rgba(0, 122, 255, 0.1); margin-bottom: 15px;">
+                <span style="padding:5px;">ليبيانا: 0920414760</span>
+                <span style="padding:5px;">مدار: 0912377291</span>
+            </div>
+            <div class="input-group"><label>الرقم الذي حولت منه</label><input type="tel"></div>
+            <div class="input-group"><label>القيمة المحولة (دينار)</label><input type="number"></div>
+            <button class="btn-3d">تأكيد الإيداع</button>
+        </div>
+    </div>
+
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // إعداداتك الخاصة التي أرسلتها
+    // إعدادات Firebase الخاصة بك (CD-Card)
     const firebaseConfig = {
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
         authDomain: "cd-card-87365.firebaseapp.com",
@@ -126,38 +178,65 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // جلب بيانات المستخدم وعرضها
+    // 1. وظيفة التسجيل وحفظ البيانات
+    document.getElementById('register-btn').addEventListener('click', async () => {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-password').value;
+
+        if(!name || !email || !pass) return alert("أكمل البيانات");
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                full_name: name,
+                phone: phone,
+                balance: 0.0,
+                spent: 0.0,
+                discount: 0
+            });
+            showPage('dashboard');
+        } catch (error) { alert("خطأ: " + error.message); }
+    });
+
+    // 2. مراقبة حالة المستخدم وجلب بياناته (الرصيد/المنفق)
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const data = userDoc.data();
-                document.getElementById('display-name').innerText = data.full_name || "مستخدم";
-                document.getElementById('display-balance').innerText = `$${data.balance.toFixed(6)}`;
-                document.getElementById('display-spent').innerText = `$${data.spent.toFixed(6)}`;
+                document.getElementById('user-display-name').innerText = data.full_name;
+                document.getElementById('user-balance').innerText = `$${data.balance.toFixed(2)}`;
+                document.getElementById('user-spent').innerText = `$${data.spent.toFixed(2)}`;
+                document.getElementById('user-discount').innerText = `${data.discount}%`;
+                showPage('dashboard');
+                document.getElementById('auth-page').classList.remove('active');
             }
         } else {
-            window.location.href = "login.html"; // حماية الصفحة
+            showPage('auth-page');
         }
     });
 
-    // تحديث الخدمات (رقم 1100)
-    window.updateServices = function() {
-        const cat = document.getElementById('category').value;
-        const serv = document.getElementById('service');
-        if(cat === 'tk') {
-            serv.innerHTML = '<option value="1100">إعادة نشر تيك توك (#1100)</option>';
-        }
+    // 3. تسجيل الخروج
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        signOut(auth).then(() => location.reload());
+    });
+</script>
+
+<script>
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+    
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.getElementById('sidebar').classList.remove('active');
     }
 
-    // إرسال الطلب
-    window.placeOrder = function() {
-        const serviceId = document.getElementById('service').value;
-        const link = document.getElementById('target-link').value;
-        if(!link) return alert("الرجاء وضع الرابط");
-
-        alert(`جاري معالجة الطلب رقم ${serviceId} وإرساله لـ SMM ADAM...`);
-        // هنا يوضع كود الـ API الفعلي للخصم من Firebase والإرسال للمزود
+    function updateServicesList() {
+        const cat = document.getElementById('category-select').value;
+        const serv = document.getElementById('service-select');
+        serv.innerHTML = (cat === 'tk') ? '<option value="1100">إعادة نشر تيك توك (#1100)</option>' : '<option>إختر الفئة أولاً...</option>';
     }
 </script>
 
