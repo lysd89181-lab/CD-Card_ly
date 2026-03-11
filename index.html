@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 
 <meta charset="UTF-8">
@@ -16,7 +17,7 @@ margin:0;
 font-family:'Cairo',sans-serif;
 background:linear-gradient(140deg,#05070f,#0b1225,#05070f);
 color:white;
-padding:10px;
+padding:15px;
 }
 
 .container{
@@ -26,26 +27,22 @@ margin:auto;
 
 .title{
 text-align:center;
+font-size:32px;
 color:#00ffa6;
-font-size:28px;
-margin-top:10px;
+margin-bottom:10px;
 }
 
 .card{
 background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:15px;
+border-radius:18px;
 padding:15px;
 margin-top:15px;
-backdrop-filter:blur(10px);
 }
 
 label{
 display:block;
 margin-top:10px;
-margin-bottom:5px;
 color:#00ffa6;
-font-weight:bold;
 }
 
 input,select{
@@ -57,70 +54,37 @@ background:#0e1529;
 color:white;
 }
 
-.price-box{
-margin-top:10px;
-background:#0e1529;
-padding:10px;
-border-radius:8px;
-font-size:18px;
+.price{
 text-align:center;
+margin-top:10px;
+font-size:18px;
+color:#00ffa6;
 }
 
 button{
 width:100%;
+padding:13px;
 margin-top:10px;
-padding:14px;
 border:none;
-border-radius:30px;
-font-size:16px;
+border-radius:25px;
+background:linear-gradient(135deg,#00ffa6,#00cfff);
 font-weight:bold;
 cursor:pointer;
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-color:black;
-}
-
-.payments{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
-.pay{
-flex:1;
-padding:10px;
-text-align:center;
-border-radius:10px;
-background:#0e1529;
-cursor:pointer;
-}
-
-.pay.active{
-border:1px solid #00ffa6;
-color:#00ffa6;
-}
-
-.cart{
-margin-top:15px;
 }
 
 .cart-item{
 background:#0e1529;
 padding:8px;
 border-radius:8px;
-margin-bottom:5px;
+margin-bottom:6px;
 display:flex;
 justify-content:space-between;
 }
 
-.remove{
-color:red;
-cursor:pointer;
-}
-
 .total{
+text-align:center;
 margin-top:10px;
 font-size:18px;
-text-align:center;
 }
 
 </style>
@@ -147,24 +111,23 @@ text-align:center;
 <label>الكمية</label>
 <input id="qty" type="number" value="50" oninput="updatePrice()">
 
-<label>التكلفة</label>
-<div class="price-box">
-<span id="price">0</span> د.ل
+<div class="price">
+السعر: <span id="price">0</span> د.ل
 </div>
 
-<label>طريقة الدفع</label>
+<label>الدفع</label>
 
-<div class="payments">
-<div class="pay active" onclick="setPay(this,'كاش',0)">💸 كاش</div>
-<div class="pay" onclick="setPay(this,'لبيانا',0.25)">📲 لبيانا</div>
-<div class="pay" onclick="setPay(this,'مدار',0.25)">📡 مدار</div>
+<select id="pay" onchange="updatePrice()">
+<option value="0">كاش</option>
+<option value="0.25">لبيانا</option>
+<option value="0.25">مدار</option>
+</select>
+
+<button onclick="addToCart()">إضافة للسلة</button>
+
 </div>
 
-<button onclick="addToCart()">إضافة إلى السلة</button>
-
-</div>
-
-<div class="card cart">
+<div class="card">
 
 <h3>السلة</h3>
 
@@ -182,61 +145,78 @@ text-align:center;
 
 <script>
 
-let payPercent=0
-let payType="كاش"
 let cart=[]
 
 const services={
 
 "تيك توك":[
-{name:"1000 متابع تيك توك",price:12,isSocial:true},
-{name:"1000 لايك تيك توك",price:3,isSocial:true},
-{name:"1000 مشاهدة تيك توك",price:1,isSocial:true},
-{name:"100 مشاركة تيك توك",price:1,isSocial:true}
+{name:" متابع تيك توك",price:12,social:true},
+{name:" لايك تيك توك",price:3,social:true},
+{name:" مشاهدة تيك توك",price:1,social:true},
+{name:" مشاركة تيك توك",price:1,social:true}
+],
+
+"عملات تيك توك":[
+{name:"30 عملة",price:4,social:false},
+{name:"50 عملة",price:7,social:false},
+{name:"100 عملة",price:14,social:false},
+{name:"200 عملة",price:28,social:false}
 ],
 
 "انستقرام":[
-{name:"1000 متابع انستقرام",price:8,isSocial:true},
-{name:"1000 لايك انستقرام",price:4,isSocial:true},
-{name:"1000 مشاهدة انستقرام",price:1,isSocial:true}
+{name:"1000 متابع انستقرام",price:8,social:true},
+{name:"1000 لايك انستقرام",price:4,social:true},
+{name:"1000 مشاهدة",price:1,social:true},
+{name:"100 مشاركة",price:1,social:true}
 ],
 
 "فيسبوك":[
-{name:"1000 متابع صفحة",price:5,isSocial:true},
-{name:"1000 مشاهدة ريلز",price:1,isSocial:true},
-{name:"1000 متابع مجموعة",price:8,isSocial:true}
+{name:"1000 متابع صفحة",price:5,social:true},
+{name:"1000 مشاهدة ريلز",price:1,social:true},
+{name:"لايك منشور",price:6,social:true},
+{name:"1000 متابع مجموعة",price:8,social:true}
 ],
 
 "ببجي":[
-{name:"60 شدة",price:12,isSocial:false},
-{name:"120 شدة",price:24,isSocial:false},
-{name:"325 شدة",price:55,isSocial:false},
-{name:"660 شدة",price:117,isSocial:false}
+{name:"60 شدة",price:11,social:false},
+{name:"120 شدة",price:22,social:false},
+{name:"325 شدة",price:55,social:false},
+{name:"660 شدة",price:115,social:false}
+],
+
+"نجوم تيليجرام":[
+{name:"100 نجمة",price:25,social:false},
+{name:"150 نجمة",price:37,social:false},
+{name:"250 نجمة",price:59,social:false},
+{name:"350 نجمة",price:80,social:false},
+{name:"500 نجمة",price:113,social:false}
 ],
 
 "فري فاير":[
-{name:"110 جوهرة",price:20,isSocial:false},
-{name:"221 جوهرة",price:32,isSocial:false},
-{name:"2420 جوهرة",price:225,isSocial:false}
+{name:"110 جوهرة",price:20,social:false},
+{name:"221 جوهرة",price:32,social:false},
+{name:"2420 جوهرة",price:225,social:false}
 ],
 
 "روبلكس":[
-{name:"40 روبكس",price:15,isSocial:false},
-{name:"80 روبكس",price:29,isSocial:false},
-{name:"400 روبكس",price:98,isSocial:false}
+{name:"40 روبكس",price:15,social:false},
+{name:"80 روبكس",price:29,social:false},
+{name:"400 روبكس",price:98,social:false}
+],
+
+"FC 25":[
+{name:"40 نقطة",price:15,social:false},
+{name:"100 نقطة",price:29,social:false},
+{name:"520 نقطة",price:71,social:false},
+{name:"1070 نقطة",price:138,social:false}
 ],
 
 "اشتراكات":[
-{name:"نتفليكس شهر",price:35,isSocial:false},
-{name:"شاهد شهر",price:30,isSocial:false},
-{name:"كاب كات شخصي",price:50,isSocial:false},
-{name:"تروكولر سنوي",price:160,isSocial:false}
-],
-
-"سناب بلس":[
-{name:"3 شهور سناب بلس",price:70,isSocial:false},
-{name:"6 شهور سناب بلس",price:130,isSocial:false},
-{name:"سنوي سناب بلس",price:240,isSocial:false}
+{name:"Netflix شهر",price:30,social:false},
+{name:"Shahid شهر",price:30,social:false},
+{name:"CapCut",price:50,social:false},
+{name:"Truecaller سنوي",price:160,social:false},
+{name:"Snapchat+",price:70,social:false}
 ]
 
 }
@@ -244,38 +224,46 @@ const services={
 const cat=document.getElementById("category")
 
 for(let c in services){
+
 let opt=document.createElement("option")
 opt.value=c
 opt.textContent=c
 cat.appendChild(opt)
+
 }
 
 function loadServices(){
+
 let s=document.getElementById("service")
+
 s.innerHTML=""
 
 services[cat.value].forEach((srv,i)=>{
+
 let opt=document.createElement("option")
 opt.value=i
 opt.textContent=srv.name
 s.appendChild(opt)
+
 })
 
 serviceChanged()
+
 }
 
 function serviceChanged(){
 
 let srv=services[cat.value][document.getElementById("service").value]
 
-if(srv.isSocial){
+if(srv.social){
+
 document.getElementById("qty").min=50
 document.getElementById("qty").value=50
-}
-else{
-document.getElementById("qty").min=1
-document.getElementById("qty").max=1
+
+}else{
+
 document.getElementById("qty").value=1
+
 }
 
 updatePrice()
@@ -288,40 +276,32 @@ let srv=services[cat.value][document.getElementById("service").value]
 
 let qty=parseInt(document.getElementById("qty").value)
 
-let price=(srv.price*(srv.isSocial? qty/1000:1))
+let pay=parseFloat(document.getElementById("pay").value)
 
-price=price+(price*payPercent)
+let price=(srv.price*(srv.social? qty/1000:1))
+
+price=price+(price*pay)
 
 document.getElementById("price").innerText=price.toFixed(2)
 
 }
 
-function setPay(el,type,p){
-
-document.querySelectorAll(".pay").forEach(e=>e.classList.remove("active"))
-
-el.classList.add("active")
-
-payPercent=p
-payType=type
-
-updatePrice()
-
-}
-
 function addToCart(){
 
-let price=parseFloat(document.getElementById("price").innerText)
-let qty=parseInt(document.getElementById("qty").value)
-let srv=services[cat.value][document.getElementById("service").value]
 let link=document.getElementById("link").value
 
-cart.push({
-service:srv.name,
-qty:qty,
-link:link,
-price:price
-})
+if(link==""){
+alert("يجب إدخال الرابط")
+return
+}
+
+let srv=services[cat.value][document.getElementById("service").value]
+
+let qty=document.getElementById("qty").value
+
+let price=parseFloat(document.getElementById("price").innerText)
+
+cart.push({service:srv.name,link:link,qty:qty,price:price})
 
 renderCart()
 
@@ -330,6 +310,7 @@ renderCart()
 function renderCart(){
 
 let box=document.getElementById("cart")
+
 box.innerHTML=""
 
 let total=0
@@ -338,12 +319,13 @@ cart.forEach((item,i)=>{
 
 total+=item.price
 
-box.innerHTML+=`
-<div class="cart-item">
-<span>${item.service} - ${item.price.toFixed(2)} د.ل</span>
-<span class="remove" onclick="removeItem(${i})">✖</span>
-</div>
-`
+box.innerHTML+=`<div class="cart-item">
+
+<span>${item.service}</span>
+
+<span onclick="removeItem(${i})">✖</span>
+
+</div>`
 
 })
 
@@ -352,8 +334,11 @@ document.getElementById("total").innerText=total.toFixed(2)
 }
 
 function removeItem(i){
+
 cart.splice(i,1)
+
 renderCart()
+
 }
 
 function sendOrder(){
@@ -361,18 +346,22 @@ function sendOrder(){
 let total=parseFloat(document.getElementById("total").innerText)
 
 if(total<1){
+
 alert("لايمكن ارسال الطلب أقل من 1 دينار")
+
 return
+
 }
 
-let msg="طلب جديد - CD CARD%0A%0A"
+let msg="طلب جديد CD-CARD%0A%0A"
 
 cart.forEach(item=>{
-msg+=`الخدمة: ${item.service}%0Aالرابط: ${item.link}%0Aالكمية: ${item.qty}%0Aالسعر: ${item.price.toFixed(2)} د.ل%0A%0A`
+
+msg+=`الخدمة: ${item.service}%0Aالرابط: ${item.link}%0Aالكمية: ${item.qty}%0Aالسعر: ${item.price}%0A%0A`
+
 })
 
-msg+="طريقة الدفع: "+payType+"%0A"
-msg+="الإجمالي: "+total.toFixed(2)+" د.ل"
+msg+="الإجمالي: "+total
 
 window.open("https://wa.me/218912377291?text="+msg)
 
