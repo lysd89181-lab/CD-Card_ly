@@ -32,6 +32,23 @@ color:#00ffa6;
 margin-bottom:10px;
 }
 
+.links{
+display:flex;
+flex-direction:column;
+gap:8px;
+margin-bottom:10px;
+}
+
+.links a{
+text-decoration:none;
+background:#0e1529;
+padding:10px;
+border-radius:10px;
+text-align:center;
+color:#00ffa6;
+font-size:14px;
+}
+
 .card{
 background:rgba(255,255,255,0.05);
 border-radius:18px;
@@ -97,6 +114,22 @@ font-size:18px;
 
 <div class="title">CD-CARD</div>
 
+<div class="links">
+
+<a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank">
+قناة واتساب الرسمية
+</a>
+
+<a href="https://t.me/CD_Card1" target="_blank">
+قناة تيليجرام
+</a>
+
+<a href="https://t.me/cdcard104" target="_blank">
+التواصل عبر تيليجرام
+</a>
+
+</div>
+
 <div class="card">
 
 <label>الفئة</label>
@@ -115,12 +148,14 @@ font-size:18px;
 السعر: <span id="price">0</span> د.ل
 </div>
 
-<label>الدفع</label>
+<label>طريقة الدفع</label>
 
 <select id="pay" onchange="updatePrice()">
-<option value="0">كاش</option>
-<option value="0.25">لبيانا</option>
-<option value="0.25">مدار</option>
+
+<option value="cash">💸 كاش</option>
+<option value="libyana">📲 لبيانا</option>
+<option value="madar">📡 مدار</option>
+
 </select>
 
 <button onclick="addToCart()">إضافة للسلة</button>
@@ -150,10 +185,10 @@ let cart=[]
 const services={
 
 "تيك توك":[
-{name:" متابع تيك توك",price:12,social:true},
-{name:" لايك تيك توك",price:3,social:true},
-{name:" مشاهدة تيك توك",price:1,social:true},
-{name:" مشاركة تيك توك",price:1,social:true}
+{name:"1000 متابع تيك توك",price:12,social:true},
+{name:"1000 لايك تيك توك",price:3,social:true},
+{name:"1000 مشاهدة تيك توك",price:1,social:true},
+{name:"100 مشاركة تيك توك",price:1,social:true}
 ],
 
 "عملات تيك توك":[
@@ -276,11 +311,15 @@ let srv=services[cat.value][document.getElementById("service").value]
 
 let qty=parseInt(document.getElementById("qty").value)
 
-let pay=parseFloat(document.getElementById("pay").value)
+let pay=document.getElementById("pay").value
+
+let percent=0
+
+if(pay!="cash") percent=0.25
 
 let price=(srv.price*(srv.social? qty/1000:1))
 
-price=price+(price*pay)
+price=price+(price*percent)
 
 document.getElementById("price").innerText=price.toFixed(2)
 
@@ -353,6 +392,12 @@ return
 
 }
 
+let pay=document.getElementById("pay").value
+
+let phone="218912377291"
+
+if(pay=="libyana") phone="218920414760"
+
 let msg="طلب جديد CD-CARD%0A%0A"
 
 cart.forEach(item=>{
@@ -363,7 +408,7 @@ msg+=`الخدمة: ${item.service}%0Aالرابط: ${item.link}%0Aالكمية:
 
 msg+="الإجمالي: "+total
 
-window.open("https://wa.me/218912377291?text="+msg)
+window.open("https://wa.me/"+phone+"?text="+msg)
 
 }
 
@@ -372,4 +417,5 @@ loadServices()
 </script>
 
 </body>
+
 </html>
