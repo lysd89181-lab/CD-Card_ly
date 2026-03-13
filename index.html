@@ -123,7 +123,7 @@
             <label>الرابط</label>
             <input id="link" placeholder="ضع الرابط">
 
-            <label>الكمية / القيمة بالدولار</label>
+            <label id="qtyLabel">الكمية</label>
             <input id="qty" type="number" value="50" oninput="updatePrice()">
 
             <div class="price">
@@ -154,12 +154,11 @@
         let cart = []
 
         const services = {
-            // الفئة الجديدة التي طلبتها
             "بطاقة ماستر كارد": [
-                { name: "10 دولار", price: 150, social: false },
-                { name: "15 دولار", price: 220, social: false },
-                { name: "30 دولار", price: 420, social: false },
-                { name: "كمية مخصصة (سعر الدولار 15)", price: 15, isCustom: true, social: false }
+                { name: "10 دولار", price: 150, social: false, noTax: true },
+                { name: "15 دولار", price: 220, social: false, noTax: true },
+                { name: "30 دولار", price: 420, social: false, noTax: true },
+                { name: "كمية مخصصة (سعر الدولار 15)", price: 15, isCustom: true, social: false, noTax: true }
             ],
             "تيك توك": [
                 { name: " متابع تيك توك", price: 25, social: true },
@@ -247,16 +246,20 @@
         function serviceChanged() {
             let srv = services[cat.value][document.getElementById("service").value]
             let qtyInput = document.getElementById("qty");
+            let qtyLabel = document.getElementById("qtyLabel");
 
             if (srv.social) {
                 qtyInput.min = 50
                 qtyInput.value = 50
+                qtyLabel.innerText = "الكمية";
             } else if (srv.isCustom) {
-                qtyInput.min = 5 // الحد الأدنى لبطاقة الماستر كارد المخصصة
+                qtyInput.min = 5
                 qtyInput.value = 5
+                qtyLabel.innerText = "القيمة بالدولار (أقل شيء 5)";
             } else {
                 qtyInput.min = 1
                 qtyInput.value = 1
+                qtyLabel.innerText = "الكمية";
             }
             updatePrice()
         }
@@ -265,15 +268,18 @@
             let srv = services[cat.value][document.getElementById("service").value]
             let qty = parseFloat(document.getElementById("qty").value) || 0
             let pay = document.getElementById("pay").value
+            
+            // تحديد نسبة الزيادة: 0 إذا كانت الخدمة "noTax" أو كان الدفع كاش، غير ذلك 25%
             let percent = 0
-
-            if (pay != "cash") percent = 0.25
+            if (!srv.noTax && pay != "cash") {
+                percent = 0.25
+            }
 
             let basePrice = 0;
             if (srv.social) {
                 basePrice = (srv.price * (qty / 1000));
             } else if (srv.isCustom) {
-                basePrice = srv.price * qty; // حساب سعر الماستر كارد المخصص (كمية * 15)
+                basePrice = srv.price * qty;
             } else {
                 basePrice = srv.price;
             }
@@ -292,9 +298,8 @@
             let srv = services[cat.value][document.getElementById("service").value]
             let qty = document.getElementById("qty").value
 
-            // التحقق من الحد الأدنى للمخصص
             if (srv.isCustom && qty < 5) {
-                alert("الحد الأدنى للكمية المخصصة هو 5 دولار");
+                alert("الحد الأدنى هو 5 دولار");
                 return;
             }
 
