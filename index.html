@@ -2,420 +2,345 @@
 <html lang="ar" dir="rtl">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD-CARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(140deg, #05070f, #0b1225, #05070f);
+            color: white;
+            padding: 15px;
+        }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        .container {
+            max-width: 520px;
+            margin: auto;
+        }
 
-<title>CD-CARD</title>
+        .title {
+            text-align: center;
+            font-size: 32px;
+            color: #00ffa6;
+            margin-bottom: 10px;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
 
-<style>
+        .links a {
+            text-decoration: none;
+            background: #0e1529;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            color: #00ffa6;
+            font-size: 14px;
+        }
 
-body{
-margin:0;
-font-family:'Cairo',sans-serif;
-background:linear-gradient(140deg,#05070f,#0b1225,#05070f);
-color:white;
-padding:15px;
-}
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            padding: 15px;
+            margin-top: 15px;
+        }
 
-.container{
-max-width:520px;
-margin:auto;
-}
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #00ffa6;
+        }
 
-.title{
-text-align:center;
-font-size:32px;
-color:#00ffa6;
-margin-bottom:10px;
-}
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #0e1529;
+            color: white;
+            box-sizing: border-box;
+        }
 
-.links{
-display:flex;
-flex-direction:column;
-gap:8px;
-margin-bottom:10px;
-}
+        .price {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #00ffa6;
+        }
 
-.links a{
-text-decoration:none;
-background:#0e1529;
-padding:10px;
-border-radius:10px;
-text-align:center;
-color:#00ffa6;
-font-size:14px;
-}
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #00ffa6, #00cfff);
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.card{
-background:rgba(255,255,255,0.05);
-border-radius:18px;
-padding:15px;
-margin-top:15px;
-}
+        .cart-item {
+            background: #0e1529;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
 
-label{
-display:block;
-margin-top:10px;
-color:#00ffa6;
-}
-
-input,select{
-width:100%;
-padding:10px;
-border-radius:8px;
-border:none;
-background:#0e1529;
-color:white;
-}
-
-.price{
-text-align:center;
-margin-top:10px;
-font-size:18px;
-color:#00ffa6;
-}
-
-button{
-width:100%;
-padding:13px;
-margin-top:10px;
-border:none;
-border-radius:25px;
-background:linear-gradient(135deg,#00ffa6,#00cfff);
-font-weight:bold;
-cursor:pointer;
-}
-
-.cart-item{
-background:#0e1529;
-padding:8px;
-border-radius:8px;
-margin-bottom:6px;
-display:flex;
-justify-content:space-between;
-}
-
-.total{
-text-align:center;
-margin-top:10px;
-font-size:18px;
-}
-
-</style>
-
+        .total {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<div class="title">CD-CARD</div>
-
-<div class="links">
-
-<a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank">
-قناة واتساب الرسمية
-</a>
-
-<a href="https://t.me/CD_Card1" target="_blank">
-قناة تيليجرام
-</a>
-
-<a href="https://t.me/cdcard104" target="_blank">
-التواصل عبر تيليجرام
-</a>
-
-</div>
-
-<div class="card">
-
-<label>الفئة</label>
-<select id="category" onchange="loadServices()"></select>
-
-<label>الخدمة</label>
-<select id="service" onchange="serviceChanged()"></select>
-
-<label>الرابط</label>
-<input id="link" placeholder="ضع الرابط">
-
-<label>الكمية</label>
-<input id="qty" type="number" value="50" oninput="updatePrice()">
-
-<div class="price">
-السعر: <span id="price">0</span> د.ل
-</div>
-
-<label>طريقة الدفع</label>
-
-<select id="pay" onchange="updatePrice()">
-
-<option value="cash">💸 كاش</option>
-<option value="libyana">📲 لبيانا</option>
-<option value="madar">📡 مدار</option>
-
-</select>
-
-<button onclick="addToCart()">إضافة للسلة</button>
-
-</div>
-
-<div class="card">
-
-<h3>السلة</h3>
-
-<div id="cart"></div>
-
-<div class="total">
-الإجمالي: <span id="total">0</span> د.ل
-</div>
-
-<button onclick="sendOrder()">إرسال الطلب</button>
-
-</div>
-
-</div>
-
-<script>
-
-let cart=[]
-
-const services={
-
-"تيك توك":[
-{name:" متابع تيك توك",price:25,social:true},
-{name:" لايك تيك توك",price:4,social:true},
-{name:" مشاهدة تيك توك",price:2,social:true},
-{name:" مشاركة تيك توك",price:1,social:true}
-],
-
-"عملات تيك توك":[
-{name:"30 عملة",price:4,social:false},
-{name:"50 عملة",price:7,social:false},
-{name:"100 عملة",price:14,social:false},
-{name:"200 عملة",price:28,social:false}
-],
-
-"انستقرام":[
-{name:"1000 متابع انستقرام",price:8,social:true},
-{name:"1000 لايك انستقرام",price:4,social:true},
-{name:"1000 مشاهدة",price:1,social:true},
-{name:"100 مشاركة",price:1,social:true}
-],
-
-"فيسبوك":[
-{name:"1000 متابع صفحة",price:5,social:true},
-{name:"1000 مشاهدة ريلز",price:1,social:true},
-{name:"لايك منشور",price:6,social:true},
-{name:"1000 متابع مجموعة",price:8,social:true}
-],
-
-"ببجي":[
-{name:"60 شدة",price:14,social:false},
-{name:"120 شدة",price:28,social:false},
-{name:"325 شدة",price:66,social:false},
-{name:"660 شدة",price:130,social:false}
-],
-
-"نجوم تيليجرام":[
-{name:"100 نجمة",price:25,social:false},
-{name:"150 نجمة",price:37,social:false},
-{name:"250 نجمة",price:59,social:false},
-{name:"350 نجمة",price:80,social:false},
-{name:"500 نجمة",price:113,social:false}
-],
-
-"فري فاير":[
-{name:"110 جوهرة",price:20,social:false},
-{name:"221 جوهرة",price:32,social:false},
-{name:"2420 جوهرة",price:225,social:false}
-],
-
-"روبلكس":[
-{name:"40 روبكس",price:15,social:false},
-{name:"80 روبكس",price:29,social:false},
-{name:"400 روبكس",price:98,social:false}
-],
-
-"FC 25":[
-{name:"40 نقطة",price:15,social:false},
-{name:"100 نقطة",price:29,social:false},
-{name:"520 نقطة",price:71,social:false},
-{name:"1070 نقطة",price:138,social:false}
-],
-
-"اشتراكات":[
-{name:"Netflix شهر",price:30,social:false},
-{name:"Shahid شهر",price:30,social:false},
-{name:"CapCut",price:50,social:false},
-{name:"Truecaller سنوي",price:160,social:false},
-{name:"Snapchat+",price:70,social:false}
-]
-
-}
-
-const cat=document.getElementById("category")
-
-for(let c in services){
-
-let opt=document.createElement("option")
-opt.value=c
-opt.textContent=c
-cat.appendChild(opt)
-
-}
-
-function loadServices(){
-
-let s=document.getElementById("service")
-
-s.innerHTML=""
-
-services[cat.value].forEach((srv,i)=>{
-
-let opt=document.createElement("option")
-opt.value=i
-opt.textContent=srv.name
-s.appendChild(opt)
-
-})
-
-serviceChanged()
-
-}
-
-function serviceChanged(){
-
-let srv=services[cat.value][document.getElementById("service").value]
-
-if(srv.social){
-
-document.getElementById("qty").min=50
-document.getElementById("qty").value=50
-
-}else{
-
-document.getElementById("qty").value=1
-
-}
-
-updatePrice()
-
-}
-
-function updatePrice(){
-
-let srv=services[cat.value][document.getElementById("service").value]
-
-let qty=parseInt(document.getElementById("qty").value)
-
-let pay=document.getElementById("pay").value
-
-let percent=0
-
-if(pay!="cash") percent=0.25
-
-let price=(srv.price*(srv.social? qty/1000:1))
-
-price=price+(price*percent)
-
-document.getElementById("price").innerText=price.toFixed(2)
-
-}
-
-function addToCart(){
-
-let link=document.getElementById("link").value
-
-if(link==""){
-alert("يجب إدخال الرابط")
-return
-}
-
-let srv=services[cat.value][document.getElementById("service").value]
-
-let qty=document.getElementById("qty").value
-
-let price=parseFloat(document.getElementById("price").innerText)
-
-cart.push({service:srv.name,link:link,qty:qty,price:price})
-
-renderCart()
-
-}
-
-function renderCart(){
-
-let box=document.getElementById("cart")
-
-box.innerHTML=""
-
-let total=0
-
-cart.forEach((item,i)=>{
-
-total+=item.price
-
-box.innerHTML+=`<div class="cart-item">
-
-<span>${item.service}</span>
-
-<span onclick="removeItem(${i})">✖</span>
-
-</div>`
-
-})
-
-document.getElementById("total").innerText=total.toFixed(2)
-
-}
-
-function removeItem(i){
-
-cart.splice(i,1)
-
-renderCart()
-
-}
-
-function sendOrder(){
-
-let total=parseFloat(document.getElementById("total").innerText)
-
-if(total<1){
-
-alert("لايمكن ارسال الطلب أقل من 1 دينار")
-
-return
-
-}
-
-let pay=document.getElementById("pay").value
-
-let phone="218912377291"
-
-if(pay=="libyana") phone="218920414760"
-
-let msg="طلب جديد CD-CARD%0A%0A"
-
-cart.forEach(item=>{
-
-msg+=`الخدمة: ${item.service}%0Aالرابط: ${item.link}%0Aالكمية: ${item.qty}%0Aالسعر: ${item.price}%0A%0A`
-
-})
-
-msg+="الإجمالي: "+total
-
-window.open("https://wa.me/"+phone+"?text="+msg)
-
-}
-
-loadServices()
-
-</script>
-
+    <div class="container">
+        <div class="title">CD-CARD</div>
+
+        <div class="links">
+            <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank">قناة واتساب الرسمية</a>
+            <a href="https://t.me/CD_Card1" target="_blank">قناة تيليجرام</a>
+            <a href="https://t.me/cdcard104" target="_blank">التواصل عبر تيليجرام</a>
+        </div>
+
+        <div class="card">
+            <label>الفئة</label>
+            <select id="category" onchange="loadServices()"></select>
+
+            <label>الخدمة</label>
+            <select id="service" onchange="serviceChanged()"></select>
+
+            <label>الرابط</label>
+            <input id="link" placeholder="ضع الرابط">
+
+            <label>الكمية / القيمة بالدولار</label>
+            <input id="qty" type="number" value="50" oninput="updatePrice()">
+
+            <div class="price">
+                السعر: <span id="price">0</span> د.ل
+            </div>
+
+            <label>طريقة الدفع</label>
+            <select id="pay" onchange="updatePrice()">
+                <option value="cash">💸 كاش</option>
+                <option value="libyana">📲 لبيانا</option>
+                <option value="madar">📡 مدار</option>
+            </select>
+
+            <button onclick="addToCart()">إضافة للسلة</button>
+        </div>
+
+        <div class="card">
+            <h3>السلة</h3>
+            <div id="cart"></div>
+            <div class="total">
+                الإجمالي: <span id="total">0</span> د.ل
+            </div>
+            <button onclick="sendOrder()">إرسال الطلب</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = []
+
+        const services = {
+            // الفئة الجديدة التي طلبتها
+            "بطاقة ماستر كارد": [
+                { name: "10 دولار", price: 150, social: false },
+                { name: "15 دولار", price: 220, social: false },
+                { name: "30 دولار", price: 420, social: false },
+                { name: "كمية مخصصة (سعر الدولار 15)", price: 15, isCustom: true, social: false }
+            ],
+            "تيك توك": [
+                { name: " متابع تيك توك", price: 25, social: true },
+                { name: " لايك تيك توك", price: 4, social: true },
+                { name: " مشاهدة تيك توك", price: 2, social: true },
+                { name: " مشاركة تيك توك", price: 1, social: true }
+            ],
+            "عملات تيك توك": [
+                { name: "30 عملة", price: 4, social: false },
+                { name: "50 عملة", price: 7, social: false },
+                { name: "100 عملة", price: 14, social: false },
+                { name: "200 عملة", price: 28, social: false }
+            ],
+            "انستقرام": [
+                { name: "1000 متابع انستقرام", price: 8, social: true },
+                { name: "1000 لايك انستقرام", price: 4, social: true },
+                { name: "1000 مشاهدة", price: 1, social: true },
+                { name: "100 مشاركة", price: 1, social: true }
+            ],
+            "فيسبوك": [
+                { name: "1000 متابع صفحة", price: 5, social: true },
+                { name: "1000 مشاهدة ريلز", price: 1, social: true },
+                { name: "لايك منشور", price: 6, social: true },
+                { name: "1000 متابع مجموعة", price: 8, social: true }
+            ],
+            "ببجي": [
+                { name: "60 شدة", price: 14, social: false },
+                { name: "120 شدة", price: 28, social: false },
+                { name: "325 شدة", price: 66, social: false },
+                { name: "660 شدة", price: 130, social: false }
+            ],
+            "نجوم تيليجرام": [
+                { name: "100 نجمة", price: 25, social: false },
+                { name: "150 نجمة", price: 37, social: false },
+                { name: "250 نجمة", price: 59, social: false },
+                { name: "350 نجمة", price: 80, social: false },
+                { name: "500 نجمة", price: 113, social: false }
+            ],
+            "فري فاير": [
+                { name: "110 جوهرة", price: 20, social: false },
+                { name: "221 جوهرة", price: 32, social: false },
+                { name: "2420 جوهرة", price: 225, social: false }
+            ],
+            "روبلكس": [
+                { name: "40 روبكس", price: 15, social: false },
+                { name: "80 روبكس", price: 29, social: false },
+                { name: "400 روبكس", price: 98, social: false }
+            ],
+            "FC 25": [
+                { name: "40 نقطة", price: 15, social: false },
+                { name: "100 نقطة", price: 29, social: false },
+                { name: "520 نقطة", price: 71, social: false },
+                { name: "1070 نقطة", price: 138, social: false }
+            ],
+            "اشتراكات": [
+                { name: "Netflix شهر", price: 30, social: false },
+                { name: "Shahid شهر", price: 30, social: false },
+                { name: "CapCut", price: 50, social: false },
+                { name: "Truecaller سنوي", price: 160, social: false },
+                { name: "Snapchat+", price: 70, social: false }
+            ]
+        }
+
+        const cat = document.getElementById("category")
+
+        for (let c in services) {
+            let opt = document.createElement("option")
+            opt.value = c
+            opt.textContent = c
+            cat.appendChild(opt)
+        }
+
+        function loadServices() {
+            let s = document.getElementById("service")
+            s.innerHTML = ""
+            services[cat.value].forEach((srv, i) => {
+                let opt = document.createElement("option")
+                opt.value = i
+                opt.textContent = srv.name
+                s.appendChild(opt)
+            })
+            serviceChanged()
+        }
+
+        function serviceChanged() {
+            let srv = services[cat.value][document.getElementById("service").value]
+            let qtyInput = document.getElementById("qty");
+
+            if (srv.social) {
+                qtyInput.min = 50
+                qtyInput.value = 50
+            } else if (srv.isCustom) {
+                qtyInput.min = 5 // الحد الأدنى لبطاقة الماستر كارد المخصصة
+                qtyInput.value = 5
+            } else {
+                qtyInput.min = 1
+                qtyInput.value = 1
+            }
+            updatePrice()
+        }
+
+        function updatePrice() {
+            let srv = services[cat.value][document.getElementById("service").value]
+            let qty = parseFloat(document.getElementById("qty").value) || 0
+            let pay = document.getElementById("pay").value
+            let percent = 0
+
+            if (pay != "cash") percent = 0.25
+
+            let basePrice = 0;
+            if (srv.social) {
+                basePrice = (srv.price * (qty / 1000));
+            } else if (srv.isCustom) {
+                basePrice = srv.price * qty; // حساب سعر الماستر كارد المخصص (كمية * 15)
+            } else {
+                basePrice = srv.price;
+            }
+
+            let finalPrice = basePrice + (basePrice * percent)
+            document.getElementById("price").innerText = finalPrice.toFixed(2)
+        }
+
+        function addToCart() {
+            let link = document.getElementById("link").value
+            if (link == "") {
+                alert("يجب إدخال الرابط")
+                return
+            }
+
+            let srv = services[cat.value][document.getElementById("service").value]
+            let qty = document.getElementById("qty").value
+
+            // التحقق من الحد الأدنى للمخصص
+            if (srv.isCustom && qty < 5) {
+                alert("الحد الأدنى للكمية المخصصة هو 5 دولار");
+                return;
+            }
+
+            let price = parseFloat(document.getElementById("price").innerText)
+            cart.push({ service: srv.name, link: link, qty: qty, price: price })
+            renderCart()
+        }
+
+        function renderCart() {
+            let box = document.getElementById("cart")
+            box.innerHTML = ""
+            let total = 0
+            cart.forEach((item, i) => {
+                total += item.price
+                box.innerHTML += `<div class="cart-item">
+                    <span>${item.service} (${item.qty})</span>
+                    <span onclick="removeItem(${i})" style="cursor:pointer">✖</span>
+                </div>`
+            })
+            document.getElementById("total").innerText = total.toFixed(2)
+        }
+
+        function removeItem(i) {
+            cart.splice(i, 1)
+            renderCart()
+        }
+
+        function sendOrder() {
+            let total = parseFloat(document.getElementById("total").innerText)
+            if (total < 1) {
+                alert("لايمكن ارسال الطلب أقل من 1 دينار")
+                return
+            }
+            let pay = document.getElementById("pay").value
+            let phone = "218912377291"
+            if (pay == "libyana") phone = "218920414760"
+
+            let msg = "طلب جديد CD-CARD%0A%0A"
+            cart.forEach(item => {
+                msg += `الخدمة: ${item.service}%0Aالرابط: ${item.link}%0Aالكمية: ${item.qty}%0Aالسعر: ${item.price}%0A%0A`
+            })
+            msg += "الإجمالي: " + total + " د.ل"
+            window.open("https://wa.me/" + phone + "?text=" + msg)
+        }
+
+        loadServices()
+    </script>
 </body>
-
 </html>
