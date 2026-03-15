@@ -15,6 +15,32 @@
             padding: 15px;
         }
 
+        /* تنسيق نافذة الاشتراك الإجباري */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay-card {
+            background: #0e1529;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #00ffa6;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .overlay-card h2 { color: #00ffa6; margin-bottom: 20px; }
+        .overlay-card p { margin-bottom: 25px; font-size: 18px; }
+
         .container {
             max-width: 520px;
             margin: auto;
@@ -34,7 +60,7 @@
             margin-bottom: 10px;
         }
 
-        .links a {
+        .links a, .sub-btn {
             text-decoration: none;
             background: #0e1529;
             padding: 10px;
@@ -42,6 +68,9 @@
             text-align: center;
             color: #00ffa6;
             font-size: 14px;
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #00ffa6;
         }
 
         .card {
@@ -104,6 +133,16 @@
 
 <body>
 
+    <div id="overlay">
+        <div class="overlay-card">
+            <h2>تنبيه هام ⚠️</h2>
+            <p>يجب عليك الاشتراك في قنواتنا أولاً لتتمكن من استخدام الموقع</p>
+            <a href="https://t.me/CD_Card1" target="_blank" class="sub-btn" onclick="checkSub()">الاشتراك في قناة التيليجرام</a>
+            <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="sub-btn" onclick="checkSub()">الاشتراك في قناة الواتساب</a>
+            <button id="closeOverlay" style="display:none; background: #00ffa6; color:black;" onclick="hideOverlay()">دخلت للقنوات (فتح الموقع)</button>
+        </div>
+    </div>
+
     <div class="container">
         <div class="title">CD-CARD</div>
 
@@ -124,7 +163,7 @@
             <input id="link" placeholder="ضع الرابط">
 
             <label id="qtyLabel">الكمية</label>
-            <input id="qty" type="number" value="50" oninput="updatePrice()">
+            <input id="qty" type="number" value="10" oninput="updatePrice()">
 
             <div class="price">
                 السعر: <span id="price">0</span> د.ل
@@ -151,20 +190,34 @@
     </div>
 
     <script>
+        // وظائف الاشتراك الإجباري
+        let subCount = 0;
+        function checkSub() {
+            subCount++;
+            if (subCount >= 1) {
+                document.getElementById('closeOverlay').style.display = 'block';
+            }
+        }
+        function hideOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
         let cart = []
 
         const services = {
+            "تيك توك": [
+                { name: "تعليقات تيك توك مخصصة (سعر الـ 10 بـ 2د.ل)", price: 2, social: true, perTen: true },
+                { name: "تعليقات تيك توك ايموجي (سعر الـ 10 بـ 1د.ل)", price: 1, social: true, perTen: true },
+                { name: " متابع تيك توك", price: 25, social: true },
+                { name: " لايك تيك توك", price: 4, social: true },
+                { name: " مشاهدة تيك توك", price: 2, social: true },
+                { name: " مشاركة تيك توك", price: 1, social: true }
+            ],
             "بطاقة ماستر كارد": [
                 { name: "10 دولار", price: 150, social: false, noTax: true },
                 { name: "15 دولار", price: 220, social: false, noTax: true },
                 { name: "30 دولار", price: 420, social: false, noTax: true },
                 { name: "كمية مخصصة (سعر الدولار 15)", price: 15, isCustom: true, social: false, noTax: true }
-            ],
-            "تيك توك": [
-                { name: " متابع تيك توك", price: 25, social: true },
-                { name: " لايك تيك توك", price: 4, social: true },
-                { name: " مشاهدة تيك توك", price: 2, social: true },
-                { name: " مشاركة تيك توك", price: 1, social: true }
             ],
             "عملات تيك توك": [
                 { name: "30 عملة", price: 4, social: false },
@@ -248,7 +301,11 @@
             let qtyInput = document.getElementById("qty");
             let qtyLabel = document.getElementById("qtyLabel");
 
-            if (srv.social) {
+            if (srv.perTen) {
+                qtyInput.min = 10
+                qtyInput.value = 10
+                qtyLabel.innerText = "الكمية (أقل شيء 10)";
+            } else if (srv.social) {
                 qtyInput.min = 50
                 qtyInput.value = 50
                 qtyLabel.innerText = "الكمية";
@@ -269,14 +326,15 @@
             let qty = parseFloat(document.getElementById("qty").value) || 0
             let pay = document.getElementById("pay").value
             
-            // تحديد نسبة الزيادة: 0 إذا كانت الخدمة "noTax" أو كان الدفع كاش، غير ذلك 25%
             let percent = 0
             if (!srv.noTax && pay != "cash") {
                 percent = 0.25
             }
 
             let basePrice = 0;
-            if (srv.social) {
+            if (srv.perTen) {
+                basePrice = (srv.price * (qty / 10)); // حساب السعر لكل 10 قطع
+            } else if (srv.social) {
                 basePrice = (srv.price * (qty / 1000));
             } else if (srv.isCustom) {
                 basePrice = srv.price * qty;
@@ -349,3 +407,4 @@
     </script>
 </body>
 </html>
+
