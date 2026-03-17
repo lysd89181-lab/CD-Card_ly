@@ -1,245 +1,523 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | متجر الاشتراكات الرقمية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --glow-color: #00ffa6;
-            --bg-dark: #05070f;
-            --card-bg: #0e1529;
-            --text-gray: #a0a6b5;
-        }
 
-        body {
-            margin: 0;
-            background-color: var(--bg-dark);
-            color: white;
-            font-family: 'Cairo', sans-serif;
-            padding-bottom: 120px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* الهيدر واللوجو */
-        .header-brand { text-align: center; padding: 40px 20px 20px; }
-        .header-brand h1 { color: var(--glow-color); margin: 0; font-size: 38px; font-weight: 700; text-shadow: 0 0 15px rgba(0, 255, 166, 0.4); }
-        .header-brand p { color: var(--text-gray); font-size: 15px; margin-top: 10px; line-height: 1.6; max-width: 300px; margin-left: auto; margin-right: auto; }
+<title>CD-CARD | متجر الاشتراكات الرقمية</title>
 
-        /* أزرار الدفع العلوية */
-        .payment-title { text-align: center; font-size: 18px; margin-top: 20px; color: white; }
-        .payment-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-            max-width: 500px; margin: 20px auto; padding: 0 15px;
-        }
-        .pay-card {
-            background: var(--card-bg); border: 1px solid #1e263d;
-            padding: 15px; border-radius: 15px; cursor: pointer; text-align: center; transition: 0.3s;
-        }
-        .pay-card.active { border-color: var(--glow-color); background: rgba(0, 255, 166, 0.05); box-shadow: 0 0 15px rgba(0, 255, 166, 0.2); }
-        .pay-card span { display: block; font-size: 14px; font-weight: 600; }
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
-        /* الأقسام */
-        .section-header {
-            padding: 12px 20px; color: var(--glow-color); border-right: 4px solid var(--glow-color);
-            margin: 30px 15px 15px; background: linear-gradient(to left, rgba(0, 255, 166, 0.1), transparent);
-            font-weight: 700; font-size: 18px;
-        }
+<style>
 
-        /* شبكة الخدمات 2x2 */
-        .services-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; max-width: 800px; margin: auto;
-        }
-        .service-card {
-            background: var(--card-bg); border-radius: 20px; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: 0.3s;
-        }
-        .service-card:hover { border-color: var(--glow-color); transform: translateY(-5px); }
-        
-        .service-img {
-            width: 100%; height: 130px; object-fit: cover;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+:root{
+--glow-color:#00ffa6;
+--bg-dark:#05070f;
+--card-bg:#0e1529;
+--text-gray:#a0a6b5;
+}
 
-        .service-body { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .service-body h3 { font-size: 14px; margin: 0 0 8px; text-align: center; height: 40px; overflow: hidden; }
-        .service-body .price { color: var(--glow-color); font-weight: 700; text-align: center; font-size: 16px; margin-bottom: 12px; }
+body{
+margin:0;
+background:var(--bg-dark);
+color:white;
+font-family:'Cairo',sans-serif;
+padding-bottom:120px;
+}
 
-        .input-group { margin-bottom: 10px; }
-        .input-group label { font-size: 11px; color: var(--text-gray); display: block; margin-bottom: 4px; }
-        .link-input, .qty-input {
-            width: 100%; background: #05070f; border: 1px solid #1e263d;
-            color: white; padding: 8px; border-radius: 10px; font-family: 'Cairo'; font-size: 12px; box-sizing: border-box; outline: none;
-        }
-        .link-input:focus { border-color: var(--glow-color); }
+/* الهيدر */
 
-        .add-btn {
-            background: var(--glow-color); color: black; border: none; padding: 10px;
-            border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-top: auto;
-        }
+.header-brand{
+text-align:center;
+padding:40px 20px 20px;
+}
 
-        /* طريقة الشراء والدعم */
-        .info-section { padding: 20px; max-width: 600px; margin: auto; }
-        .info-card { background: #0e1529; border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid #1e263d; }
-        .info-card h4 { margin: 0 0 15px; color: var(--glow-color); font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .step { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; border-right: 3px solid var(--glow-color); }
-        
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .c-btn { text-decoration: none; background: #151c33; color: white; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; border: 1px solid #1e263d; transition: 0.3s; }
-        .c-btn:hover { border-color: var(--glow-color); color: var(--glow-color); }
+.header-brand h1{
+color:var(--glow-color);
+margin:0;
+font-size:38px;
+text-shadow:0 0 15px rgba(0,255,166,0.4);
+}
 
-        /* السلة والإشعار */
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #25d366; color: white; padding: 12px 30px; border-radius: 50px; display: none; z-index: 10000; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .cart-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: white; color: black; padding: 18px; border-radius: 20px; text-align: center; font-weight: 700; display: none; cursor: pointer; z-index: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-    </style>
+.header-brand p{
+color:var(--text-gray);
+font-size:15px;
+margin-top:10px;
+line-height:1.6;
+max-width:320px;
+margin:auto;
+}
+
+/* الدفع */
+
+.payment-title{
+text-align:center;
+font-size:18px;
+margin-top:20px;
+}
+
+.payment-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+max-width:500px;
+margin:20px auto;
+padding:0 15px;
+}
+
+.pay-card{
+background:var(--card-bg);
+border:1px solid #1e263d;
+padding:15px;
+border-radius:15px;
+cursor:pointer;
+text-align:center;
+transition:0.3s;
+}
+
+.pay-card.active{
+border-color:var(--glow-color);
+background:rgba(0,255,166,0.05);
+box-shadow:0 0 15px rgba(0,255,166,0.2);
+}
+
+/* العناوين */
+
+.section-header{
+padding:12px 20px;
+color:var(--glow-color);
+border-right:4px solid var(--glow-color);
+margin:30px 15px 15px;
+background:linear-gradient(to left,rgba(0,255,166,0.1),transparent);
+font-weight:700;
+}
+
+/* الخدمات */
+
+.services-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+padding:0 15px;
+max-width:800px;
+margin:auto;
+}
+
+.service-card{
+background:var(--card-bg);
+border-radius:20px;
+overflow:hidden;
+border:1px solid rgba(255,255,255,0.05);
+display:flex;
+flex-direction:column;
+transition:0.3s;
+}
+
+.service-card:hover{
+border-color:var(--glow-color);
+transform:translateY(-5px);
+}
+
+.service-img{
+width:100%;
+height:130px;
+object-fit:cover;
+}
+
+.service-body{
+padding:12px;
+display:flex;
+flex-direction:column;
+flex-grow:1;
+}
+
+.service-body h3{
+font-size:14px;
+margin:0 0 8px;
+text-align:center;
+height:40px;
+overflow:hidden;
+}
+
+.price{
+color:var(--glow-color);
+font-weight:700;
+text-align:center;
+margin-bottom:10px;
+}
+
+.input-group{
+margin-bottom:10px;
+}
+
+.input-group label{
+font-size:11px;
+color:var(--text-gray);
+display:block;
+margin-bottom:4px;
+}
+
+.link-input,.qty-input{
+width:100%;
+background:#05070f;
+border:1px solid #1e263d;
+color:white;
+padding:8px;
+border-radius:10px;
+font-family:'Cairo';
+font-size:12px;
+box-sizing:border-box;
+}
+
+.add-btn{
+background:var(--glow-color);
+color:black;
+border:none;
+padding:10px;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+width:100%;
+margin-top:auto;
+}
+
+/* طريقة الشراء */
+
+.info-section{
+padding:20px;
+max-width:600px;
+margin:auto;
+}
+
+.info-card{
+background:#0e1529;
+border-radius:18px;
+padding:20px;
+margin-bottom:15px;
+border:1px solid #1e263d;
+}
+
+.info-card h4{
+margin:0 0 15px;
+color:var(--glow-color);
+font-size:18px;
+}
+
+.step{
+background:rgba(255,255,255,0.03);
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+font-size:13px;
+border-right:3px solid var(--glow-color);
+}
+
+/* التواصل */
+
+.contact-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.c-btn{
+text-decoration:none;
+background:#151c33;
+color:white;
+padding:12px;
+border-radius:12px;
+text-align:center;
+font-size:13px;
+border:1px solid #1e263d;
+transition:0.3s;
+}
+
+.c-btn:hover{
+border-color:var(--glow-color);
+color:var(--glow-color);
+}
+
+/* السلة */
+
+#toast{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#25d366;
+color:white;
+padding:12px 30px;
+border-radius:50px;
+display:none;
+z-index:10000;
+font-weight:600;
+}
+
+.cart-bar{
+position:fixed;
+bottom:20px;
+left:20px;
+right:20px;
+background:white;
+color:black;
+padding:18px;
+border-radius:20px;
+text-align:center;
+font-weight:700;
+display:none;
+cursor:pointer;
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <div id="toast">تمت إضافة الخدمة للسلة ✅</div>
+<div id="toast">تمت إضافة الخدمة للسلة ✅</div>
 
-    <div class="header-brand">
-        <h1>CD-CARD</h1>
-        <p>اشتراكات رقمية سريعة وموثوقة في ليبيا. شحن ألعاب، عملات تيك توك، والمزيد..</p>
-    </div>
+<div class="header-brand">
+<h1>CD-CARD</h1>
+<p>اشتراكات رقمية سريعة وموثوقة في ليبيا. شحن ألعاب، عملات تيك توك، والمزيد..</p>
+</div>
 
-    <div class="payment-title">💳 اختر طريقة الدفع للمتابعة</div>
-    <div class="payment-grid">
-        <div class="pay-card active" onclick="setPay('كاش', this)"><span>💵 كاش</span></div>
-        <div class="pay-card" onclick="setPay('مصرفي', this)"><span>🏦 مصرفي</span></div>
-        <div class="pay-card" onclick="setPay('لبيانا', this)"><span>📲 لبيانا</span></div>
-        <div class="pay-card" onclick="setPay('مدار', this)"><span>📡 مدار</span></div>
-    </div>
+<div class="payment-title">💳 اختر طريقة الدفع</div>
 
-    <div id="services-container"></div>
+<div class="payment-grid">
 
-    <div class="info-section">
-        <div class="info-card">
-            <h4>📦 طريقة الشراء</h4>
-            <div class="step">1) أضف المنتجات: اختر الخدمة والكمية ثم أضف للسلة.</div>
-            <div class="step">2) اختر الدفع: كاش، رصيد، أو حوالة مصرفية.</div>
-            <div class="step">3) أرسل الطلب: سيتم توجيهك للواتساب لإتمام العملية.</div>
-        </div>
-        <div class="info-card">
-            <h4>💬 تواصل معنا</h4>
-            <div class="contact-grid">
-                <a href="https://t.me/cdcard104" class="c-btn">تيليجرام</a>
-                <a href="https://wa.me/218912377291" class="c-btn">واتساب</a>
-            </div>
-            <a href="https://t.me/CD_Card1" class="c-btn" style="display:block; margin-top:10px; background: rgba(0, 255, 166, 0.05); border-color: var(--glow-color);">انضم لقناتنا الرسمية</a>
-        </div>
-    </div>
+<div class="pay-card active" onclick="setPay('كاش',this)">💵 كاش</div>
 
-    <div class="cart-bar" id="cart-bar" onclick="sendToWhatsApp()">
-        إكمال الطلب وإرسال الفاتورة (<span id="count">0</span>)
-    </div>
+<div class="pay-card" onclick="setPay('مصرفي',this)">🏦 مصرفي</div>
 
-    <script>
-        let selectedPay = 'كاش';
-        let cart = [];
-        const githubURL = "https://raw.githubusercontent.com/lysd89181-lab/CD-CARD/main/";
+<div class="pay-card" onclick="setPay('لبيانا',this)">📲 لبيانا</div>
 
-        const services = {
-            "خدمات تيك توك 📱": [
-                { name: "إعادة نشر تيك توك", price: 1, img: "IMG-20260307-WA0001.jpg", isSocial: true },
-                { name: "متابعين تيك توك", price: 25, img: "tiktok.jpg", isSocial: true },
-                { name: "لايكات تيك توك", price: 4, img: "tiktok.jpg", isSocial: true },
-                { name: "تعليقات تيك توك مخصصة", price: 2, img: "tiktok.jpg", perTen: true }
-            ],
-            "شحن ألعاب 🎮": [
-                { name: "60 شدة ببجي", price: 14, img: "pubg.jpg" },
-                { name: "110 جوهرة فري فاير", price: 20, img: "freefire.jpg" },
-                { name: "روبوكس 80", price: 29, img: "roblox.jpg" },
-                { name: "نقاط FC 25", price: 29, img: "fc.jpg" }
-            ],
-            "اشتراكات رقمية 📺": [
-                { name: "يوتيوب بريميوم شهر", price: 48, img: "instagram.jpg" }, 
-                { name: "نيتفليكس شهر", price: 30, img: "netflix.jpg" },
-                { name: "شاهد VIP شهر", price: 30, img: "shahid.jpg" },
-                { name: "سناب شات بلس", price: 70, img: "snapchat.jpg" }
-            ],
-            "بطاقات وماستر كارد 💳": [
-                { name: "10 دولار ماستر كارد", price: 150, img: "b3bb5717a1f5a0a1866e112fbc.jpg" },
-                { name: "كروت ايتونز 2$", price: 24, img: "etonz.jpg" },
-                { name: "نجوم تيليجرام 100", price: 25, img: "telegram.jpg" }
-            ]
-        };
+<div class="pay-card" onclick="setPay('مدار',this)">📡 مدار</div>
 
-        function renderServices() {
-            const container = document.getElementById('services-container');
-            container.innerHTML = '';
-            for (const [section, list] of Object.entries(services)) {
-                container.innerHTML += `<div class="section-header">${section}</div>`;
-                let grid = '<div class="services-grid">';
-                list.forEach(s => {
-                    let defQty = s.perTen ? 10 : (s.isSocial ? 1000 : 1);
-                    grid += `
-                        <div class="service-card">
-                            <img src="${githubURL}${s.img}" class="service-img" alt="${s.name}">
-                            <div class="service-body">
-                                <h3>${s.name}</h3>
-                                <div class="price">${s.price} د.ل</div>
-                                <div class="input-group">
-                                    <label>الرابط / ID</label>
-                                    <input type="text" id="link-${s.name}" class="link-input" placeholder="ضع الرابط هنا">
-                                </div>
-                                <div class="input-group">
-                                    <label>الكمية</label>
-                                    <input type="number" id="qty-${s.name}" class="qty-input" value="${defQty}">
-                                </div>
-                                <button class="add-btn" onclick="addToCart('${s.name}', ${s.price}, ${!!s.isSocial}, ${!!s.perTen})">إضافة للسلة</button>
-                            </div>
-                        </div>`;
-                });
-                grid += '</div>';
-                container.innerHTML += grid;
-            }
-        }
+</div>
 
-        function setPay(m, el) {
-            selectedPay = m;
-            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-        }
+<div id="services-container"></div>
 
-        function addToCart(name, price, isSocial, perTen) {
-            const link = document.getElementById(`link-${name}`).value;
-            const qty = parseFloat(document.getElementById(`qty-${name}`).value);
-            if(!link) { alert("يرجى إدخال الرابط أولاً"); return; }
 
-            let basePrice = 0;
-            if(perTen) basePrice = (price * (qty / 10));
-            else if(isSocial) basePrice = (price * (qty / 1000));
-            else basePrice = price * qty;
+<div class="info-section">
 
-            if(selectedPay !== 'كاش') basePrice *= 1.25; // ضريبة الدفع الإلكتروني
+<div class="info-card">
 
-            cart.push({ name, qty, link, price: basePrice });
-            
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 1500);
+<h4>📦 طريقة الشراء</h4>
 
-            document.getElementById('cart-bar').style.display = 'block';
-            document.getElementById('count').innerText = cart.length;
-        }
+<div class="step">1️⃣ اختر الخدمة واضفها للسلة.</div>
 
-        function sendToWhatsApp() {
-            let phone = (selectedPay === 'لبيانا') ? "218920414760" : "218912377291";
-            let orderID = Math.floor(Math.random() * 90000) + 10000;
-            let msg = `*طلب جديد في متجر CD-CARD #${orderID}*%0A%0A`;
-            let total = 0;
-            
-            cart.forEach(item => {
-                msg += `*الخدمة*🛍: ${item.name}%0A*الرابط* 📎: ${item.link}%0A*الكمية* 🎁: ${item.qty}%0A*السعر* 💰: ${item.price.toFixed(2)} د.ل%0A%0A`;
-                total += item.price;
-            });
+<div class="step">2️⃣ اختر طريقة الدفع المناسبة.</div>
 
-            msg += `*طريقة الدفع* 💸: ${selectedPay}%0A*الإجمالي*: ${total.toFixed(2)} د.ل`;
-            window.open(`https://wa.me/${phone}?text=${msg}`);
-        }
+<div class="step">3️⃣ اضغط ارسال الطلب وسيتم تحويلك للواتساب.</div>
 
-        window.onload = renderServices;
-    </script>
+</div>
+
+
+<div class="info-card">
+
+<h4>💬 تواصل معنا</h4>
+
+<div class="contact-grid">
+
+<a href="https://t.me/cdcard104" class="c-btn">تيليجرام</a>
+
+<a href="https://wa.me/218912377291" class="c-btn">واتساب</a>
+
+</div>
+
+<a href="https://t.me/CD_Card1" class="c-btn" style="display:block;margin-top:10px;background:rgba(0,255,166,0.05);border-color:var(--glow-color);">
+انضم لقناتنا الرسمية
+</a>
+
+</div>
+
+</div>
+
+
+<div class="cart-bar" id="cart-bar" onclick="sendToWhatsApp()">
+إكمال الطلب وإرسال الفاتورة (<span id="count">0</span>)
+</div>
+
+
+<script>
+
+let selectedPay='كاش'
+let cart=[]
+
+const githubURL="https://raw.githubusercontent.com/lysd89181-lab/CD-CARD/main/"
+
+const services={
+
+"خدمات تيك توك 📱":[
+{name:"إعادة نشر تيك توك",price:1,img:"IMG-20260307-WA0001.jpg",isSocial:true},
+{name:"متابعين تيك توك",price:25,img:"tiktok.jpg",isSocial:true},
+{name:"لايكات تيك توك",price:4,img:"tiktok.jpg",isSocial:true},
+{name:"تعليقات تيك توك مخصصة",price:2,img:"tiktok.jpg",perTen:true}
+],
+
+"شحن ألعاب 🎮":[
+{name:"60 شدة ببجي",price:14,img:"pubg.jpg"},
+{name:"110 جوهرة فري فاير",price:20,img:"freefire.jpg"},
+{name:"روبوكس 80",price:29,img:"roblox.jpg"},
+{name:"نقاط FC 25",price:29,img:"fc.jpg"}
+],
+
+"اشتراكات رقمية 📺":[
+{name:"يوتيوب بريميوم شهر",price:48,img:"instagram.jpg"},
+{name:"نيتفليكس شهر",price:30,img:"netflix.jpg"},
+{name:"شاهد VIP شهر",price:30,img:"shahid.jpg"},
+{name:"سناب شات بلس",price:70,img:"snapchat.jpg"}
+],
+
+"بطاقات وماستر كارد 💳":[
+{name:"10 دولار ماستر كارد",price:150,img:"b3bb5717a1f5a0a1866e112fbc.jpg"},
+{name:"كروت ايتونز 2$",price:24,img:"etonz.jpg"},
+{name:"نجوم تيليجرام 100",price:25,img:"telegram.jpg"}
+]
+
+}
+
+function renderServices(){
+
+const container=document.getElementById('services-container')
+
+container.innerHTML=''
+
+for(const [section,list] of Object.entries(services)){
+
+container.innerHTML+=`<div class="section-header">${section}</div>`
+
+let grid='<div class="services-grid">'
+
+list.forEach(s=>{
+
+let defQty=s.perTen?10:(s.isSocial?1000:1)
+
+grid+=`
+
+<div class="service-card">
+
+<img src="${githubURL}${s.img}" class="service-img">
+
+<div class="service-body">
+
+<h3>${s.name}</h3>
+
+<div class="price">${s.price} د.ل</div>
+
+<div class="input-group">
+
+<label>الرابط / ID</label>
+
+<input type="text" id="link-${s.name}" class="link-input">
+
+</div>
+
+<div class="input-group">
+
+<label>الكمية</label>
+
+<input type="number" id="qty-${s.name}" class="qty-input" value="${defQty}">
+
+</div>
+
+<button class="add-btn" onclick="addToCart('${s.name}',${s.price},${!!s.isSocial},${!!s.perTen})">
+إضافة للسلة
+</button>
+
+</div>
+
+</div>`
+
+})
+
+grid+='</div>'
+
+container.innerHTML+=grid
+
+}
+
+}
+
+function setPay(m,el){
+
+selectedPay=m
+
+document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('active'))
+
+el.classList.add('active')
+
+}
+
+function addToCart(name,price,isSocial,perTen){
+
+const link=document.getElementById(`link-${name}`).value
+const qty=parseFloat(document.getElementById(`qty-${name}`).value)
+
+if(!link){
+alert("يرجى إدخال الرابط")
+return
+}
+
+let basePrice=0
+
+if(perTen) basePrice=(price*(qty/10))
+else if(isSocial) basePrice=(price*(qty/1000))
+else basePrice=price*qty
+
+if(selectedPay!=='كاش') basePrice*=1.25
+
+cart.push({name,qty,link,price:basePrice})
+
+document.getElementById('toast').style.display='block'
+
+setTimeout(()=>document.getElementById('toast').style.display='none',1500)
+
+document.getElementById('cart-bar').style.display='block'
+
+document.getElementById('count').innerText=cart.length
+
+}
+
+function sendToWhatsApp(){
+
+let phone=(selectedPay==='لبيانا')?"218920414760":"218912377291"
+
+let orderID=Math.floor(Math.random()*90000)+10000
+
+let msg=`طلب جديد CD-CARD #${orderID}\n\n`
+
+let total=0
+
+cart.forEach(item=>{
+
+msg+=`الخدمة: ${item.name}\n`
+msg+=`الرابط: ${item.link}\n`
+msg+=`الكمية: ${item.qty}\n`
+msg+=`السعر: ${item.price.toFixed(2)} د.ل\n\n`
+
+total+=item.price
+
+})
+
+msg+=`طريقة الدفع: ${selectedPay}\n`
+msg+=`الإجمالي: ${total.toFixed(2)} د.ل`
+
+let encoded=encodeURIComponent(msg)
+
+window.open(`https://wa.me/${phone}?text=${encoded}`)
+
+cart=[]
+
+document.getElementById('cart-bar').style.display='none'
+
+}
+
+window.onload=renderServices
+
+</script>
+
 </body>
 </html>
-
