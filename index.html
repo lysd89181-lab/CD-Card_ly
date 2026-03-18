@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -26,6 +26,7 @@ font-family:'Cairo',sans-serif;
 padding-bottom:120px;
 }
 
+/* الهيدر */
 .header-brand{
 text-align:center;
 padding:40px 20px 20px;
@@ -35,24 +36,69 @@ padding:40px 20px 20px;
 color:var(--glow-color);
 margin:0;
 font-size:38px;
-text-shadow:0 0 15px rgba(0,255,166,0.4);
+text-shadow:0 0 20px rgba(0,255,166,0.5);
 }
 
+.header-brand p{
+color:var(--text-gray);
+font-size:15px;
+margin-top:10px;
+line-height:1.6;
+max-width:320px;
+margin:auto;
+}
+
+/* الدفع */
+.payment-title{
+text-align:center;
+font-size:18px;
+margin-top:20px;
+}
+
+.payment-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+max-width:500px;
+margin:20px auto;
+padding:0 15px;
+}
+
+.pay-card{
+background:var(--card-bg);
+border:1px solid #1e263d;
+padding:15px;
+border-radius:15px;
+cursor:pointer;
+text-align:center;
+transition:0.3s;
+}
+
+.pay-card:hover{
+transform:scale(1.05);
+}
+
+.pay-card.active{
+border-color:var(--glow-color);
+box-shadow:0 0 15px rgba(0,255,166,0.3);
+}
+
+/* العناوين */
 .section-header{
 padding:12px 20px;
 color:var(--glow-color);
 border-right:4px solid var(--glow-color);
 margin:30px 15px 15px;
-background:linear-gradient(to left,rgba(0,255,166,0.1),transparent);
 font-weight:700;
 }
 
+/* الخدمات */
 .services-grid{
 display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
 padding:0 15px;
-max-width:800px;
+max-width:500px;
 margin:auto;
 }
 
@@ -69,19 +115,30 @@ transition:0.3s;
 .service-card:hover{
 border-color:var(--glow-color);
 transform:translateY(-5px);
+box-shadow:0 0 20px rgba(0,255,166,0.2);
 }
 
+/* 🔥 صورة مربعة */
 .service-img{
 width:100%;
-height:130px;
+aspect-ratio:1/1;
 object-fit:cover;
 }
 
+/* محتوى */
 .service-body{
 padding:12px;
 display:flex;
 flex-direction:column;
 flex-grow:1;
+}
+
+.service-body h3{
+font-size:13px;
+margin:0 0 8px;
+text-align:center;
+height:40px;
+overflow:hidden;
 }
 
 .price{
@@ -95,6 +152,13 @@ margin-bottom:10px;
 margin-bottom:10px;
 }
 
+.input-group label{
+font-size:11px;
+color:var(--text-gray);
+display:block;
+margin-bottom:4px;
+}
+
 .link-input,.qty-input{
 width:100%;
 background:#05070f;
@@ -102,10 +166,10 @@ border:1px solid #1e263d;
 color:white;
 padding:8px;
 border-radius:10px;
-font-family:'Cairo';
 font-size:12px;
 }
 
+/* زر */
 .add-btn{
 background:var(--glow-color);
 color:black;
@@ -114,10 +178,27 @@ padding:10px;
 border-radius:12px;
 font-weight:700;
 cursor:pointer;
-width:100%;
 margin-top:auto;
 }
 
+.add-btn:hover{
+transform:scale(1.05);
+}
+
+/* تنبيه */
+#toast{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#25d366;
+padding:12px 30px;
+border-radius:50px;
+display:none;
+z-index:10000;
+}
+
+/* السلة */
 .cart-bar{
 position:fixed;
 bottom:20px;
@@ -134,150 +215,206 @@ cursor:pointer;
 }
 
 </style>
-
 </head>
 
 <body>
 
+<div id="toast">تمت إضافة الخدمة ✅</div>
+
 <div class="header-brand">
 <h1>CD-CARD</h1>
+<p>اشتراكات رقمية سريعة وموثوقة في ليبيا 🚀</p>
+</div>
+
+<div class="payment-title">💳 اختر طريقة الدفع</div>
+
+<div class="payment-grid">
+<div class="pay-card active" onclick="setPay('كاش',this)">💵 كاش</div>
+<div class="pay-card" onclick="setPay('مصرفي',this)">🏦 مصرفي</div>
+<div class="pay-card" onclick="setPay('لبيانا',this)">📲 لبيانا</div>
+<div class="pay-card" onclick="setPay('مدار',this)">📡 مدار</div>
 </div>
 
 <div id="services-container"></div>
 
 <div class="cart-bar" id="cart-bar" onclick="sendToWhatsApp()">
-إرسال الطلب (<span id="count">0</span>)
+إكمال الطلب (<span id="count">0</span>)
 </div>
 
 <script>
 
+let selectedPay='كاش'
 let cart=[]
 
 const githubURL="https://raw.githubusercontent.com/lysd89181-lab/CD-Card_ly/main/"
 
-function label(type){
-
-if(type==="user") return "يوزر الحساب"
-if(type==="video") return "رابط الفيديو"
-if(type==="game") return "ID اللعبة"
-if(type==="whatsapp") return "رقم الواتساب"
-if(type==="coins") return "يوزر الحساب + كلمة السر"
-
-return "الرابط"
-
-}
-
+/* الخدمات */
 const services={
 
-"خدمات تيك توك 📱":[
-{name:"إعادة نشر تيك توك",price:1,img:"IMG-20260307-WA0001.jpg",min:50,type:"video"},
-{name:"متابعين تيك توك",price:25,img:"tiktok.jpg",min:50,type:"user"},
-{name:"لايكات تيك توك",price:4,img:"tiktok.jpg",min:50,type:"video"}
+"خدمات تيك توك":[
+{name:"متابعين تيك توك",price:25,img:"tiktok.jpg",type:"followers"},
+{name:"لايكات تيك توك",price:4,img:"tiktok.jpg",type:"likes"},
+{name:"مشاهدات تيك توك",price:2,img:"tiktok.jpg",type:"views"},
+{name:"إعادة نشر",price:1,img:"tiktok.jpg",type:"repost"}
 ],
 
-"شحن ألعاب 🎮":[
-{name:"60 شدة ببجي",price:14,img:"pubg.jpg",min:1,max:1,type:"game"},
-{name:"110 جوهرة فري فاير",price:20,img:"freefire.jpg",min:1,max:1,type:"game"},
-{name:"روبوكس 80",price:29,img:"roblox.jpg",min:1,max:1,type:"game"},
-{name:"نقاط FC 25",price:29,img:"fc.jpg",min:1,max:1,type:"game"}
+"انستقرام":[
+{name:"متابعين انستقرام",price:30,img:"Instagram.jpg",type:"followers"},
+{name:"لايكات انستقرام",price:5,img:"Instagram.jpg",type:"likes"}
 ],
 
-"اشتراكات رقمية 📺":[
-{name:"يوتيوب بريميوم شهر",price:48,img:"Instagram.jpg",min:1,max:1,type:"whatsapp"},
-{name:"نيتفليكس شهر",price:30,img:"netflix.jpg",min:1,max:1,type:"whatsapp"},
-{name:"شاهد VIP شهر",price:30,img:"shahid.jpg",min:1,max:1,type:"whatsapp"},
-{name:"سناب شات بلس",price:70,img:"snapchat.jpg",min:1,max:1,type:"whatsapp"}
+"فيسبوك":[
+{name:"متابعين فيسبوك",price:28,img:"facebook.jpg",type:"followers"},
+{name:"لايكات فيسبوك",price:6,img:"facebook.jpg",type:"likes"}
+],
+
+"الألعاب":[
+{name:"شحن ببجي",price:14,img:"pubg.jpg",type:"game"},
+{name:"فري فاير",price:20,img:"freefire.jpg",type:"game"}
+],
+
+"اشتراكات":[
+{name:"نتفليكس",price:30,img:"netflix.jpg",type:"subscription"},
+{name:"يوتيوب بريميوم",price:48,img:"youtube.jpg",type:"subscription"}
 ],
 
 "عملات تيك توك":[
-{name:"70 عملة تيك توك",price:18,img:"etonz.jpg",min:1,type:"coins"},
-{name:"140 عملة تيك توك",price:32,img:"etonz.jpg",min:1,type:"coins"}
+{name:"70 عملة",price:18,img:"etonz.jpg",type:"tiktok"},
+{name:"140 عملة",price:32,img:"etonz.jpg",type:"tiktok"}
 ],
 
 "نجوم تيليجرام":[
-{name:"100 نجمة تيليجرام",price:25,img:"telegram.jpg",min:1,type:"whatsapp"}
+{name:"100 نجمة",price:25,img:"telegram.jpg",type:"telegram"}
 ],
 
-"بطاقات وماستر كارد 💳":[
-{name:"10 دولار ماستر كارد",price:150,img:"b3bb5717a1f5a0a1866e112fbc.jpg",min:5,max:99,defaultQty:10,type:"whatsapp"}
+"ماستر كارد":[
+{name:"ماستر كارد",price:150,img:"b3bb5717a1f5a0a1866e112fbc.jpg",type:"master"}
 ]
 
 }
 
+/* نوع الإدخال */
+function getLabel(type){
+if(type==="followers") return "يوزر الحساب"
+if(type==="likes"||type==="views"||type==="repost") return "رابط الفيديو"
+if(type==="subscription") return "رقم الواتساب"
+if(type==="game") return "ID اللعبة"
+if(type==="master") return "رقم الواتساب"
+if(type==="tiktok") return "يوزر الحساب + كلمة السر"
+if(type==="telegram") return "رقم الواتساب"
+return "الرابط"
+}
+
+/* عرض */
 function renderServices(){
 
-const container=document.getElementById('services-container')
+let container=document.getElementById('services-container')
+container.innerHTML=''
 
-for(const [section,list] of Object.entries(services)){
+for(const [sec,list] of Object.entries(services)){
 
-container.innerHTML+=`<div class="section-header">${section}</div>`
-
-let grid='<div class="services-grid">'
+container.innerHTML+=`<div class="section-header">${sec}</div><div class="services-grid">`
 
 list.forEach(s=>{
 
-let qty=s.defaultQty||s.min
+let min=1,max=1,val=1
 
-grid+=`
+if(["followers","likes","views","repost"].includes(s.type)){
+min=50;max=100000;val=1000
+}
+
+if(s.type==="master"){
+min=5;max=99;val=10
+}
+
+container.innerHTML+=`
 
 <div class="service-card">
-
 <img src="${githubURL+s.img}" class="service-img">
 
 <div class="service-body">
 
 <h3>${s.name}</h3>
-
 <div class="price">${s.price} د.ل</div>
 
 <div class="input-group">
-<input type="text" placeholder="${label(s.type)}" id="link-${s.name}" class="link-input">
+<label>${getLabel(s.type)}</label>
+<input class="link-input" id="link-${s.name}">
 </div>
 
 <div class="input-group">
-<input type="number" value="${qty}" min="${s.min}" max="${s.max||9999}" id="qty-${s.name}" class="qty-input">
+<label>الكمية</label>
+<input type="number" min="${min}" max="${max}" value="${val}" id="qty-${s.name}" class="qty-input">
 </div>
 
-<button class="add-btn" onclick="addToCart('${s.name}',${s.price})">
+<button class="add-btn" onclick="add('${s.name}',${s.price},'${s.type}')">
 إضافة للسلة
 </button>
 
 </div>
 </div>
+
 `
 
 })
 
-grid+='</div>'
-
-container.innerHTML+=grid
-
+container.innerHTML+='</div>'
 }
 
 }
 
-function addToCart(name,price){
+/* إضافة */
+function add(name,price,type){
 
-cart.push({name,price})
+let link=document.getElementById(`link-${name}`).value
+let qty=parseFloat(document.getElementById(`qty-${name}`).value)
+
+if(!link) return alert("أدخل البيانات")
+
+let total=price*qty
+
+if(selectedPay!=="كاش") total*=1.25
+
+cart.push({name,qty,link,total})
+
+document.getElementById('toast').style.display='block'
+setTimeout(()=>document.getElementById('toast').style.display='none',1500)
 
 document.getElementById('cart-bar').style.display='block'
 document.getElementById('count').innerText=cart.length
 
 }
 
+/* الدفع */
+function setPay(p,e){
+selectedPay=p
+document.querySelectorAll('.pay-card').forEach(x=>x.classList.remove('active'))
+e.classList.add('active')
+}
+
+/* ارسال */
 function sendToWhatsApp(){
 
+let phone="218912377291"
+
 let msg="طلب جديد CD-CARD\n\n"
+let total=0
 
 cart.forEach(i=>{
-msg+=i.name+"\n"
+msg+=`${i.name}\n${i.link}\n${i.qty}\n${i.total}\n\n`
+total+=i.total
 })
 
-window.open("https://wa.me/218912377291?text="+encodeURIComponent(msg))
+msg+=`الإجمالي: ${total}`
+
+window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`)
+
+cart=[]
+document.getElementById('cart-bar').style.display='none'
 
 }
 
-renderServices()
+window.onload=renderServices
 
 </script>
 
