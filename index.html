@@ -27,8 +27,6 @@ font-family:'Cairo',sans-serif;
 padding-bottom:120px;
 }
 
-/* الهيدر */
-
 .header-brand{
 text-align:center;
 padding:40px 20px 20px;
@@ -49,8 +47,6 @@ line-height:1.6;
 max-width:320px;
 margin:auto;
 }
-
-/* الدفع */
 
 .payment-title{
 text-align:center;
@@ -83,8 +79,6 @@ background:rgba(0,255,166,0.05);
 box-shadow:0 0 15px rgba(0,255,166,0.2);
 }
 
-/* العناوين */
-
 .section-header{
 padding:12px 20px;
 color:var(--glow-color);
@@ -93,8 +87,6 @@ margin:30px 15px 15px;
 background:linear-gradient(to left,rgba(0,255,166,0.1),transparent);
 font-weight:700;
 }
-
-/* الخدمات */
 
 .services-grid{
 display:grid;
@@ -183,8 +175,6 @@ width:100%;
 margin-top:auto;
 }
 
-/* طريقة الشراء */
-
 .info-section{
 padding:20px;
 max-width:600px;
@@ -214,8 +204,6 @@ font-size:13px;
 border-right:3px solid var(--glow-color);
 }
 
-/* التواصل */
-
 .contact-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
@@ -238,8 +226,6 @@ transition:0.3s;
 border-color:var(--glow-color);
 color:var(--glow-color);
 }
-
-/* السلة */
 
 #toast{
 position:fixed;
@@ -288,17 +274,13 @@ cursor:pointer;
 <div class="payment-grid">
 
 <div class="pay-card active" onclick="setPay('كاش',this)">💵 كاش</div>
-
 <div class="pay-card" onclick="setPay('مصرفي',this)">🏦 مصرفي</div>
-
 <div class="pay-card" onclick="setPay('لبيانا',this)">📲 لبيانا</div>
-
 <div class="pay-card" onclick="setPay('مدار',this)">📡 مدار</div>
 
 </div>
 
 <div id="services-container"></div>
-
 
 <div class="info-section">
 
@@ -307,13 +289,10 @@ cursor:pointer;
 <h4>📦 طريقة الشراء</h4>
 
 <div class="step">1️⃣ اختر الخدمة واضفها للسلة.</div>
-
 <div class="step">2️⃣ اختر طريقة الدفع المناسبة.</div>
-
 <div class="step">3️⃣ اضغط ارسال الطلب وسيتم تحويلك للواتساب.</div>
 
 </div>
-
 
 <div class="info-card">
 
@@ -322,7 +301,6 @@ cursor:pointer;
 <div class="contact-grid">
 
 <a href="https://t.me/cdcard104" class="c-btn">تيليجرام</a>
-
 <a href="https://wa.me/218912377291" class="c-btn">واتساب</a>
 
 </div>
@@ -335,18 +313,16 @@ cursor:pointer;
 
 </div>
 
-
 <div class="cart-bar" id="cart-bar" onclick="sendToWhatsApp()">
 إكمال الطلب وإرسال الفاتورة (<span id="count">0</span>)
 </div>
-
 
 <script>
 
 let selectedPay='كاش'
 let cart=[]
 
-const githubURL="https://raw.githubusercontent.com/lysd89181-lab/CD-CARD/main/"
+const githubURL="https://raw.githubusercontent.com/lysd89181-lab/CD-Card_ly/main/"
 
 const services={
 
@@ -365,7 +341,7 @@ const services={
 ],
 
 "اشتراكات رقمية 📺":[
-{name:"يوتيوب بريميوم شهر",price:48,img:"instagram.jpg"},
+{name:"يوتيوب بريميوم شهر",price:48,img:"Instagram.jpg"},
 {name:"نيتفليكس شهر",price:30,img:"netflix.jpg"},
 {name:"شاهد VIP شهر",price:30,img:"shahid.jpg"},
 {name:"سناب شات بلس",price:70,img:"snapchat.jpg"}
@@ -408,19 +384,13 @@ grid+=`
 <div class="price">${s.price} د.ل</div>
 
 <div class="input-group">
-
 <label>الرابط / ID</label>
-
 <input type="text" id="link-${s.name}" class="link-input">
-
 </div>
 
 <div class="input-group">
-
 <label>الكمية</label>
-
 <input type="number" id="qty-${s.name}" class="qty-input" value="${defQty}">
-
 </div>
 
 <button class="add-btn" onclick="addToCart('${s.name}',${s.price},${!!s.isSocial},${!!s.perTen})">
@@ -428,8 +398,8 @@ grid+=`
 </button>
 
 </div>
-
-</div>`
+</div>
+`
 
 })
 
@@ -476,7 +446,6 @@ document.getElementById('toast').style.display='block'
 setTimeout(()=>document.getElementById('toast').style.display='none',1500)
 
 document.getElementById('cart-bar').style.display='block'
-
 document.getElementById('count').innerText=cart.length
 
 }
@@ -510,7 +479,6 @@ let encoded=encodeURIComponent(msg)
 window.open(`https://wa.me/${phone}?text=${encoded}`)
 
 cart=[]
-
 document.getElementById('cart-bar').style.display='none'
 
 }
