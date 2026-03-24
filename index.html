@@ -24,55 +24,38 @@
             line-height: 1.6;
         }
 
-        /* الهيدر الجديد */
-        .header {
+        /* الهيدر العلوي */
+        .header-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 15px 5px;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 1001;
         }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-area img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1px solid var(--accent); }
+        .logo-area img { width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--accent); object-fit: cover; }
         .logo-area h1 { font-size: 20px; margin: 0; color: var(--accent); letter-spacing: 1px; }
 
-        /* سلة التسوق */
-        .cart-icon {
+        .cart-btn {
             position: relative;
             background: var(--card-bg);
             padding: 10px 15px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            cursor: pointer;
         }
         .cart-count {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -5px; right: -5px;
             background: var(--accent);
             color: #000;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 50%;
+            font-size: 11px; font-weight: bold;
+            padding: 2px 6px; border-radius: 50%;
         }
 
-        /* المقدمة */
-        .intro {
-            background: linear-gradient(45deg, #121212, #1a1a1a);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-        }
-        .intro p { font-size: 13px; color: var(--dim); margin: 5px 0 0 0; }
-
-        .top-nav {
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            padding: 10px 0;
-            z-index: 1000;
-        }
+        .top-nav { padding: 10px 0; }
         .search-bar {
             width: 100%;
             background: var(--card-bg);
@@ -83,16 +66,10 @@
             font-size: 14px;
             outline: none;
             box-sizing: border-box;
-            transition: 0.3s;
         }
-        .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
         .cats {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 15px 0;
-            scrollbar-width: none;
+            display: flex; gap: 8px; overflow-x: auto; padding: 15px 0; scrollbar-width: none;
         }
         .cats::-webkit-scrollbar { display: none; }
         .cat-item {
@@ -104,138 +81,73 @@
             white-space: nowrap;
             cursor: pointer;
         }
-        .cat-item.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+        .cat-item.active { background: var(--accent); color: #000; font-weight: bold; }
 
         .pay-selector {
-            display: flex;
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 5px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
+            display: flex; background: var(--card-bg); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border);
         }
         .pay-option {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.3s;
+            flex: 1; text-align: center; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 13px;
         }
         .pay-option.active { background: #1a1a1a; color: var(--accent); border: 1px solid var(--border); }
 
         .services-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
         }
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 12px;
+            padding: 10px;
             position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .card img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            display: flex; flex-direction: column;
         }
         .badge {
-            position: absolute; top: 20px; left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--accent);
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 9px;
-            font-weight: bold;
-            border: 1px solid var(--accent);
-            z-index: 1;
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(0,0,0,0.6); color: var(--accent);
+            padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: bold; border: 1px solid var(--accent); z-index: 2;
         }
-        .card h3 { font-size: 13px; margin: 5px 0; color: #fff; }
-        .card p { font-size: 10px; color: var(--dim); margin-bottom: 10px; flex-grow: 1; }
-        
-        .price-box { margin: 8px 0; font-size: 18px; font-weight: bold; color: var(--accent); }
+        .card img { width: 100%; border-radius: 15px; margin-bottom: 8px; aspect-ratio: 1/1; object-fit: cover; }
+        .card h3 { font-size: 13px; margin: 5px 0; height: 35px; overflow: hidden; }
+
+        /* حقول الإدخال */
+        .data-input, .custom-qty {
+            width: 100%; background: #000; border: 1px solid #333; color: var(--accent);
+            padding: 8px; border-radius: 8px; font-size: 11px; outline: none; margin-bottom: 8px; box-sizing: border-box;
+        }
+        .price-box { margin: 5px 0; font-size: 18px; font-weight: bold; color: var(--accent); text-align: center; }
         .price-box small { font-size: 11px; color: var(--dim); margin-right: 3px; }
 
-        .selector, .custom-input {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 12px;
-            outline: none;
-            margin-bottom: 8px;
-            box-sizing: border-box;
+        .selector {
+            width: 100%; background: #1a1a1a; border: 1px solid var(--border); color: #fff;
+            padding: 7px; border-radius: 8px; font-size: 11px; outline: none; margin-bottom: 10px;
         }
-
         .buy-btn {
-            width: 100%;
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
+            width: 100%; background: #fff; color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.3s;
         }
         .buy-btn:active { transform: scale(0.95); }
 
-        /* الفوتر */
-        .footer-sections {
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
+        /* الفوتر السفلي */
+        .footer {
+            margin-top: 40px; padding: 20px; background: var(--card-bg); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0;
         }
-        .footer-item {
-            background: var(--card-bg);
-            margin-bottom: 10px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .footer-item h4 {
-            margin: 0;
-            padding: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .footer-content {
-            padding: 15px;
-            font-size: 13px;
-            color: var(--dim);
-            display: none;
-        }
-        .footer-content a { color: var(--accent); text-decoration: none; }
+        .footer-sec { margin-bottom: 25px; }
+        .footer-sec h4 { color: var(--accent); font-size: 16px; margin-bottom: 10px; }
+        .footer-sec p, .footer-sec li { font-size: 13px; color: var(--dim); list-style: none; padding: 0; }
+        .footer-sec a { color: var(--accent); text-decoration: none; }
+        .guarantee-note { background: rgba(0, 255, 136, 0.05); border: 1px dashed var(--accent); padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="header">
+<div class="header-top">
     <div class="logo-area">
         <img src="cd.jpg" alt="Logo">
         <h1>CD-CARD</h1>
     </div>
-    <div class="cart-icon" onclick="alert('سيتم إرسال طلباتك للواتساب مباشرة عند الضغط على شراء')">
+    <div class="cart-btn">
         🛒 <span class="cart-count" id="cartCount">0</span>
     </div>
-</div>
-
-<div class="intro">
-    <h3>مرحباً بك في متجر CD-CARD 🇱🇾</h3>
-    <p>أسرع منصة لشحن الألعاب والخدمات الرقمية في ليبيا. تنفيذ فوري ودعم فني متواصل.</p>
 </div>
 
 <div class="top-nav">
@@ -256,32 +168,26 @@
 
 <div class="services-grid" id="grid"></div>
 
-<div class="footer-sections">
-    <div class="footer-item">
-        <h4 onclick="toggleFooter(this)">من نحن <span>+</span></h4>
-        <div class="footer-content">
-            CD-CARD هو متجرك الأول في ليبيا لتوفير كافة خدمات الشحن الرقمي والسوشيال ميديا بأفضل الأسعار وأسرع تنفيذ.
-        </div>
+<div class="footer">
+    <div class="footer-sec">
+        <h4>من نحن</h4>
+        <p>متجر CD-CARD هو منصتك الموثوقة في ليبيا لتوفير كافة الخدمات الرقمية وشحن الألعاب بأسرع وقت وأفضل سعر.</p>
     </div>
-    <div class="footer-item">
-        <h4 onclick="toggleFooter(this)">طريقة الشراء <span>+</span></h4>
-        <div class="footer-content">
-            اختر الخدمة، حدد الكمية أو النوع، اضغط شراء، وسيتم تحويلك للواتساب لإرسال الفاتورة وإتمام الدفع.
-        </div>
+    <div class="footer-sec">
+        <h4>طريقة الشراء</h4>
+        <p>1. اختر الخدمة المطلوبة.<br>2. أدخل الرابط أو الـ ID.<br>3. حدد الكمية (لخدمات السوشيال).<br>4. اضغط شراء ليتم تحويلك للواتساب.</p>
     </div>
-    <div class="footer-item">
-        <h4 onclick="toggleFooter(this)">قنوات الموقع <span>+</span></h4>
-        <div class="footer-content">
-            - <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q">قناة الواتساب</a><br>
-            - <a href="https://t.me/CD_Card1">قناة التليجرام</a>
-        </div>
+    <div class="footer-sec">
+        <h4>قنوات الموقع والدعم</h4>
+        <li>تليجرام: <a href="https://t.me/CD_Card1">@CD_Card1</a></li>
+        <li>واتساب: <a href="https://wa.me/218912377291">0912377291</a></li>
     </div>
-    <div class="footer-item">
-        <h4 onclick="toggleFooter(this)">الدعم الفني <span>+</span></h4>
-        <div class="footer-content">
-            تليجرام: @cdcard104 <br>
-            واتساب: 0912377291
-        </div>
+    <div class="footer-sec">
+        <h4>نصائح</h4>
+        <p>تأكد دائماً من صحة الرابط أو الـ ID قبل الطلب لضمان وصول الخدمة بشكل سريع.</p>
+    </div>
+    <div class="guarantee-note">
+        ✅ ملاحظة: جميع خدماتنا بضمان استبدال أو تعويض لمدة 3 أيام.
     </div>
 </div>
 
@@ -289,27 +195,43 @@
     const whatsappNumber = "218912377291";
     let payType = 'cash';
     let cartTotal = 0;
-    
-    // ملاحظة: الرصيد (الرابع) هو سعر الألف وحدة. السعر المعروض في الكارد سيتغير تلقائياً حسب الكمية.
+
+    // قاعدة البيانات
     const db = [
-        { cat: 'social', title: 'متابعين تيك توك', badge: 'ضمان 3 أيام', desc: 'متابعين جودة عالية، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 16/1000 },
-        { cat: 'social', title: 'لايكات تيك توك', badge: 'سريع', desc: 'لايكات حقيقية، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 2/1000 },
-        { cat: 'social', title: 'مشاهدات تيك توك', badge: 'فوري', desc: 'مشاهدات فورية، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 500, rate: 1/1000 },
-        
-        { cat: 'social', title: 'متابعين انستقرام', badge: 'ضمان 3 أيام', desc: 'متابعين انستقرام، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 10/1000 },
-        { cat: 'social', title: 'لايكات انستقرام', badge: 'سريع', desc: 'لايكات انستقرام، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 8/1000 },
+        // تيك توك (كمية مخصصة)
+        { cat: 'social', title: 'متابعين تيك توك', badge: 'ضمان', isCustom: true, rate: 16/1000, min: 100, ph: 'رابط الحساب' },
+        { cat: 'social', title: 'لايكات تيك توك', badge: 'سريع', isCustom: true, rate: 2/1000, min: 100, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'مشاهدات تيك توك', badge: 'فوري', isCustom: true, rate: 1/1000, min: 1000, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'مفضلة تيك توك', badge: 'ترند', isCustom: true, rate: 1/10, min: 10, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'اكسبلور تيك توك', badge: 'ترند', isCustom: true, rate: 1/10, min: 10, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'إعادات نشر تيك توك', badge: 'جديد', isCustom: true, rate: 2/10, min: 10, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'تعليقات مخصصة تيك توك', badge: 'عربي', isCustom: true, rate: 2/10, min: 10, ph: 'رابط الفيديو' },
 
-        { cat: 'social', title: 'متابعين فيسبوك', badge: 'حقيقي', desc: 'متابعين ملف شخصي/بيج، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 15/1000 },
-        { cat: 'social', title: 'أعضاء قناة واتس', badge: 'حصري', desc: 'أعضاء قنوات، ضمان 3 أيام.', img: 'cd.jpg', custom: true, min: 100, rate: 130/1000 },
+        // انستقرام (كمية مخصصة)
+        { cat: 'social', title: 'متابعين انستقرام', badge: 'ضمان', isCustom: true, rate: 10/1000, min: 100, ph: 'يوزر الحساب' },
+        { cat: 'social', title: 'لايكات انستقرام', badge: 'حقيقي', isCustom: true, rate: 8/1000, min: 100, ph: 'رابط المنشور' },
+        { cat: 'social', title: 'مشاهدات انستقرام', badge: 'بدون ضمان', isCustom: true, rate: 2/1000, min: 100, ph: 'رابط الفيديو' },
+        { cat: 'social', title: 'مشاركات انستقرام', badge: 'بدون ضمان', isCustom: true, rate: 1/10, min: 10, ph: 'رابط المنشور' },
 
-        { cat: 'games', title: 'شدات ببجي موبايل', badge: 'ID', desc: 'شحن عن طريق الـ ID.', img: 'cd.jpg', options: [
-            {n: '60 شدة', p: 14}, {n: '325 شدة', p: 65}, {n: '660 شدة', p: 130}
-        ]},
-        { cat: 'games', title: 'جواهر فري فاير', badge: 'ID', desc: 'شحن فوري بالـ ID.', img: 'cd.jpg', options: [
-            {n: '100 جوهرة', p: 16}, {n: '210 جوهرة', p: 31}, {n: '530 جوهرة', p: 76}
-        ]},
-        { cat: 'stream', title: 'يوتيوب بريميوم', badge: 'رسمي', desc: 'اشتراك شهر كامل، ضمان 3 أيام.', img: 'cd.jpg', options: [{n: 'شهر', p: 50}] },
-        { cat: 'stream', title: 'نتفلكس', badge: '4K', desc: 'اشتراكات رسمية وضمان.', img: 'cd.jpg', options: [{n: '7 أيام', p: 15}, {n: 'شهر كامل', p: 40}] }
+        // فيسبوك (كمية مخصصة)
+        { cat: 'social', title: 'متابعين فيسبوك', badge: 'رسمي', isCustom: true, rate: 5/1000, min: 1000, ph: 'رابط الحساب' },
+        { cat: 'social', title: 'تفاعلات فيسبوك', badge: 'سريع', isCustom: true, rate: 3/100, min: 100, ph: 'رابط المنشور' },
+        { cat: 'social', title: 'مشاهدات فيسبوك', badge: 'فوري', isCustom: true, rate: 1/1000, min: 1000, ph: 'رابط الفيديو' },
+
+        // واتساب (خيارات ثابتة)
+        { cat: 'social', title: 'أعضاء قناة واتساب', badge: 'حصري', options: [{n: '1000 عضو', p: 130}], ph: 'رابط القناة' },
+        { cat: 'social', title: 'تفاعلات قناة واتساب', badge: 'فوري', options: [{n: '1000 تفاعل', p: 1000}], ph: 'رابط المنشور' },
+
+        // ألعاب
+        { cat: 'games', title: 'شدات ببجي موبايل', badge: 'ID', options: [{n: '60 شدة', p: 14}, {n: '120 شدة', p: 28}, {n: '325 شدة', p: 65}, {n: '660 شدة', p: 130}], ph: 'ID اللاعب' },
+        { cat: 'games', title: 'جواهر فري فاير', badge: 'ID', options: [{n: '100 جوهرة', p: 16}, {n: '210 جوهرة', p: 31}, {n: '530 جوهرة', p: 76}, {n: '1080 جوهرة', p: 150}], ph: 'ID اللاعب' },
+        { cat: 'games', title: 'عملات روبلكس', badge: 'فوري', options: [{n: '40 عملة', p: 16}, {n: '80 عملة', p: 32}], ph: 'اسم المستخدم' },
+
+        // اشتراكات
+        { cat: 'stream', title: 'يوتيوب بريميوم', badge: 'رسمي', options: [{n: 'شهر كامل', p: 50}], ph: 'ايميل الحساب' },
+        { cat: 'stream', title: 'نتفلكس Netflix', badge: '4K', options: [{n: '7 أيام', p: 15}, {n: 'شهر كامل', p: 40}], ph: 'رقم الواتساب' },
+        { cat: 'stream', title: 'شاهد VIP', badge: 'رياضة', options: [{n: 'شهر كامل', p: 30}], ph: 'رقم الواتساب' },
+        { cat: 'stream', title: 'سناب شات بلس', badge: 'حصري', options: [{n: '3 شهور', p: 70}], ph: 'يوزر السناب' }
     ];
 
     function setPay(type, el) {
@@ -319,33 +241,28 @@
         render();
     }
 
-    function render(filter = 'all', query = '') {
+    function render(f = 'all', q = '') {
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         db.forEach((item, i) => {
-            if (filter !== 'all' && item.cat !== filter) return;
-            if (query && !item.title.toLowerCase().includes(query.toLowerCase())) return;
+            if(f !== 'all' && item.cat !== f) return;
+            if(q && !item.title.toLowerCase().includes(q.toLowerCase())) return;
 
             let content = '';
-            let multiplier = (payType === 'credit') ? 1.25 : 1;
+            let multiplier = (payType === 'credit') ? 1.10 : 1;
 
-            if (item.custom) {
-                let currentRate = item.rate * multiplier;
-                let initialPrice = Math.ceil(item.min * currentRate);
-                
+            if(item.isCustom) {
+                let startPrice = Math.ceil(item.min * item.rate * multiplier);
                 content = `
-                    <div class="price-box"><span id="pr-${i}">${initialPrice}</span><small>LYD</small></div>
-                    <input type="number" class="custom-input" placeholder="الكمية (أقل شيء ${item.min})" value="${item.min}" oninput="updateCustomPrice(this, ${i}, ${currentRate}, ${item.min})">
+                    <div class="price-box"><span id="pr-${i}">${startPrice}</span><small>LYD</small></div>
+                    <input type="number" class="custom-qty" id="qty-${i}" value="${item.min}" oninput="calcPrice(${i}, ${item.rate}, ${multiplier})" placeholder="الكمية">
                 `;
             } else {
-                let firstPrice = Math.ceil(item.options[0].p * multiplier);
+                let startPrice = Math.ceil(item.options[0].p * multiplier);
                 content = `
-                    <div class="price-box"><span id="pr-${i}">${firstPrice}</span><small>LYD</small></div>
-                    <select class="selector" onchange="updatePrice(this, ${i})">
-                        ${item.options.map(o => {
-                            let p = Math.ceil(o.p * multiplier);
-                            return `<option value="${p}">${o.n}</option>`;
-                        }).join('')}
+                    <div class="price-box"><span id="pr-${i}">${startPrice}</span><small>LYD</small></div>
+                    <select class="selector" id="sel-${i}" onchange="updateStaticPrice(${i}, ${multiplier})">
+                        ${item.options.map(o => `<option value="${o.p}">${o.n}</option>`).join('')}
                     </select>
                 `;
             }
@@ -353,9 +270,9 @@
             grid.innerHTML += `
                 <div class="card">
                     <div class="badge">${item.badge}</div>
-                    <img src="${item.img}" alt="${item.title}">
+                    <img src="cd.jpg" alt="${item.title}">
                     <h3>${item.title}</h3>
-                    <p>${item.desc}</p>
+                    <input type="text" class="data-input" id="data-${i}" placeholder="${item.ph}">
                     ${content}
                     <button class="buy-btn" onclick="buyNow(${i})">شراء الآن</button>
                 </div>
@@ -363,17 +280,14 @@
         });
     }
 
-    function updatePrice(sel, idx) {
-        document.getElementById(`pr-${idx}`).innerText = sel.value;
+    function calcPrice(idx, rate, mult) {
+        let qty = document.getElementById(`qty-${idx}`).value || 0;
+        document.getElementById(`pr-${idx}`).innerText = Math.ceil(qty * rate * mult);
     }
 
-    function updateCustomPrice(input, idx, rate, min) {
-        let qty = parseInt(input.value) || 0;
-        if (qty < min && qty !== 0) {
-            // لا نفعل شيء، ننتظر المستخدم يكمل الكتابة
-        }
-        let total = Math.ceil(qty * rate);
-        document.getElementById(`pr-${idx}`).innerText = total;
+    function updateStaticPrice(idx, mult) {
+        let p = document.getElementById(`sel-${idx}`).value;
+        document.getElementById(`pr-${idx}`).innerText = Math.ceil(p * mult);
     }
 
     function doFilter(c, el) {
@@ -388,43 +302,24 @@
 
     function buyNow(idx) {
         const item = db[idx];
+        const dataVal = document.getElementById(`data-${idx}`).value;
         const price = document.getElementById(`pr-${idx}`).innerText;
-        let details = "";
+        let qtyInfo = "";
 
-        // زيادة عداد السلة كشكل جمالي
+        if(item.isCustom) {
+            qtyInfo = "الكمية: " + document.getElementById(`qty-${idx}`).value;
+        } else {
+            const sel = document.getElementById(`sel-${idx}`);
+            qtyInfo = "الخيار: " + sel.options[sel.selectedIndex].text;
+        }
+
+        if(!dataVal) { alert('يرجى إدخال البيانات المطلوبة'); return; }
+
         cartTotal++;
         document.getElementById('cartCount').innerText = cartTotal;
 
-        if (item.custom) {
-            const qty = document.querySelectorAll('.card')[idx]?.querySelector('input')?.value || item.min;
-            details = `الكمية: ${qty}`;
-        } else {
-            const sel = document.querySelectorAll('.card')[idx]?.querySelector('select');
-            details = `الخيار: ${sel.options[sel.selectedIndex].text}`;
-        }
-
-        const msg = `🧾 *فاتورة طلب جديدة - CD CARD*\n` +
-                    `--------------------------\n` +
-                    `🔹 الخدمة: ${item.title}\n` +
-                    `🔹 ${details}\n` +
-                    `💰 السعر الإجمالي: ${price} LYD\n` +
-                    `💳 طريقة الدفع: ${payType === 'cash' ? 'كاش / مصرفي' : 'رصيد ليبيانا'}\n` +
-                    `--------------------------\n` +
-                    `يرجى إتمام عملية الدفع لمعالجة الطلب.`;
-
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    function toggleFooter(el) {
-        const content = el.nextElementSibling;
-        const isOpen = content.style.display === "block";
-        document.querySelectorAll('.footer-content').forEach(c => c.style.display = 'none');
-        document.querySelectorAll('.footer-item h4 span').forEach(s => s.innerText = '+');
-        
-        if (!isOpen) {
-            content.style.display = "block";
-            el.querySelector('span').innerText = '-';
-        }
+        const message = `طلب جديد من متجر CD-CARD\n------------------\nالخدمة: ${item.title}\n${qtyInfo}\nالبيانات: ${dataVal}\nالسعر: ${price} LYD\nنوع الدفع: ${payType === 'cash' ? 'كاش/مصرفي' : 'رصيد'}\n------------------\nبضمان 3 أيام ✅`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
     }
 
     render();
@@ -432,3 +327,4 @@
 
 </body>
 </html>
+
