@@ -179,7 +179,7 @@
     </div>
     <div class="footer-sec">
         <h4>طريقة الشراء</h4>
-        <p>1. اختر الخدمة المطلوبة.<br>2. أدخل الرابط أو الـ ID.<br>3. حدد الكمية (لخدمات السوشيال).<br>4. اضغط شراء ليتم تحويلك للواتساب.</p>
+        <p>1. اختر الخدمة المطلوبة.<br>2. أدخل الرابط أو الـ ID.<br>3. حدد الكمية (لخدمات السوشيال).<br>4. اضغط إضافة للسلة ليتم تحويلك للواتساب.</p>
     </div>
     <div class="footer-sec">
         <h4>قنوات الموقع والدعم</h4>
@@ -278,7 +278,7 @@
                     <h3>${item.title}</h3>
                     <input type="text" class="data-input" id="data-${i}" placeholder="${item.ph}">
                     ${content}
-                    <button class="buy-btn" onclick="buyNow(${i})">شراء الآن</button>
+                    <button class="buy-btn" onclick="addToCart(${i})">إضافة إلى السلة</button>
                 </div>
             `;
         });
@@ -304,7 +304,7 @@
         render('all', document.getElementById('searchInput').value);
     }
 
-    function buyNow(idx) {
+    function addToCart(idx) {
         const item = db[idx];
         const dataVal = document.getElementById(`data-${idx}`).value;
         const price = document.getElementById(`pr-${idx}`).innerText;
@@ -321,6 +321,9 @@
 
         cartTotal++;
         document.getElementById('cartCount').innerText = cartTotal;
+        
+        // رسالة تأكيد الإضافة
+        alert(`تم إضافة ${item.title} إلى السلة بنجاح!`);
 
         const message = `طلب جديد من متجر CD-CARD\n------------------\nالخدمة: ${item.title}\n${qtyInfo}\nالبيانات: ${dataVal}\nالسعر: ${price} LYD\nنوع الدفع: ${payType === 'cash' ? 'كاش/مصرفي' : 'رصيد'}\n------------------\nبضمان 3 أيام ✅`;
         window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
