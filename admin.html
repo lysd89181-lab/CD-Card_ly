@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكمcd card | إدارة الخدمات</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root { --bg: #0a0a0b; --card: #161618; --accent: #00ff88; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .admin-box { background: var(--card); padding: 40px; border-radius: 25px; border: 1px solid rgba(0, 255, 136, 0.2); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: var(--accent); margin-bottom: 10px; }
+        p { font-size: 14px; color: #8e8e93; margin-bottom: 30px; }
+        .btn-sync { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-sync:active { transform: scale(0.96); }
+        #status { margin-top: 25px; font-size: 13px; line-height: 1.6; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; margin-left: 10px; vertical-align: middle; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h2>لوحة تحكم محمد ستور ⚙️</h2>
+    <p>تحديث الخدمات تلقائياً مع زيادة 30% أرباح</p>
+    
+    <button class="btn-sync" onclick="syncFromProvider()">
+        <span id="loader" class="loader"></span>
+        🔄 تحديث الخدمات من المزود
+    </button>
+    
+    <div id="status">جاهز لبدء المزامنة...</div>
+</div>
+
+<script>
+    // إعدادات Firebase الخاصة بمشروعك CD-Card
+    const firebaseConfig = {
+      apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
+      authDomain: "cd-card-87365.firebaseapp.com",
+      projectId: "cd-card-87365",
+      storageBucket: "cd-card-87365.firebasestorage.app",
+      messagingSenderId: "397926299412",
+      appId: "1:397926299412:web:efbe9ae9aae29df368f401"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const API_KEY = "Bc34ac73c612e956734842221d87df60";
+    const API_URL = "https://ms1.shop/api/v2";
+
+    async function syncFromProvider() {
+        const statusDiv = document.getElementById('status');
+        const loader = document.getElementById('loader');
+        
+        if (!confirm("هل أنت متأكد من رغبتك في تحديث كافة الخدمات والأسعار؟")) return;
+
+        loader.style.display = "inline-block";
+        statusDiv.style.color = "#8e8e93";
+        statusDiv.innerText = "⏳ جاري الاتصال بالمزود وسحب الخدمات...";
+
+        try {
+            // جلب الخدمات من API المزود
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'key': API_KEY,
+                    'action': 'services'
+                })
+            });
+
+            const services = await response.json();
+            statusDiv.innerText = `✅ تم جلب ${services.length} خدمة. جاري تنظيف وتحديث Firestore...`;
+
+            // 1. مسح الخدمات القديمة في Firestore لتجنب التكرار
+            const oldDocs = await db.collection('services').get();
+            const batch = db.batch();
+            oldDocs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+
+            // 2. إضافة الخدمات الجديدة مع زيادة الربح 30% تلقائياً
+            let count = 0;
+            for (let s of services) {
+                await db.collection('services').add({
+                    apiId: s.service,
+                    name: s.name,
+                    category: s.category,
+                    originalPrice: parseFloat(s.rate),
+                    finalPrice: (parseFloat(s.rate) * 1.3).toFixed(2), // السعر للزبون بعد زيادة 30%
+                    min: s.min,
+                    max: s.max,
+                    type: s.type,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                count++;
+                if (count % 20 === 0) statusDiv.innerText = `⏳ جاري معالجة ورفع الخدمات: ${count}...`;
+            }
+
+            statusDiv.style.color = var(--accent);
+            statusDiv.innerText = "✨ مبروك! تم تحديث المتجر بالكامل بأسعارك الجديدة.";
+            alert("تمت المزامنة بنجاح!");
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.style.color = "#ff4444";
+            statusDiv.innerText = "❌ فشل الاتصال. تأكد من إعدادات CORS أو مفتاح API.";
+        } finally {
+            loader.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>
+
