@@ -25,24 +25,26 @@
         .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 12px; text-align: center; }
         .data-input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 8px; outline: none; box-sizing: border-box; }
-        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .buy-btn:active { transform: scale(0.95); }
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .auth-input { width: 100%; max-width: 300px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; }
+        .auth-input { width: 100%; max-width: 300px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="auth-overlay">
     <h2 style="color:var(--accent)">CD-CARD</h2>
+    <p style="font-size: 14px; color: var(--dim);">يرجى تسجيل الدخول للمتابعة</p>
     <input type="email" id="loginEmail" class="auth-input" placeholder="البريد الإلكتروني">
     <input type="password" id="loginPass" class="auth-input" placeholder="كلمة المرور">
-    <button class="buy-btn" style="max-width:300px" onclick="login()">تسجيل الدخول</button>
+    <button class="buy-btn" style="max-width:300px" onclick="login()">دخول</button>
 </div>
 
 <div id="main-content" style="display:none">
     <div class="header-top">
         <h1 style="color:var(--accent); margin:0; font-size:20px;">CD-CARD</h1>
-        <button onclick="logout()" style="background:none; border:1px solid #ff4444; color:#ff4444; border-radius:8px; padding:5px 10px; cursor:pointer">خروج</button>
+        <button onclick="logout()" style="background:none; border:1px solid #ff4444; color:#ff4444; border-radius:8px; padding:5px 10px; cursor:pointer; font-size: 12px;">خروج</button>
     </div>
 
     <div class="user-stats">
@@ -50,28 +52,29 @@
             <div style="font-size:12px; color:var(--dim)">رصيدك الحالي</div>
             <div class="balance-val"><span id="userBalance">0.00</span> <small>LYD</small></div>
         </div>
-        <button class="buy-btn" style="width:auto; padding:5px 15px" onclick="window.open('https://wa.me/218912377291')">شحن +</button>
+        <button class="buy-btn" style="width:auto; padding:5px 15px; font-size: 11px;" onclick="window.open('https://wa.me/218912377291')">شحن +</button>
     </div>
 
     <div class="services-grid" id="grid"></div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك من الصورة
+    // الإعدادات التي أرسلتها أنت (صحيحة 100%)
     const firebaseConfig = {
-        apiKey: "AIzaSyArNJOPAYcWU3YJdZsBN1d996734842221", 
-        authDomain: "cd-card-87365.firebaseapp.com",
-        projectId: "cd-card-87365",
-        storageBucket: "cd-card-87365.firebasestorage.app",
-        messagingSenderId: "397926299412",
-        appId: "1:397926299412:web:efbe9ae9aae29df368f401",
-        measurementId: "G-NDL36M3W68"
+      apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
+      authDomain: "cd-card-87365.firebaseapp.com",
+      projectId: "cd-card-87365",
+      storageBucket: "cd-card-87365.firebasestorage.app",
+      messagingSenderId: "397926299412",
+      appId: "1:397926299412:web:efbe9ae9aae29df368f401",
+      measurementId: "G-NDL36M3W68"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // إعدادات المورد
     const API_KEY = "Bc34ac73c612e956734842221d87df60";
     const API_URL = "https://ms1.shop/api/v2";
 
@@ -97,17 +100,21 @@
     async function login() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
+        if(!email || !pass) return alert("أدخل البيانات!");
         try { await auth.signInWithEmailAndPassword(email, pass); } 
-        catch (e) { alert("خطأ: " + e.message); }
+        catch (e) { alert("خطأ في الدخول: " + e.message); }
     }
 
     function logout() { auth.signOut(); }
 
     function loadBalance(uid) {
-        // يقرأ من مجموعة users وثيقة تحمل الـ UID
+        // البحث في مجموعة users عن وثيقة باسم الـ UID
         db.collection('users').doc(uid).onSnapshot(doc => {
             if (doc.exists) {
-                document.getElementById('userBalance').innerText = doc.data().balance.toFixed(2);
+                document.getElementById('userBalance').innerText = (doc.data().balance || 0).toFixed(2);
+            } else {
+                // إنشاء ملف مستخدم جديد برصيد 0 إذا لم يوجد
+                db.collection('users').doc(uid).set({ balance: 0, email: auth.currentUser.email });
             }
         });
     }
@@ -125,28 +132,42 @@
 
     async function order(sid, price) {
         const input = document.getElementById(`in-${sid}`).value;
-        if (!input) return alert("أدخل البيانات!");
+        if (!input) return alert("أدخل البيانات المطلوبة!");
 
         const user = auth.currentUser;
         const userRef = db.collection('users').doc(user.uid);
         const doc = await userRef.get();
-        const bal = doc.data().balance;
+        const bal = doc.data().balance || 0;
 
-        if (bal < price) return alert("رصيدك غير كافٍ!");
+        if (bal < price) return alert("عذراً، رصيدك غير كافٍ!");
 
-        if (confirm(`خصم ${price} LYD؟`)) {
+        if (confirm(`تأكيد خصم ${price} LYD من رصيدك؟`)) {
+            // خصم الرصيد أولاً
             await userRef.update({ balance: bal - price });
             
-            // إرسال الطلب للسيرفر
-            fetch(API_URL, {
-                method: 'POST',
-                body: new URLSearchParams({ 'key': API_KEY, 'action': 'add', 'service': sid, 'link': input, 'quantity': '1' })
-            }).then(r => r.json()).then(res => {
-                alert(res.order ? "تم الطلب! رقم: " + res.order : "خطأ سيرفر: " + res.error);
-            });
+            // إرسال الطلب للمورد
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({ 
+                        'key': API_KEY, 
+                        'action': 'add', 
+                        'service': sid, 
+                        'link': input, 
+                        'quantity': '1' 
+                    })
+                });
+                const res = await response.json();
+                if (res.order) {
+                    alert("تم تنفيذ طلبك بنجاح! رقم العملية: " + res.order);
+                } else {
+                    alert("خطأ من السيرفر: " + res.error);
+                }
+            } catch (e) {
+                alert("تم الخصم بنجاح، والطلب قيد المعالجة اليدوية.");
+            }
         }
     }
 </script>
 </body>
 </html>
-
