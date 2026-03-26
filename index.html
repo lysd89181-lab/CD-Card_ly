@@ -4,366 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CD-CARD | Dashboard</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
     <style>
         :root {
             --bg: #080808;
             --card-bg: #121212;
             --accent: #00ff88;
-            --accent-glow: rgba(0, 255, 136, 0.3);
             --text: #ffffff;
             --dim: #888;
             --border: rgba(255,255,255,0.07);
         }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 10px;
-            user-select: none;
-            line-height: 1.6;
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 5px;
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            z-index: 1001;
-        }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-area img { width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--accent); object-fit: cover; }
-        .logo-area h1 { font-size: 20px; margin: 0; color: var(--accent); letter-spacing: 1px; }
-
-        .cart-btn {
-            position: relative;
-            background: var(--card-bg);
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-        }
-        .cart-count {
-            position: absolute;
-            top: -5px; right: -5px;
-            background: var(--accent);
-            color: #000;
-            font-size: 11px; font-weight: bold;
-            padding: 2px 6px; border-radius: 50%;
-        }
-
-        .intro { margin: 10px 5px 20px; }
-        .intro h3 { color: var(--accent); margin-bottom: 5px; }
-        .intro p { font-size: 13px; color: var(--dim); margin: 0; }
-
-        .top-nav { padding: 10px 0; }
-        .search-bar {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 12px 15px;
-            border-radius: 15px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        .cats {
-            display: flex; gap: 8px; overflow-x: auto; padding: 15px 0; scrollbar-width: none;
-        }
-        .cats::-webkit-scrollbar { display: none; }
-        .cat-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-        .cat-item.active { background: var(--accent); color: #000; font-weight: bold; }
-
-        .pay-selector {
-            display: flex; background: var(--card-bg); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border);
-        }
-        .pay-option {
-            flex: 1; text-align: center; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 13px;
-        }
-        .pay-option.active { background: #1a1a1a; color: var(--accent); border: 1px solid var(--border); }
-
-        .services-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-        }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 10px;
-            position: relative;
-            display: flex; flex-direction: column;
-        }
-        .badge {
-            position: absolute; top: 15px; left: 15px;
-            background: rgba(0,0,0,0.6); color: var(--accent);
-            padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: bold; border: 1px solid var(--accent); z-index: 2;
-        }
-        .card img { width: 100%; border-radius: 15px; margin-bottom: 8px; aspect-ratio: 1/1; object-fit: cover; }
-        .card h3 { font-size: 13px; margin: 5px 0; height: 35px; overflow: hidden; }
-
-        .data-input, .custom-qty {
-            width: 100%; background: #000; border: 1px solid #333; color: var(--accent);
-            padding: 8px; border-radius: 8px; font-size: 11px; outline: none; margin-bottom: 8px; box-sizing: border-box;
-        }
-        .price-box { margin: 5px 0; font-size: 18px; font-weight: bold; color: var(--accent); text-align: center; }
-        .price-box small { font-size: 11px; color: var(--dim); margin-right: 3px; }
-
-        .selector {
-            width: 100%; background: #1a1a1a; border: 1px solid var(--border); color: #fff;
-            padding: 7px; border-radius: 8px; font-size: 11px; outline: none; margin-bottom: 10px;
-        }
-        .buy-btn {
-            width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.3s;
-        }
-        .buy-btn:active { transform: scale(0.95); }
-
-        /* واجهة السلة (Modal) */
-        .cart-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 2000;
-            display: none; flex-direction: column; padding: 20px; box-sizing: border-box;
-        }
-        .cart-modal.active { display: flex; }
-        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .cart-items-list { flex: 1; overflow-y: auto; }
-        .cart-item-row {
-            background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);
-        }
-        .cart-item-info h4 { margin: 0; font-size: 14px; color: var(--accent); }
-        .cart-item-info p { margin: 5px 0 0; font-size: 11px; color: var(--dim); }
-        .remove-item { color: #ff4444; font-size: 18px; cursor: pointer; padding: 5px; }
-
-        .cart-footer { border-top: 1px solid var(--border); padding-top: 15px; margin-top: 10px; }
-        .total-price { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: var(--accent); }
-        .send-wa-btn {
-            width: 100%; background: #25d366; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer;
-        }
-
-        .footer {
-            margin-top: 40px; padding: 20px; background: var(--card-bg); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0;
-        }
-        .footer-sec { margin-bottom: 25px; }
-        .footer-sec h4 { color: var(--accent); font-size: 16px; margin-bottom: 10px; }
-        .footer-sec p, .footer-sec li { font-size: 13px; color: var(--dim); list-style: none; padding: 0; }
-        .footer-sec a { color: var(--accent); text-decoration: none; }
-        .guarantee-note { background: rgba(0, 255, 136, 0.05); border: 1px dashed var(--accent); padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 10px; line-height: 1.6; }
+        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 5px; position: sticky; top: 0; background: var(--bg); z-index: 1001; }
+        .user-stats { background: var(--card-bg); border: 1px solid var(--accent); padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .balance-val { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 12px; text-align: center; }
+        .data-input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 8px; outline: none; box-sizing: border-box; }
+        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .auth-input { width: 100%; max-width: 300px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; }
     </style>
 </head>
 <body>
 
-<div class="header-top">
-    <div class="logo-area">
-        <img src="cd.jpg" alt="Logo">
-        <h1>CD-CARD</h1>
-    </div>
-    <div class="cart-btn" onclick="toggleCart()">
-        🛒 <span class="cart-count" id="cartCount">0</span>
-    </div>
+<div id="auth-overlay">
+    <h2 style="color:var(--accent)">CD-CARD</h2>
+    <input type="email" id="loginEmail" class="auth-input" placeholder="البريد الإلكتروني">
+    <input type="password" id="loginPass" class="auth-input" placeholder="كلمة المرور">
+    <button class="buy-btn" style="max-width:300px" onclick="login()">تسجيل الدخول</button>
 </div>
 
-<div class="intro">
-    <h3>مرحباً بك في متجر CD-CARD 🇱🇾</h3>
-    <p>أسرع منصة لشحن الألعاب والخدمات الرقمية في ليبيا.</p>
-</div>
-
-<div class="top-nav">
-    <input type="text" class="search-bar" id="searchInput" placeholder="ابحث عن خدمتك المفضلة..." onkeyup="doSearch()">
-    <div class="cats">
-        <div class="cat-item active" onclick="doFilter('all', this)">الكل 🔥</div>
-        <div class="cat-item" onclick="doFilter('games', this)">ألعاب 🎮</div>
-        <div class="cat-item" onclick="doFilter('social', this)">سوشيال 🌐</div>
-        <div class="cat-item" onclick="doFilter('cards', this)">كروت 💳</div>
-        <div class="cat-item" onclick="doFilter('stream', this)">مشاهدة 🎬</div>
+<div id="main-content" style="display:none">
+    <div class="header-top">
+        <h1 style="color:var(--accent); margin:0; font-size:20px;">CD-CARD</h1>
+        <button onclick="logout()" style="background:none; border:1px solid #ff4444; color:#ff4444; border-radius:8px; padding:5px 10px; cursor:pointer">خروج</button>
     </div>
-</div>
 
-<div class="pay-selector">
-    <div class="pay-option active" onclick="setPay('cash', this)">كاش / مصرفي</div>
-    <div class="pay-option" onclick="setPay('credit', this)">رصيد (ليبيانا)</div>
-</div>
+    <div class="user-stats">
+        <div>
+            <div style="font-size:12px; color:var(--dim)">رصيدك الحالي</div>
+            <div class="balance-val"><span id="userBalance">0.00</span> <small>LYD</small></div>
+        </div>
+        <button class="buy-btn" style="width:auto; padding:5px 15px" onclick="window.open('https://wa.me/218912377291')">شحن +</button>
+    </div>
 
-<div class="services-grid" id="grid"></div>
-
-<div class="cart-modal" id="cartModal">
-    <div class="cart-header">
-        <h2 style="margin:0; color:var(--accent);">سلة المشتريات 🛒</h2>
-        <span style="font-size: 30px; cursor: pointer;" onclick="toggleCart()">✕</span>
-    </div>
-    <div class="cart-items-list" id="cartItemsList"></div>
-    <div class="cart-footer">
-        <div class="total-price">الإجمالي: <span id="totalDisplay">0</span> LYD</div>
-        <button class="send-wa-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب ✅</button>
-    </div>
-</div>
-
-<div class="footer">
-    <div class="footer-sec">
-        <h4>طريقة الشراء</h4>
-        <p>1. اختر الخدمة.<br>2. أدخل البيانات.<br>3. أضف للسلة.<br>4. أرسل الطلب للواتساب.</p>
-    </div>
-    <div class="footer-sec">
-        <h4>الدعم</h4>
-        <li>تليجرام: <a href="https://t.me/CD_Card1">@CD_Card1</a></li>
-        <li>واتساب: <a href="https://wa.me/218912377291">0912377291</a></li>
-    </div>
-    <div class="guarantee-note">✅ جميع الخدمات بضمان 3 أيام.</div>
+    <div class="services-grid" id="grid"></div>
 </div>
 
 <script>
-    const whatsappNumber = "218912377291";
-    let payType = 'cash';
-    let cart = [];
+    // إعدادات Firebase الخاصة بك من الصورة
+    const firebaseConfig = {
+        apiKey: "AIzaSyArNJOPAYcWU3YJdZsBN1d996734842221", 
+        authDomain: "cd-card-87365.firebaseapp.com",
+        projectId: "cd-card-87365",
+        storageBucket: "cd-card-87365.firebasestorage.app",
+        messagingSenderId: "397926299412",
+        appId: "1:397926299412:web:efbe9ae9aae29df368f401",
+        measurementId: "G-NDL36M3W68"
+    };
 
-    const db = [
-        // تيك توك
-        { cat: 'social', title: 'متابعين تيك توك', badge: 'ضمان', isCustom: true, rate: 16/1000, min: 100, ph: 'رابط الحساب' },
-        { cat: 'social', title: 'لايكات تيك توك', badge: 'سريع', isCustom: true, rate: 2/1000, min: 100, ph: 'رابط الفيديو' },
-        { cat: 'social', title: 'مشاهدات تيك توك', badge: 'فوري', isCustom: true, rate: 1/1000, min: 1000, ph: 'رابط الفيديو' },
-        { cat: 'social', title: 'مفضلة تيك توك', badge: 'ترند', isCustom: true, rate: 1/10, min: 10, ph: 'رابط الفيديو' },
-        { cat: 'social', title: 'اكسبلور تيك توك', badge: 'ترند', isCustom: true, rate: 1/10, min: 10, ph: 'رابط الفيديو' },
-        
-        // انستقرام
-        { cat: 'social', title: 'متابعين انستقرام', badge: 'ضمان', isCustom: true, rate: 10/1000, min: 100, ph: 'يوزر الحساب' },
-        { cat: 'social', title: 'لايكات انستقرام', badge: 'حقيقي', isCustom: true, rate: 8/1000, min: 100, ph: 'رابط المنشور' },
-        
-        // فيسبوك
-        { cat: 'social', title: 'متابعين فيسبوك', badge: 'رسمي', isCustom: true, rate: 5/1000, min: 1000, ph: 'رابط الحساب' },
-        { cat: 'social', title: 'تفاعلات فيسبوك', badge: 'سريع', isCustom: true, rate: 3/100, min: 100, ph: 'رابط المنشور' },
-        
-        // واتساب
-        { cat: 'social', title: 'أعضاء قناة واتساب', badge: 'حصري', options: [{n: '1000 عضو', p: 130}], ph: 'رابط القناة' },
-        
-        // ألعاب
-        { cat: 'games', title: 'شدات ببجي موبايل', badge: 'ID', options: [{n: '60 شدة', p: 14}, {n: '325 شدة', p: 65}, {n: '660 شدة', p: 130}], ph: 'ID اللاعب' },
-        { cat: 'games', title: 'جواهر فري فاير', badge: 'ID', options: [{n: '100 جوهرة', p: 16}, {n: '210 جوهرة', p: 31}, {n: '530 جوهرة', p: 76}], ph: 'ID اللاعب' },
-        { cat: 'games', title: 'عملات روبلكس', badge: 'فوري', options: [{n: '40 عملة', p: 16}, {n: '80 عملة', p: 32}], ph: 'اسم المستخدم' },
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        // اشتراكات
-        { cat: 'stream', title: 'يوتيوب بريميوم', badge: 'رسمي', options: [{n: 'شهر كامل', p: 50}], ph: 'ايميل الحساب' },
-        { cat: 'stream', title: 'نتفلكس Netflix', badge: '4K', options: [{n: '7 أيام', p: 15}, {n: 'شهر كامل', p: 40}], ph: 'رقم الواتساب' },
-        { cat: 'stream', title: 'شاهد VIP', badge: 'رياضة', options: [{n: 'شهر كامل', p: 30}], ph: 'رقم الواتساب' }
+    const API_KEY = "Bc34ac73c612e956734842221d87df60";
+    const API_URL = "https://ms1.shop/api/v2";
+
+    const services = [
+        { id: 16348, title: '60 شدة ببجي 🌎', price: 16.0, ph: 'ID اللاعب' },
+        { id: 16349, title: '325 شدة ببجي 🌎', price: 73.0, ph: 'ID اللاعب' },
+        { id: 16350, title: '660 شدة ببجي 🌎', price: 140.0, ph: 'ID اللاعب' },
+        { id: 21205, title: 'حفظ فيديو تيك توك (1000)', price: 0.12, ph: 'رابط الفيديو' }
     ];
 
-    function setPay(type, el) {
-        payType = type;
-        document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('active'));
-        el.classList.add('active');
-        render();
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            loadBalance(user.uid);
+            renderServices();
+        } else {
+            document.getElementById('auth-overlay').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+        }
+    });
+
+    async function login() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+        try { await auth.signInWithEmailAndPassword(email, pass); } 
+        catch (e) { alert("خطأ: " + e.message); }
     }
 
-    function render(f = 'all', q = '') {
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
-        db.forEach((item, i) => {
-            if(f !== 'all' && item.cat !== f) return;
-            if(q && !item.title.toLowerCase().includes(q.toLowerCase())) return;
+    function logout() { auth.signOut(); }
 
-            let multiplier = (payType === 'credit') ? 1.10 : 1;
-            let content = '';
-
-            if(item.isCustom) {
-                let startPr = Math.ceil(item.min * item.rate * multiplier);
-                content = `<div class="price-box"><span id="pr-${i}">${startPr}</span><small>LYD</small></div>
-                           <input type="number" class="custom-qty" id="qty-${i}" value="${item.min}" oninput="calcPrice(${i}, ${item.rate}, ${multiplier})">`;
-            } else {
-                let startPr = Math.ceil(item.options[0].p * multiplier);
-                content = `<div class="price-box"><span id="pr-${i}">${startPr}</span><small>LYD</small></div>
-                           <select class="selector" id="sel-${i}" onchange="updateStaticPrice(${i}, ${multiplier})">
-                                ${item.options.map(o => `<option value="${o.p}">${o.n}</option>`).join('')}
-                           </select>`;
+    function loadBalance(uid) {
+        // يقرأ من مجموعة users وثيقة تحمل الـ UID
+        db.collection('users').doc(uid).onSnapshot(doc => {
+            if (doc.exists) {
+                document.getElementById('userBalance').innerText = doc.data().balance.toFixed(2);
             }
-
-            grid.innerHTML += `
-                <div class="card">
-                    <div class="badge">${item.badge}</div>
-                    <img src="cd.jpg" alt="${item.title}">
-                    <h3>${item.title}</h3>
-                    <input type="text" class="data-input" id="data-${i}" placeholder="${item.ph}">
-                    ${content}
-                    <button class="buy-btn" onclick="addToCart(${i})">إضافة إلى السلة</button>
-                </div>`;
         });
     }
 
-    function calcPrice(idx, rate, mult) {
-        let qty = document.getElementById(`qty-${idx}`).value || 0;
-        document.getElementById(`pr-${idx}`).innerText = Math.ceil(qty * rate * mult);
+    function renderServices() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = services.map(s => `
+            <div class="card">
+                <h3 style="font-size:12px">${s.title}</h3>
+                <input type="text" class="data-input" id="in-${s.id}" placeholder="${s.ph}">
+                <div style="color:var(--accent); font-weight:bold; margin-bottom:10px">${s.price} LYD</div>
+                <button class="buy-btn" onclick="order('${s.id}', ${s.price})">طلب تلقائي</button>
+            </div>`).join('');
     }
 
-    function updateStaticPrice(idx, mult) {
-        let p = document.getElementById(`sel-${idx}`).value;
-        document.getElementById(`pr-${idx}`).innerText = Math.ceil(p * mult);
+    async function order(sid, price) {
+        const input = document.getElementById(`in-${sid}`).value;
+        if (!input) return alert("أدخل البيانات!");
+
+        const user = auth.currentUser;
+        const userRef = db.collection('users').doc(user.uid);
+        const doc = await userRef.get();
+        const bal = doc.data().balance;
+
+        if (bal < price) return alert("رصيدك غير كافٍ!");
+
+        if (confirm(`خصم ${price} LYD؟`)) {
+            await userRef.update({ balance: bal - price });
+            
+            // إرسال الطلب للسيرفر
+            fetch(API_URL, {
+                method: 'POST',
+                body: new URLSearchParams({ 'key': API_KEY, 'action': 'add', 'service': sid, 'link': input, 'quantity': '1' })
+            }).then(r => r.json()).then(res => {
+                alert(res.order ? "تم الطلب! رقم: " + res.order : "خطأ سيرفر: " + res.error);
+            });
+        }
     }
-
-    function addToCart(idx) {
-        const item = db[idx];
-        const dataVal = document.getElementById(`data-${idx}`).value;
-        const price = document.getElementById(`pr-${idx}`).innerText;
-        if(!dataVal) { alert('أدخل البيانات المطلوبة'); return; }
-
-        let detail = item.isCustom ? `الكمية: ${document.getElementById(`qty-${idx}`).value}` : 
-                     `الخيار: ${document.getElementById(`sel-${idx}`).options[document.getElementById(`sel-${idx}`).selectedIndex].text}`;
-
-        cart.push({ title: item.title, detail, data: dataVal, price: parseInt(price) });
-        updateCartUI();
-        alert('تمت الإضافة بنجاح!');
-    }
-
-    function updateCartUI() {
-        document.getElementById('cartCount').innerText = cart.length;
-        const list = document.getElementById('cartItemsList');
-        list.innerHTML = '';
-        let total = 0;
-        cart.forEach((item, i) => {
-            total += item.price;
-            list.innerHTML += `
-                <div class="cart-item-row">
-                    <div class="cart-item-info">
-                        <h4>${item.title}</h4>
-                        <p>${item.detail} | ${item.price} LYD</p>
-                    </div>
-                    <div class="remove-item" onclick="removeItem(${i})">🗑️</div>
-                </div>`;
-        });
-        document.getElementById('totalDisplay').innerText = total;
-    }
-
-    function removeItem(i) { cart.splice(i, 1); updateCartUI(); }
-    function toggleCart() { document.getElementById('cartModal').classList.toggle('active'); }
-
-    function sendOrder() {
-        if(cart.length === 0) { alert('السلة فارغة!'); return; }
-        let msg = `طلب جديد من متجر CD-CARD 🛒\n----------------------\n`;
-        cart.forEach((item, i) => {
-            msg += `${i+1}. ${item.title}\n🔹 التفاصيل: ${item.detail}\n🔹 البيانات: ${item.data}\n🔹 السعر: ${item.price} LYD\n----------------------\n`;
-        });
-        msg += `💰 الإجمالي: ${document.getElementById('totalDisplay').innerText} LYD\n💳 الدفع: ${payType === 'cash' ? 'كاش/مصرفي' : 'رصيد'}`;
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    function doSearch() { render('all', document.getElementById('searchInput').value); }
-    function doFilter(c, el) { 
-        document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active'));
-        el.classList.add('active'); render(c); 
-    }
-
-    render();
 </script>
-
 </body>
 </html>
 
