@@ -3,92 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | المتجر المتكامل</title>
+    <title>CD-CARD | المتجر الاحترافي</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     
     <style>
-        :root { --bg: #080808; --card-bg: #121212; --accent: #00ff88; --text: #ffffff; --border: rgba(255,255,255,0.07); }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 90px; }
+        :root { --bg: #050505; --card-bg: #111111; --accent: #00ff88; --text: #ffffff; --border: rgba(255,255,255,0.08); }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 100px; }
         
-        /* الهيدر */
-        .header-bal { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card-bg); border-radius: 18px; border: 1px solid var(--accent); margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,255,136,0.1); }
-        
-        /* شريط التنقل السفلي الثابت */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #121212; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); z-index: 2000; height: 75px; padding: 0 10px; box-sizing: border-box; }
-        .nav-item { color: #888; text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
-        .nav-center { background: var(--accent); color: #000; padding: 12px 20px; border-radius: 15px; font-weight: bold; transform: translateY(-20px); box-shadow: 0 5px 20px rgba(0,255,136,0.4); min-width: 80px; }
+        /* واجهة الرصيد الجديدة */
+        .glass-header { 
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,0,0,0.5));
+            border: 1px solid var(--border); backdrop-filter: blur(10px);
+            padding: 25px; border-radius: 25px; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .balance-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-amount { font-size: 28px; font-weight: 800; color: var(--accent); text-shadow: 0 0 15px rgba(0,255,136,0.3); }
 
-        .section { display: none; animation: fadeIn 0.4s; }
+        /* شريط التنقل السفلي */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18,18,18,0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 2000; height: 75px; backdrop-filter: blur(15px); }
+        .nav-item { color: #666; text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); }
+        .nav-center { background: var(--accent); color: #000; padding: 12px; border-radius: 20px; font-weight: bold; transform: translateY(-20px); box-shadow: 0 8px 25px rgba(0,255,136,0.4); width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; flex: none; }
+
+        .section { display: none; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* شبكة الخدمات */
-        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 10px; border: 1px solid var(--border); text-align: center; position: relative; }
-        .card img { width: 100%; height: 100px; object-fit: cover; border-radius: 15px; margin-bottom: 8px; border: 1px solid #222; }
-        .service-title { font-size: 11px; font-weight: bold; color: var(--accent); margin-bottom: 4px; height: 32px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .service-desc { font-size: 9px; color: #888; margin-bottom: 10px; height: 26px; overflow: hidden; line-height: 1.3; }
+        /* كروت الخدمات */
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 22px; padding: 12px; border: 1px solid var(--border); text-align: center; transition: 0.3s; }
+        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 18px; margin-bottom: 10px; }
+        .service-title { font-size: 12px; font-weight: bold; color: #eee; margin-bottom: 5px; height: 35px; overflow: hidden; }
         
-        .data-input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 6px; font-size: 10px; box-sizing: border-box; outline: none; text-align: center; }
-        .data-input:focus { border-color: var(--accent); }
-        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .buy-btn:active { transform: scale(0.95); }
+        .data-input, .package-select { width: 100%; background: #000; border: 1px solid #222; color: var(--accent); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 11px; box-sizing: border-box; outline: none; text-align: center; }
+        .price-tag { font-size: 13px; color: var(--accent); font-weight: bold; margin: 10px 0; background: rgba(0,255,136,0.05); padding: 5px; border-radius: 8px; }
+        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; }
 
-        /* سجل الطلبات */
-        .order-item { background: #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 12px; border-right: 5px solid var(--accent); font-size: 12px; position: relative; }
-        .order-status { position: absolute; left: 15px; top: 15px; background: #000; padding: 4px 8px; border-radius: 6px; font-size: 9px; color: var(--accent); border: 1px solid #333; }
+        .order-item { background: #151515; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 4px solid var(--accent); position: relative; }
+        .status-badge { float: left; font-size: 10px; padding: 4px 10px; border-radius: 20px; background: #000; color: var(--accent); border: 1px solid #222; }
 
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
 <div id="auth-overlay">
-    <h1 style="color:var(--accent); margin-bottom: 30px; font-size: 32px;">CD-CARD</h1>
-    <input type="email" id="loginEmail" class="data-input" style="max-width:300px; height: 50px; font-size: 14px;" placeholder="البريد الإلكتروني">
-    <input type="password" id="loginPass" class="data-input" style="max-width:300px; height: 50px; font-size: 14px;" placeholder="كلمة المرور">
-    <button class="buy-btn" style="max-width:300px; height: 50px; margin-top: 10px;" onclick="login()">دخول للمتجر</button>
+    <h1 style="color:var(--accent); font-size: 40px; margin-bottom: 20px;">CD-CARD</h1>
+    <input type="email" id="loginEmail" class="data-input" style="max-width:320px; height:55px" placeholder="البريد الإلكتروني">
+    <input type="password" id="loginPass" class="data-input" style="max-width:320px; height:55px" placeholder="كلمة المرور">
+    <button class="buy-btn" style="max-width:320px; height:55px" onclick="login()">دخول</button>
 </div>
 
 <div id="main-content" style="display:none">
     
-    <div class="header-bal">
-        <div><small style="color:#888">رصيد حسابك</small><br><b id="userBalance" style="color:var(--accent); font-size:22px">0.00</b> <small>LYD</small></div>
-        <button style="background:rgba(255,68,68,0.1); border:1px solid #ff4444; color:#ff4444; border-radius:8px; padding:6px 12px; font-size:11px" onclick="auth.signOut()">تسجيل خروج</button>
+    <div class="glass-header">
+        <div>
+            <div class="balance-label">رصيدك الحالي</div>
+            <div class="balance-amount"><span id="userBalance">0.00</span> <small style="font-size:14px">LYD</small></div>
+        </div>
+        <button onclick="auth.signOut()" style="background:none; border:1px solid #ff4444; color:#ff4444; border-radius:10px; padding:8px 15px; font-size:11px">خروج</button>
     </div>
 
     <div id="new-order-sec" class="section active">
-        <input type="text" id="srch" onkeyup="filter()" placeholder="🔍 ابحث عن أي خدمة هنا..." style="width:100%; padding:14px; border-radius:15px; background:#121212; color:#fff; border:1px solid #333; margin-bottom:20px; box-sizing:border-box; outline: none;">
+        <input type="text" id="srch" onkeyup="filter()" placeholder="بحث عن خدمة..." class="data-input" style="margin-bottom:20px; height:50px; text-align:right">
         <div class="services-grid" id="grid"></div>
     </div>
 
     <div id="orders-sec" class="section">
-        <h3 style="color:var(--accent); text-align:center; margin-bottom: 20px;">📦 سجل طلباتي الأخيرة</h3>
+        <h3 style="text-align:center; color:var(--accent)">سجل العمليات</h3>
         <div id="orderList"></div>
     </div>
 
     <div id="support-sec" class="section">
-        <h3 style="color:var(--accent); text-align:center; margin-bottom: 20px;">💬 الدعم الفني</h3>
-        <div class="card" style="padding:40px 20px">
-            <div style="font-size: 40px; margin-bottom: 15px;">👋</div>
-            <p style="margin-bottom: 25px; line-height: 1.6;">أهلاً بك في قسم الدعم. إذا واجهت مشكلة في الطلب أو تريد شحن رصيدك، اضغط على الزر أدناه.</p>
-            <button class="buy-btn" onclick="window.open('https://wa.me/218912377291')">تحدث معنا عبر واتساب</button>
+        <h3 style="text-align:center; color:var(--accent)">الدعم المباشر</h3>
+        <div class="card" style="padding:50px 20px">
+            <p>لشحن الرصيد أو الاستفسار تواصل معنا</p>
+            <button class="buy-btn" onclick="window.open('https://wa.me/218912377291')">واتساب الدعم</button>
         </div>
     </div>
 
     <div class="bottom-nav">
         <div class="nav-item" onclick="showSec('support-sec', this)">💬<br>الدعم</div>
-        <div class="nav-item active nav-center" id="nav-new" onclick="showSec('new-order-sec', this)">طلب جديد</div>
+        <div class="nav-item active nav-center" onclick="showSec('new-order-sec', document.getElementById('nav-item-services'))" id="nav-item-services">➕</div>
         <div class="nav-item" onclick="showSec('orders-sec', this)">📑<br>الطلبات</div>
     </div>
 </div>
 
 <script>
-    // إعدادات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -104,19 +110,34 @@
     const API_KEY = "Bc34ac73c612e956734842221d87df60";
     const API_URL = "https://ms1.shop/api/v2";
 
-    // القائمة الكاملة مع الوصف والـ IDs
+    // قائمة الخدمات (باقات + خدمات سوشيال)
     const services = [
-        { id: 21417, title: 'لايكات تيك توك ❤️', price: 0.63, desc: 'سرعة +50 ألف يومياً - بداية فورية', ph: 'رابط الفيديو' },
-        { id: 21186, title: 'متابعين تيك توك 👤', price: 29.65, desc: 'حسابات ريل حقيقية - ضمان 15 يوم', ph: 'رابط الحساب' },
-        { id: 14016, title: 'شاهد هاتف (شهر) 📱', price: 19.0, desc: 'اشتراك رسمي على رقمك الخاص', ph: 'الإيميل/الهاتف' },
-        { id: 14017, title: 'شاهد شاشة (شهر) 📺', price: 35.0, desc: 'جودة 4K رسمية تدعم الشاشات', ph: 'البيانات' },
-        { id: 15244, title: 'تيك توك (70 عملة) 🪙', price: 15.0, desc: 'شحن فوري عن طريق الآيدي', ph: 'ID الحساب' },
-        { id: 10531, title: 'نيتفليكس (شهر واحد) 🎬', price: 30.0, desc: 'بروفايل خاص بك بضمان كامل', ph: 'الإيميل' },
-        { id: 10918, title: 'USDT $10 💵', price: 150.0, desc: 'تحويل TRC20 فوري لمحفظتك', ph: 'عنوان المحفظة' },
-        { id: 21180, title: 'متابعين انستجرام 📸', price: 2.76, desc: 'حسابات عالية الجودة بدون نقص', ph: 'رابط الحساب' },
-        { id: 21585, title: 'مشتركين يوتيوب 🔴', price: 161.50, desc: 'عدم نقص - ضمان 30 يوم', ph: 'رابط القناة' },
-        { id: 21662, title: 'أعضاء تيليجرام ✈️', price: 6.42, desc: 'زيادة أعضاء القنوات والمجموعات', ph: 'رابط القناة' }
-        // ... يمكنك إضافة البقية هنا بنفس النمط
+        // خدمات باقات (Dropdown)
+        { type: 'package', title: 'شحن USDT 💵', options: [
+            { id: 10915, name: '$1 USDT', price: 15 },
+            { id: 10916, name: '$2 USDT', price: 30 },
+            { id: 10917, name: '$5 USDT', price: 80 },
+            { id: 10918, name: '$10 USDT', price: 150 }
+        ], ph: 'عنوان المحفظة (TRC20)' },
+
+        { type: 'package', title: 'عملات تيك توك 🪙', options: [
+            { id: 15244, name: '70 عملة', price: 15 },
+            { id: 15245, name: '100 عملة', price: 19 },
+            { id: 15246, name: '200 عملة', price: 35 },
+            { id: 15247, name: '390 عملة', price: 69 }
+        ], ph: 'ID الحساب' },
+
+        { type: 'package', title: 'اشتراكات شاهد 📱', options: [
+            { id: 14016, name: 'شاهد هاتف (شهر)', price: 19 },
+            { id: 14017, name: 'شاهد VIP شاشة', price: 35 }
+        ], ph: 'رقم الهاتف/الإيميل' },
+
+        // خدمات عادية (كمية متغيرة)
+        { type: 'social', id: 21417, title: 'لايكات تيك توك ❤️', price: 0.63, ph: 'رابط الفيديو' },
+        { id: 21186, type: 'social', title: 'متابعين تيك توك 👤', price: 29.65, ph: 'رابط الحساب' },
+        { id: 21180, type: 'social', title: 'متابعين انستا 📸', price: 2.76, ph: 'رابط الحساب' },
+        { id: 21585, type: 'social', title: 'مشتركين يوتيوب 🔴', price: 161.50, ph: 'رابط القناة' },
+        { id: 21662, type: 'social', title: 'أعضاء تيليجرام ✈️', price: 6.42, ph: 'رابط القناة' }
     ];
 
     function showSec(id, el) {
@@ -135,14 +156,13 @@
             loadHistory(user.uid);
         } else {
             document.getElementById('auth-overlay').style.display = 'flex';
-            document.getElementById('main-content').style.display = 'none';
         }
     });
 
     async function login() {
         const e = document.getElementById('loginEmail').value;
         const p = document.getElementById('loginPass').value;
-        try { await auth.signInWithEmailAndPassword(e, p); } catch(err) { alert("خطأ في بيانات الدخول"); }
+        try { await auth.signInWithEmailAndPassword(e, p); } catch(err) { alert("خطأ دخول"); }
     }
 
     function loadUser(uid) {
@@ -156,50 +176,83 @@
 
     function renderServices(data) {
         const grid = document.getElementById('grid');
-        grid.innerHTML = data.map(s => `
-            <div class="card">
-                <img src="cd.jpg" onerror="this.src='https://via.placeholder.com/150/121212/00ff88?text=CD-CARD'">
-                <div class="service-title">${s.title}</div>
-                <div class="service-desc">${s.desc}</div>
-                <input type="text" class="data-input" id="link-${s.id}" placeholder="${s.ph}">
-                <input type="number" class="data-input" id="qty-${s.id}" placeholder="الكمية" value="1000">
-                <div style="font-size:10px; color:var(--accent); margin-bottom:8px">السعر: ${s.price} LYD</div>
-                <button class="buy-btn" onclick="order('${s.id}', ${s.price}, '${s.title}')">طلب الآن</button>
-            </div>`).join('');
+        grid.innerHTML = data.map((s, idx) => {
+            if(s.type === 'package') {
+                return `
+                <div class="card">
+                    <img src="cd.jpg">
+                    <div class="service-title">${s.title}</div>
+                    <select class="package-select" id="sel-${idx}" onchange="updatePackPrice(${idx})">
+                        ${s.options.map(opt => `<option value="${opt.id}" data-price="${opt.price}">${opt.name}</option>`).join('')}
+                    </select>
+                    <input type="text" class="data-input" id="link-${idx}" placeholder="${s.ph}">
+                    <div class="price-tag"><span id="pr-${idx}">${s.options[0].price}</span> LYD</div>
+                    <button class="buy-btn" onclick="orderPack(${idx})">طلب الآن</button>
+                </div>`;
+            } else {
+                return `
+                <div class="card">
+                    <img src="cd.jpg">
+                    <div class="service-title">${s.title}</div>
+                    <input type="text" class="data-input" id="link-s-${s.id}" placeholder="${s.ph}">
+                    <input type="number" class="data-input" id="qty-s-${s.id}" value="1000" oninput="updateSocialPrice(${s.id}, ${s.price})">
+                    <div class="price-tag"><span id="pr-s-${s.id}">${s.price}</span> LYD</div>
+                    <button class="buy-btn" onclick="orderSocial(${s.id}, ${s.price}, '${s.title}')">طلب الآن</button>
+                </div>`;
+            }
+        }).join('');
     }
 
-    function filter() {
-        const q = document.getElementById('srch').value.toLowerCase();
-        renderServices(services.filter(s => s.title.toLowerCase().includes(q)));
+    function updatePackPrice(idx) {
+        const sel = document.getElementById(`sel-${idx}`);
+        const price = sel.options[sel.selectedIndex].getAttribute('data-price');
+        document.getElementById(`pr-${idx}`).innerText = price;
     }
 
-    async function order(sid, p1000, name) {
-        const link = document.getElementById(`link-${sid}`).value;
-        const qty = parseInt(document.getElementById(`qty-${sid}`).value);
-        if(!link || !qty || qty < 1) return alert("الرجاء إدخال الرابط والكمية!");
+    function updateSocialPrice(id, p1000) {
+        const qty = document.getElementById(`qty-s-${id}`).value || 0;
+        document.getElementById(`pr-s-${id}`).innerText = ((p1000/1000)*qty).toFixed(2);
+    }
 
+    async function orderPack(idx) {
+        const s = services[idx];
+        const sel = document.getElementById(`sel-${idx}`);
+        const sid = sel.value;
+        const name = sel.options[sel.selectedIndex].text;
+        const price = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-price'));
+        const link = document.getElementById(`link-${idx}`).value;
+
+        if(!link) return alert("أدخل البيانات!");
+        processOrder(sid, price, name, link, 1);
+    }
+
+    async function orderSocial(sid, p1000, name) {
+        const link = document.getElementById(`link-s-${sid}`).value;
+        const qty = parseInt(document.getElementById(`qty-s-${sid}`).value);
         const cost = (p1000 / 1000) * qty;
-        if(window.bal < cost) return alert("عذراً، رصيدك غير كافٍ لإتمام العملية!");
 
-        if(confirm(`سيتم خصم ${cost.toFixed(2)} LYD مقابل ${qty} من ${name}. هل تريد الاستمرار؟`)) {
-            const user = auth.currentUser;
-            await db.collection('users').doc(user.uid).update({ balance: window.bal - cost });
+        if(!link || !qty) return alert("أكمل البيانات!");
+        processOrder(sid, cost, name, link, qty);
+    }
 
-            let sStatus = "معالجة يدوية";
-            try {
-                const r = await fetch(API_URL, {
-                    method: 'POST',
-                    body: new URLSearchParams({'key':API_KEY,'action':'add','service':sid,'link':link,'quantity':qty})
-                });
-                const res = await r.json();
-                if(res.order) sStatus = "تم الإرسال للسيرفر";
-            } catch(e) {}
+    async function processOrder(sid, cost, name, link, qty) {
+        if(window.bal < cost) return alert("رصيد ناقص!");
+        if(!confirm(`تأكيد خصم ${cost.toFixed(2)} LYD؟`)) return;
 
-            await db.collection({ collectionPath: 'orders' }).add({
-                uid: user.uid, email: user.email, serviceName: name, price: cost, qty: qty, status: sStatus, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("تم تسجيل طلبك بنجاح! تابع الحالة من سجل الطلبات.");
-        }
+        const uid = auth.currentUser.uid;
+        await db.collection('users').doc(uid).update({ balance: window.bal - cost });
+
+        let status = "يتم المعالجة";
+        try {
+            const r = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({'key':API_KEY,'action':'add','service':sid,'link':link,'quantity':qty}) });
+            const res = await r.json();
+            if(res.order) status = "✅ تم الإرسال";
+        } catch(e) { status = "⏳ بانتظار السيرفر"; }
+
+        await db.collection('orders').add({
+            uid: uid, serviceName: name, price: cost, status: status, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("تم الطلب!");
     }
 
     function loadHistory(uid) {
@@ -207,12 +260,17 @@
             document.getElementById('orderList').innerHTML = snap.docs.map(doc => {
                 const d = doc.data();
                 return `<div class="order-item">
-                    <span class="order-status">${d.status}</span>
-                    <b style="color:var(--accent)">${d.serviceName}</b><br>
-                    <small style="color:#888">الكمية: ${d.qty} | القيمة: ${d.price.toFixed(2)} LYD</small>
+                    <span class="status-badge">${d.status}</span>
+                    <b>${d.serviceName}</b><br>
+                    <small>${d.price.toFixed(2)} LYD | ${d.timestamp?.toDate().toLocaleString('ar-LY') || 'الآن'}</small>
                 </div>`;
             }).join('');
         });
+    }
+
+    function filter() {
+        const q = document.getElementById('srch').value.toLowerCase();
+        renderServices(services.filter(s => s.title.toLowerCase().includes(q)));
     }
 </script>
 </body>
