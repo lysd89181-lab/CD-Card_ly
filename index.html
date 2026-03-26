@@ -22,11 +22,16 @@
         .header-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 5px; position: sticky; top: 0; background: var(--bg); z-index: 1001; }
         .user-stats { background: var(--card-bg); border: 1px solid var(--accent); padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .balance-val { font-size: 20px; font-weight: bold; color: var(--accent); }
-        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 12px; text-align: center; }
         .data-input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 8px; outline: none; box-sizing: border-box; }
         .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .buy-btn:active { transform: scale(0.95); }
+        
+        /* سجل الطلبات */
+        .order-history { margin-top: 20px; padding: 10px; border-top: 1px solid var(--border); }
+        .order-item { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 12px; border-right: 4px solid var(--accent); }
+        
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .auth-input { width: 100%; max-width: 300px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; text-align: center; }
     </style>
@@ -35,7 +40,6 @@
 
 <div id="auth-overlay">
     <h2 style="color:var(--accent)">CD-CARD</h2>
-    <p style="font-size: 14px; color: var(--dim);">يرجى تسجيل الدخول للمتابعة</p>
     <input type="email" id="loginEmail" class="auth-input" placeholder="البريد الإلكتروني">
     <input type="password" id="loginPass" class="auth-input" placeholder="كلمة المرور">
     <button class="buy-btn" style="max-width:300px" onclick="login()">دخول</button>
@@ -56,10 +60,15 @@
     </div>
 
     <div class="services-grid" id="grid"></div>
+
+    <div class="order-history">
+        <h3 style="color:var(--accent); font-size: 14px;">آخر طلباتك:</h3>
+        <div id="orderList"></div>
+    </div>
 </div>
 
 <script>
-    // الإعدادات التي أرسلتها أنت (صحيحة 100%)
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -74,7 +83,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // إعدادات المورد
     const API_KEY = "Bc34ac73c612e956734842221d87df60";
     const API_URL = "https://ms1.shop/api/v2";
 
@@ -90,6 +98,7 @@
             document.getElementById('auth-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             loadBalance(user.uid);
+            loadOrders(user.uid);
             renderServices();
         } else {
             document.getElementById('auth-overlay').style.display = 'flex';
@@ -100,22 +109,30 @@
     async function login() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
-        if(!email || !pass) return alert("أدخل البيانات!");
         try { await auth.signInWithEmailAndPassword(email, pass); } 
-        catch (e) { alert("خطأ في الدخول: " + e.message); }
+        catch (e) { alert("خطأ: " + e.message); }
     }
 
     function logout() { auth.signOut(); }
 
     function loadBalance(uid) {
-        // البحث في مجموعة users عن وثيقة باسم الـ UID
         db.collection('users').doc(uid).onSnapshot(doc => {
             if (doc.exists) {
                 document.getElementById('userBalance').innerText = (doc.data().balance || 0).toFixed(2);
-            } else {
-                // إنشاء ملف مستخدم جديد برصيد 0 إذا لم يوجد
-                db.collection('users').doc(uid).set({ balance: 0, email: auth.currentUser.email });
             }
+        });
+    }
+
+    function loadOrders(uid) {
+        db.collection('orders').where('uid', '==', uid).orderBy('timestamp', 'desc').limit(5).onSnapshot(snap => {
+            document.getElementById('orderList').innerHTML = snap.docs.map(doc => {
+                const d = doc.data();
+                return `<div class="order-item">
+                    <b>${d.serviceName}</b><br>
+                    البيانات: ${d.inputData}<br>
+                    الحالة: ${d.serverStatus == "Success" ? "✅ مكتمل" : "⏳ قيد المراجعة"}
+                </div>`;
+            }).join('');
         });
     }
 
@@ -126,46 +143,57 @@
                 <h3 style="font-size:12px">${s.title}</h3>
                 <input type="text" class="data-input" id="in-${s.id}" placeholder="${s.ph}">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px">${s.price} LYD</div>
-                <button class="buy-btn" onclick="order('${s.id}', ${s.price})">طلب تلقائي</button>
+                <button class="buy-btn" onclick="order('${s.id}', ${s.price}, '${s.title}')">طلب تلقائي</button>
             </div>`).join('');
     }
 
-    async function order(sid, price) {
+    async function order(sid, price, sName) {
         const input = document.getElementById(`in-${sid}`).value;
-        if (!input) return alert("أدخل البيانات المطلوبة!");
+        if (!input) return alert("أدخل البيانات!");
 
         const user = auth.currentUser;
         const userRef = db.collection('users').doc(user.uid);
         const doc = await userRef.get();
         const bal = doc.data().balance || 0;
 
-        if (bal < price) return alert("عذراً، رصيدك غير كافٍ!");
+        if (bal < price) return alert("رصيدك غير كافٍ!");
 
-        if (confirm(`تأكيد خصم ${price} LYD من رصيدك؟`)) {
-            // خصم الرصيد أولاً
-            await userRef.update({ balance: bal - price });
-            
-            // إرسال الطلب للمورد
+        if (confirm(`تأكيد خصم ${price} LYD لخدمة ${sName}؟`)) {
+            const newBalance = bal - price;
+            await userRef.update({ balance: newBalance });
+
+            let serverResponse = "Waiting Balance";
+            let orderId = "N/A";
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: new URLSearchParams({ 
-                        'key': API_KEY, 
-                        'action': 'add', 
-                        'service': sid, 
-                        'link': input, 
-                        'quantity': '1' 
-                    })
+                    body: new URLSearchParams({ 'key': API_KEY, 'action': 'add', 'service': sid, 'link': input, 'quantity': '1' })
                 });
                 const res = await response.json();
                 if (res.order) {
-                    alert("تم تنفيذ طلبك بنجاح! رقم العملية: " + res.order);
+                    serverResponse = "Success";
+                    orderId = res.order;
                 } else {
-                    alert("خطأ من السيرفر: " + res.error);
+                    serverResponse = "Error: " + (res.error || "No Credit");
                 }
-            } catch (e) {
-                alert("تم الخصم بنجاح، والطلب قيد المعالجة اليدوية.");
-            }
+            } catch (err) { console.log("Server error, saving for manual"); }
+
+            // حفظ السجل لمراقبته في Firestore
+            await db.collection('orders').add({
+                uid: user.uid,
+                email: user.email,
+                serviceName: sName,
+                inputData: input,
+                price: price,
+                oldBalance: bal,
+                newBalance: newBalance,
+                serverStatus: serverResponse,
+                serverOrderId: orderId,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert(serverResponse == "Success" ? "تم الطلب بنجاح!" : "تم الخصم، والطلب قيد المعالجة اليدوية حالياً.");
         }
     }
 </script>
