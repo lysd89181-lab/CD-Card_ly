@@ -22,6 +22,10 @@
         .header-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 5px; position: sticky; top: 0; background: var(--bg); z-index: 1001; }
         .user-stats { background: var(--card-bg); border: 1px solid var(--accent); padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .balance-val { font-size: 20px; font-weight: bold; color: var(--accent); }
+        
+        /* البحث */
+        .search-box { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; margin-bottom: 20px; outline: none; box-sizing: border-box; }
+        
         .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 12px; text-align: center; }
         .data-input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 8px; outline: none; box-sizing: border-box; }
@@ -30,7 +34,7 @@
         
         /* سجل الطلبات */
         .order-history { margin-top: 20px; padding: 10px; border-top: 1px solid var(--border); }
-        .order-item { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 12px; border-right: 4px solid var(--accent); }
+        .order-item { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 11px; border-right: 4px solid var(--accent); }
         
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .auth-input { width: 100%; max-width: 300px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; text-align: center; }
@@ -59,16 +63,18 @@
         <button class="buy-btn" style="width:auto; padding:5px 15px; font-size: 11px;" onclick="window.open('https://wa.me/218912377291')">شحن +</button>
     </div>
 
+    <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن خدمة..." onkeyup="filterServices()">
+
     <div class="services-grid" id="grid"></div>
 
     <div class="order-history">
-        <h3 style="color:var(--accent); font-size: 14px;">آخر طلباتك:</h3>
+        <h3 style="color:var(--accent); font-size: 14px;">آخر 5 طلبات لك:</h3>
         <div id="orderList"></div>
     </div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
+    // إعدادات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -83,14 +89,47 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // السيرفر القديم MS1 SHOP
     const API_KEY = "Bc34ac73c612e956734842221d87df60";
     const API_URL = "https://ms1.shop/api/v2";
 
+    // القائمة الكاملة (35 خدمة) بدون نقص
     const services = [
-        { id: 16348, title: '60 شدة ببجي 🌎', price: 16.0, ph: 'ID اللاعب' },
-        { id: 16349, title: '325 شدة ببجي 🌎', price: 73.0, ph: 'ID اللاعب' },
-        { id: 16350, title: '660 شدة ببجي 🌎', price: 140.0, ph: 'ID اللاعب' },
-        { id: 21205, title: 'حفظ فيديو تيك توك (1000)', price: 0.12, ph: 'رابط الفيديو' }
+        { id: 21417, title: 'إعجابات تيك توك ❤️', price: 0.63, ph: 'رابط الفيديو' },
+        { id: 21186, title: 'متابعين تيك توك 👤', price: 29.65, ph: 'رابط الحساب' },
+        { id: 21353, title: 'إعجابات تيك توك [ضمان] ✅', price: 3.05, ph: 'رابط الفيديو' },
+        { id: 21370, title: 'إعادة نشر تيك توك 🔁', price: 11.61, ph: 'رابط الفيديو' },
+        { id: 21451, title: 'بث مباشر تيك توك (15د) 👁️', price: 46.21, ph: 'رابط البث' },
+        { id: 21465, title: 'تعليقات بث مباشر تيك توك 💬', price: 13.26, ph: 'رابط البث' },
+        { id: 14016, title: 'شاهد هاتف (شهر) 📱', price: 19.0, ph: 'بيانات الحساب' },
+        { id: 14017, title: 'شاهد شاشة (شهر) 📺', price: 35.0, ph: 'بيانات الحساب' },
+        { id: 15244, title: 'تيك توك (70 عملة) 🪙', price: 15.0, ph: 'ID الحساب' },
+        { id: 15245, title: 'تيك توك (100 عملة) 🪙', price: 19.0, ph: 'ID الحساب' },
+        { id: 15246, title: 'تيك توك (200 عملة) 🪙', price: 35.0, ph: 'ID الحساب' },
+        { id: 15247, title: 'تيك توك (390 عملة) 🪙', price: 69.0, ph: 'ID الحساب' },
+        { id: 10531, title: 'نيتفليكس (شهر واحد) 🎬', price: 30.0, ph: 'بيانات الحساب' },
+        { id: 12352, title: 'سناب بلس (3 شهور) 👻', price: 50.0, ph: 'بيانات الحساب' },
+        { id: 18963, title: 'شات جي بي تي (شهر) 🤖', price: 45.0, ph: 'بيانات الحساب' },
+        { id: 15653, title: 'كاب كات (شهر واحد) 🎬', price: 85.0, ph: 'بيانات الحساب' },
+        { id: 10915, title: 'USDT $1 💵', price: 15.0, ph: 'عنوان المحفظة' },
+        { id: 10916, title: 'USDT $2 💵', price: 30.0, ph: 'عنوان المحفظة' },
+        { id: 10917, title: 'USDT $5 💵', price: 80.0, ph: 'عنوان المحفظة' },
+        { id: 10918, title: 'USDT $10 💵', price: 150.0, ph: 'عنوان المحفظة' },
+        { id: 21180, title: 'متابعين انستجرام 📸', price: 2.76, ph: 'رابط الحساب' },
+        { id: 21241, title: 'لايكات انستجرام ❤️', price: 1.27, ph: 'رابط المنشور' },
+        { id: 21276, title: 'مشاهدات انستجرام 👁️', price: 0.02, ph: 'رابط الفيديو' },
+        { id: 21331, title: 'تعليقات انستجرام 💬', price: 54.24, ph: 'رابط المنشور' },
+        { id: 21473, title: 'متابعين فيس بوك 👤', price: 2.33, ph: 'رابط الحساب' },
+        { id: 21532, title: 'تفاعل منشورات فيسبوك 👍', price: 1.40, ph: 'رابط المنشور' },
+        { id: 21539, title: 'أعضاء جروب فيس بوك 👥', price: 3.82, ph: 'رابط الجروب' },
+        { id: 21557, title: 'مشاركات فيس بوك 🔁', price: 0.20, ph: 'رابط المنشور' },
+        { id: 21585, title: 'مشتركين يوتيوب 🔴', price: 161.50, ph: 'رابط القناة' },
+        { id: 21594, title: 'إعجابات يوتيوب 👍', price: 4.97, ph: 'رابط الفيديو' },
+        { id: 21610, title: 'مشاهدات يوتيوب 👁️', price: 15.71, ph: 'رابط الفيديو' },
+        { id: 21662, title: 'أعضاء تيليجرام ✈️', price: 6.42, ph: 'رابط القناة' },
+        { id: 21691, title: 'تفاعل ميكس تيليجرام 🔥', price: 0.23, ph: 'رابط المنشور' },
+        { id: 22030, title: 'تفاعلات واتساب ❤️', price: 16.21, ph: 'رابط القناة' },
+        { id: 22021, title: 'أعضاء قناة واتساب 🟢', price: 59.32, ph: 'رابط القناة' }
     ];
 
     auth.onAuthStateChanged(user => {
@@ -99,7 +138,7 @@
             document.getElementById('main-content').style.display = 'block';
             loadBalance(user.uid);
             loadOrders(user.uid);
-            renderServices();
+            renderServices(services);
         } else {
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-content').style.display = 'none';
@@ -117,9 +156,7 @@
 
     function loadBalance(uid) {
         db.collection('users').doc(uid).onSnapshot(doc => {
-            if (doc.exists) {
-                document.getElementById('userBalance').innerText = (doc.data().balance || 0).toFixed(2);
-            }
+            if (doc.exists) document.getElementById('userBalance').innerText = (doc.data().balance || 0).toFixed(2);
         });
     }
 
@@ -128,72 +165,62 @@
             document.getElementById('orderList').innerHTML = snap.docs.map(doc => {
                 const d = doc.data();
                 return `<div class="order-item">
-                    <b>${d.serviceName}</b><br>
-                    البيانات: ${d.inputData}<br>
-                    الحالة: ${d.serverStatus == "Success" ? "✅ مكتمل" : "⏳ قيد المراجعة"}
+                    <b>${d.serviceName}</b> | ${d.price} LYD<br>
+                    الحالة: ${d.serverStatus === "Success" ? "✅ تم" : "⏳ قيد المراجعة"}
                 </div>`;
             }).join('');
         });
     }
 
-    function renderServices() {
+    function renderServices(data) {
         const grid = document.getElementById('grid');
-        grid.innerHTML = services.map(s => `
+        grid.innerHTML = data.map(s => `
             <div class="card">
-                <h3 style="font-size:12px">${s.title}</h3>
+                <h3 style="font-size:11px">${s.title}</h3>
                 <input type="text" class="data-input" id="in-${s.id}" placeholder="${s.ph}">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px">${s.price} LYD</div>
-                <button class="buy-btn" onclick="order('${s.id}', ${s.price}, '${s.title}')">طلب تلقائي</button>
+                <button class="buy-btn" onclick="order('${s.id}', ${s.price}, '${s.title}')">طلب الآن</button>
             </div>`).join('');
+    }
+
+    function filterServices() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = services.filter(s => s.title.toLowerCase().includes(term));
+        renderServices(filtered);
     }
 
     async function order(sid, price, sName) {
         const input = document.getElementById(`in-${sid}`).value;
-        if (!input) return alert("أدخل البيانات!");
+        if (!input) return alert("الرجاء إدخال البيانات!");
 
         const user = auth.currentUser;
         const userRef = db.collection('users').doc(user.uid);
         const doc = await userRef.get();
         const bal = doc.data().balance || 0;
 
-        if (bal < price) return alert("رصيدك غير كافٍ!");
+        if (bal < price) return alert("الرصيد غير كافٍ!");
 
-        if (confirm(`تأكيد خصم ${price} LYD لخدمة ${sName}؟`)) {
+        if (confirm(`تأكيد طلب ${sName}؟`)) {
             const newBalance = bal - price;
             await userRef.update({ balance: newBalance });
 
-            let serverResponse = "Waiting Balance";
-            let orderId = "N/A";
-
+            let serverStatus = "Manual Pending";
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: new URLSearchParams({ 'key': API_KEY, 'action': 'add', 'service': sid, 'link': input, 'quantity': '1' })
                 });
                 const res = await response.json();
-                if (res.order) {
-                    serverResponse = "Success";
-                    orderId = res.order;
-                } else {
-                    serverResponse = "Error: " + (res.error || "No Credit");
-                }
-            } catch (err) { console.log("Server error, saving for manual"); }
+                if (res.order) serverStatus = "Success";
+            } catch (e) { console.log("Recorded for manual processing"); }
 
-            // حفظ السجل لمراقبته في Firestore
             await db.collection('orders').add({
-                uid: user.uid,
-                email: user.email,
-                serviceName: sName,
-                inputData: input,
-                price: price,
-                oldBalance: bal,
-                newBalance: newBalance,
-                serverStatus: serverResponse,
-                serverOrderId: orderId,
+                uid: user.uid, email: user.email, serviceName: sName,
+                inputData: input, price: price, serverStatus: serverStatus,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            alert(serverResponse == "Success" ? "تم الطلب بنجاح!" : "تم الخصم، والطلب قيد المعالجة اليدوية حالياً.");
+            alert("تم تسجيل طلبك بنجاح!");
         }
     }
 </script>
