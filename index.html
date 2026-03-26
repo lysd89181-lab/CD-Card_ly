@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | المتجر الاحترافي</title>
+    <title>CD-CARD | المتجر المتكامل</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -11,95 +11,74 @@
     
     <style>
         :root { --bg: #0a0a0b; --card: #161618; --accent: #00ff88; --text: #ffffff; --sub: #8e8e93; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
 
-        /* واجهة الدخول والتسجيل */
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; }
-        .auth-card { background: var(--card); padding: 30px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid rgba(255,255,255,0.05); }
-        
-        /* شريط الرصيد العلوي */
+        /* الهيدر والرصيد */
         .top-bar { position: sticky; top: 15px; z-index: 1000; padding: 0 15px; margin-bottom: 20px; }
         .balance-pill { background: rgba(22, 22, 24, 0.9); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 12px 18px; border-radius: 50px; display: flex; justify-content: space-between; align-items: center; }
         .bal-box { display: flex; align-items: center; background: rgba(0,255,136,0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--accent); }
-        .plus-btn { background: var(--accent); color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 10px; cursor: pointer; }
 
-        /* الأقسام */
-        .section { display: none; padding: 0 15px; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* اختيار القسم */
+        .cat-filter { padding: 0 15px; margin-bottom: 20px; }
+        .cat-select { width: 100%; background: var(--card); border: 1px solid var(--accent); color: #fff; padding: 15px; border-radius: 15px; outline: none; font-size: 14px; }
 
-        /* الخدمات */
-        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .card { background: var(--card); border-radius: 22px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); text-align: center; }
+        /* شبكة الخدمات */
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
+        .card { background: var(--card); border-radius: 22px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); text-align: center; animation: fadeIn 0.4s ease; }
         .card img { width: 100%; height: 95px; object-fit: cover; border-radius: 15px; margin-bottom: 8px; }
-        .service-title { font-size: 10px; font-weight: bold; height: 35px; overflow: hidden; margin-bottom: 8px; }
+        .service-name { font-size: 10px; font-weight: bold; height: 35px; overflow: hidden; margin-bottom: 10px; line-height: 1.4; }
         
-        .data-input, .package-select { width: 100%; background: #000; border: 1px solid #222; color: var(--accent); padding: 10px; border-radius: 12px; margin-bottom: 6px; font-size: 11px; text-align: center; box-sizing: border-box; outline: none; }
-        .price-tag { color: var(--accent); font-weight: 800; font-size: 13px; margin: 8px 0; display: block; }
-        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 15px; font-weight: 800; font-size: 11px; cursor: pointer; }
+        .data-input { width: 100%; background: #000; border: 1px solid #222; color: var(--accent); padding: 10px; border-radius: 12px; margin-bottom: 6px; font-size: 11px; text-align: center; box-sizing: border-box; outline: none; }
+        .price-tag { color: var(--accent); font-weight: 800; font-size: 14px; margin: 10px 0; display: block; }
+        .buy-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .buy-btn:active { transform: scale(0.95); }
 
-        /* شريط سفلي */
+        /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #161618; display: flex; justify-content: space-around; align-items: center; height: 80px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000; }
-        .nav-item { text-align: center; color: var(--sub); font-size: 10px; flex: 1; cursor: pointer; }
+        .nav-item { text-align: center; color: var(--sub); font-size: 11px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
-        .nav-center { background: #1d1d20; width: 65px; height: 65px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: translateY(-20px); border: 6px solid var(--bg); color: var(--accent); }
 
-        .order-item { background: var(--card); padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 4px solid var(--accent); }
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="auth-overlay">
-    <div class="auth-card">
-        <h1 style="color:var(--accent); margin-top:0">CD-CARD</h1>
-        <div id="auth-inputs">
-            <input type="email" id="userEmail" class="data-input" placeholder="البريد الإلكتروني">
-            <input type="password" id="userPass" class="data-input" placeholder="كلمة المرور">
-            <button class="buy-btn" id="mainAuthBtn" onclick="handleAuth()">دخول</button>
-            <p id="auth-toggle" style="font-size:12px; color:var(--sub); margin-top:15px; cursor:pointer" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
-        </div>
+    <div style="background:var(--card); padding:30px; border-radius:25px; width:100%; max-width:320px; text-align:center">
+        <h1 style="color:var(--accent); margin-bottom:20px">CD-CARD</h1>
+        <input type="email" id="email" class="data-input" style="height:45px" placeholder="البريد الإلكتروني">
+        <input type="password" id="pass" class="data-input" style="height:45px" placeholder="كلمة المرور">
+        <button class="buy-btn" onclick="login()" style="height:45px">دخول للمتجر</button>
     </div>
 </div>
 
 <div id="main-content" style="display:none">
     <div class="top-bar">
         <div class="balance-pill">
-            <div style="font-weight:800">CD-CARD</div>
+            <div style="font-weight:800; letter-spacing:1px">CD-CARD</div>
             <div class="bal-box">
                 <span id="userBalance">0.00</span> <small style="margin-right:5px">د.ل</small>
-                <div class="plus-btn" onclick="showSec('support-sec', document.getElementById('nav-support'))">+</div>
             </div>
         </div>
     </div>
 
-    <div id="new-order-sec" class="section active">
-        <input type="text" id="srch" onkeyup="filter()" placeholder="🔍 ابحث عن خدمة..." class="data-input" style="margin-bottom:15px; width:92%; margin-right:4%">
-        <div class="services-grid" id="grid"></div>
+    <div class="cat-filter">
+        <select id="categorySelect" class="cat-select" onchange="renderServices()">
+            <option value="all">-- جميع الأقسام --</option>
+        </select>
     </div>
 
-    <div id="orders-sec" class="section">
-        <h3 style="color:var(--accent); text-align:center">سجل طلباتي</h3>
-        <div id="orderList"></div>
-    </div>
-
-    <div id="support-sec" class="section">
-        <h3 style="text-align:center; color:var(--accent)">الإعدادات</h3>
-        <div class="card" style="padding:30px">
-            <p>لشحن الرصيد تواصل معنا</p>
-            <button class="buy-btn" onclick="window.open('https://wa.me/218912377291')">واتساب الشحن</button>
-            <button class="buy-btn" style="background:#ff4444; margin-top:10px; color:#fff" onclick="auth.signOut()">تسجيل الخروج</button>
-        </div>
-    </div>
+    <div id="grid" class="services-grid"></div>
 
     <div class="bottom-nav">
-        <div class="nav-item" onclick="showSec('support-sec', this)" id="nav-support">⚙️<br>إعدادات</div>
-        <div class="nav-item active nav-center" onclick="showSec('new-order-sec', this)">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="showSec('orders-sec', this)">🛒<br>طلباتي</div>
+        <div class="nav-item">⚙️<br>الإعدادات</div>
+        <div class="nav-item active">🏠<br>الرئيسية</div>
+        <div class="nav-item">🛒<br>طلباتي</div>
     </div>
 </div>
 
 <script>
-    // تكوين فايربيس الخاص بك
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -112,72 +91,19 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const API_KEY = "Bc34ac73c612e956734842221d87df60";
-    const API_URL = "https://ms1.shop/api/v2";
+    let allServices = [];
 
-    let isLoginMode = true;
-
-    // دالة زيادة السعر 30%
-    const addProfit = (price) => (price * 1.3).toFixed(2);
-
-    const services = [
-        // باقات (Dropdown)
-        { type: 'package', title: 'عملات تيك توك 🪙', options: [
-            { id: 15244, name: '70 عملة', price: 15.0 },
-            { id: 15245, name: '100 عملة', price: 19.0 },
-            { id: 15246, name: '200 عملة', price: 35.0 },
-            { id: 15247, name: '390 عملة', price: 69.0 }
-        ], ph: 'ID الحساب' },
-        
-        { type: 'package', title: 'شحن USDT 💵', options: [
-            { id: 10915, name: '$1 USDT', price: 15.0 },
-            { id: 10916, name: '$2 USDT', price: 30.0 },
-            { id: 10917, name: '$5 USDT', price: 80.0 },
-            { id: 10918, name: '$10 USDT', price: 150.0 }
-        ], ph: 'عنوان المحفظة' },
-
-        { type: 'package', title: 'اشتراكات شاهد 📱', options: [
-            { id: 14016, name: 'شاهد هاتف (شهر)', price: 19.0 },
-            { id: 14017, name: 'شاهد شاشة (شهر)', price: 35.0 }
-        ], ph: 'الإيميل/الهاتف' },
-
-        { id: 10531, type: 'one', title: 'نيتفليكس شهر واحد 🎬', price: 30.0, ph: 'الإيميل' },
-        { id: 12352, type: 'one', title: 'سناب بلس 3 شهور 👻', price: 50.0, ph: 'اسم الحساب' },
-        { id: 18963, type: 'one', title: 'شات جي بي تي (شهر) 🤖', price: 45.0, ph: 'الإيميل' },
-        { id: 15653, type: 'one', title: 'كاب كات برو (شهر) 🎬', price: 85.0, ph: 'الإيميل' },
-
-        // خدمات سوشيال (بالألف)
-        { id: 21416, type: 'social', title: 'مشاهدات تيك توك 👁️', price: 0.4, ph: 'رابط الفيديو' },
-        { id: 21417, type: 'social', title: 'لايكات تيك توك (ضمان) ❤️', price: 0.55, ph: 'رابط الفيديو' },
-        { id: 21186, type: 'social', title: 'متابعين تيك توك ريل 👤', price: 29.65, ph: 'رابط الحساب' },
-        { id: 21180, type: 'social', title: 'متابعين انستا جودة ✨', price: 2.76, ph: 'رابط الحساب' },
-        { id: 21241, type: 'social', title: 'لايكات انستا (ضمان) ❤️', price: 1.27, ph: 'رابط المنشور' },
-        { id: 21585, type: 'social', title: 'مشتركين يوتيوب (ثبات) 🔴', price: 161.5, ph: 'رابط القناة' },
-        { id: 21662, type: 'social', title: 'أعضاء تيليجرام (ثبات) ✈️', price: 6.42, ph: 'رابط القناة' },
-        { id: 22021, type: 'social', title: 'متابعين قناة واتساب 🟢', price: 59.32, ph: 'رابط القناة' },
-        { id: 21473, type: 'social', title: 'متابعين فيسبوك 👤', price: 2.33, ph: 'رابط الحساب' },
-        { id: 21532, type: 'social', title: 'تفاعل فيسبوك 👍', price: 1.4, ph: 'رابط المنشور' },
-        { id: 21557, type: 'social', title: 'مشاركات فيسبوك 🔄', price: 0.2, ph: 'رابط المنشور' },
-        { id: 21610, type: 'social', title: 'مشاهدات يوتيوب (ضمان) 👁️', price: 15.71, ph: 'رابط الفيديو' }
-    ];
-
-    function toggleAuthMode() {
-        isLoginMode = !isLoginMode;
-        document.getElementById('mainAuthBtn').innerText = isLoginMode ? 'دخول' : 'إنشاء حساب جديد';
-        document.getElementById('auth-toggle').innerText = isLoginMode ? 'ليس لديك حساب؟ إنشاء حساب جديد' : 'لديك حساب؟ سجل دخولك';
-    }
-
-    async function handleAuth() {
-        const e = document.getElementById('userEmail').value;
-        const p = document.getElementById('userPass').value;
+    async function login() {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('pass').value;
         try {
-            if(isLoginMode) {
-                await auth.signInWithEmailAndPassword(e, p);
-            } else {
+            await auth.signInWithEmailAndPassword(e, p);
+        } catch(err) {
+            if(err.code === 'auth/user-not-found') {
                 const res = await auth.createUserWithEmailAndPassword(e, p);
                 await db.collection('users').doc(res.user.uid).set({ balance: 0, email: e });
-            }
-        } catch(err) { alert("خطأ: " + err.message); }
+            } else { alert("خطأ في تسجيل الدخول"); }
+        }
     }
 
     auth.onAuthStateChanged(user => {
@@ -185,143 +111,89 @@
             document.getElementById('auth-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             loadUser(user.uid);
-            renderServices();
-            loadHistory(user.uid);
-        } else {
-            document.getElementById('auth-overlay').style.display = 'flex';
+            fetchServices();
         }
     });
 
     function loadUser(uid) {
         db.collection('users').doc(uid).onSnapshot(doc => {
-            if(doc.exists) {
-                window.bal = doc.data().balance || 0;
-                document.getElementById('userBalance').innerText = window.bal.toFixed(2);
-            }
+            if(doc.exists) document.getElementById('userBalance').innerText = doc.data().balance.toFixed(2);
         });
     }
 
+    // جلب الخدمات والأقسام من Firestore
+    function fetchServices() {
+        db.collection('services').onSnapshot(snap => {
+            allServices = [];
+            const categories = new Set();
+            
+            snap.forEach(doc => {
+                const data = doc.data();
+                allServices.push({ id: doc.id, ...data });
+                categories.add(data.category);
+            });
+
+            // تحديث قائمة الأقسام
+            const catSelect = document.getElementById('categorySelect');
+            catSelect.innerHTML = '<option value="all">-- جميع الأقسام --</option>';
+            categories.forEach(cat => {
+                catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+
+            renderServices();
+        });
+    }
+
+    // عرض الخدمات بناءً على القسم المختار
     function renderServices() {
         const grid = document.getElementById('grid');
-        grid.innerHTML = services.map((s, idx) => {
-            if(s.type === 'package') {
-                return `
-                <div class="card">
-                    <img src="cd.jpg">
-                    <div class="service-title">${s.title}</div>
-                    <select class="package-select" id="sel-${idx}" onchange="updatePackPrice(${idx})">
-                        ${s.options.map(o => `<option value="${o.id}" data-base="${o.price}">${o.name}</option>`).join('')}
-                    </select>
-                    <input type="text" class="data-input" id="link-${idx}" placeholder="${s.ph}">
-                    <div class="price-tag">د.ل <span id="pr-${idx}">${addProfit(s.options[0].price)}</span></div>
-                    <button class="buy-btn" onclick="orderPack(${idx})">طلب الآن</button>
-                </div>`;
-            } else if(s.type === 'one') {
-                return `
-                <div class="card">
-                    <img src="cd.jpg">
-                    <div class="service-title">${s.title}</div>
-                    <input type="text" class="data-input" id="link-o-${s.id}" placeholder="${s.ph}">
-                    <div class="price-tag">د.ل <span>${addProfit(s.price)}</span></div>
-                    <button class="buy-btn" onclick="orderOne(${s.id}, ${s.price}, '${s.title}')">طلب الآن</button>
-                </div>`;
-            } else {
-                return `
-                <div class="card">
-                    <img src="cd.jpg">
-                    <div class="service-title">${s.title}</div>
-                    <input type="text" class="data-input" id="link-s-${s.id}" placeholder="${s.ph}">
-                    <input type="number" class="data-input" id="qty-s-${s.id}" value="1000" oninput="updateSocialPrice(${s.id}, ${s.price})">
-                    <div class="price-tag">د.ل <span id="pr-s-${s.id}">${addProfit(s.price)}</span></div>
-                    <button class="buy-btn" onclick="orderSocial(${s.id}, ${s.price}, '${s.title}')">طلب الآن</button>
-                </div>`;
-            }
-        }).join('');
+        const selectedCat = document.getElementById('categorySelect').value;
+        
+        const filtered = selectedCat === 'all' 
+            ? allServices 
+            : allServices.filter(s => s.category === selectedCat);
+
+        grid.innerHTML = filtered.map(s => `
+            <div class="card">
+                <img src="cd.jpg">
+                <div class="service-name">${s.name}</div>
+                <input type="text" class="data-input" id="input-${s.id}" placeholder="أدخل الرابط أو الـ ID">
+                <input type="number" class="data-input" id="qty-${s.id}" value="${s.min}" min="${s.min}" max="${s.max}">
+                <div class="price-tag">${s.finalPrice} د.ل</div>
+                <button class="buy-btn" onclick="makeOrder('${s.id}', ${s.finalPrice}, '${s.name}', '${s.apiId}')">طلب الآن</button>
+            </div>
+        `).join('');
     }
 
-    function updatePackPrice(idx) {
-        const sel = document.getElementById(`sel-${idx}`);
-        const basePrice = sel.options[sel.selectedIndex].getAttribute('data-base');
-        document.getElementById(`pr-${idx}`).innerText = addProfit(basePrice);
-    }
+    async function makeOrder(docId, price, name, apiId) {
+        const inputVal = document.getElementById(`input-${docId}`).value;
+        const qty = document.getElementById(`qty-${docId}`).value;
+        if(!inputVal || !qty) return alert("يرجى ملء كافة الخانات");
 
-    function updateSocialPrice(id, p1000) {
-        const qty = document.getElementById(`qty-s-${id}`).value || 0;
-        const totalBase = (p1000 / 1000) * qty;
-        document.getElementById(`pr-s-${id}`).innerText = addProfit(totalBase);
-    }
+        const currentBal = parseFloat(document.getElementById('userBalance').innerText);
+        if(currentBal < price) return alert("رصيدك الحالي لا يكفي!");
 
-    async function orderPack(idx) {
-        const sel = document.getElementById(`sel-${idx}`);
-        const sid = sel.value;
-        const basePrice = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-base'));
-        const link = document.getElementById(`link-${idx}`).value;
-        if(!link) return alert("أدخل البيانات");
-        processOrder(sid, parseFloat(addProfit(basePrice)), sel.options[sel.selectedIndex].text, link, 1);
-    }
+        if(!confirm(`تأكيد طلب ${name}؟`)) return;
 
-    async function orderOne(sid, basePrice, name) {
-        const link = document.getElementById(`link-o-${sid}`).value;
-        if(!link) return alert("أدخل البيانات");
-        processOrder(sid, parseFloat(addProfit(basePrice)), name, link, 1);
-    }
-
-    async function orderSocial(sid, p1000, name) {
-        const link = document.getElementById(`link-s-${sid}`).value;
-        const qty = parseInt(document.getElementById(`qty-s-${sid}`).value);
-        const totalBase = (p1000 / 1000) * qty;
-        if(!link || !qty) return alert("أكمل البيانات");
-        processOrder(sid, parseFloat(addProfit(totalBase)), name, link, qty);
-    }
-
-    async function processOrder(sid, cost, name, link, qty) {
-        if(window.bal < cost) return alert("رصيدك غير كافٍ");
-        if(!confirm(`تأكيد خصم ${cost} د.ل من رصيدك؟`)) return;
-
-        const uid = auth.currentUser.uid;
-        await db.collection('users').doc(uid).update({ balance: (window.bal - cost).toFixed(2) * 1 });
-
-        let status = "يتم التجهيز";
-        try {
-            const r = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({'key':API_KEY,'action':'add','service':sid,'link':link,'quantity':qty}) });
-            const res = await r.json();
-            if(res.order) status = "✅ ناجح";
-        } catch(e) {}
+        // خصم الرصيد وتسجيل الطلب
+        await db.collection('users').doc(auth.currentUser.uid).update({ 
+            balance: parseFloat((currentBal - price).toFixed(2)) 
+        });
 
         await db.collection('orders').add({
-            uid: uid, serviceName: name, price: cost, status: status, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            uid: auth.currentUser.uid,
+            serviceName: name,
+            apiId: apiId,
+            input: inputVal,
+            quantity: qty,
+            price: price,
+            status: 'قيد التنفيذ',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert("تم إرسال طلبك!");
-    }
 
-    function loadHistory(uid) {
-        db.collection('orders').where('uid', '==', uid).orderBy('timestamp', 'desc').onSnapshot(snap => {
-            document.getElementById('orderList').innerHTML = snap.docs.map(doc => {
-                const d = doc.data();
-                return `<div class="order-item">
-                    <span style="float:left; font-size:10px; color:var(--accent)">${d.status}</span>
-                    <b>${d.serviceName}</b><br>
-                    <small>القيمة: ${d.price} د.ل</small>
-                </div>`;
-            }).join('');
-        });
-    }
-
-    function showSec(id, el) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function filter() {
-        const q = document.getElementById('srch').value.toLowerCase();
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            const title = card.querySelector('.service-title').innerText.toLowerCase();
-            card.style.display = title.includes(q) ? 'block' : 'none';
-        });
+        alert("تم إرسال الطلب بنجاح!");
     }
 </script>
 </body>
 </html>
+
