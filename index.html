@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محمد ستور | الصفحة الرئيسية</title>
+    <title>CD-Card | متجرك للخدمات الرقمية</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -11,28 +11,31 @@
     
     <style>
         :root { --bg: #0a0a0b; --card: #161618; --accent: #00ff88; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 100px; }
 
-        /* الهيدر والرصيد */
-        .top-nav { sticky; top: 0; background: rgba(10,10,11,0.9); backdrop-filter: blur(10px); padding: 15px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .balance-card { background: var(--card); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--accent); display: inline-flex; align-items: center; }
+        /* الهيدر */
+        .top-nav { position: sticky; top: 0; background: rgba(10,10,11,0.9); backdrop-filter: blur(10px); padding: 15px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .balance-card { background: var(--card); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--accent); display: inline-flex; align-items: center; font-weight: bold; }
 
-        /* فلتر الأقسام */
+        /* الفلتر */
         .filter-section { padding: 20px 15px; }
-        .cat-select { width: 100%; background: var(--card); color: #fff; border: 1px solid #333; padding: 12px; border-radius: 12px; outline: none; }
+        .cat-select { width: 100%; background: var(--card); color: #fff; border: 1px solid #333; padding: 12px; border-radius: 12px; outline: none; font-size: 14px; }
 
         /* شبكة الخدمات */
-        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 15px; }
-        .service-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.03); transition: 0.3s; }
-        .service-card img { width: 100%; border-radius: 12px; margin-bottom: 10px; }
-        .service-name { font-size: 11px; font-weight: bold; height: 35px; overflow: hidden; margin-bottom: 10px; }
-        .price { color: var(--accent); font-weight: 800; font-size: 15px; margin-bottom: 10px; display: block; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 0 15px; }
+        .service-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
         
-        .input-field { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; text-align: center; }
-        .order-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .cat-tag { background: var(--accent); color: #000; font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: bold; align-self: flex-start; margin-bottom: 8px; }
+        .service-name { font-size: 13px; font-weight: 600; line-height: 1.4; height: 40px; overflow: hidden; margin-bottom: 10px; color: #eee; }
+        .price-box { background: rgba(0,255,136,0.1); padding: 8px; border-radius: 10px; text-align: center; margin-bottom: 10px; }
+        .price { color: var(--accent); font-weight: 800; font-size: 16px; }
 
-        /* شريط التنقل السفلي */
-        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+        .input-field { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; box-sizing: border-box; }
+        .order-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .order-btn:active { transform: scale(0.95); }
+
+        /* شريط سفلي */
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .nav-link { color: #8e8e93; text-decoration: none; font-size: 12px; text-align: center; }
         .nav-link.active { color: var(--accent); }
     </style>
@@ -41,7 +44,7 @@
 
 <div class="top-nav">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: bold; color: var(--accent);">محمد ستور</span>
+        <span style="font-weight: 800; font-size: 18px; letter-spacing: 1px;">CD-CARD</span>
         <div class="balance-card">
             <span id="userBalance">0.00</span> <small style="margin-right: 5px;">د.ل</small>
         </div>
@@ -50,7 +53,7 @@
 
 <div class="filter-section">
     <select id="categoryFilter" class="cat-select" onchange="displayServices()">
-        <option value="all">كل الأقسام</option>
+        <option value="all">جاري تحميل الأقسام...</option>
     </select>
 </div>
 
@@ -58,12 +61,13 @@
     </div>
 
 <div class="bottom-bar">
-    <a href="#" class="nav-link">⚙️<br>إعدادات</a>
+    <a href="#" class="nav-link">⚙️<br>الإعدادات</a>
     <a href="#" class="nav-link active">🏠<br>الرئيسية</a>
     <a href="#" class="nav-link">🛒<br>طلباتي</a>
 </div>
 
 <script>
+    // إعدادات Firebase الخاصة بـ منصور
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -78,15 +82,13 @@
 
     let allServices = [];
 
-    // جلب بيانات المستخدم
+    // متابعة حالة المستخدم والرصيد
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if (doc.exists) document.getElementById('userBalance').innerText = doc.data().balance.toFixed(2);
             });
             loadServices();
-        } else {
-            // توجيه لصفحة تسجيل الدخول إذا لزم الأمر
         }
     });
 
@@ -101,9 +103,8 @@
                 categories.add(s.category);
             });
 
-            // تحديث قائمة الأقسام
             const filter = document.getElementById('categoryFilter');
-            filter.innerHTML = '<option value="all">كل الأقسام</option>';
+            filter.innerHTML = '<option value="all">كل الخدمات (عرض الكل)</option>';
             categories.forEach(c => {
                 filter.innerHTML += `<option value="${c}">${c}</option>`;
             });
@@ -112,57 +113,84 @@
         });
     }
 
-    // عرض الخدمات بناءً على الفلتر
+    // عرض الخدمات مع "تنظيف" الأسماء لسهولة القراءة
     function displayServices() {
         const container = document.getElementById('servicesContainer');
         const selectedCat = document.getElementById('categoryFilter').value;
         
-        const filtered = selectedCat === 'all' 
+        let filtered = selectedCat === 'all' 
             ? allServices 
             : allServices.filter(s => s.category === selectedCat);
 
-        container.innerHTML = filtered.map(s => `
-            <div class="service-card">
-                <img src="cd.jpg">
-                <div class="service-name">${s.name}</div>
-                <div class="price">${s.finalPrice} د.ل</div>
-                <input type="text" id="link-${s.id}" class="input-field" placeholder="الرابط / ID">
-                <input type="number" id="qty-${s.id}" class="input-field" value="${s.min}" min="${s.min}" max="${s.max}">
-                <button class="order-btn" onclick="sendOrder('${s.id}', ${s.finalPrice}, '${s.name}', '${s.apiId}')">اطلب الآن</button>
-            </div>
-        `).join('');
+        // ترتيب الخدمات من الأرخص للأغلى
+        filtered.sort((a, b) => parseFloat(a.finalPrice) - parseFloat(b.finalPrice));
+
+        container.innerHTML = filtered.map(s => {
+            // تنظيف الاسم من الأكواد والرموز المعقدة
+            let cleanName = s.name
+                .replace(/\[.*?\]/g, '') // حذف ما بين الأقواس
+                .replace(/[0-9]{4,}/g, '') // حذف الأرقام الطويلة
+                .replace('⚡', '').replace('🔥', '')
+                .trim();
+
+            return `
+                <div class="service-card">
+                    <div class="cat-tag">${s.category}</div>
+                    <div class="service-name">${cleanName}</div>
+                    <div class="price-box">
+                        <span class="price">${s.finalPrice}</span> <small>د.ل</small>
+                    </div>
+                    
+                    <input type="text" id="link-${s.id}" class="input-field" placeholder="الرابط / ID">
+                    <input type="number" id="qty-${s.id}" class="input-field" value="${s.min}" min="${s.min}" max="${s.max}">
+                    
+                    <button class="order-btn" onclick="sendOrder('${s.id}', ${s.finalPrice}, '${s.name}', '${s.apiId}')">
+                        اطلب الآن
+                    </button>
+                    <div style="font-size: 8px; color: #444; margin-top: 5px; text-align: center;">ID: ${s.apiId}</div>
+                </div>
+            `;
+        }).join('');
     }
 
-    async function sendOrder(docId, price, name, apiId) {
+    // إرسال الطلب وحسم الرصيد
+    async function sendOrder(docId, price, fullName, apiId) {
         const link = document.getElementById(`link-${docId}`).value;
         const qty = document.getElementById(`qty-${docId}`).value;
         const bal = parseFloat(document.getElementById('userBalance').innerText);
 
-        if (!link || !qty) return alert("يرجى إدخال البيانات");
-        if (bal < price) return alert("رصيدك لا يكفي");
+        if (!link || !qty) return alert("يرجى ملء البيانات المطلوبة");
+        if (bal < price) return alert("عذراً، رصيدك غير كافٍ لهذا الطلب");
 
-        if (confirm(`تأكيد طلب ${name} بقيمة ${price} د.ل؟`)) {
+        if (confirm(`هل تريد تأكيد طلب ${fullName}؟`)) {
             const user = auth.currentUser;
             
-            // خصم الرصيد
-            await db.collection('users').doc(user.uid).update({
-                balance: parseFloat((bal - price).toFixed(2))
-            });
+            try {
+                // 1. خصم الرصيد
+                await db.collection('users').doc(user.uid).update({
+                    balance: parseFloat((bal - price).toFixed(2))
+                });
 
-            // تسجيل الطلب
-            await db.collection('orders').add({
-                uid: user.uid,
-                serviceName: name,
-                price: price,
-                inputData: link,
-                quantity: qty,
-                serverStatus: "Waiting Balance", // الحالة الافتراضية كما في صورتك
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+                // 2. تسجيل الطلب في Firestore
+                await db.collection('orders').add({
+                    uid: user.uid,
+                    email: user.email,
+                    serviceName: fullName,
+                    price: price,
+                    inputData: link,
+                    quantity: qty,
+                    apiId: apiId,
+                    serverStatus: "Waiting Balance", // الحالة الافتراضية
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
-            alert("تم إرسال طلبك بنجاح!");
+                alert("تم استلام طلبك بنجاح! جاري المعالجة.");
+            } catch (err) {
+                alert("حدث خطأ أثناء الطلب، يرجى المحاولة لاحقاً.");
+            }
         }
     }
 </script>
 </body>
 </html>
+
