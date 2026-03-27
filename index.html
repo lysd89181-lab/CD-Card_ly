@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | الأسعار الحقيقية</title>
+    <title>CD-CARD | المتجر المتكامل</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -21,53 +21,64 @@
         .nav-item { color: #8b949e; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--accent); }
         .info-row { display: flex; justify-content: space-between; background: #0d1117; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .desc-box { background: rgba(0,0,0,0.3); border-right: 4px solid var(--accent); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; display: none; }
     </style>
 </head>
 <body>
 
     <div id="homePage" class="page active">
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <div class="stat-box" style="flex:1;"><small>مرحباً بك</small><br><span id="uName">..</span></div>
-            <button class="btn-main" style="width:100px;" onclick="nav('rechargePage')">➕ رصيد</button>
-        </div>
-        <div class="stat-box"> <small>الرصيد المتوفر</small><br> <span id="uBalance">0.00</span> د.ل </div>
-        <div class="card-panel">
-            <label>اختر التصنيف</label> <select id="catSelect" onchange="updateServiceList()"></select>
-            <label>اختر الخدمة</label> <select id="serviceSelect" onchange="updateServiceDetails()"></select>
-            <input type="text" id="orderLink" placeholder="الرابط أو الآيدي">
-            <label>الكمية</label>
-            <input type="number" id="orderQty" placeholder="مثلاً: 1000" oninput="calculateTotal()">
-            <div style="text-align:center; padding:15px; background: #000; border-radius: 12px;"> 
-                <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
-                <span id="totalPrice" style="color:var(--accent); font-size:24px; font-weight:bold;">0.00</span> د.ل 
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <div style="background:var(--card); padding:10px; border-radius:12px; border:1px solid var(--border); flex:1;">
+                مرحباً يا <span id="uName" style="color:var(--accent);">تحميل...</span> 🇱🇾
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="submitOrder()">تنفيذ الطلب ✅</button>
+            <button class="btn-main" style="width:90px; margin-right:10px; padding:10px;" onclick="nav('rechargePage')">➕ رصيد</button>
+        </div>
+        
+        <div class="stat-box"> <small>الرصيد المتوفر</small><br> <span id="uBalance">0.00</span> د.ل </div>
+
+        <div class="card-panel">
+            <label>1. اختر التصنيف</label> <select id="catSelect" onchange="updateServiceList()"></select>
+            <label>2. اختر الخدمة</label> <select id="serviceSelect" onchange="updateServiceDetails()"></select>
+            
+            <div id="descBox" class="desc-box"></div>
+
+            <label>3. الرابط أو الآيدي</label>
+            <input type="text" id="orderLink" placeholder="أدخل الرابط أو الآيدي هنا">
+            
+            <label>4. الكمية</label>
+            <input type="number" id="orderQty" placeholder="أدخل الكمية المطلوبة" oninput="calculateTotal()">
+            
+            <div style="text-align:center; padding:15px; background: #000; border-radius: 12px; border: 1px solid var(--border);"> 
+                <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
+                <span id="totalPrice" style="color:var(--accent); font-size:26px; font-weight:bold;">0.00</span> د.ل 
+            </div>
+            <button class="btn-main" style="margin-top:15px;" onclick="submitOrder()">تنفيذ الطلب الآن ✅</button>
         </div>
     </div>
 
     <div id="rechargePage" class="page">
-        <button onclick="nav('homePage')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:15px;">⬅ رجوع</button>
-        <h3 style="color:var(--accent);">شحن رصيد الحساب</h3>
+        <button onclick="nav('homePage')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:15px;">⬅ رجوع للمتجر</button>
+        <h3 style="color:var(--accent);">شحن رصيد المحفظة</h3>
         <div class="card-panel">
-            <p style="font-size:13px; color:#8b949e;">حول القيمة للأرقام التالية ثم أرسل الإثبات:</p>
-            <div class="info-row"><span>مدار:</span> <b>0912377291</b></div>
+            <p style="font-size:13px; color:#8b949e; margin-bottom:15px;">يرجى تحويل القيمة للأرقام التالية:</p>
             <div class="info-row"><span>ليبيانا:</span> <b>0920414760</b></div>
-            <label>القيمة المحولة</label>
-            <input type="number" id="rechargeAmount" placeholder="أدخل القيمة د.ل">
-            <label>صورة التحويل</label>
+            <div class="info-row"><span>مدار:</span> <b>0912377291</b></div>
+            <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+            <label>القيمة المحولة (د.ل)</label>
+            <input type="number" id="rechargeAmount" placeholder="مثلاً: 50">
+            <label>إرفاق صورة التحويل (سكرين)</label>
             <input type="file" id="rechargeProof" accept="image/*">
-            <button class="btn-main" onclick="sendRechargeWA()">إرسال الطلب (واتساب) 💬</button>
+            <button class="btn-main" onclick="sendRechargeWA()">إرسال طلب الشحن (واتساب) 💬</button>
         </div>
     </div>
 
     <div class="nav-bar">
         <div class="nav-item active" onclick="nav('homePage')">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="alert('صفحة الأرباح قيد التجهيز')">💰<br>أرباحي</div>
+        <div class="nav-item" onclick="alert('سيتم تفعيل صفحة الأرباح قريباً')">💰<br>أرباحي</div>
         <div class="nav-item" onclick="window.open('https://wa.me/218920414760')">💬<br>الدعم</div>
     </div>
 
 <script>
-    // بيانات Firebase الخاصة بك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -118,26 +129,22 @@
 
     function updateServiceDetails() {
         selectedService = allServices.find(s => s.id === document.getElementById('serviceSelect').value);
-        calculateTotal();
+        if(selectedService) {
+            const dBox = document.getElementById('descBox');
+            dBox.style.display = 'block';
+            dBox.innerHTML = `<b>وصف الخدمة:</b> ${selectedService.name}<br>الحد الأدنى: ${selectedService.min || 10}`;
+            calculateTotal();
+        }
     }
 
-    // الدالة المسؤولة عن السعر الحقيقي
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
+            // التحويل من نص إلى رقم لضمان قراءة السعر الحقيقي
+            const price = parseFloat(selectedService.finalPrice) || 0; 
             
-            // تحويل السعر من نص (String) إلى رقم (Number) لضمان العمل
-            const pricePerUnit = parseFloat(selectedService.finalPrice) || 0; 
-            
-            // فحص نوع الخدمة (هل هي بكج أم لكل 1000)
-            const isPkg = selectedService.name.includes('بكج') || selectedService.name.includes('شده') || selectedService.type === "Package";
-            
-            let total = 0;
-            if (isPkg) {
-                total = pricePerUnit; // سعر ثابت للبكج
-            } else {
-                total = (qty / 1000) * pricePerUnit; // الحساب لكل 1000
-            }
+            const isPkg = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
+            const total = isPkg ? price : (qty / 1000) * price;
             
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
@@ -145,15 +152,13 @@
 
     function sendRechargeWA() {
         const amt = document.getElementById('rechargeAmount').value;
-        if(!amt) return alert("الرجاء إدخال القيمة");
-        const msg = `طلب شحن رصيد لمتجر CD-CARD%0Aالآيدي: ${auth.currentUser.uid}%0Aالقيمة: ${amt} د.ل%0Aالرجاء التأكد من صورة الإثبات المرفقة.`;
+        if(!amt) return alert("أدخل قيمة التحويل");
+        const msg = `مرحباً، أريد شحن رصيد.%0Aالآيدي: ${auth.currentUser.uid}%0Aالقيمة: ${amt} د.ل%0A(الصورة مرفقة)`;
         window.open(`https://wa.me/218920414760?text=${msg}`);
     }
 
     async function submitOrder() {
-        const total = parseFloat(document.getElementById('totalPrice').innerText);
-        if (total <= 0) return alert("الرجاء تحديد الكمية والسعر");
-        alert("جاري إرسال طلبك...");
+        alert("جاري التحقق من الطلب...");
     }
 </script>
 </body>
