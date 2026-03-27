@@ -10,29 +10,139 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 90px; overflow-x: hidden; }
-        .page { display: none; } .page.active { display: block; }
-        
-        /* تصميم المربع العلوي الجميل */
-        .user-header { background: linear-gradient(135deg, #161b22 0%, #0d1117 100%); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .user-header h3 { margin: 0 0 15px 0; font-size: 16px; color: #fff; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
-        .stat-item small { display: block; color: #8b949e; font-size: 11px; margin-bottom: 5px; }
-        .stat-item span { color: var(--accent); font-weight: bold; font-size: 16px; }
+        :root { 
+            --bg: #0d1117; 
+            --card: #161b22; 
+            --accent: #00ff88; 
+            --text: #f0f6fc; 
+            --border: #30363d; 
+            --error: #ff4d4d;
+        }
 
-        .card-panel { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: bold; }
-        select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; outline: none; font-size: 14px; }
-        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.98); }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            padding-bottom: 100px; 
+            line-height: 1.6;
+        }
+
+        /* تصميم الهيدر العلوي المطور */
+        .user-header { 
+            background: linear-gradient(145deg, #1c2128, #161b22); 
+            padding: 25px 20px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 20px; 
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .user-header h3 { margin: 0 0 15px 0; font-size: 18px; font-weight: 600; }
         
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #8b949e; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--accent); }
-        
-        .quran-box { text-align: center; padding: 20px; font-size: 14px; color: #8b949e; line-height: 1.8; border-top: 1px solid var(--border); margin-top: 20px; font-style: italic; }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-top: 15px; 
+        }
+
+        .stat-item { 
+            background: rgba(255,255,255,0.03); 
+            padding: 12px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border); 
+        }
+
+        .stat-item small { display: block; color: #8b949e; font-size: 11px; margin-bottom: 4px; }
+        .stat-item span { color: var(--accent); font-weight: 800; font-size: 18px; }
+
+        .card-panel { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 20px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 10px; 
+            font-size: 14px; 
+            color: var(--accent); 
+            font-weight: 600; 
+            padding-right: 5px;
+        }
+
+        select, input { 
+            width: 100%; 
+            background: #0d1117; 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            padding: 15px; 
+            border-radius: 14px; 
+            margin-bottom: 18px; 
+            box-sizing: border-box; 
+            outline: none; 
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        select:focus, input:focus { border-color: var(--accent); }
+
+        input:disabled { 
+            background: #1c2128; 
+            color: #484f58; 
+            cursor: not-allowed; 
+            border-style: dashed;
+        }
+
+        .btn-main { 
+            width: 100%; 
+            background: var(--accent); 
+            color: #000; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 14px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            font-size: 16px; 
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(22, 27, 34, 0.95); 
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border); 
+            display: flex; 
+            padding: 10px 0; 
+            z-index: 1000; 
+        }
+
+        .nav-item { color: #8b949e; text-align: center; font-size: 12px; flex: 1; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
+
+        .quran-box { 
+            text-align: center; 
+            padding: 30px 20px; 
+            font-size: 15px; 
+            color: #8b949e; 
+            line-height: 2; 
+            border-top: 1px solid var(--border); 
+            margin-top: 20px; 
+            background: rgba(255,255,255,0.01);
+            border-radius: 20px;
+        }
+
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -43,61 +153,68 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <small>الرصيد المتوفر</small>
-                    <span id="uBalance">0.00</span> <small style="display:inline; font-size:10px;">د.ل</small>
+                    <span id="uBalance">0.00</span>
                 </div>
                 <div class="stat-item">
-                    <small>الرصيد المنفق</small>
-                    <span id="uSpent">0.00</span> <small style="display:inline; font-size:10px;">د.ل</small>
+                    <small>إجمالي المنفق</small>
+                    <span id="uSpent">0.00</span>
                 </div>
             </div>
-            <button class="btn-main" style="margin-top:15px; padding:10px;" onclick="nav('rechargePage', document.querySelector('.nav-item:nth-child(3)'))">➕ إضافة رصيد</button>
+            <button class="btn-main" style="margin-top:20px; padding:12px; font-size:14px;" onclick="nav('rechargePage', document.querySelectorAll('.nav-item')[2])">➕ إضافة رصيد للحساب</button>
         </div>
 
         <div class="card-panel">
-            <label>1. اختر التصنيف</label> 
-            <select id="catSelect" onchange="updateServiceList()"><option>جاري تحميل التصنيفات...</option></select>
+            <label>اختر التصنيف (الخدمة المطلوبة)</label> 
+            <select id="catSelect" onchange="updateServiceList()">
+                <option>جاري تحميل التصنيفات...</option>
+            </select>
             
-            <label>2. اختر الخدمة</label> 
-            <select id="serviceSelect" onchange="updateServiceDetails()"><option>اختر التصنيف أولاً</option></select>
+            <label>اختر نوع الخدمة (ترتيب حسب السعر)</label> 
+            <select id="serviceSelect" onchange="updateServiceDetails()">
+                <option>يرجى اختيار فئة أولاً</option>
+            </select>
             
-            <div id="descBox" style="display:none; background:rgba(0,255,136,0.05); padding:10px; border-radius:10px; margin-bottom:15px; font-size:13px; border-right:3px solid var(--accent);"></div>
-
-            <label>3. الرابط أو الآيدي</label>
-            <input type="text" id="orderLink" placeholder="ضع الرابط هنا">
+            <label>الرابط أو اسم المستخدم (ID)</label>
+            <input type="text" id="orderLink" placeholder="أدخل الرابط هنا...">
             
-            <label>4. الكمية</label>
-            <input type="number" id="orderQty" placeholder="0" oninput="calculateTotal()">
+            <label id="qtyLabel">الكمية المطلوبة</label>
+            <input type="number" id="orderQty" placeholder="أدخل الكمية..." oninput="calculateTotal()">
             
-            <div style="text-align:center; padding:15px; background: #000; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px;"> 
-                <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
-                <span id="totalPrice" style="color:var(--accent); font-size:28px; font-weight:bold;">0.00</span> د.ل 
+            <div style="text-align:center; padding:20px; background: #000; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 20px;"> 
+                <small style="color:#8b949e; font-size:12px;">السعر الإجمالي للطلب:</small><br> 
+                <span id="totalPrice" style="color:var(--accent); font-size:32px; font-weight:bold;">0.00</span> <small>د.ل</small>
             </div>
-            <button class="btn-main" onclick="submitOrder()">تنفيذ الطلب الآن ✅</button>
+            
+            <button class="btn-main" onclick="submitOrder()">تأكيد وإرسال الطلب ✅</button>
         </div>
 
         <div class="quran-box">
-            اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
+            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ<br>
+            اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحيطونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
         </div>
     </div>
 
     <div id="ordersPage" class="page">
-        <div class="card-panel"><h3 style="color:var(--accent)">📦 طلباتي</h3><div id="ordersList"></div></div>
+        <div class="card-panel">
+            <h3 style="color:var(--accent); margin-top:0;">📦 سجل طلباتي</h3>
+            <div id="ordersList" style="color:#8b949e; text-align:center; padding:20px;">لا توجد طلبات مسجلة حتى الآن.</div>
+        </div>
     </div>
 
     <div id="rechargePage" class="page">
         <div class="card-panel">
-            <h3 style="color:var(--accent)">💳 شحن الرصيد</h3>
-            <p>يرجى التحويل وارسال الإيصال للدعم:</p>
-            <div class="stat-item" style="margin-bottom:10px;">ليبيانا: 0920414760</div>
-            <div class="stat-item">مدار: 0912377291</div>
-            <button class="btn-main" style="margin-top:20px;" onclick="window.open('https://wa.me/218920414760')">تواصل مع الدعم</button>
+            <h3 style="color:var(--accent); margin-top:0;">💳 شحن الرصيد</h3>
+            <p style="font-size:14px; color:#8b949e;">يرجى التحويل لأحد الأرقام التالية ثم إرسال صورة الإيصال للدعم:</p>
+            <div class="stat-item" style="margin-bottom:12px; text-align:right;"><b>ليبيانا:</b> 0920414760</div>
+            <div class="stat-item" style="text-align:right;"><b>مدار:</b> 0912377291</div>
+            <button class="btn-main" style="margin-top:25px;" onclick="window.open('https://wa.me/218920414760')">تحدث مع الدعم الفني 💬</button>
         </div>
     </div>
 
     <div id="settingsPage" class="page">
         <div class="card-panel" style="text-align:center;">
-            <h4 id="uFull">محمد</h4>
-            <button class="btn-main" style="background:#ff4d4d; color:#fff;" onclick="auth.signOut()">تسجيل الخروج</button>
+            <h3 id="uProfileName" style="margin-bottom:20px;">المستخدم</h3>
+            <button class="btn-main" style="background:var(--error); color:#fff;" onclick="auth.signOut()">تسجيل الخروج من الحساب</button>
         </div>
     </div>
 
@@ -109,6 +226,7 @@
     </div>
 
 <script>
+    // تهيئة Firebase بالكامل
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -118,25 +236,32 @@
         appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(); const auth = firebase.auth();
+    const db = firebase.firestore(); 
+    const auth = firebase.auth();
 
-    let allServices = []; let selectedService = null;
+    let allServices = []; 
+    let selectedService = null;
 
+    // دالة التنقل بين الصفحات
     function nav(id, el) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); el.classList.add('active');
-        if(id === 'ordersPage') loadOrders();
+        document.getElementById(id).classList.add('active'); 
+        el.classList.add('active');
+        if(id === 'ordersPage') loadUserOrders();
     }
 
+    // تشغيل جلب الخدمات
     loadServices();
 
+    // مراقبة حالة المستخدم وجلب بيانات الرصيد
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const d = doc.data();
                     document.getElementById('uName').innerText = d.username || "مشترك";
+                    document.getElementById('uProfileName').innerText = d.username || "مشترك";
                     document.getElementById('uBalance').innerText = Number(d.balance || 0).toFixed(2);
                     document.getElementById('uSpent').innerText = Number(d.spent || 0).toFixed(2);
                 }
@@ -144,76 +269,172 @@
         }
     });
 
+    // دالة جلب وترتيب الخدمات والفئات بشكل صارم
     async function loadServices() {
-        const snap = await db.collection('services').get();
-        allServices = []; let cats = new Set();
-        snap.forEach(doc => { 
-            const s = doc.data(); allServices.push({id: doc.id, ...s}); 
-            if(s.category) cats.add(s.category); 
-        });
+        try {
+            const snap = await db.collection('services').get();
+            allServices = []; 
+            let cats = new Set();
+            
+            snap.forEach(doc => { 
+                const s = doc.data(); 
+                allServices.push({id: doc.id, ...s}); 
+                if(s.category) cats.add(s.category); 
+            });
 
-        let sortedCats = Array.from(cats).sort((a, b) => {
-            // ترتيب التطبيقات والفئات المطلوب
-            const appOrder = ["ببجي", "لعبة", "جواهر", "اشتراك", "تيك توك", "فيسبوك", "انستغرام", "يوتيوب", "واتساب"];
-            const typeOrder = ["متابعين", "لايكات", "مشاهدات", "تعليقات", "مفصلة", "اكسبلور", "إعادة نشر"];
+            // ترتيب الفئات يدوياً كما طلبت بالظبط
+            let sortedCats = Array.from(cats).sort((a, b) => {
+                const apps = ["ببجي", "لعبة", "جواهر", "اشتراك", "تيك توك", "فيسبوك", "انستغرام", "يوتيوب", "واتساب", "تليجرام"];
+                const types = ["متابعين", "لايكات", "مشاهدات", "تعليقات", "مفصلة", "اكسبلور", "إعادة نشر"];
 
-            let getRank = (name) => {
-                let appIdx = appOrder.findIndex(k => name.includes(k));
-                let typeIdx = typeOrder.findIndex(k => name.includes(k));
-                return (appIdx !== -1 ? appIdx * 100 : 9000) + (typeIdx !== -1 ? typeIdx : 99);
-            };
-            return getRank(a) - getRank(b);
-        });
+                let getRank = (name) => {
+                    let aIdx = apps.findIndex(k => name.toLowerCase().includes(k.toLowerCase()));
+                    let tIdx = types.findIndex(k => name.includes(k));
+                    // الألعاب والاشتراكات تأخذ أولوية عليا (0-1000)
+                    // تطبيقات الرشق تليها
+                    // الأنواع داخل الرشق ترتب (متابعين ثم لايكات...)
+                    let rank = 10000;
+                    if (aIdx !== -1) rank = aIdx * 100;
+                    if (tIdx !== -1) rank += tIdx;
+                    return rank;
+                };
+                return getRank(a) - getRank(b);
+            });
 
-        const catSelect = document.getElementById('catSelect'); catSelect.innerHTML = "";
-        sortedCats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
-        updateServiceList();
+            const catSelect = document.getElementById('catSelect'); 
+            catSelect.innerHTML = "";
+            sortedCats.forEach(c => { 
+                catSelect.innerHTML += `<option value="${c}">${c}</option>`; 
+            });
+            updateServiceList();
+        } catch (e) { console.error("Error:", e); }
     }
 
+    // تحديث قائمة الخدمات بناءً على الفئة + الترتيب حسب السعر
     function updateServiceList() {
         const cat = document.getElementById('catSelect').value;
-        const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = "";
+        const sSelect = document.getElementById('serviceSelect'); 
+        sSelect.innerHTML = "";
         
-        // ترتيب الخدمات من أقل سعر للأعلى
-        allServices.filter(s => s.category === cat)
-            .sort((a, b) => (a.finalPrice || 0) - (b.finalPrice || 0))
-            .forEach(s => { sSelect.innerHTML += `<option value="${s.id}">${s.name} - ${s.finalPrice} د.ل</option>`; });
+        const filtered = allServices.filter(s => s.category === cat);
+        // الترتيب من الأرخص للأغلى
+        filtered.sort((a, b) => (a.finalPrice || 0) - (b.finalPrice || 0));
+
+        filtered.forEach(s => { 
+            sSelect.innerHTML += `<option value="${s.id}">${s.name} - (${s.finalPrice} د.ل)</option>`; 
+        });
         updateServiceDetails();
     }
 
+    // تحديث تفاصيل الخدمة وقفل الكمية للألعاب/الاشتراكات
     function updateServiceDetails() {
         selectedService = allServices.find(s => s.id === document.getElementById('serviceSelect').value);
         if(selectedService) {
-            const dBox = document.getElementById('descBox'); dBox.style.display = 'block';
-            dBox.innerHTML = `<b>وصف:</b> ${selectedService.name}<br><b>أدنى كمية:</b> ${selectedService.min || 10}`;
+            const qtyInput = document.getElementById('orderQty');
+            const catName = selectedService.category.toLowerCase();
+            const servName = selectedService.name.toLowerCase();
+
+            // فحص هل الخدمة "فردية" (ألعاب، اشتراكات، بكجات)
+            const isSingle = catName.includes('ببجي') || 
+                             catName.includes('لعبة') || 
+                             catName.includes('اشتراك') || 
+                             servName.includes('شده') || 
+                             servName.includes('بكج') || 
+                             catName.includes('نيتفلكس');
+            
+            if(isSingle) {
+                qtyInput.value = 1;
+                qtyInput.disabled = true; // قفل الكمية
+                document.getElementById('qtyLabel').innerText = "الكمية (ثابتة لهذه الخدمة)";
+            } else {
+                qtyInput.value = selectedService.min || 1000;
+                qtyInput.disabled = false; // فتح الكمية للرشق
+                document.getElementById('qtyLabel').innerText = "الكمية المطلوبة (لكل 1000)";
+            }
             calculateTotal();
         }
     }
 
+    // دالة حساب السعر بدقة
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
-            const price = selectedService.finalPrice || 0;
-            const isPkg = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
-            let total = isPkg ? price : (qty / 1000) * price;
+            const price = parseFloat(selectedService.finalPrice) || 0;
+            const qtyInput = document.getElementById('orderQty');
+            
+            let total = 0;
+            if(qtyInput.disabled) {
+                // سعر القطعة الواحدة (للألعاب)
+                total = price;
+            } else {
+                // سعر الرشق (لكل 1000)
+                total = (qty / 1000) * price;
+            }
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
     }
 
+    // تنفيذ الطلب وخصم الرصيد
     async function submitOrder() {
-        const user = auth.currentUser; if(!user) return alert("سجل دخولك!");
+        const user = auth.currentUser;
+        if(!user) return alert("يرجى تسجيل الدخول أولاً!");
+
         const total = parseFloat(document.getElementById('totalPrice').innerText);
         const currentBal = parseFloat(document.getElementById('uBalance').innerText);
-        if(currentBal < total) return alert("رصيدك غير كافٍ!");
+        const link = document.getElementById('orderLink').value;
+        const qty = document.getElementById('orderQty').value;
 
-        await db.collection('orders').add({
-            userId: user.uid, serviceName: selectedService.name, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY')
+        if(!link || !qty) return alert("يرجى إكمال بيانات الرابط والكمية!");
+        if(currentBal < total) return alert("عذراً، رصيدك الحالي لا يكفي!");
+
+        try {
+            // 1. إضافة الطلب لقاعدة البيانات
+            await db.collection('orders').add({
+                userId: user.uid,
+                serviceName: selectedService.name,
+                link: link,
+                qty: qty,
+                cost: total,
+                status: "قيد الانتظار",
+                date: new Date().toLocaleString('ar-LY')
+            });
+
+            // 2. تحديث الرصيد والمنفق في حساب المستخدم
+            await db.collection('users').doc(user.uid).update({
+                balance: firebase.firestore.FieldValue.increment(-total),
+                spent: firebase.firestore.FieldValue.increment(total)
+            });
+
+            alert("✅ تم استلام طلبك بنجاح!");
+            document.getElementById('orderLink').value = "";
+        } catch (e) {
+            alert("حدث خطأ أثناء تنفيذ الطلب، حاول مرة أخرى.");
+        }
+    }
+
+    // جلب سجل الطلبات للمستخدم
+    async function loadUserOrders() {
+        const user = auth.currentUser;
+        if(!user) return;
+        const snap = await db.collection('orders').where('userId', '==', user.uid).get();
+        const list = document.getElementById('ordersList');
+        list.innerHTML = "";
+        
+        if(snap.empty) {
+            list.innerHTML = "لا توجد طلبات سابقة.";
+            return;
+        }
+
+        snap.forEach(doc => {
+            const o = doc.data();
+            list.innerHTML += `
+                <div style="background:var(--card); padding:15px; border-radius:15px; border:1px solid var(--border); margin-bottom:10px; text-align:right;">
+                    <div style="color:var(--accent); font-weight:bold;">${o.serviceName}</div>
+                    <div style="font-size:12px; margin:5px 0;">الحالة: ${o.status}</div>
+                    <div style="font-size:11px; color:#8b949e;">التاريخ: ${o.date}</div>
+                </div>
+            `;
         });
-        await db.collection('users').doc(user.uid).update({
-            balance: currentBal - total,
-            spent: firebase.firestore.FieldValue.increment(total)
-        });
-        alert("✅ تم الطلب بنجاح!");
     }
 </script>
 </body>
