@@ -31,7 +31,7 @@
     <div id="homePage" class="page active">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <div style="background:var(--card); padding:10px 15px; border-radius:12px; border:1px solid var(--border); flex:1;">
-                مرحباً <span id="uName" style="color:var(--accent);">...</span> 🇱🇾
+                مرحباً <span id="uName" style="color:var(--accent);">زائر</span> 🇱🇾
             </div>
             <button class="btn-main" style="width:auto; margin-right:10px; padding:10px 20px;" onclick="nav('rechargePage')">➕ رصيد</button>
         </div>
@@ -103,38 +103,46 @@
         document.getElementById(id).classList.add('active'); 
     }
 
-    // مراقبة بيانات المستخدم (الاسم والرصيد)
+    // جلب الخدمات فوراً للجميع (حل مشكلة التعليق)
+    loadServices();
+
+    // مراقبة حالة المستخدم
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const d = doc.data();
                     document.getElementById('uName').innerText = d.username || "مشترك";
-                    // عرض الرصيد كرقم (Number)
+                    // عرض الرصيد كرقم بدقة خانتين
                     document.getElementById('uBalance').innerText = Number(d.balance || 0).toFixed(2);
                 }
             });
-            loadServices();
-        } else {
-            // توجيه لصفحة تسجيل الدخول إذا لم يكن مسجلاً
-            console.log("No user logged in");
         }
     });
 
     // جلب الخدمات من Firestore
     async function loadServices() {
-        const snap = await db.collection('services').get();
-        allServices = []; 
-        const cats = new Set();
-        snap.forEach(doc => { 
-            const s = doc.data(); 
-            allServices.push({id: doc.id, ...s}); 
-            if(s.category) cats.add(s.category); 
-        });
-        const catSelect = document.getElementById('catSelect'); 
-        catSelect.innerHTML = "";
-        cats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
-        updateServiceList();
+        try {
+            const snap = await db.collection('services').get();
+            allServices = []; 
+            const cats = new Set();
+            snap.forEach(doc => { 
+                const s = doc.data(); 
+                allServices.push({id: doc.id, ...s}); 
+                if(s.category) cats.add(s.category); 
+            });
+            const catSelect = document.getElementById('catSelect'); 
+            catSelect.innerHTML = "";
+            if (cats.size === 0) {
+                catSelect.innerHTML = "<option>لا توجد خدمات حالياً</option>";
+            } else {
+                cats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+                updateServiceList();
+            }
+        } catch (e) {
+            console.error("Error loading services:", e);
+            document.getElementById('catSelect').innerHTML = "<option>خطأ في جلب البيانات</option>";
+        }
     }
 
     function updateServiceList() {
@@ -157,14 +165,13 @@
         }
     }
 
-    // دالة حساب السعر (تتعامل مع الأرقام مباشرة بفضل نظام الرفع الجديد)
+    // حساب السعر النهائي (يتعامل مع الأرقام مباشرة)
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
-            // السعر الآن يأتي كرقم (Number) من القاعدة
+            // السعر رقم مخزن مسبقاً في Firebase
             const price = selectedService.finalPrice || 0; 
             
-            // تمييز خدمات البكجات عن خدمات الألف
             const isPkg = selectedService.name.includes('شده') || 
                           selectedService.name.includes('بكج') || 
                           selectedService.category.includes('ببجي');
@@ -184,4 +191,3 @@
 </script>
 </body>
 </html>
-
