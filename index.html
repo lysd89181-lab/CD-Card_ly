@@ -82,7 +82,7 @@
     </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
+    // إعدادات Firebase الخاصة بمشروعك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -103,40 +103,61 @@
         document.getElementById(id).classList.add('active'); 
     }
 
-    // جلب الخدمات فوراً للجميع (حل مشكلة التعليق)
+    // تشغيل جلب البيانات فوراً لضمان السرعة
     loadServices();
 
-    // مراقبة حالة المستخدم
+    // مراقبة حساب المستخدم ورصيده
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const d = doc.data();
                     document.getElementById('uName').innerText = d.username || "مشترك";
-                    // عرض الرصيد كرقم بدقة خانتين
                     document.getElementById('uBalance').innerText = Number(d.balance || 0).toFixed(2);
                 }
             });
         }
     });
 
-    // جلب الخدمات من Firestore
+    // جلب الخدمات وترتيبها يدوياً (ألعاب -> اشتراكات -> رشق)
     async function loadServices() {
         try {
             const snap = await db.collection('services').get();
             allServices = []; 
-            const cats = new Set();
+            let cats = new Set();
+            
             snap.forEach(doc => { 
                 const s = doc.data(); 
                 allServices.push({id: doc.id, ...s}); 
                 if(s.category) cats.add(s.category); 
             });
+
+            // تحويل التصنيفات لمصفوفة لترتيبها حسب طلبك
+            let sortedCats = Array.from(cats);
+
+            sortedCats.sort((a, b) => {
+                // الكلمات المفتاحية للترتيب: الألعاب أولاً، ثم الاشتراكات، ثم منصات الرشق
+                const order = ["ببجي", "لعبة", "جواهر", "اشتراك", "نيتفلكس", "تيك توك", "انستقرام", "فيسبوك", "تليجرام"];
+                
+                let indexA = order.findIndex(keyword => a.includes(keyword));
+                let indexB = order.findIndex(keyword => b.includes(keyword));
+
+                // إذا لم توجد الكلمة في القائمة، توضع في الأسفل
+                if (indexA === -1) indexA = 99;
+                if (indexB === -1) indexB = 99;
+
+                return indexA - indexB;
+            });
+
             const catSelect = document.getElementById('catSelect'); 
             catSelect.innerHTML = "";
-            if (cats.size === 0) {
+            
+            if (sortedCats.length === 0) {
                 catSelect.innerHTML = "<option>لا توجد خدمات حالياً</option>";
             } else {
-                cats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+                sortedCats.forEach(c => { 
+                    catSelect.innerHTML += `<option value="${c}">${c}</option>`; 
+                });
                 updateServiceList();
             }
         } catch (e) {
@@ -149,9 +170,14 @@
         const cat = document.getElementById('catSelect').value;
         const sSelect = document.getElementById('serviceSelect'); 
         sSelect.innerHTML = "";
-        allServices.filter(s => s.category === cat).forEach(s => { 
-            sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; 
-        });
+        
+        // تصفية الخدمات حسب التصنيف وترتيبها أبجدياً داخل التصنيف الواحد
+        allServices
+            .filter(s => s.category === cat)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach(s => { 
+                sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; 
+            });
         updateServiceDetails();
     }
 
@@ -165,13 +191,13 @@
         }
     }
 
-    // حساب السعر النهائي (يتعامل مع الأرقام مباشرة)
+    // حساب السعر الإجمالي بناءً على السعر المخزن كرقم (Number)
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
-            // السعر رقم مخزن مسبقاً في Firebase
             const price = selectedService.finalPrice || 0; 
             
+            // تمييز خدمات البكجات عن الخدمات التي تعتمد على الألف
             const isPkg = selectedService.name.includes('شده') || 
                           selectedService.name.includes('بكج') || 
                           selectedService.category.includes('ببجي');
@@ -186,7 +212,9 @@
         const currentBal = parseFloat(document.getElementById('uBalance').innerText);
         
         if(currentBal < total) return alert("عذراً، رصيدك غير كافٍ لإتمام الطلب!");
-        alert("جاري إرسال الطلب للمزود... سيتم الخصم عند التأكيد ✅");
+        
+        // ملاحظة: هنا سنضيف لاحقاً كود إرسال الطلب الفعلي لـ Firestore
+        alert("تم استلام طلبك بنجاح! جاري المعالجة... ✅");
     }
 </script>
 </body>
