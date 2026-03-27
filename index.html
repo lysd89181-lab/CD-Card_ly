@@ -13,131 +13,152 @@
         :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; --error: #ff4d4d; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 100px; }
         
-        /* شاشات تسجيل الدخول */
-        .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; padding: 20px; }
+        /* شاشات تسجيل الدخول والإنشاء */
+        .auth-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; padding: 20px; }
+        .auth-page.active { display: flex; }
         .auth-card { background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; }
         
-        /* التنسيقات العامة */
+        /* التنسيق العام للموقع */
         .user-header { background: linear-gradient(145deg, #1c2128, #161b22); padding: 25px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .stat-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 16px; border: 1px solid var(--border); }
         .stat-item span { color: var(--accent); font-weight: 800; font-size: 18px; }
+
         .card-panel { background: var(--card); padding: 20px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; }
         label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
         select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 14px; margin-bottom: 18px; box-sizing: border-box; outline: none; }
         input:disabled { background: #1c2128; color: #484f58; border-style: dashed; }
+        
         .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
+        
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); border-top: 1px solid var(--border); display: flex; padding: 10px 0; z-index: 1000; }
         .nav-item { color: #8b949e; text-align: center; font-size: 12px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
+
+        .page { display: none; }
+        .page.active { display: block; }
         .quran-box { text-align: center; padding: 25px; font-size: 14px; color: #8b949e; line-height: 2; border-top: 1px solid var(--border); margin-top: 20px; }
-        .page { display: none; } .page.active { display: block; }
     </style>
 </head>
 <body>
 
-    <div id="loginPage" class="auth-container active">
+    <div id="loginPage" class="auth-page active">
         <div class="auth-card">
             <h2 style="color:var(--accent)">CD-Card</h2>
-            <p>تسجيل الدخول للمتجر</p>
+            <p>مرحباً بك، سجل دخولك</p>
             <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
             <input type="password" id="loginPass" placeholder="كلمة المرور">
             <button class="btn-main" onclick="login()">دخول</button>
-            <p style="font-size:12px; cursor:pointer;" onclick="showAuth('signupPage')">ليس لديك حساب؟ إنشاء حساب جديد</p>
+            <p style="font-size:13px; cursor:pointer; color:var(--accent)" onclick="toggleAuth('signupPage')">إنشاء حساب جديد؟ اضغط هنا</p>
         </div>
     </div>
 
-    <div id="signupPage" class="auth-container page">
+    <div id="signupPage" class="auth-page">
         <div class="auth-card">
-            <h2 style="color:var(--accent)">إنشاء حساب</h2>
-            <input type="text" id="signUser" placeholder="اسم المستخدم">
+            <h2 style="color:var(--accent)">انضم إلينا</h2>
+            <p>إنشاء حساب جديد في CD-Card</p>
+            <input type="text" id="signUser" placeholder="اسمك بالكامل">
             <input type="email" id="signEmail" placeholder="البريد الإلكتروني">
             <input type="password" id="signPass" placeholder="كلمة المرور">
-            <button class="btn-main" onclick="signup()">إنشاء الحساب</button>
-            <p style="font-size:12px; cursor:pointer;" onclick="showAuth('loginPage')">لديك حساب بالفعل؟ سجل دخولك</p>
+            <button class="btn-main" onclick="signup()">إنشاء الحساب الآن</button>
+            <p style="font-size:13px; cursor:pointer; color:var(--accent)" onclick="toggleAuth('loginPage')">لديك حساب؟ سجل دخولك</p>
         </div>
     </div>
 
-    <div id="homePage" class="page">
-        <div class="user-header">
-            <h3>مرحبا بيك في موقع CD-Card يـ <span id="uName" style="color:var(--accent);">...</span> 🇱🇾</h3>
-            <div class="stats-grid">
-                <div class="stat-item"><small>الرصيد المتوفر</small><br><span id="uBalance">0.00</span></div>
-                <div class="stat-item"><small>الرصيد المنفق</small><br><span id="uSpent">0.00</span></div>
+    <div id="mainContent" style="display:none;">
+        <div id="homePage" class="page active">
+            <div class="user-header">
+                <h3>مرحبا بيك في موقع CD-Card يـ <span id="uName" style="color:var(--accent);">...</span> 🇱🇾</h3>
+                <div class="stats-grid">
+                    <div class="stat-item"><small>الرصيد المتوفر</small><br><span id="uBalance">0.00</span></div>
+                    <div class="stat-item"><small>الرصيد المنفق</small><br><span id="uSpent">0.00</span></div>
+                </div>
             </div>
-            <button class="btn-main" style="margin-top:15px; padding:10px; font-size:13px;" onclick="nav('rechargePage', document.querySelectorAll('.nav-item')[2])">➕ شحن الرصيد</button>
-        </div>
 
-        <div class="card-panel">
-            <label>1. اختر التصنيف</label> 
-            <select id="catSelect" onchange="updateServiceList()"></select>
-            
-            <label>2. اختر نوع الخدمة</label> 
-            <select id="serviceSelect" onchange="updateServiceDetails()"></select>
-            
-            <label>3. الرابط أو الآيدي</label>
-            <input type="text" id="orderLink" placeholder="أدخل الرابط هنا...">
-            
-            <label id="qtyLabel">4. الكمية المطلوبة</label>
-            <input type="number" id="orderQty" oninput="calculateTotal()">
-            
-            <div style="text-align:center; padding:15px; background: #000; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 20px;"> 
-                <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
-                <span id="totalPrice" style="color:var(--accent); font-size:28px; font-weight:bold;">0.00</span> د.ل
+            <div class="card-panel">
+                <label>1. اختر التصنيف</label> 
+                <select id="catSelect" onchange="updateServiceList()"></select>
+                
+                <label>2. اختر الخدمة</label> 
+                <select id="serviceSelect" onchange="updateServiceDetails()"></select>
+                
+                <label>3. الرابط أو الآيدي</label>
+                <input type="text" id="orderLink" placeholder="أدخل الرابط هنا...">
+                
+                <label id="qtyLabel">4. الكمية المطلوبة</label>
+                <input type="number" id="orderQty" oninput="calculateTotal()">
+                
+                <div style="text-align:center; padding:15px; background: #000; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 20px;"> 
+                    <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
+                    <span id="totalPrice" style="color:var(--accent); font-size:28px; font-weight:bold;">0.00</span> د.ل
+                </div>
+                <button class="btn-main" onclick="submitOrder()">تنفيذ الطلب ✅</button>
             </div>
-            <button class="btn-main" onclick="submitOrder()">تنفيذ الطلب ✅</button>
+
+            <div class="quran-box">
+                اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحيطونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
+            </div>
         </div>
 
-        <div class="quran-box">
-            اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحيطونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
+        <div id="ordersPage" class="page">
+            <div class="card-panel"><h3>📦 طلباتي الأخيرة</h3><div id="ordersList"></div></div>
         </div>
-    </div>
 
-    <div id="ordersPage" class="page"><div class="card-panel"><h3>📦 طلباتي</h3><div id="ordersList"></div></div></div>
-    <div id="rechargePage" class="page"><div class="card-panel"><h3>💳 الشحن</h3><p>ليبيانا: 0920414760<br>مدار: 0912377291</p></div></div>
-    <div id="settingsPage" class="page"><div class="card-panel" style="text-align:center;"><button class="btn-main" style="background:var(--error);color:#fff" onclick="auth.signOut()">خروج</button></div></div>
+        <div id="rechargePage" class="page">
+            <div class="card-panel">
+                <h3>💳 شحن الرصيد</h3>
+                <p>ليبيانا: 0920414760<br>مدار: 0912377291</p>
+                <button class="btn-main" onclick="window.open('https://wa.me/218920414760')">تواصل مع الدعم</button>
+            </div>
+        </div>
 
-    <div id="mainNav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="nav('ordersPage', this)">📦<br>طلباتي</div>
-        <div class="nav-item" onclick="nav('rechargePage', this)">💳<br>الشحن</div>
-        <div class="nav-item" onclick="nav('settingsPage', this)">⚙️<br>الإعدادات</div>
+        <div id="settingsPage" class="page">
+            <div class="card-panel" style="text-align:center;">
+                <button class="btn-main" style="background:var(--error);color:#fff" onclick="auth.signOut()">تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
+            <div class="nav-item" onclick="nav('ordersPage', this)">📦<br>طلباتي</div>
+            <div class="nav-item" onclick="nav('rechargePage', this)">💳<br>الشحن</div>
+            <div class="nav-item" onclick="nav('settingsPage', this)">⚙️<br>الإعدادات</div>
+        </div>
     </div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(); const auth = firebase.auth();
-    let allServices = []; let selectedService = null;
 
-    function showAuth(id) {
-        document.querySelectorAll('.auth-container, .page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    // التبديل بين الدخول والإنشاء
+    function toggleAuth(pageId) {
+        document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
     }
 
     async function signup() {
         const email = document.getElementById('signEmail').value;
         const pass = document.getElementById('signPass').value;
         const user = document.getElementById('signUser').value;
+        if(!email || !pass || !user) return alert("املأ كافة الحقول!");
         try {
             const res = await auth.createUserWithEmailAndPassword(email, pass);
             await db.collection('users').doc(res.user.uid).set({ username: user, balance: 0, spent: 0 });
-            alert("تم إنشاء الحساب بنجاح!");
-        } catch (e) { alert(e.message); }
+            alert("تم إنشاء حسابك بنجاح!");
+        } catch (e) { alert("خطأ: " + e.message); }
     }
 
     async function login() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
-        try { await auth.signInWithEmailAndPassword(email, pass); } catch (e) { alert(e.message); }
+        try { await auth.signInWithEmailAndPassword(email, pass); } catch (e) { alert("بيانات الدخول غير صحيحة!"); }
     }
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            document.getElementById('loginPage').classList.remove('active');
-            document.getElementById('signupPage').classList.remove('active');
-            document.getElementById('homePage').classList.add('active');
-            document.getElementById('mainNav').style.display = 'flex';
+            document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('mainContent').style.display = 'block';
             loadServices();
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
@@ -148,18 +169,20 @@
                 }
             });
         } else {
-            showAuth('loginPage');
-            document.getElementById('mainNav').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            toggleAuth('loginPage');
         }
     });
 
+    // جلب وترتيب الخدمات والفئات
     async function loadServices() {
         const snap = await db.collection('services').get();
-        allServices = []; let cats = new Set();
+        let allServices = []; let cats = new Set();
         snap.forEach(doc => { 
             const s = doc.data(); allServices.push({id: doc.id, ...s}); 
             if(s.category) cats.add(s.category); 
         });
+        window.allServices = allServices;
 
         let sortedCats = Array.from(cats).sort((a, b) => {
             const apps = ["ببجي", "لعبة", "جواهر", "اشتراك", "تيك توك", "فيسبوك", "انستغرام", "يوتيوب", "واتساب", "تليجرام"];
@@ -180,22 +203,22 @@
     function updateServiceList() {
         const cat = document.getElementById('catSelect').value;
         const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = "";
-        allServices.filter(s => s.category === cat)
+        window.allServices.filter(s => s.category === cat)
             .sort((a, b) => (a.finalPrice || 0) - (b.finalPrice || 0))
             .forEach(s => { sSelect.innerHTML += `<option value="${s.id}">${s.name} - ${s.finalPrice} د.ل</option>`; });
         updateServiceDetails();
     }
 
     function updateServiceDetails() {
-        selectedService = allServices.find(s => s.id === document.getElementById('serviceSelect').value);
-        if(selectedService) {
+        window.selectedService = window.allServices.find(s => s.id === document.getElementById('serviceSelect').value);
+        if(window.selectedService) {
             const qtyInput = document.getElementById('orderQty');
-            const isSingle = selectedService.category.includes('ببجي') || selectedService.category.includes('لعبة') || selectedService.category.includes('اشتراك');
+            const isSingle = window.selectedService.category.includes('ببجي') || window.selectedService.category.includes('لعبة') || window.selectedService.category.includes('اشتراك');
             if(isSingle) {
                 qtyInput.value = 1; qtyInput.disabled = true;
                 document.getElementById('qtyLabel').innerText = "الكمية (ثابتة)";
             } else {
-                qtyInput.value = selectedService.min || 1000; qtyInput.disabled = false;
+                qtyInput.value = window.selectedService.min || 1000; qtyInput.disabled = false;
                 document.getElementById('qtyLabel').innerText = "الكمية المطلوبة";
             }
             calculateTotal();
@@ -203,9 +226,9 @@
     }
 
     function calculateTotal() {
-        if (selectedService) {
+        if (window.selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
-            const price = parseFloat(selectedService.finalPrice) || 0;
+            const price = parseFloat(window.selectedService.finalPrice) || 0;
             let total = document.getElementById('orderQty').disabled ? price : (qty / 1000) * price;
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
@@ -216,14 +239,14 @@
         const currentBal = parseFloat(document.getElementById('uBalance').innerText);
         if(currentBal < total) return alert("رصيدك لا يكفي!");
         await db.collection('orders').add({
-            userId: auth.currentUser.uid, serviceName: selectedService.name, link: document.getElementById('orderLink').value,
+            userId: auth.currentUser.uid, serviceName: window.selectedService.name, link: document.getElementById('orderLink').value,
             qty: document.getElementById('orderQty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY')
         });
         await db.collection('users').doc(auth.currentUser.uid).update({
             balance: firebase.firestore.FieldValue.increment(-total),
             spent: firebase.firestore.FieldValue.increment(total)
         });
-        alert("✅ تم الطلب!");
+        alert("✅ تم إرسال الطلب!");
     }
 
     function nav(id, el) {
@@ -244,4 +267,3 @@
 </script>
 </body>
 </html>
-
