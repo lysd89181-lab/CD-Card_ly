@@ -12,7 +12,7 @@
     <style>
         :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 90px; overflow-x: hidden; }
-        .page { display: none; } .page.active { display: block; }
+        .page { display: none; padding: 10px; } .page.active { display: block; }
         .card-panel { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
         .stat-box { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px; }
         .stat-box span { color: var(--accent); font-weight: bold; font-size: 22px; }
@@ -24,6 +24,7 @@
         .nav-item { color: #8b949e; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--accent); }
         .desc-box { background: rgba(0,255,136,0.05); border-right: 4px solid var(--accent); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; display: none; line-height: 1.5; }
+        .order-card { background: var(--card); padding: 12px; border-radius: 12px; border-right: 4px solid var(--accent); margin-bottom: 10px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -33,7 +34,6 @@
             <div style="background:var(--card); padding:10px 15px; border-radius:12px; border:1px solid var(--border); flex:1;">
                 مرحباً <span id="uName" style="color:var(--accent);">زائر</span> 🇱🇾
             </div>
-            <button class="btn-main" style="width:auto; margin-right:10px; padding:10px 20px;" onclick="nav('rechargePage')">➕ رصيد</button>
         </div>
         
         <div class="stat-box"> 
@@ -64,25 +64,46 @@
         </div>
     </div>
 
-    <div id="rechargePage" class="page">
-        <button onclick="nav('homePage')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:15px;">⬅ رجوع</button>
-        <div class="card-panel">
-            <h3>شحن الرصيد</h3>
-            <p style="font-size: 13px; color: #8b949e;">يرجى التحويل وارسال الصورة للدعم:</p>
-            <div style="background:#0d1117; padding:10px; border-radius:10px; margin-bottom:10px;">ليبيانا: 0920414760</div>
-            <div style="background:#0d1117; padding:10px; border-radius:10px; margin-bottom:20px;">مدار: 0912377291</div>
-            <button class="btn-main" onclick="window.open('https://wa.me/218920414760')">تواصل مع الدعم 💬</button>
+    <div id="ordersPage" class="page">
+        <h3 style="color:var(--accent)">📦 طلباتي الأخيرة</h3>
+        <div id="ordersList">
+            <p style="color:#8b949e; text-align:center;">لا توجد طلبات حالياً</p>
         </div>
     </div>
 
+    <div id="rechargePage" class="page">
+        <div class="card-panel">
+            <h3 style="color:var(--accent)">💳 شحن الرصيد</h3>
+            <p style="font-size: 14px; line-height: 1.6;">لشحن رصيدك، يرجى تحويل المبلغ عبر أحد الحسابات التالية، ثم إرسال صورة التحويل للدعم الفني لتفعيل الرصيد فوراً:</p>
+            <div class="stat-box" style="text-align:right;">
+                <b>ليبيانا:</b> <span style="font-size:18px;">0920414760</span><br>
+                <b>مدار:</b> <span style="font-size:18px;">0912377291</span>
+            </div>
+            <button class="btn-main" onclick="window.open('https://wa.me/218920414760')">إرسال إيصال الدفع 💬</button>
+        </div>
+    </div>
+
+    <div id="settingsPage" class="page">
+        <div class="card-panel" style="text-align:center;">
+            <div style="width:70px; height:70px; background:var(--accent); border-radius:50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; color:#000; font-size:30px; font-weight:bold;">M</div>
+            <h4 id="uFullName">محمد ..</h4>
+            <p style="font-size:12px; color:#8b949e;" id="uEmail">example@gmail.com</p>
+        </div>
+        <div class="card-panel" onclick="window.open('https://wa.me/218920414760')" style="cursor:pointer; display:flex; justify-content:space-between;">
+            <span>مركز الدعم الفني</span>
+            <span style="color:var(--accent)">💬</span>
+        </div>
+        <button class="btn-main" style="background:#ff4d4d; color:white;" onclick="auth.signOut()">تسجيل الخروج</button>
+    </div>
+
     <div class="nav-bar">
-        <div class="nav-item active" onclick="nav('homePage')">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="alert('قريباً')">💰<br>أرباحي</div>
-        <div class="nav-item" onclick="window.open('https://wa.me/218920414760')">💬<br>الدعم</div>
+        <div class="nav-item active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
+        <div class="nav-item" onclick="nav('ordersPage', this)">📦<br>طلباتي</div>
+        <div class="nav-item" onclick="nav('rechargePage', this)">💳<br>الشحن</div>
+        <div class="nav-item" onclick="nav('settingsPage', this)">⚙️<br>الإعدادات</div>
     </div>
 
 <script>
-    // إعدادات Firebase الخاصة بمشروعك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -98,86 +119,66 @@
     let allServices = []; 
     let selectedService = null;
 
-    function nav(id) { 
+    function nav(id, el) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById(id).classList.add('active'); 
+        el.classList.add('active');
+        if(id === 'ordersPage') loadUserOrders();
     }
 
-    // تشغيل جلب البيانات فوراً لضمان السرعة
     loadServices();
 
-    // مراقبة حساب المستخدم ورصيده
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const d = doc.data();
                     document.getElementById('uName').innerText = d.username || "مشترك";
+                    document.getElementById('uFullName').innerText = d.username || "محمد";
+                    document.getElementById('uEmail').innerText = user.email;
                     document.getElementById('uBalance').innerText = Number(d.balance || 0).toFixed(2);
                 }
             });
         }
     });
 
-    // جلب الخدمات وترتيبها يدوياً (ألعاب -> اشتراكات -> رشق)
+    // جلب وترتيب الفئات حسب طلبك
     async function loadServices() {
         try {
             const snap = await db.collection('services').get();
             allServices = []; 
             let cats = new Set();
-            
             snap.forEach(doc => { 
                 const s = doc.data(); 
                 allServices.push({id: doc.id, ...s}); 
                 if(s.category) cats.add(s.category); 
             });
 
-            // تحويل التصنيفات لمصفوفة لترتيبها حسب طلبك
             let sortedCats = Array.from(cats);
-
             sortedCats.sort((a, b) => {
-                // الكلمات المفتاحية للترتيب: الألعاب أولاً، ثم الاشتراكات، ثم منصات الرشق
-                const order = ["ببجي", "لعبة", "جواهر", "اشتراك", "نيتفلكس", "تيك توك", "انستقرام", "فيسبوك", "تليجرام"];
-                
-                let indexA = order.findIndex(keyword => a.includes(keyword));
-                let indexB = order.findIndex(keyword => b.includes(keyword));
-
-                // إذا لم توجد الكلمة في القائمة، توضع في الأسفل
-                if (indexA === -1) indexA = 99;
-                if (indexB === -1) indexB = 99;
-
+                // الترتيب المطلوب: ألعاب -> اشتراكات -> تيك توك -> انستا -> فيسبوك -> يوتيوب -> تليجرام
+                const order = ["ببجي", "لعبة", "جواهر", "اشتراك", "نيتفلكس", "تيك توك", "انستقرام", "فيسبوك", "يوتيوب", "تليجرام"];
+                let indexA = order.findIndex(key => a.toLowerCase().includes(key));
+                let indexB = order.findIndex(key => b.toLowerCase().includes(key));
+                if (indexA === -1) indexA = 99; if (indexB === -1) indexB = 99;
                 return indexA - indexB;
             });
 
             const catSelect = document.getElementById('catSelect'); 
             catSelect.innerHTML = "";
-            
-            if (sortedCats.length === 0) {
-                catSelect.innerHTML = "<option>لا توجد خدمات حالياً</option>";
-            } else {
-                sortedCats.forEach(c => { 
-                    catSelect.innerHTML += `<option value="${c}">${c}</option>`; 
-                });
-                updateServiceList();
-            }
-        } catch (e) {
-            console.error("Error loading services:", e);
-            document.getElementById('catSelect').innerHTML = "<option>خطأ في جلب البيانات</option>";
-        }
+            sortedCats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+            updateServiceList();
+        } catch (e) { console.error(e); }
     }
 
     function updateServiceList() {
         const cat = document.getElementById('catSelect').value;
         const sSelect = document.getElementById('serviceSelect'); 
         sSelect.innerHTML = "";
-        
-        // تصفية الخدمات حسب التصنيف وترتيبها أبجدياً داخل التصنيف الواحد
-        allServices
-            .filter(s => s.category === cat)
+        allServices.filter(s => s.category === cat)
             .sort((a, b) => a.name.localeCompare(b.name))
-            .forEach(s => { 
-                sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; 
-            });
+            .forEach(s => { sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; });
         updateServiceDetails();
     }
 
@@ -191,31 +192,70 @@
         }
     }
 
-    // حساب السعر الإجمالي بناءً على السعر المخزن كرقم (Number)
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
             const price = selectedService.finalPrice || 0; 
-            
-            // تمييز خدمات البكجات عن الخدمات التي تعتمد على الألف
-            const isPkg = selectedService.name.includes('شده') || 
-                          selectedService.name.includes('بكج') || 
-                          selectedService.category.includes('ببجي');
-
+            const isPkg = selectedService.name.includes('شده') || selectedService.name.includes('بكج') || selectedService.category.includes('ببجي');
             let total = isPkg ? price : (qty / 1000) * price;
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
     }
 
+    // إرسال الطلب وحفظه في الـ Firebase لكي يظهر لك وللمستخدم
     async function submitOrder() {
+        const user = auth.currentUser;
+        if(!user) return alert("يرجى تسجيل الدخول أولاً!");
+
         const total = parseFloat(document.getElementById('totalPrice').innerText);
         const currentBal = parseFloat(document.getElementById('uBalance').innerText);
-        
-        if(currentBal < total) return alert("عذراً، رصيدك غير كافٍ لإتمام الطلب!");
-        
-        // ملاحظة: هنا سنضيف لاحقاً كود إرسال الطلب الفعلي لـ Firestore
-        alert("تم استلام طلبك بنجاح! جاري المعالجة... ✅");
+        const link = document.getElementById('orderLink').value;
+        const qty = document.getElementById('orderQty').value;
+
+        if(!link || qty <= 0) return alert("يرجى ملء جميع البيانات!");
+        if(currentBal < total) return alert("رصيدك غير كافٍ!");
+
+        try {
+            // 1. تسجيل الطلب في مجموعة orders
+            await db.collection('orders').add({
+                userId: user.uid,
+                serviceName: selectedService.name,
+                link: link,
+                qty: qty,
+                cost: total,
+                status: "قيد الانتظار",
+                date: new Date().toLocaleString('ar-LY')
+            });
+
+            // 2. خصم الرصيد من المستخدم
+            await db.collection('users').doc(user.uid).update({
+                balance: currentBal - total
+            });
+
+            alert("✅ تم إرسال طلبك بنجاح وسيتم تنفيذه فوراً!");
+            document.getElementById('orderQty').value = "";
+            document.getElementById('orderLink').value = "";
+        } catch (e) { alert("خطأ في تنفيذ الطلب"); }
+    }
+
+    async function loadUserOrders() {
+        const user = auth.currentUser;
+        if(!user) return;
+        const snap = await db.collection('orders').where('userId', '==', user.uid).get();
+        const list = document.getElementById('ordersList');
+        list.innerHTML = "";
+        if(snap.empty) list.innerHTML = "<p style='text-align:center;'>لا توجد طلبات</p>";
+        snap.forEach(doc => {
+            const o = doc.data();
+            list.innerHTML += `
+                <div class="order-card">
+                    <b>${o.serviceName}</b><br>
+                    <small>الرابط: ${o.link}</small><br>
+                    <small>التكلفة: ${o.cost} د.ل | الحالة: <span style="color:var(--accent)">${o.status}</span></small>
+                </div>`;
+        });
     }
 </script>
 </body>
 </html>
+
