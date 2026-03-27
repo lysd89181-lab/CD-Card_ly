@@ -24,7 +24,8 @@
         .phone-num { background: #000; padding: 12px; border-radius: 12px; margin: 8px 0; border: 1px solid var(--accent); font-weight: bold; font-size: 18px; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 10px; }
         label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
         select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 14px; margin-bottom: 18px; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; }
+        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-main:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); border-top: 1px solid var(--border); display: flex; padding: 10px 0; z-index: 1000; }
         .nav-item { color: #8b949e; text-align: center; font-size: 11px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
@@ -56,6 +57,7 @@
     </div>
 
     <div id="mainContent" style="display:none;">
+        
         <div id="homePage" class="page active">
             <div class="user-header">
                 <h3>مرحبا بيك في موقع CD-Card يـ <span id="uName">...</span> 🇱🇾</h3>
@@ -86,13 +88,15 @@
                 <label>رقم الهاتف الذي قمت بالتحويل منه</label>
                 <input type="number" id="senderPhone" placeholder="09xxxxxxxx">
 
-                <label>المبلغ الذي أرسلته (بالدينار الليبي)</label>
-                <input type="number" id="chargeAmount" placeholder="القيمة بالدينار">
+                <label>المبلغ المرسل (د.ل)</label>
+                <input type="number" id="chargeAmount" placeholder="القيمة">
 
                 <label>ارفع سكرين التحويل</label>
                 <input type="file" id="chargeScreen" accept="image/*">
 
-                <button class="btn-main" onclick="uploadChargeRequest()">إرسال طلب الشحن 🚀</button>
+                <div id="rechargeStatus" style="text-align:center; margin-bottom:15px; display:none; color:var(--accent);">جاري المعالجة...</div>
+                
+                <button id="chargeBtn" class="btn-main" onclick="handleCharge()">إرسال طلب الشحن 🚀</button>
             </div>
         </div>
 
@@ -133,38 +137,56 @@
         if (user) {
             document.getElementById('mainContent').style.display = 'block'; document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
             db.collection('users').doc(user.uid).onSnapshot(doc => {
-                const d = doc.data(); document.getElementById('uName').innerText = d.username; document.getElementById('setUName').innerText = d.username;
-                document.getElementById('setUPass').innerText = d.password; document.getElementById('uBalance').innerText = Number(d.balance).toFixed(2);
+                if(doc.exists){
+                    const d = doc.data(); document.getElementById('uName').innerText = d.username; document.getElementById('setUName').innerText = d.username;
+                    document.getElementById('setUPass').innerText = d.password; document.getElementById('uBalance').innerText = Number(d.balance).toFixed(2);
+                }
             });
             loadServices();
         } else { document.getElementById('mainContent').style.display = 'none'; toggleAuth('loginPage'); }
     });
 
-    async function uploadChargeRequest() {
+    // دالة الشحن المعدلة لضمان فتح واتساب
+    async function handleCharge() {
         const phone = document.getElementById('senderPhone').value;
         const amount = document.getElementById('chargeAmount').value;
         const file = document.getElementById('chargeScreen').files[0];
+        const btn = document.getElementById('chargeBtn');
+        const status = document.getElementById('rechargeStatus');
         const userName = document.getElementById('uName').innerText;
 
-        if(!phone || !amount || !file) return alert("املأ كافة البيانات!");
+        if(!phone || !amount || !file) return alert("يرجى ملء كافة الخانات ورفع الصورة!");
+
+        btn.disabled = true;
+        status.style.display = 'block';
+        status.innerText = "جاري رفع الصورة... انتظر";
 
         try {
             const ref = storage.ref(`receipts/${auth.currentUser.uid}_${Date.now()}`);
             await ref.put(file);
             const url = await ref.getDownloadURL();
 
-            // حفظ الطلب في Firestore
-            await db.collection('charge_requests').add({ userId: auth.currentUser.uid, phone, amount, image: url, status: "قيد المراجعة", date: new Date().toLocaleString('ar-LY') });
+            await db.collection('charge_requests').add({ 
+                userId: auth.currentUser.uid, phone, amount, image: url, status: "قيد المراجعة", date: new Date().toLocaleString('ar-LY') 
+            });
 
-            // إرسال البيانات إليك على الواتساب
-            const msg = `طلب شحن جديد 🚀\nاسم المستخدم: ${userName}\nالمبلغ: ${amount} د.ل\nتم التحويل من رقم: ${phone}\nرابط الصورة: ${url}`;
-            window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`);
+            status.innerText = "تم الرفع! اضغط إرسال للواتساب";
+            btn.innerText = "إرسال الآن للواتساب ✅";
+            btn.disabled = false;
             
-            alert("✅ تم إرسال طلبك عبر الواتساب وللمراجعة!");
-        } catch (e) { alert("حدث خطأ!"); }
+            // تغيير وظيفة الزر لفتح الواتساب مباشرة عند الضغطة الثانية (لتجاوز حظر المتصفح)
+            btn.onclick = function() {
+                const msg = `طلب شحن جديد 🚀\nاسم المستخدم: ${userName}\nالمبلغ: ${amount} د.ل\nمن رقم: ${phone}\nرابط الصورة: ${url}`;
+                window.location.href = `https://wa.me/218912377291?text=${encodeURIComponent(msg)}`;
+            };
+        } catch (e) { 
+            alert("حدث خطأ!"); 
+            btn.disabled = false;
+            status.style.display = 'none';
+        }
     }
 
-    // دوال الخدمات والطلبات المختصرة
+    // دوال الخدمات
     async function loadServices() {
         const snap = await db.collection('services').get(); window.allServices = []; snap.forEach(doc => window.allServices.push({id: doc.id, ...doc.data()}));
         const cats = [...new Set(window.allServices.map(s => s.category))];
