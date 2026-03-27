@@ -10,52 +10,38 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --accent-dim: rgba(0,255,136,0.1); --text: #f0f6fc; --border: #30363d; --input-bg: #0d1117; }
-        
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 15px; font-size: 15px; padding-bottom: 50px; }
+        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 80px; }
 
-        /* --- الهيدر العلوي --- */
-        .header-section { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .user-welcome-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px; }
-        
-        .welcome-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 15px; flex: 1; text-align: center; }
-        .welcome-text { font-weight: bold; font-size: 15px; color: var(--accent); }
-
-        .add-balance-btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 12px 20px; font-weight: 800; font-size: 13px; cursor: pointer; }
+        /* الهيدر العلوي */
+        .header-section { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .user-welcome-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .welcome-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; flex: 1; text-align: center; }
+        .welcome-text { font-weight: bold; color: var(--accent); font-size: 14px; }
+        .add-balance-btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 12px 18px; font-weight: 800; font-size: 12px; cursor: pointer; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); }
-        .stat-box small { color: #8b949e; display: block; margin-bottom: 5px; font-size: 11px; }
+        .stat-box small { color: #8b949e; display: block; font-size: 11px; margin-bottom: 5px; }
         .stat-box span { color: var(--accent); font-weight: bold; font-size: 18px; }
 
-        /* --- نموذج الطلب --- */
+        /* نموذج الطلب */
         .order-form { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
-        
-        select, input { 
-            width: 100%; background: var(--input-bg); border: 1px solid var(--border); 
-            color: #fff; padding: 14px; border-radius: 12px; margin-bottom: 15px; 
-            box-sizing: border-box; font-size: 14px; outline: none; transition: 0.3s;
-        }
-        select:focus, input:focus { border-color: var(--accent); }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); }
+        select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; outline: none; }
 
-        /* صندوق الوصف الضخم - بنفس ستايل خانة الرصيد */
-        .description-box { 
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-right: 5px solid var(--accent);
-            padding: 15px; font-size: 13px; color: #ced4da; margin-bottom: 15px; 
-            line-height: 1.8; border-radius: 12px; display: none; min-height: 60px;
-        }
+        .description-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-right: 5px solid var(--accent); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: none; line-height: 1.7; font-size: 13px; }
 
-        .btn-send { 
-            width: 100%; background: var(--accent); color: #000; 
-            border: none; padding: 16px; border-radius: 12px; 
-            font-weight: 800; font-size: 16px; cursor: pointer;
-        }
+        .btn-send { width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
 
-        /* --- صندوق آية الكرسي --- */
-        .quran-box { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 25px; text-align: center; margin-top: 35px; }
-        .quran-title { color: var(--accent); font-size: 18px; margin-bottom: 12px; font-weight: bold; }
-        .quran-text { font-family: 'Amiri', serif; font-size: 16px; color: #f0f6fc; line-height: 2.2; }
+        /* شريط التنقل السفلي (الدعم، الربح، الإعدادات) */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
+        .nav-item { color: #8b949e; text-decoration: none; text-align: center; font-size: 11px; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { display: block; font-size: 18px; margin-bottom: 4px; }
+
+        /* آية الكرسي */
+        .quran-box { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; margin-top: 30px; font-family: 'Amiri', serif; line-height: 2; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 </head>
@@ -64,20 +50,13 @@
 <div class="header-section">
     <div class="user-welcome-row">
         <div class="welcome-box">
-            <span class="welcome-text">مرحباً يا <span id="userNameHeader">محمد</span> 🇱🇾</span>
+            <span class="welcome-text">مرحباً يا <span id="userDisplayName">تحميل...</span> 🇱🇾</span>
         </div>
         <button class="add-balance-btn">➕ رصيد</button>
     </div>
-
     <div class="stats-grid">
-        <div class="stat-box">
-            <small>الرصيد المتوفر</small>
-            <span id="userBalance">0.00</span> <small style="display:inline; font-size:11px;">د.ل</small>
-        </div>
-        <div class="stat-box">
-            <small>إجمالي المنفق</small>
-            <span id="userSpent">0.00</span> <small style="display:inline; font-size:11px;">د.ل</small>
-        </div>
+        <div class="stat-box"><small>الرصيد</small><span id="userBalance">0.00</span> د.ل</div>
+        <div class="stat-box"><small>المنفق</small><span id="userSpent">0.00</span> د.ل</div>
     </div>
 </div>
 
@@ -90,29 +69,35 @@
 
     <div id="descBox" class="description-box"></div>
 
-    <label>3. الرابط أو المعرف (ID)</label>
-    <input type="text" id="orderLink" placeholder="أدخل الرابط أو الآيدي هنا">
+    <label>3. الرابط أو الآيدي</label>
+    <input type="text" id="orderLink" placeholder="أدخل البيانات المطلوبة هنا">
 
     <label>4. الكمية</label>
-    <input type="number" id="orderQty" placeholder="أدخل الكمية المطلوبة" oninput="calculateTotal()">
-    <small id="limitHint" style="color: #8b949e; font-size: 11px; display: block; margin-top: -10px; margin-bottom: 12px;"></small>
+    <input type="number" id="orderQty" oninput="calculateTotal()">
+    <small id="limitHint" style="color:#8b949e; font-size:10px; display:block; margin-top:-10px; margin-bottom:10px;"></small>
 
-    <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid #222;">
-        <small style="color:#8b949e;">السعر الإجمالي:</small><br>
-        <span id="totalPrice" style="color: var(--accent); font-weight: bold; font-size: 22px;">0.00</span> د.ل
+    <div style="background:#000; padding:15px; border-radius:12px; margin-bottom:15px; text-align:center; border:1px solid #222;">
+        <small style="color:#8b949e;">السعر النهائي:</small><br>
+        <span id="totalPrice" style="color:var(--accent); font-weight:bold; font-size:22px;">0.00</span> د.ل
     </div>
 
-    <button class="btn-send" onclick="submitOrder()">تأكيد الطلب الآن ✅</button>
+    <button class="btn-send" onclick="submitOrder()">تأكيد الطلب ✅</button>
 </div>
 
 <div class="quran-box">
-    <div class="quran-title">۞ آية الكرسي ۞</div>
-    <div class="quran-text">
-        اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۚ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۚ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۚ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
-    </div>
+    <div style="color:var(--accent); font-weight:bold; margin-bottom:8px;">۞ آية الكرسي ۞</div>
+    اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۚ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۚ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۚ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
+</div>
+
+<div class="nav-bar">
+    <a href="#" class="nav-item active">🏠<br>الرئيسية</a>
+    <a href="#" class="nav-item">💰<br>أرباحي</a>
+    <a href="#" class="nav-item">💬<br>الدعم</a>
+    <a href="#" class="nav-item">⚙️<br>الإعدادات</a>
 </div>
 
 <script>
+    // تهيئة Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
       authDomain: "cd-card-87365.firebaseapp.com",
@@ -127,15 +112,16 @@
 
     let allServices = [];
     let selectedService = null;
+    let currentUserData = null;
 
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('userNameHeader').innerText = data.username || "محمد";
-                    document.getElementById('userBalance').innerText = data.balance.toFixed(2);
-                    document.getElementById('userSpent').innerText = (data.spent || 0).toFixed(2);
+                    currentUserData = doc.data();
+                    document.getElementById('userDisplayName').innerText = currentUserData.username || "مشترك";
+                    document.getElementById('userBalance').innerText = currentUserData.balance.toFixed(2);
+                    document.getElementById('userSpent').innerText = (currentUserData.spent || 0).toFixed(2);
                 }
             });
             loadDatabase();
@@ -185,20 +171,17 @@
             const qtyInput = document.getElementById('orderQty');
             desc.style.display = 'block';
             
-            // تحقق هل الخدمة شدات أو ببجي لتغيير الوصف ونظام الكمية
-            const isPackage = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
+            // سحب الوصف الحقيقي من الـ Firestore (أو إنشاء وصف تلقائي)
+            desc.innerHTML = selectedService.description || `<b>وصف الخدمة:</b> شحن فوري وآمن لـ ${selectedService.name}.`;
             
+            const isPackage = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
             if(isPackage) {
-                desc.innerHTML = `<b>وصف الخدمة:</b> شحن مباشر عبر الآيدي. <br> <b>ملاحظة:</b> السعر شامل للكمية المطلوبة.`;
                 qtyInput.value = 1;
                 qtyInput.readOnly = true;
-                qtyInput.style.opacity = "0.5";
-                document.getElementById('limitHint').innerText = "بكج ثابت (كمية 1)";
+                document.getElementById('limitHint').innerText = "كمية ثابتة";
             } else {
-                desc.innerHTML = `<b>وصف الخدمة:</b> ضمان تعويض لمدة 2 يوم. <br> <b>السعر لكل 1000:</b> ${selectedService.finalPrice.toFixed(2)} د.ل`;
                 qtyInput.value = selectedService.min;
                 qtyInput.readOnly = false;
-                qtyInput.style.opacity = "1";
                 document.getElementById('limitHint').innerText = `النطاق: ${selectedService.min} - ${selectedService.max}`;
             }
             calculateTotal();
@@ -209,17 +192,41 @@
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
             const isPackage = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
-            
-            // في الشدات الحساب مباشر، في المتابعين الحساب لكل 1000
+            // الأسعار الحقيقية من الحقل finalPrice
             const total = isPackage ? selectedService.finalPrice : (qty / 1000) * selectedService.finalPrice;
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
     }
 
     async function submitOrder() {
-        // منطق إرسال الطلب كما في الأكواد السابقة
+        const total = parseFloat(document.getElementById('totalPrice').innerText);
+        const bal = parseFloat(document.getElementById('userBalance').innerText);
+        if (bal < total) return alert("رصيدك غير كافٍ");
+
+        const profit = total * 0.04; // حساب الـ 4% ربح لصاحب الرابط
+
+        if (confirm("هل تريد تأكيد الطلب؟")) {
+            const user = auth.currentUser;
+            
+            // تحديث رصيد المستخدم
+            await db.collection('users').doc(user.uid).update({
+                balance: firebase.firestore.FieldValue.increment(-total),
+                spent: firebase.firestore.FieldValue.increment(total)
+            });
+
+            // تسجيل الطلب مع الربح
+            await db.collection('orders').add({
+                uid: user.uid,
+                username: currentUserData.username,
+                serviceName: selectedService.name,
+                cost: total,
+                profit: profit, // الـ 30 (أو الـ 4%) محسوبة هنا
+                status: "قيد الانتظار",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("تم تنفيذ طلبك!");
+        }
     }
 </script>
 </body>
 </html>
-
