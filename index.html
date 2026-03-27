@@ -11,26 +11,70 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; --error: #ff4d4d; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; padding-bottom: 100px; line-height: 1.6; }
+        :root { 
+            --bg: #0d1117; 
+            --card: #161b22; 
+            --accent: #00ff88; 
+            --text: #f0f6fc; 
+            --border: #30363d; 
+            --error: #ff4d4d;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            padding-bottom: 100px; 
+            line-height: 1.6;
+        }
+
+        /* شاشات الدخول */
         .auth-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
         .auth-page.active { display: flex; }
         .auth-card { background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid var(--border); width: 90%; max-width: 400px; text-align: center; }
-        .user-header { background: linear-gradient(145deg, #1c2128, #161b22); padding: 25px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; }
+
+        /* الهيدر */
+        .user-header { 
+            background: linear-gradient(145deg, #1c2128, #161b22); 
+            padding: 25px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; 
+        }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .stat-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 16px; border: 1px solid var(--border); }
         .stat-item span { color: var(--accent); font-weight: 800; font-size: 18px; }
+
+        /* القوائم والبطاقات */
         .card-panel { background: var(--card); padding: 20px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .phone-num { background: #000; padding: 12px; border-radius: 12px; margin: 8px 0; border: 1px solid var(--accent); font-weight: bold; font-size: 18px; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .phone-num { background: #000; padding: 12px; border-radius: 12px; margin: 8px 0; border: 1px solid var(--accent); font-weight: bold; font-size: 18px; color: var(--accent); text-align: center; }
+        
         label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
-        select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 14px; margin-bottom: 18px; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        select, input { 
+            width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; 
+            padding: 15px; border-radius: 14px; margin-bottom: 18px; box-sizing: border-box; outline: none; 
+        }
+
+        .btn-main { 
+            width: 100%; background: var(--accent); color: #000; border: none; padding: 18px; 
+            border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s;
+        }
         .btn-main:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); border-top: 1px solid var(--border); display: flex; padding: 10px 0; z-index: 1000; }
+
+        /* ناف بار */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); border-top: 1px solid var(--border); display: flex; padding: 10px 0; z-index: 1000; backdrop-filter: blur(8px); }
         .nav-item { color: #8b949e; text-align: center; font-size: 11px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
-        .page { display: none; } .page.active { display: block; }
-        .quran-box { text-align: center; padding: 25px; font-size: 14px; color: #8b949e; line-height: 2.2; border-top: 1px solid var(--border); margin-top: 20px; background: rgba(255,255,255,0.01); border-radius: 20px; }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .quran-box { 
+            text-align: center; padding: 25px; font-size: 14px; color: #8b949e; line-height: 2.2; 
+            border-top: 1px solid var(--border); margin-top: 20px; background: rgba(255,255,255,0.01); border-radius: 20px; 
+        }
+
+        /* شريط التحميل */
+        #uploadProgressBar { transition: width 0.3s ease-in-out; }
     </style>
 </head>
 <body>
@@ -60,43 +104,44 @@
         
         <div id="homePage" class="page active">
             <div class="user-header">
-                <h3>مرحبا بيك في موقع CD-Card يـ <span id="uName">...</span> 🇱🇾</h3>
+                <h3>مرحبا بك في CD-Card يـ <span id="uName">...</span> 🇱🇾</h3>
                 <div class="stats-grid">
-                    <div class="stat-item"><small>الرصيد المتوفر</small><br><span id="uBalance">0.00</span></div>
-                    <div class="stat-item"><small>إجمالي المنفق</small><br><span id="uSpent">0.00</span></div>
+                    <div class="stat-item"><small>الرصيد</small><br><span id="uBalance">0.00</span></div>
+                    <div class="stat-item"><small>المنفق</small><br><span id="uSpent">0.00</span></div>
                 </div>
             </div>
             <div class="card-panel">
-                <label>1. اختر التصنيف</label> <select id="catSelect" onchange="updateServiceList()"></select>
-                <label>2. اختر الخدمة</label> <select id="serviceSelect" onchange="updateServiceDetails()"></select>
+                <label>اختر التصنيف</label> <select id="catSelect" onchange="updateServiceList()"></select>
+                <label>اختر الخدمة</label> <select id="serviceSelect" onchange="updateServiceDetails()"></select>
                 <input type="text" id="orderLink" placeholder="الرابط أو الآيدي">
-                <input type="number" id="orderQty" oninput="calculateTotal()">
-                <div style="text-align:center; padding:20px; background: #000; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 20px;"> 
-                    <span id="totalPrice" style="color:var(--accent); font-size:32px; font-weight:bold;">0.00</span> <small>د.ل</small>
+                <input type="number" id="orderQty" oninput="calculateTotal()" placeholder="الكمية">
+                <div style="text-align:center; padding:15px; background: #000; border-radius: 18px; margin-bottom: 15px;"> 
+                    <span id="totalPrice" style="color:var(--accent); font-size:28px; font-weight:bold;">0.00</span> د.ل
                 </div>
-                <button class="btn-main" onclick="submitOrder()">تنفيذ الطلب ✅</button>
+                <button class="btn-main" onclick="submitOrder()">تأكيد الطلب ✅</button>
             </div>
             <div class="quran-box">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ<br>اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحيطونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ</div>
         </div>
 
         <div id="rechargePage" class="page">
             <div class="card-panel">
-                <h3 style="color:var(--accent); text-align:center;">💳 شحن برصيد ليبيانا أو مدار</h3>
+                <h3 style="color:var(--accent); text-align:center;">💳 شحن الرصيد</h3>
                 <div class="phone-num">0920414760</div>
                 <div class="phone-num">0912377291</div>
+                <label>رقمك المحول منه</label><input type="number" id="senderPhone" placeholder="09xxxxxxxx">
+                <label>المبلغ (د.ل)</label><input type="number" id="chargeAmount" placeholder="3.00">
+                <label>ارفع سكرين التحويل</label><input type="file" id="chargeScreen" accept="image/*">
                 
-                <label>رقم الهاتف الذي قمت بالتحويل منه</label>
-                <input type="number" id="senderPhone" placeholder="09xxxxxxxx">
+                <div id="uploadContainer" style="display:none; margin:15px 0;">
+                    <div style="width:100%; background:#000; height:8px; border-radius:10px; border:1px solid var(--border);">
+                        <div id="uploadProgressBar" style="width:0%; background:var(--accent); height:100%; border-radius:10px;"></div>
+                    </div>
+                    <p id="uploadStatus" style="text-align:center; font-size:12px; color:var(--accent); margin-top:5px;">جاري الرفع...</p>
+                </div>
 
-                <label>المبلغ المرسل (د.ل)</label>
-                <input type="number" id="chargeAmount" placeholder="القيمة">
-
-                <label>ارفع سكرين التحويل</label>
-                <input type="file" id="chargeScreen" accept="image/*">
-
-                <div id="rechargeStatus" style="text-align:center; margin-bottom:15px; display:none; color:var(--accent);">جاري المعالجة...</div>
-                
-                <button id="chargeBtn" class="btn-main" onclick="handleCharge()">إرسال طلب الشحن 🚀</button>
+                <div id="btnArea">
+                    <button id="chargeBtn" class="btn-main" onclick="handleCharge()">إرسال طلب الشحن 🚀</button>
+                </div>
             </div>
         </div>
 
@@ -104,10 +149,13 @@
 
         <div id="settingsPage" class="page">
             <div class="card-panel">
-                <h3 style="color:var(--accent)">👤 حسابك</h3>
+                <h3 style="color:var(--accent)">⚙️ الإعدادات</h3>
                 <p>الاسم: <span id="setUName"></span></p>
                 <p>كلمة السر: <span id="setUPass" style="color:var(--accent)"></span></p>
-                <button class="btn-main" style="background:var(--error); color:#fff;" onclick="auth.signOut()">خروج</button>
+                <hr style="border-color:var(--border)">
+                <p onclick="alert('اتصل بنا: 0912377291')" style="cursor:pointer">الدعم الفني 💬</p>
+                <p onclick="alert('متجر CD-Card لخدمات الألعاب')" style="cursor:pointer">من نحن ℹ️</p>
+                <button class="btn-main" style="background:var(--error); color:#fff; margin-top:10px;" onclick="auth.signOut()">خروج</button>
             </div>
         </div>
 
@@ -120,6 +168,7 @@
     </div>
 
 <script>
+    // إعدادات Firebase
     const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(); const auth = firebase.auth(); const storage = firebase.storage();
@@ -127,76 +176,68 @@
     function toggleAuth(id) { document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
     async function signup() {
-        const email = document.getElementById('signEmail').value; const pass = document.getElementById('signPass').value; const user = document.getElementById('signUser').value;
-        try { const res = await auth.createUserWithEmailAndPassword(email, pass); await db.collection('users').doc(res.user.uid).set({ username: user, balance: 0, spent: 0, password: pass }); } catch (e) { alert(e.message); }
+        const e = document.getElementById('signEmail').value, p = document.getElementById('signPass').value, u = document.getElementById('signUser').value;
+        try { const r = await auth.createUserWithEmailAndPassword(e, p); await db.collection('users').doc(r.user.uid).set({ username: u, balance: 0, spent: 0, password: p }); } catch (err) { alert(err.message); }
     }
 
-    async function login() { try { await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPass').value); } catch (e) { alert("خطأ!"); } }
+    async function login() { try { await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPass').value); } catch (e) { alert("بيانات خاطئة!"); } }
 
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('mainContent').style.display = 'block'; document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
             db.collection('users').doc(user.uid).onSnapshot(doc => {
-                if(doc.exists){
-                    const d = doc.data(); document.getElementById('uName').innerText = d.username; document.getElementById('setUName').innerText = d.username;
-                    document.getElementById('setUPass').innerText = d.password; document.getElementById('uBalance').innerText = Number(d.balance).toFixed(2);
-                }
+                const d = doc.data(); document.getElementById('uName').innerText = d.username; document.getElementById('setUName').innerText = d.username;
+                document.getElementById('setUPass').innerText = d.password; document.getElementById('uBalance').innerText = Number(d.balance).toFixed(2);
+                document.getElementById('uSpent').innerText = Number(d.spent).toFixed(2);
             });
             loadServices();
         } else { document.getElementById('mainContent').style.display = 'none'; toggleAuth('loginPage'); }
     });
 
-    // دالة الشحن المعدلة لضمان فتح واتساب
+    // وظيفة الشحن المطورة
     async function handleCharge() {
-        const phone = document.getElementById('senderPhone').value;
-        const amount = document.getElementById('chargeAmount').value;
-        const file = document.getElementById('chargeScreen').files[0];
+        const ph = document.getElementById('senderPhone').value, amt = document.getElementById('chargeAmount').value, file = document.getElementById('chargeScreen').files[0];
+        if(!ph || !amt || !file) return alert("أكمل البيانات!");
+        
         const btn = document.getElementById('chargeBtn');
-        const status = document.getElementById('rechargeStatus');
-        const userName = document.getElementById('uName').innerText;
+        const container = document.getElementById('uploadContainer');
+        const bar = document.getElementById('uploadProgressBar');
+        const status = document.getElementById('uploadStatus');
 
-        if(!phone || !amount || !file) return alert("يرجى ملء كافة الخانات ورفع الصورة!");
-
-        btn.disabled = true;
-        status.style.display = 'block';
-        status.innerText = "جاري رفع الصورة... انتظر";
+        btn.disabled = true; container.style.display = 'block';
 
         try {
             const ref = storage.ref(`receipts/${auth.currentUser.uid}_${Date.now()}`);
-            await ref.put(file);
-            const url = await ref.getDownloadURL();
-
-            await db.collection('charge_requests').add({ 
-                userId: auth.currentUser.uid, phone, amount, image: url, status: "قيد المراجعة", date: new Date().toLocaleString('ar-LY') 
+            const task = ref.put(file);
+            task.on('state_changed', s => {
+                const p = (s.bytesTransferred / s.totalBytes) * 100;
+                bar.style.width = p + '%'; status.innerText = "جاري الرفع: " + Math.round(p) + "%";
+            }, e => alert("خطأ في الرفع"), async () => {
+                const url = await task.snapshot.ref.getDownloadURL();
+                await db.collection('charge_requests').add({ userId: auth.currentUser.uid, phone: ph, amount: amt, image: url, status: "قيد المراجعة", date: new Date().toLocaleString() });
+                
+                status.innerText = "✅ تم الرفع! اضغط لتأكيد الواتساب";
+                document.getElementById('btnArea').innerHTML = `<button class="btn-main" style="background:#25d366; color:#fff;" onclick="openWA('${amt}','${ph}','${url}')">تأكيد الإرسال للواتساب 💬</button>`;
             });
-
-            status.innerText = "تم الرفع! اضغط إرسال للواتساب";
-            btn.innerText = "إرسال الآن للواتساب ✅";
-            btn.disabled = false;
-            
-            // تغيير وظيفة الزر لفتح الواتساب مباشرة عند الضغطة الثانية (لتجاوز حظر المتصفح)
-            btn.onclick = function() {
-                const msg = `طلب شحن جديد 🚀\nاسم المستخدم: ${userName}\nالمبلغ: ${amount} د.ل\nمن رقم: ${phone}\nرابط الصورة: ${url}`;
-                window.location.href = `https://wa.me/218912377291?text=${encodeURIComponent(msg)}`;
-            };
-        } catch (e) { 
-            alert("حدث خطأ!"); 
-            btn.disabled = false;
-            status.style.display = 'none';
-        }
+        } catch (e) { alert("حدث خطأ"); btn.disabled = false; }
     }
 
-    // دوال الخدمات
+    function openWA(amt, ph, url) {
+        const msg = `طلب شحن جديد 🚀\nالمستخدم: ${document.getElementById('uName').innerText}\nالمبلغ: ${amt} د.ل\nمن رقم: ${ph}\nالصورة: ${url}`;
+        window.location.href = `https://wa.me/218912377291?text=${encodeURIComponent(msg)}`;
+    }
+
+    // دوال الخدمات والطلبات
     async function loadServices() {
         const snap = await db.collection('services').get(); window.allServices = []; snap.forEach(doc => window.allServices.push({id: doc.id, ...doc.data()}));
         const cats = [...new Set(window.allServices.map(s => s.category))];
-        const catSelect = document.getElementById('catSelect'); catSelect.innerHTML = "";
-        cats.forEach(c => catSelect.innerHTML += `<option value="${c}">${c}</option>`);
+        const catS = document.getElementById('catSelect'); catS.innerHTML = "";
+        cats.forEach(c => catS.innerHTML += `<option value="${c}">${c}</option>`);
         updateServiceList();
     }
     function updateServiceList() {
-        const cat = document.getElementById('catSelect').value; const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = "";
-        window.allServices.filter(s => s.category === cat).forEach(s => sSelect.innerHTML += `<option value="${s.id}">${s.name} - ${s.finalPrice} د.ل</option>`);
+        const cat = document.getElementById('catSelect').value; const sS = document.getElementById('serviceSelect'); sS.innerHTML = "";
+        window.allServices.filter(s => s.category === cat).forEach(s => sS.innerHTML += `<option value="${s.id}">${s.name} - ${s.finalPrice} د.ل</option>`);
         updateServiceDetails();
     }
     function updateServiceDetails() {
@@ -205,18 +246,23 @@
         calculateTotal();
     }
     function calculateTotal() { 
-        const qty = parseFloat(document.getElementById('orderQty').value) || 0; 
-        const price = parseFloat(window.selectedService.finalPrice) || 0;
-        document.getElementById('totalPrice').innerText = (window.selectedService.category.includes('ببجي') ? price : (qty / 1000) * price).toFixed(3);
+        const q = parseFloat(document.getElementById('orderQty').value) || 0, p = parseFloat(window.selectedService.finalPrice) || 0;
+        document.getElementById('totalPrice').innerText = (window.selectedService.category.includes('ببجي') ? p : (q / 1000) * p).toFixed(3);
     }
     async function submitOrder() {
-        const total = parseFloat(document.getElementById('totalPrice').innerText);
-        if(parseFloat(document.getElementById('uBalance').innerText) < total) return alert("رصيدك لا يكفي!");
-        await db.collection('orders').add({ userId: auth.currentUser.uid, serviceName: window.selectedService.name, link: document.getElementById('orderLink').value, qty: document.getElementById('orderQty').value, cost: total, status: "قيد الانتظار" });
-        await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total) });
+        const t = parseFloat(document.getElementById('totalPrice').innerText);
+        if(parseFloat(document.getElementById('uBalance').innerText) < t) return alert("رصيدك لا يكفي!");
+        await db.collection('orders').add({ userId: auth.currentUser.uid, serviceName: window.selectedService.name, link: document.getElementById('orderLink').value, qty: document.getElementById('orderQty').value, cost: t, status: "قيد الانتظار", date: new Date().toLocaleString() });
+        await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-t), spent: firebase.firestore.FieldValue.increment(t) });
         alert("✅ تم الطلب!");
     }
-    function nav(id, el) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); }
+    function nav(id, el) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); if(id === 'ordersPage') loadUserOrders(); }
+    async function loadUserOrders() {
+        const snap = await db.collection('orders').where('userId', '==', auth.currentUser.uid).get();
+        const list = document.getElementById('ordersList'); list.innerHTML = "";
+        snap.forEach(doc => { const o = doc.data(); list.innerHTML += `<div class="stat-item" style="text-align:right; margin-bottom:10px;"><b>${o.serviceName}</b><br><small>الحالة: ${o.status}</small></div>`; });
+    }
 </script>
 </body>
 </html>
+
