@@ -4,81 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CD-CARD | المتجر المتكامل</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #f0f6fc; --border: #30363d; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 90px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 90px; overflow-x: hidden; }
         .page { display: none; } .page.active { display: block; }
         .card-panel { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .stat-box { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); margin-bottom: 10px; }
-        .stat-box span { color: var(--accent); font-weight: bold; font-size: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); }
-        select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px; }
+        .stat-box span { color: var(--accent); font-weight: bold; font-size: 22px; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: bold; }
+        select, input { width: 100%; background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; outline: none; font-size: 14px; }
+        .btn-main { width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.98); }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #8b949e; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--accent); }
-        .info-row { display: flex; justify-content: space-between; background: #0d1117; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
-        .desc-box { background: rgba(0,0,0,0.3); border-right: 4px solid var(--accent); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; display: none; }
+        .desc-box { background: rgba(0,255,136,0.05); border-right: 4px solid var(--accent); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; display: none; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <div id="homePage" class="page active">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <div style="background:var(--card); padding:10px; border-radius:12px; border:1px solid var(--border); flex:1;">
-                مرحباً يا <span id="uName" style="color:var(--accent);">تحميل...</span> 🇱🇾
+            <div style="background:var(--card); padding:10px 15px; border-radius:12px; border:1px solid var(--border); flex:1;">
+                مرحباً <span id="uName" style="color:var(--accent);">...</span> 🇱🇾
             </div>
-            <button class="btn-main" style="width:90px; margin-right:10px; padding:10px;" onclick="nav('rechargePage')">➕ رصيد</button>
+            <button class="btn-main" style="width:auto; margin-right:10px; padding:10px 20px;" onclick="nav('rechargePage')">➕ رصيد</button>
         </div>
         
-        <div class="stat-box"> <small>الرصيد المتوفر</small><br> <span id="uBalance">0.00</span> د.ل </div>
+        <div class="stat-box"> 
+            <small style="color:#8b949e;">الرصيد المتوفر</small><br> 
+            <span id="uBalance">0.00</span> <small style="font-size: 12px;">د.ل</small> 
+        </div>
 
         <div class="card-panel">
-            <label>1. اختر التصنيف</label> <select id="catSelect" onchange="updateServiceList()"></select>
-            <label>2. اختر الخدمة</label> <select id="serviceSelect" onchange="updateServiceDetails()"></select>
+            <label>1. اختر التصنيف</label> 
+            <select id="catSelect" onchange="updateServiceList()"><option>جاري تحميل التصنيفات...</option></select>
+            
+            <label>2. اختر الخدمة</label> 
+            <select id="serviceSelect" onchange="updateServiceDetails()"><option>اختر التصنيف أولاً</option></select>
             
             <div id="descBox" class="desc-box"></div>
 
             <label>3. الرابط أو الآيدي</label>
-            <input type="text" id="orderLink" placeholder="أدخل الرابط أو الآيدي هنا">
+            <input type="text" id="orderLink" placeholder="ضع الرابط هنا">
             
             <label>4. الكمية</label>
-            <input type="number" id="orderQty" placeholder="أدخل الكمية المطلوبة" oninput="calculateTotal()">
+            <input type="number" id="orderQty" placeholder="0" oninput="calculateTotal()">
             
-            <div style="text-align:center; padding:15px; background: #000; border-radius: 12px; border: 1px solid var(--border);"> 
+            <div style="text-align:center; padding:15px; background: #000; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px;"> 
                 <small style="color:#8b949e;">السعر الإجمالي:</small><br> 
-                <span id="totalPrice" style="color:var(--accent); font-size:26px; font-weight:bold;">0.00</span> د.ل 
+                <span id="totalPrice" style="color:var(--accent); font-size:28px; font-weight:bold;">0.00</span> د.ل 
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="submitOrder()">تنفيذ الطلب الآن ✅</button>
+            <button class="btn-main" onclick="submitOrder()">تنفيذ الطلب الآن ✅</button>
         </div>
     </div>
 
     <div id="rechargePage" class="page">
-        <button onclick="nav('homePage')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:15px;">⬅ رجوع للمتجر</button>
-        <h3 style="color:var(--accent);">شحن رصيد المحفظة</h3>
+        <button onclick="nav('homePage')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:15px;">⬅ رجوع</button>
         <div class="card-panel">
-            <p style="font-size:13px; color:#8b949e; margin-bottom:15px;">يرجى تحويل القيمة للأرقام التالية:</p>
-            <div class="info-row"><span>ليبيانا:</span> <b>0920414760</b></div>
-            <div class="info-row"><span>مدار:</span> <b>0912377291</b></div>
-            <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
-            <label>القيمة المحولة (د.ل)</label>
-            <input type="number" id="rechargeAmount" placeholder="مثلاً: 50">
-            <label>إرفاق صورة التحويل (سكرين)</label>
-            <input type="file" id="rechargeProof" accept="image/*">
-            <button class="btn-main" onclick="sendRechargeWA()">إرسال طلب الشحن (واتساب) 💬</button>
+            <h3>شحن الرصيد</h3>
+            <p style="font-size: 13px; color: #8b949e;">يرجى التحويل وارسال الصورة للدعم:</p>
+            <div style="background:#0d1117; padding:10px; border-radius:10px; margin-bottom:10px;">ليبيانا: 0920414760</div>
+            <div style="background:#0d1117; padding:10px; border-radius:10px; margin-bottom:20px;">مدار: 0912377291</div>
+            <button class="btn-main" onclick="window.open('https://wa.me/218920414760')">تواصل مع الدعم 💬</button>
         </div>
     </div>
 
     <div class="nav-bar">
         <div class="nav-item active" onclick="nav('homePage')">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="alert('سيتم تفعيل صفحة الأرباح قريباً')">💰<br>أرباحي</div>
+        <div class="nav-item" onclick="alert('قريباً')">💰<br>أرباحي</div>
         <div class="nav-item" onclick="window.open('https://wa.me/218920414760')">💬<br>الدعم</div>
     </div>
 
 <script>
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -88,42 +92,58 @@
         appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(); const auth = firebase.auth();
+    const db = firebase.firestore(); 
+    const auth = firebase.auth();
 
-    function nav(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    let allServices = []; 
+    let selectedService = null;
 
-    let allServices = []; let selectedService = null;
+    function nav(id) { 
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+    }
 
+    // مراقبة بيانات المستخدم (الاسم والرصيد)
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const d = doc.data();
                     document.getElementById('uName').innerText = d.username || "مشترك";
-                    document.getElementById('uBalance').innerText = d.balance.toFixed(2);
+                    // عرض الرصيد كرقم (Number)
+                    document.getElementById('uBalance').innerText = Number(d.balance || 0).toFixed(2);
                 }
             });
-            loadDatabase();
+            loadServices();
+        } else {
+            // توجيه لصفحة تسجيل الدخول إذا لم يكن مسجلاً
+            console.log("No user logged in");
         }
     });
 
-    async function loadDatabase() {
+    // جلب الخدمات من Firestore
+    async function loadServices() {
         const snap = await db.collection('services').get();
-        allServices = []; const cats = new Set();
+        allServices = []; 
+        const cats = new Set();
         snap.forEach(doc => { 
             const s = doc.data(); 
             allServices.push({id: doc.id, ...s}); 
-            cats.add(s.category); 
+            if(s.category) cats.add(s.category); 
         });
-        const catSelect = document.getElementById('catSelect'); catSelect.innerHTML = "";
+        const catSelect = document.getElementById('catSelect'); 
+        catSelect.innerHTML = "";
         cats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
         updateServiceList();
     }
 
     function updateServiceList() {
         const cat = document.getElementById('catSelect').value;
-        const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = "";
-        allServices.filter(s => s.category === cat).forEach(s => { sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; });
+        const sSelect = document.getElementById('serviceSelect'); 
+        sSelect.innerHTML = "";
+        allServices.filter(s => s.category === cat).forEach(s => { 
+            sSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`; 
+        });
         updateServiceDetails();
     }
 
@@ -132,34 +152,36 @@
         if(selectedService) {
             const dBox = document.getElementById('descBox');
             dBox.style.display = 'block';
-            dBox.innerHTML = `<b>وصف الخدمة:</b> ${selectedService.name}<br>الحد الأدنى: ${selectedService.min || 10}`;
+            dBox.innerHTML = `<b>وصف:</b> ${selectedService.name}<br><b>أدنى كمية:</b> ${selectedService.min || 10}`;
             calculateTotal();
         }
     }
 
+    // دالة حساب السعر (تتعامل مع الأرقام مباشرة بفضل نظام الرفع الجديد)
     function calculateTotal() {
         if (selectedService) {
             const qty = parseFloat(document.getElementById('orderQty').value) || 0;
-            // التحويل من نص إلى رقم لضمان قراءة السعر الحقيقي
-            const price = parseFloat(selectedService.finalPrice) || 0; 
+            // السعر الآن يأتي كرقم (Number) من القاعدة
+            const price = selectedService.finalPrice || 0; 
             
-            const isPkg = selectedService.name.includes('شده') || selectedService.category.includes('ببجي');
-            const total = isPkg ? price : (qty / 1000) * price;
-            
+            // تمييز خدمات البكجات عن خدمات الألف
+            const isPkg = selectedService.name.includes('شده') || 
+                          selectedService.name.includes('بكج') || 
+                          selectedService.category.includes('ببجي');
+
+            let total = isPkg ? price : (qty / 1000) * price;
             document.getElementById('totalPrice').innerText = total.toFixed(3);
         }
     }
 
-    function sendRechargeWA() {
-        const amt = document.getElementById('rechargeAmount').value;
-        if(!amt) return alert("أدخل قيمة التحويل");
-        const msg = `مرحباً، أريد شحن رصيد.%0Aالآيدي: ${auth.currentUser.uid}%0Aالقيمة: ${amt} د.ل%0A(الصورة مرفقة)`;
-        window.open(`https://wa.me/218920414760?text=${msg}`);
-    }
-
     async function submitOrder() {
-        alert("جاري التحقق من الطلب...");
+        const total = parseFloat(document.getElementById('totalPrice').innerText);
+        const currentBal = parseFloat(document.getElementById('uBalance').innerText);
+        
+        if(currentBal < total) return alert("عذراً، رصيدك غير كافٍ لإتمام الطلب!");
+        alert("جاري إرسال الطلب للمزود... سيتم الخصم عند التأكيد ✅");
     }
 </script>
 </body>
 </html>
+
