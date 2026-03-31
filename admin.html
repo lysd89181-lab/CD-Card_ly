@@ -2,23 +2,65 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تحديث الخدمات | CD-CARD</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-</head>
-<body style="background: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 50px;">
-
-    <h2>تحديث خدمات متجر CD-CARD 🚀</h2>
-    <p>المزود: ms1.shop | الربح: 30% | نوع البيانات: Number</p>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم CD-CARD | الإدارة</title>
     
-    <button id="uploadBtn" style="padding: 15px 30px; background: #00ff88; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px;">
-        ابدأ جلب وتحديث الخدمات الآن
-    </button>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    <div id="status" style="margin-top: 25px; color: #8b949e; font-size: 14px; line-height: 1.6;"></div>
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #fff; --border: #30363d; --error: #ff4d4d; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
+        h2 { color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        
+        .section { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid var(--border); }
+        th { color: var(--accent); }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 2px; }
+        .btn-api { background: var(--accent); color: #000; }
+        .btn-cancel { background: var(--error); color: #fff; }
+        .btn-balance { background: #218bff; color: #fff; }
+
+        input { background: #000; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 5px; width: 100px; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .pending { background: #f1c40f; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <img src="cd.jpg" style="width: 60px; border-radius: 50%; border: 2px solid var(--accent);">
+        <h2>لوحة إدارة متجر CD-CARD 🛠️</h2>
+    </div>
+
+    <div class="section">
+        <h3>💰 إدارة أرصدة المستخدمين</h3>
+        <div id="usersList">جاري تحميل المستخدمين...</div>
+    </div>
+
+    <div class="section">
+        <h3>📦 طلبات الزبائن الواردة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>الزبون</th>
+                    <th>الخدمة (ID)</th>
+                    <th>الرابط</th>
+                    <th>الكمية</th>
+                    <th>التكلفة</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTable">
+                </tbody>
+        </table>
+    </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -30,72 +72,82 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    document.getElementById('uploadBtn').onclick = async () => {
-        const btn = document.getElementById('uploadBtn');
-        const status = document.getElementById('status');
-        
-        btn.disabled = true;
-        status.innerHTML = "جاري الاتصال بالمزود عبر البروكسي...<br><small>تأكد من تفعيل CORS من الرابط المعتاد</small>";
+    const apiKey = "bc34ac73c612e956734842221d87df60"; // مفتاح API الخاص بك
+    const proxy = "https://cors-anywhere.herokuapp.com/";
 
-        // بيانات المزود الخاصة بك التي أرسلتها
-        const apiKey = "bc34ac73c612e956734842221d87df60";
-        const apiUrl = `https://ms1.shop/api/v2?key=${apiKey}&action=services`;
-        const proxy = "https://cors-anywhere.herokuapp.com/";
+    // 1. جلب المستخدمين لتعديل أرصدتهم
+    db.collection('users').onSnapshot(snap => {
+        let html = "<table><tr><th>الاسم</th><th>الرصيد الحالي</th><th>إضافة مبلغ</th><th>عملية</th></tr>";
+        snap.forEach(doc => {
+            const u = doc.data();
+            html += `<tr>
+                <td>${u.username}</td>
+                <td style="color:var(--accent)">${Number(u.balance).toFixed(2)} د.ل</td>
+                <td><input type="number" id="amt-${doc.id}" placeholder="القيمة"></td>
+                <td><button class="btn btn-balance" onclick="addBalance('${doc.id}')">إضافة ✅</button></td>
+            </tr>`;
+        });
+        document.getElementById('usersList').innerHTML = html + "</table>";
+    });
+
+    async function addBalance(uid) {
+        const amt = parseFloat(document.getElementById(`amt-${uid}`).value);
+        if(!amt || amt <= 0) return alert("أدخل قيمة صحيحة");
+        await db.collection('users').doc(uid).update({
+            balance: firebase.firestore.FieldValue.increment(amt)
+        });
+        alert("تم تحديث الرصيد بنجاح!");
+    }
+
+    // 2. جلب الطلبات وإدارتها
+    db.collection('orders').orderBy('date', 'desc').onSnapshot(snap => {
+        const table = document.getElementById('ordersTable');
+        table.innerHTML = "";
+        snap.forEach(doc => {
+            const o = doc.data();
+            const row = `<tr>
+                <td>${o.userId.substring(0,5)}...</td>
+                <td>${o.serviceName}</td>
+                <td><small>${o.link}</small></td>
+                <td>${o.qty}</td>
+                <td>${o.cost} د.ل</td>
+                <td><span class="status-badge pending">${o.status}</span></td>
+                <td>
+                    <button class="btn btn-api" onclick="sendToProvider('${doc.id}', '${o.apiId}', '${o.link}', '${o.qty}')">إرسال للمزود 🚀</button>
+                    <button class="btn btn-cancel" onclick="deleteOrder('${doc.id}')">حذف 🗑️</button>
+                </td>
+            </tr>`;
+            table.innerHTML += row;
+        });
+    });
+
+    // 3. وظيفة الإرسال التلقائي للمزود (API)
+    async function sendToProvider(orderDocId, apiId, link, qty) {
+        if(!apiId) return alert("هذه الخدمة لا تملك API ID صحيح!");
+        if(!confirm("هل تريد إرسال هذا الطلب للمزود وخصم قيمته من حسابك هناك؟")) return;
 
         try {
-            const response = await fetch(proxy + apiUrl);
-            const services = await response.json();
-            
-            if (!Array.isArray(services)) {
-                throw new Error("استجابة المزود غير صحيحة، تأكد من مفتاح الـ API");
-            }
+            const url = `${proxy}https://ms1.shop/api/v2?key=${apiKey}&action=add&service=${apiId}&link=${link}&quantity=${qty}`;
+            const res = await fetch(url);
+            const data = await res.json();
 
-            status.innerHTML = `تم جلب ${services.length} خدمة بنجاح.<br>جاري التخزين في Firebase كأرقام (Numbers)...`;
-
-            let batch = db.batch();
-            let count = 0;
-
-            for (const s of services) {
-                const serviceRef = db.collection('services').doc();
-                
-                // حساب السعر مع زيادة 30%
-                const originalPrice = parseFloat(s.rate) || 0;
-                const finalPrice = originalPrice * 1.30;
-
-                batch.set(serviceRef, {
-                    apiId: s.service,
-                    name: s.name,
-                    category: s.category,
-                    // التخزين كـ Number حصراً لحل مشكلة السعر الحقيقي
-                    min: Number(s.min) || 0,
-                    max: Number(s.max) || 0,
-                    originalPrice: Number(originalPrice.toFixed(4)),
-                    finalPrice: Number(finalPrice.toFixed(4)),
-                    type: s.type || "Default"
+            if(data.order) {
+                await db.collection('orders').doc(orderDocId).update({
+                    status: "تم الإرسال (ID: " + data.order + ")",
+                    apiOrderId: data.order
                 });
-
-                count++;
-
-                // رفع الخدمات على مجموعات لتجنب ضغط الشبكة
-                if (count % 400 === 0) {
-                    await batch.commit();
-                    batch = db.batch();
-                    status.innerHTML = `تم رفع ${count} خدمة... يرجى الانتظار`;
-                }
+                alert("✅ تم إرسال الطلب للمزود بنجاح! رقم الطلب: " + data.order);
+            } else {
+                alert("❌ خطأ من المزود: " + (data.error || "غير معروف"));
             }
-
-            await batch.commit();
-            status.innerHTML = `✅ تم بنجاح!<br>تم رفع ${count} خدمة وتحويل قيم السعر إلى Numbers حقيقية.`;
-            btn.style.background = "#218bff";
-            btn.innerText = "اكتمل التحديث";
-
-        } catch (error) {
-            console.error(error);
-            status.innerHTML = "❌ خطأ في الجلب: " + error.message + "<br>تأكد من تفعيل <a href='https://cors-anywhere.herokuapp.com/corsdemo' target='_blank' style='color:#00ff88'>CORS Anywhere</a>";
-            btn.disabled = false;
+        } catch (e) {
+            alert("❌ فشل الاتصال: تأكد من تفعيل CORS Anywhere");
         }
-    };
+    }
+
+    async function deleteOrder(id) {
+        if(confirm("هل أنت متأكد من حذف هذا السجل؟")) await db.collection('orders').doc(id).delete();
+    }
 </script>
 </body>
 </html>
-
