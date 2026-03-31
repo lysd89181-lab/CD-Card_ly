@@ -2,20 +2,32 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تحديث الخدمات المختصرة | CD-CARD</title>
+    <title>إدارة خدمات CD-CARD | اختيار يدوي</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #0d1117; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
+        .service-item { background: #161b22; border: 1px solid #30363d; margin: 5px; padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; text-align: right; }
+        .controls { position: sticky; top: 0; background: #0d1117; padding: 20px; border-bottom: 2px solid #00ff88; z-index: 100; }
+        button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin: 5px; }
+        .btn-fetch { background: #218bff; color: white; }
+        .btn-save { background: #00ff88; color: black; }
+        .badge { background: #30363d; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; }
+    </style>
 </head>
-<body style="background: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 50px;">
+<body>
 
-    <img src="cd.jpg" style="width: 100px; border-radius: 50%; border: 2px solid #00ff88;">
-    <h2>تحديث خدمات CD-CARD (أسماء مختصرة + تفاصيل) 🚀</h2>
-    
-    <button id="uploadBtn" style="padding: 15px 30px; background: #00ff88; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; color: #000;">
-        ابدأ التحديث النظيف الآن
-    </button>
+    <div class="controls">
+        <img src="cd.jpg" style="width: 50px; border-radius: 50%; vertical-align: middle;">
+        <h2 style="display:inline; margin: 0 15px;">اختيار خدمات CD-CARD يدوياً 🛠️</h2>
+        <br><br>
+        <button class="btn-fetch" id="fetchBtn">1. جلب القائمة من المزود</button>
+        <button class="btn-save" id="saveBtn" style="display:none;">2. حفظ الخدمات المختارة في Firebase</button>
+        <div id="status" style="margin-top:10px; font-size:14px; color:#8b949e;"></div>
+    </div>
 
-    <div id="status" style="margin-top: 25px; color: #8b949e; font-size: 14px; line-height: 1.6;"></div>
+    <div id="servicesList" style="margin-top:20px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        </div>
 
 <script>
     const firebaseConfig = { 
@@ -29,79 +41,73 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    document.getElementById('uploadBtn').onclick = async () => {
-        const btn = document.getElementById('uploadBtn');
+    let fetchedServices = [];
+
+    // 1. جلب الخدمات من المزود وعرضها للاختيار
+    document.getElementById('fetchBtn').onclick = async () => {
         const status = document.getElementById('status');
-        btn.disabled = true;
-        
-        status.innerHTML = "🧹 جاري مسح القائمة الطويلة القديمة...";
+        status.innerHTML = "جاري الاتصال بالمزود... (تأكد من تفعيل CORS)";
         
         try {
-            // 1. حذف الخدمات القديمة لضمان العناوين المختصرة الجديدة
-            const oldServices = await db.collection('services').get();
-            let deleteBatch = db.batch();
-            let dCount = 0;
-            for (const doc of oldServices.docs) {
-                deleteBatch.delete(doc.ref);
-                dCount++;
-                if (dCount % 400 === 0) { await deleteBatch.commit(); deleteBatch = db.batch(); }
-            }
-            await deleteBatch.commit();
-
-            // 2. جلب البيانات من المزود
             const apiKey = "bc34ac73c612e956734842221d87df60";
             const proxy = "https://cors-anywhere.herokuapp.com/";
-            const apiUrl = proxy + `https://ms1.shop/api/v2?key=${apiKey}&action=services`;
+            const response = await fetch(proxy + `https://ms1.shop/api/v2?key=${apiKey}&action=services`);
+            fetchedServices = await response.json();
 
-            const response = await fetch(apiUrl);
-            const services = await response.json();
-
-            // 3. الرفع بنظام الأسماء المختصرة
-            let uploadBatch = db.batch();
-            let uCount = 0;
-
-            for (const s of services) {
-                // تقصير الاسم: نأخذ أول 30 حرفاً فقط أو نكتفي بالاسم كما هو مع تنظيف الرموز
-                let shortName = s.name.substring(0, 40).replace(/[\/\\#$.,\[\]*?]/g, '-');
-                
-                // عنوان المستند الخارجي (رقم الخدمة + اسم مختصر جداً) لسهولة البحث
-                let docId = `(${s.service}) ${shortName}`;
-
-                const serviceRef = db.collection('services').doc(docId);
-                
-                const originalPrice = parseFloat(s.rate) || 0;
-                const finalPrice = originalPrice * 1.30; 
-
-                uploadBatch.set(serviceRef, {
-                    apiId: s.service,
-                    name: s.name, // الاسم الكامل يبقى بالداخل للزبون
-                    category: s.category,
-                    min: Number(s.min) || 0,
-                    max: Number(s.max) || 0,
-                    originalPrice: Number(originalPrice.toFixed(4)),
-                    finalPrice: Number(finalPrice.toFixed(4)),
-                    description: s.description || "لا يوجد وصف لهذه الخدمة حالياً.", // خانة التفاصيل الجديدة
-                    type: s.type || "Default"
-                });
-
-                uCount++;
-                if (uCount % 400 === 0) {
-                    await uploadBatch.commit();
-                    uploadBatch = db.batch();
-                    status.innerHTML = `جاري الرفع... (${uCount})`;
-                }
-            }
-
-            await uploadBatch.commit();
-            status.innerHTML = `✅ تم التحديث بنجاح!<br>الأسماء الآن مختصرة وتم إضافة خانة التفاصيل لـ ${uCount} خدمة.`;
-            btn.innerText = "اكتمل التحديث";
-
-        } catch (error) {
-            status.innerHTML = "❌ خطأ: " + error.message;
-            btn.disabled = false;
+            let html = "";
+            fetchedServices.forEach(s => {
+                html += `
+                <div class="service-item">
+                    <div style="flex:1">
+                        <span class="badge">${s.service}</span>
+                        <strong>${s.category}</strong> - ${s.name}
+                        <div style="font-size:11px; color:#8b949e;">السعر الأصلي: ${s.rate} | النوع: ${s.type}</div>
+                    </div>
+                    <input type="checkbox" class="service-check" value="${s.service}" style="width:20px; height:20px;">
+                </div>`;
+            });
+            document.getElementById('servicesList').innerHTML = html;
+            document.getElementById('saveBtn').style.display = "inline-block";
+            status.innerHTML = `تم جلب ${fetchedServices.length} خدمة. اختر ما تريد رفعه للمتجر.`;
+        } catch (e) {
+            status.innerHTML = "خطأ في الجلب: " + e.message;
         }
+    };
+
+    // 2. حفظ المختار فقط في Firebase
+    document.getElementById('saveBtn').onclick = async () => {
+        const selectedIds = Array.from(document.querySelectorAll('.service-check:checked')).map(cb => cb.value);
+        if (selectedIds.length === 0) return alert("يرجى اختيار خدمة واحدة على الأقل!");
+
+        const status = document.getElementById('status');
+        status.innerHTML = `جاري رفع ${selectedIds.length} خدمة مختارة...`;
+        
+        const batch = db.batch();
+        
+        selectedIds.forEach(id => {
+            const s = fetchedServices.find(item => item.service == id);
+            // تسمية مختصرة ونظيفة كما طلبت
+            let shortName = s.name.substring(0, 40).replace(/[\/\\#$.,\[\]*?]/g, '-');
+            let docId = `(${s.service}) ${shortName}`;
+            
+            const ref = db.collection('services').doc(docId);
+            batch.set(ref, {
+                apiId: s.service,
+                name: s.name,
+                category: s.category,
+                min: Number(s.min),
+                max: Number(s.max),
+                finalPrice: Number((parseFloat(s.rate) * 1.30).toFixed(4)),
+                originalPrice: parseFloat(s.rate),
+                description: s.description || "خدمة ممتازة وسريعة من CD-CARD",
+                type: s.type
+            });
+        });
+
+        await batch.commit();
+        status.innerHTML = `✅ تم حفظ ${selectedIds.length} خدمة في قاعدة البيانات بنجاح!`;
+        alert("اكتمل الرفع!");
     };
 </script>
 </body>
 </html>
-
