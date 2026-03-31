@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تطوير الخدمات | CD-CARD</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body style="background: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 50px;">
+
+    <img src="cd.jpg" style="width: 100px; border-radius: 50%; border: 2px solid #00ff88;">
+    <h2>تحديث وترتيب خدمات CD-CARD 🚀</h2>
+    <p>النظام الجديد: التسمية برقم الخدمة + تنظيف تلقائي</p>
+    
+    <button id="uploadBtn" style="padding: 15px 30px; background: #00ff88; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; color: #000;">
+        ابدأ التنظيف والتحديث الآن
+    </button>
+
+    <div id="status" style="margin-top: 25px; color: #8b949e; font-size: 14px; line-height: 1.6;"></div>
+
+<script>
+    // إعدادات Firebase الخاصة بك
+    const firebaseConfig = { 
+        apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
+        authDomain: "cd-card-87365.firebaseapp.com", 
+        projectId: "cd-card-87365", 
+        storageBucket: "cd-card-87365.firebasestorage.app", 
+        messagingSenderId: "397926299412", 
+        appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('uploadBtn').onclick = async () => {
+        const btn = document.getElementById('uploadBtn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        
+        // --- المرحلة 1: تنظيف الخدمات القديمة ---
+        status.innerHTML = "🧹 جاري حذف الخدمات القديمة لترتيب قاعدة البيانات...";
+        try {
+            const oldServices = await db.collection('services').get();
+            let deleteBatch = db.batch();
+            let deleteCount = 0;
+
+            for (const doc of oldServices.docs) {
+                deleteBatch.delete(doc.ref);
+                deleteCount++;
+                if (deleteCount % 400 === 0) {
+                    await deleteBatch.commit();
+                    deleteBatch = db.batch();
+                }
+            }
+            await deleteBatch.commit();
+            status.innerHTML = `✅ تم حذف ${deleteCount} خدمة قديمة.<br>جاري الاتصال بالمزود لجلب الجديد...`;
+
+            // --- المرحلة 2: جلب الخدمات من المزود ---
+            const apiKey = "bc34ac73c612e956734842221d87df60";
+            const apiUrl = `https://ms1.shop/api/v2?key=${apiKey}&action=services`;
+            const proxy = "https://cors-anywhere.herokuapp.com/";
+
+            const response = await fetch(proxy + apiUrl);
+            const services = await response.json();
+            
+            if (!Array.isArray(services)) throw new Error("فشل في جلب البيانات من المزود.");
+
+            // --- المرحلة 3: الرفع بالنظام الجديد (الاسم = الرقم) ---
+            let uploadBatch = db.batch();
+            let uploadCount = 0;
+
+            for (const s of services) {
+                // استخدام رقم الخدمة كـ ID للمستند لسهولة التعرف عليه
+                const serviceRef = db.collection('services').doc(String(s.service));
+                
+                const originalPrice = parseFloat(s.rate) || 0;
+                const finalPrice = originalPrice * 1.30; // ربح 30%
+
+                uploadBatch.set(serviceRef, {
+                    apiId: s.service,
+                    name: s.name,
+                    category: s.category,
+                    min: Number(s.min) || 0,
+                    max: Number(s.max) || 0,
+                    originalPrice: Number(originalPrice.toFixed(4)),
+                    finalPrice: Number(finalPrice.toFixed(4)),
+                    type: s.type || "Default"
+                });
+
+                uploadCount++;
+                if (uploadCount % 400 === 0) {
+                    await uploadBatch.commit();
+                    uploadBatch = db.batch();
+                    status.innerHTML = `جاري رفع الخدمات... (${uploadCount})`;
+                }
+            }
+
+            await uploadBatch.commit();
+            status.innerHTML = `✅ اكتمل التحديث بنظام الأرقام!<br>تم رفع ${uploadCount} خدمة بنجاح.`;
+            btn.innerText = "اكتمل التحديث بنجاح";
+            btn.style.background = "#218bff";
+
+        } catch (error) {
+            console.error(error);
+            status.innerHTML = "❌ خطأ: " + error.message + "<br>تأكد من تفعيل CORS Anywhere أولاً.";
+            btn.disabled = false;
+        }
+    };
+</script>
+</body>
+</html>
