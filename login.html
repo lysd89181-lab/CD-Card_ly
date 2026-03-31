@@ -2,42 +2,207 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل الدخول | CD-CARD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول / إنشاء حساب | CD-CARD</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <style>
-        body { background: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
-        input { display: block; margin: 10px auto; padding: 10px; width: 80%; max-width: 300px; border-radius: 5px; border: 1px solid #30363d; background: #161b22; color: white; }
-        button { padding: 10px 20px; background: #00ff88; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        :root { 
+            --bg: #0d1117; /* خلفية داكنة */
+            --card: #161b22; /* لون البطاقة */
+            --accent: #00ff88; /* لون التمييز الأخضر الليلي */
+            --text-main: #ffffff; 
+            --text-muted: #8b949e; 
+            --border: #30363d; 
+            --error: #ff4d4d;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh;
+        }
+
+        .auth-container {
+            background: var(--card); 
+            padding: 40px; border-radius: 20px; 
+            border: 1px solid var(--border); 
+            width: 90%; max-width: 400px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .app-logo {
+            width: 80px; height: 80px; 
+            background: url('cd.jpg') no-repeat center center / contain;
+            border-radius: 50%; margin: 0 auto 20px; 
+            border: 2px solid var(--accent);
+        }
+
+        .app-title { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 30px; }
+
+        .form-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
+        input { 
+            width: 100%; background: rgba(0,0,0,0.2); 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 16px; border-radius: 12px; 
+            box-sizing: border-box; outline: none; font-size: 15px;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+
+        .btn-main { 
+            width: 100%; background: var(--accent); 
+            color: #000; border: none; padding: 18px; 
+            border-radius: 14px; font-weight: 800; 
+            cursor: pointer; font-size: 17px; 
+            transition: 0.2s;
+        }
+        .btn-main:active { transform: scale(0.98); }
+
+        .switch-text { color: var(--text-muted); font-size: 14px; margin-top: 20px; }
+        .switch-link { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+        #msg { color: var(--error); font-size: 14px; margin-top: 15px; }
+        #success-msg { color: #00ff44; font-size: 14px; margin-top: 15px; }
+
+        .loader {
+            border: 4px solid var(--card); border-top: 4px solid var(--accent);
+            border-radius: 50%; width: 30px; height: 30px;
+            animation: spin 1s linear infinite; display: none; margin: 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <h2>تسجيل الدخول لمتجر CD-CARD</h2>
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
-    <p id="msg"></p>
 
-    <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
-            authDomain: "cd-card-87365.firebaseapp.com", 
-            projectId: "cd-card-87365", 
-            storageBucket: "cd-card-87365.firebasestorage.app", 
-            messagingSenderId: "397926299412", 
-            appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    <div class="auth-container">
+        <div class="app-logo"></div>
+        <div class="app-title">CD-Card</div>
 
-        function login() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => { window.location.href = "index.html"; })
-                .catch(err => { document.getElementById('msg').innerText = "خطأ: " + err.message; });
+        <div id="loginForm">
+            <h3 style="margin-bottom: 10px;">تسجيل الدخول</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">أهلاً بك مجدداً في متجر CD-CARD!</p>
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@email.com"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+            <button class="btn-main" id="loginBtn" onclick="handleLogin()">تسجيل الدخول الآن</button>
+            <p class="switch-text">ليس لديك حساب؟ <span class="switch-link" onclick="switchForm('register')">إنشاء حساب جديد</span></p>
+        </div>
+
+        <div id="registerForm" style="display: none;">
+            <h3 style="margin-bottom: 10px;">إنشاء حساب جديد</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">انضم لمتجر CD-CARD واستمتع بأفضل الخدمات الإلكترونية.</p>
+            <div class="form-group"><label>اسم المستخدم</label><input type="text" id="regUsername" placeholder="اسمك"></div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="example@email.com"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" id="regPassword" placeholder="••••••••"></div>
+            <button class="btn-main" id="regBtn" onclick="handleRegister()">إنشاء الحساب وتأكيد</button>
+            <p class="switch-text">لديك حساب بالفعل؟ <span class="switch-link" onclick="switchForm('login')">تسجيل الدخول</span></p>
+        </div>
+
+        <div class="loader" id="loader"></div>
+        <p id="msg"></p>
+        <p id="success-msg"></p>
+    </div>
+
+<script>
+    // إعدادات Firebase الخاصة بك
+    const firebaseConfig = { 
+        apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
+        authDomain: "cd-card-87365.firebaseapp.com", 
+        projectId: "cd-card-87365", 
+        storageBucket: "cd-card-87365.firebasestorage.app", 
+        messagingSenderId: "397926299412", 
+        appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // تبديل بين نموذجي الدخول والتسجيل
+    function switchForm(target) {
+        if(target === 'register') {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        } else {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
         }
-    </script>
+    }
+
+    // وظيفة تسجيل الدخول
+    async function handleLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPassword').value;
+        showLoading(true);
+        try {
+            await auth.signInWithEmailAndPassword(email, pass);
+            window.location.href = "index.html"; // تحويل للصفحة الرئيسية
+        } catch (error) { showMsg("خطأ: " + getErrorAr(error.code), 'error'); }
+        showLoading(false);
+    }
+
+    // وظيفة إنشاء حساب
+    async function handleRegister() {
+        const user = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPassword').value;
+        
+        if(!user || !email || !pass) return showMsg("الرجاء ملء جميع البيانات!", 'error');
+        if(pass.length < 6) return showMsg("كلمة المرور يجب أن تكون 6 أحرف على الأقل.", 'error');
+
+        showLoading(true);
+        try {
+            // إنشاء الحساب في Authentication
+            const cred = await auth.createUserWithEmailAndPassword(email, pass);
+            
+            // تخزين بيانات المستخدم في Firestore
+            await db.collection('users').doc(cred.user.uid).set({
+                username: user,
+                balance: 0.00, // رصيد ابتدائي صفر دينار ليبي
+                spent: 0.00,
+                status: "active",
+                dateCreated: new Date().toLocaleString('ar-LY')
+            });
+
+            showMsg("✅ تم إنشاء الحساب بنجاح. جاري تحويلك...", 'success');
+            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+
+        } catch (error) { showMsg("خطأ: " + getErrorAr(error.code), 'error'); }
+        showLoading(false);
+    }
+
+    // إدارة رسائل الخطأ والنجاح
+    function showMsg(m, type) {
+        document.getElementById('msg').innerText = type === 'error' ? m : '';
+        document.getElementById('success-msg').innerText = type === 'success' ? m : '';
+    }
+
+    // إدارة لودر التحميل
+    function showLoading(show) {
+        document.getElementById('loader').style.display = show ? 'block' : 'none';
+        document.getElementById('loginBtn').disabled = show;
+        document.getElementById('regBtn').disabled = show;
+    }
+
+    // ترجمة رسائل خطأ Firebase للعربية
+    function getErrorAr(code) {
+        switch(code) {
+            case 'auth/invalid-email': return "البريد الإلكتروني غير صالح.";
+            case 'auth/user-disabled': return "هذا الحساب معطل.";
+            case 'auth/user-not-found': return "لم يتم العثور على مستخدم.";
+            case 'auth/wrong-password': return "كلمة المرور خاطئة.";
+            case 'auth/email-already-in-use': return "البريد الإلكتروني مستخدم بالفعل.";
+            case 'auth/operation-not-allowed': return "العملية غير مسموحة.";
+            case 'auth/weak-password': return "كلمة المرور ضعيفة جداً.";
+            default: return "حدث خطأ غير معروف.";
+        }
+    }
+</script>
 </body>
 </html>
-
