@@ -2,24 +2,22 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تحديث الخدمات بالأسماء | CD-CARD</title>
+    <title>تحديث الخدمات المختصرة | CD-CARD</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body style="background: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 50px;">
 
     <img src="cd.jpg" style="width: 100px; border-radius: 50%; border: 2px solid #00ff88;">
-    <h2>تحديث خدمات CD-CARD بالأسماء العربية 🚀</h2>
-    <p>هذا التحديث سيجعل أسماء الخدمات تظهر بوضوح في قاعدة البيانات</p>
+    <h2>تحديث خدمات CD-CARD (أسماء مختصرة + تفاصيل) 🚀</h2>
     
     <button id="uploadBtn" style="padding: 15px 30px; background: #00ff88; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; color: #000;">
-        ابدأ التحديث الآن
+        ابدأ التحديث النظيف الآن
     </button>
 
     <div id="status" style="margin-top: 25px; color: #8b949e; font-size: 14px; line-height: 1.6;"></div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -36,10 +34,10 @@
         const status = document.getElementById('status');
         btn.disabled = true;
         
-        status.innerHTML = "🧹 جاري تنظيف قاعدة البيانات من الأسماء القديمة...";
+        status.innerHTML = "🧹 جاري مسح القائمة الطويلة القديمة...";
         
         try {
-            // 1. حذف الخدمات القديمة لضمان الترتيب الجديد
+            // 1. حذف الخدمات القديمة لضمان العناوين المختصرة الجديدة
             const oldServices = await db.collection('services').get();
             let deleteBatch = db.batch();
             let dCount = 0;
@@ -58,31 +56,31 @@
             const response = await fetch(apiUrl);
             const services = await response.json();
 
-            // 3. الرفع بنظام الأسماء (الفئة - الخدمة)
+            // 3. الرفع بنظام الأسماء المختصرة
             let uploadBatch = db.batch();
             let uCount = 0;
 
             for (const s of services) {
-                // تنظيف الاسم من الرموز التي لا يقبلها Firebase كعنوان للمستند
-                let cleanName = s.name.replace(/[\/\\#$.,\[\]*?]/g, '-');
-                let cleanCat = s.category.replace(/[\/\\#$.,\[\]*?]/g, '-');
+                // تقصير الاسم: نأخذ أول 30 حرفاً فقط أو نكتفي بالاسم كما هو مع تنظيف الرموز
+                let shortName = s.name.substring(0, 40).replace(/[\/\\#$.,\[\]*?]/g, '-');
                 
-                // عنوان المستند الخارجي
-                let docId = `${cleanCat} | ${cleanName} (${s.service})`;
+                // عنوان المستند الخارجي (رقم الخدمة + اسم مختصر جداً) لسهولة البحث
+                let docId = `(${s.service}) ${shortName}`;
 
                 const serviceRef = db.collection('services').doc(docId);
                 
                 const originalPrice = parseFloat(s.rate) || 0;
-                const finalPrice = originalPrice * 1.30; // ربح 30%
+                const finalPrice = originalPrice * 1.30; 
 
                 uploadBatch.set(serviceRef, {
-                    apiId: s.service, // رقم الخدمة الحقيقي للـ API
-                    name: s.name,
+                    apiId: s.service,
+                    name: s.name, // الاسم الكامل يبقى بالداخل للزبون
                     category: s.category,
                     min: Number(s.min) || 0,
                     max: Number(s.max) || 0,
                     originalPrice: Number(originalPrice.toFixed(4)),
                     finalPrice: Number(finalPrice.toFixed(4)),
+                    description: s.description || "لا يوجد وصف لهذه الخدمة حالياً.", // خانة التفاصيل الجديدة
                     type: s.type || "Default"
                 });
 
@@ -95,8 +93,8 @@
             }
 
             await uploadBatch.commit();
-            status.innerHTML = `✅ تم التحديث! اذهب الآن لـ Firebase Console وستجد الخدمات بأسماء واضحة.`;
-            btn.innerText = "اكتمل بنجاح";
+            status.innerHTML = `✅ تم التحديث بنجاح!<br>الأسماء الآن مختصرة وتم إضافة خانة التفاصيل لـ ${uCount} خدمة.`;
+            btn.innerText = "اكتمل التحديث";
 
         } catch (error) {
             status.innerHTML = "❌ خطأ: " + error.message;
@@ -106,3 +104,4 @@
 </script>
 </body>
 </html>
+
