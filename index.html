@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-Card | خدمة إلكترونية ليبية</title>
+    <title>CD-Card | المتجر الرسمي</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -11,406 +11,292 @@
 
     <style>
         :root { 
-            --bg: #0d1117; 
-            --card: rgba(22, 27, 34, 0.8); 
-            --accent: #00ff88; 
-            --text-main: #ffffff; 
-            --text-muted: #8b949e; 
-            --border: rgba(255, 255, 255, 0.1); 
-            --error: #ff4d4d;
-            --gold: #ffd700;
+            --bg: #0d1117; --card: rgba(22, 27, 34, 0.95); 
+            --accent: #00ff88; --text-main: #ffffff; 
+            --text-muted: #8b949e; --border: rgba(255, 255, 255, 0.1); 
+            --gold: #ffd700; --blue: #00bdff;
         }
 
         body { 
             background: radial-gradient(circle at top, #161b22 0%, #0d1117 100%);
-            color: var(--text-main); 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; padding: 10px; padding-bottom: 100px; line-height: 1.6;
-            overflow-x: hidden;
-            direction: rtl;
+            color: var(--text-main); font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; padding-bottom: 100px; direction: rtl;
         }
 
-        .news-ticker {
-            background: rgba(0, 255, 136, 0.1); border: 1px solid var(--border);
-            color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold;
-            overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 15px;
-        }
-        .news-ticker span { display: inline-block; animation: ticker-move 20s linear infinite; }
-        @keyframes ticker-move { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
+        /* Header */
         .app-header {
             display: flex; align-items: center; justify-content: center;
-            padding: 15px 0; background: var(--card); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border); margin-bottom: 20px;
-            position: sticky; top: 0; z-index: 2000;
+            padding: 15px; background: var(--card); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px);
         }
         .app-logo {
-            width: 55px; height: 55px; 
-            background: url('cd.jpg') no-repeat center center / cover;
-            border-radius: 50%; margin-left: 10px; border: 2px solid var(--accent);
-            box-shadow: 0 0 15px var(--accent);
+            width: 45px; height: 45px; border-radius: 50%; margin-left: 12px;
+            border: 2px solid var(--accent); background: url('cd.jpg') center/cover;
+            box-shadow: 0 0 10px var(--accent);
         }
-        .app-title { font-size: 24px; font-weight: 900; color: var(--accent); }
+        .app-title { font-size: 22px; font-weight: 900; color: var(--accent); }
 
-        .welcome-card {
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+
+        /* ترويسة "ما شاء الله" باللون الذهبي وحجم أكبر 10% */
+        .mashallah-banner {
+            text-align: center; padding: 25px 10px; margin-bottom: 20px;
+            background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.05), transparent);
+        }
+        .mashallah-banner h1 { 
+            margin: 0; font-size: 28.6px; /* تم تكبيرها بنسبة 10% من 26px */
+            font-weight: 900; color: var(--gold); /* اللون الذهبي */
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); letter-spacing: 1px;
+        }
+
+        /* المربعات الأربعة (تظهر في الرئيسية فقط) */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box {
+            background: var(--card); border: 1px solid var(--border); padding: 15px;
+            border-radius: 18px; text-align: center;
+        }
+        .stat-val { display: block; font-size: 18px; font-weight: bold; color: var(--accent); }
+        .stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
+
+        /* Panels */
+        .glass-panel {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 25px; padding: 20px; margin-bottom: 20px; text-align: center;
-            display: none;
+            border-radius: 20px; padding: 20px; margin-bottom: 20px;
+        }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
+        select, input { 
+            width: 100%; background: #000; border: 1px solid var(--border); color: #fff; 
+            padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none;
+        }
+        .btn-action { 
+            width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); 
+            border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000;
         }
 
-        .user-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card {
-            background: var(--card); border-radius: 16px; padding: 15px;
-            border: 1px solid var(--border); text-align: center;
+        /* Navigation */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: rgba(22, 27, 34, 0.98);
+            display: flex; border-top: 1px solid var(--border); z-index: 2000;
         }
-        .stat-title { font-size: 18px; font-weight: 700; color: var(--accent); display: block; }
-        .stat-value { font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px; }
-
-        .services-section { 
-            background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 25px; 
-        }
-
-        .form-group { margin-bottom: 15px; text-align: right; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--accent); }
-
-        select, input, textarea { 
-            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; 
-            padding: 14px; border-radius: 12px; outline: none; box-sizing: border-box; font-size: 14px;
-        }
-
-        .btn-main { 
-            width: 100%; background: linear-gradient(45deg, var(--accent), #00bdff); color: #000; border: none; padding: 16px; 
-            border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s;
-        }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #161b22; display: flex; border-top: 1px solid var(--border); z-index: 3000; }
-        .nav-item { flex: 1; text-align: center; color: #8b949e; padding: 12px 5px; cursor: pointer; font-size: 12px; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
+        .nav-tab { flex: 1; text-align: center; padding: 12px 0; color: var(--text-muted); font-size: 10px; cursor: pointer; }
+        .nav-tab.active { color: var(--accent); font-weight: bold; }
 
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .order-item { border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; border-radius: 15px; background: rgba(255,255,255,0.03); }
+        .list-item {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            text-decoration: none; color: white;
+        }
 
-        /* عجلة الحظ */
-        .wheel-container { text-align: center; padding: 10px; }
-        #wheelElement { 
-            width: 220px; height: 220px; border: 6px solid var(--gold); border-radius: 50%; margin: 0 auto 25px;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            background: conic-gradient(var(--accent) 0 60deg, #161b22 60deg 120deg, var(--gold) 120deg 180deg, #161b22 180deg 240deg, #00bdff 240deg 300deg, #161b22 300deg 360deg);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        /* صندوق الآيات في الأسفل */
+        .quran-footer {
+            text-align: center; padding: 30px 15px; margin-top: 20px;
+            background: rgba(22, 27, 34, 0.5); border-radius: 20px;
+            border: 1px solid var(--border); margin-bottom: 20px;
+        }
+        /* البسملة بلون الموقع وحجم أكبر */
+        .quran-footer h3 { color: var(--accent); font-size: 19.8px; /* تكبير 10% */ margin-bottom: 15px; font-weight: bold; }
+        /* آية الكرسي باللون الذهبي وحجم أكبر */
+        .quran-footer p { 
+            color: var(--gold); /* اللون الذهبي */
+            font-size: 15.4px; /* تم تكبيرها بنسبة 10% من 14px */
+            line-height: 2; margin: 0;
+            font-family: 'Traditional Arabic', serif;
         }
     </style>
 </head>
 <body>
-
-    <div class="news-ticker">
-        <span>🔥 أهلاً بك في CD-Card | شحن فوري وآمن لجميع الخدمات الرقمية في ليبيا | متوفر الآن بطاقات ماستركارد بأسعار منافسة!</span>
-    </div>
 
     <div class="app-header">
         <div class="app-logo"></div>
         <div class="app-title">CD-Card</div>
     </div>
 
-    <div id="homePage" class="page active">
-        <div id="welcomeBox" class="welcome-card">
-            <h3 style="margin:0;">مرحباً، <span id="uDisplayName">...</span> 👋</h3>
-            <p id="uAccountEmail" style="font-size:12px; color:var(--text-muted);"></p>
+    <div class="container">
+        
+        <div class="mashallah-banner">
+            <h1>مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ</h1>
         </div>
 
-        <div class="user-stats">
-            <div class="stat-card"><span id="uBalance" class="stat-title">0.00</span><span class="stat-value">الرصيد المتوفر (د.ل)</span></div>
-            <div class="stat-card"><span id="uSpent" class="stat-title">0.00</span><span class="stat-value">إجمالي الإنفاق (د.ل)</span></div>
-            <div class="stat-card"><span id="uStatus" class="stat-title" style="font-size:14px;">نشط</span><span class="stat-value">حالة الحساب</span></div>
-            <div class="stat-card"><span id="ordersCount" class="stat-title">0</span><span class="stat-value">إجمالي الطلبات</span></div>
+        <div id="homePage" class="page active">
+            <div style="margin-bottom: 15px; text-align: center;">
+                <h2 style="font-size: 20px;">مرحباً، <span id="uNameDisplay" style="color:var(--accent);">...</span> 👋</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box"><span id="uBal" class="stat-val">0.00</span><span class="stat-lbl">الرصيد الحالي</span></div>
+                <div class="stat-box"><span id="uSpent" class="stat-val">0.00</span><span class="stat-lbl">إجمالي المنفق</span></div>
+                <div class="stat-box"><span id="uStatus" class="stat-val" style="font-size:14px;">نشط</span><span class="stat-lbl">حالة الحساب</span></div>
+                <div class="stat-box"><span id="uOrders" class="stat-val">0</span><span class="stat-lbl">عدد الطلبات</span></div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="margin-bottom:15px;"><label>القسم</label><select id="cat" onchange="loadServs()"></select></div>
+                <div style="margin-bottom:15px;"><label>الخدمة</label><select id="serv" onchange="applyLogic()"></select></div>
+                <div style="margin-bottom:15px;"><label>الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع الرابط أو الآيدي هنا"></div>
+                <div style="margin-bottom:15px;"><label id="qLbl">الكمية</label><input type="number" id="qty" value="50" oninput="calc()"></div>
+                <div style="text-align:center; padding:15px; margin-bottom:15px; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
+                    <span id="total" style="font-size:26px; color:var(--accent); font-weight:bold;">0.00 د.ل</span>
+                </div>
+                <button class="btn-action" onclick="order()">إرسال الطلب الآن ✅</button>
+            </div>
         </div>
 
-        <div class="services-section">
-            <div class="form-group">
-                <label>الفئات</label>
-                <select id="catSelect" onchange="updateServiceList()"></select>
+        <div id="socialPage" class="page">
+            <div class="glass-panel">
+                <h3 style="color:var(--accent); margin-top:0;">📢 القنوات الرسمية</h3>
+                <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" class="list-item" target="_blank"><span>قناة الواتساب</span><i>متابعة →</i></a>
+                <a href="https://t.me/CD_Card1" class="list-item" target="_blank"><span>قناة التيليجرام</span><i>انضمام →</i></a>
             </div>
-            <div class="form-group">
-                <label>الخدمات</label>
-                <select id="serviceSelect" onchange="updateServiceDetails()"></select>
+            <div class="glass-panel">
+                <h3 style="color:var(--blue); margin-top:0;">🛠️ الدعم الفني</h3>
+                <a href="https://wa.me/218912377291" class="list-item"><span>واتساب (إدريس)</span></a>
+                <a href="https://t.me/cdcard104" class="list-item"><span>تيليجرام (الدعم)</span></a>
             </div>
-            <div class="form-group">
-                <label>الوصف والتفاصيل</label>
-                <textarea id="serviceDesc" rows="3" readonly placeholder="تفاصيل الخدمة تظهر هنا..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>الرابط / الآيدي</label>
-                <input type="text" id="orderLink" placeholder="أدخل الرابط أو الآيدي المطلوب...">
-            </div>
-            <div class="form-group">
-                <label>الكمية المطلوب شحنها</label>
-                <input type="number" id="orderQty" oninput="calculateTotal()" placeholder="100">
-            </div>
-            <div style="text-align:center; padding:15px; margin-bottom:10px; background: rgba(0,255,136,0.05); border-radius: 12px; border: 1px dashed var(--border);">
-                <small style="color: var(--text-muted); display: block; margin-bottom: 5px;">السعر الإجمالي المطلوب:</small>
-                <span id="totalPrice" style="color:var(--accent); font-size:26px; font-weight:bold;">0.000 د.ل</span>
-            </div>
-            <button class="btn-main" onclick="submitOrder()">تأكيد عملية الطلب ✅</button>
         </div>
+
+        <div id="earnPage" class="page">
+            <div class="glass-panel" style="text-align:center;">
+                <h2 style="color:var(--accent); margin-top:0;">💰 نظام الإحالة (4%)</h2>
+                <p style="font-size:13px; line-height:1.6;">شارك رابطك الخاص واربح عمولة 4% عن كل شحن يقوم به أصدقاؤك!</p>
+                <input type="text" id="refUrl" readonly style="text-align:center; margin-top:15px; border-style:dashed; color:var(--accent);">
+                <button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ رابط الدعوة 🔗</button>
+            </div>
+        </div>
+
+        <div id="wheelPage" class="page">
+            <div class="glass-panel" style="text-align:center;">
+                <h2 style="color:var(--gold); margin-top:0;">🎡 عجلة الحظ</h2>
+                <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
+                <button class="btn-action" style="width:auto; padding:10px 40px;" onclick="document.getElementById('wheel').style.transform='rotate(3600deg)'; setTimeout(()=>alert('حظ أوفر المرة القادمة!'),4000)">جرب حظك</button>
+            </div>
+        </div>
+
+        <div id="accPage" class="page">
+            <div class="glass-panel">
+                <h3 style="margin-top:0;">👤 ملفي الشخصي</h3>
+                <div style="line-height:2.5; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;">
+                    <div>الاسم: <span id="accN" style="color:var(--accent)">...</span></div>
+                    <div>البريد: <span id="accE" style="color:var(--accent)">...</span></div>
+                </div>
+                <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <div class="quran-footer">
+            <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
+            <p>
+                اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ
+            </p>
+        </div>
+
     </div>
 
-    <div id="ordersPage" class="page">
-        <div class="services-section">
-            <h3 style="text-align:center; margin-top: 0;">📦 سجل طلباتي</h3>
-            <div id="ordersList" style="max-height: 400px; overflow-y: auto;">جاري تحميل البيانات...</div>
-        </div>
-    </div>
-
-    <div id="rechargePage" class="page">
-        <div class="services-section">
-            <h3 style="text-align:center; color:var(--accent); margin-top: 0;">💳 شحن الرصيد</h3>
-            <p style="text-align: center; font-size: 12px; color: var(--text-muted);">حول القيمة لأحد الأرقام التالية ثم أرسل الطلب:</p>
-            <div class="user-stats">
-                <div class="stat-card" onclick="copyText('0912377291')" style="cursor: pointer;"><span style="color:var(--accent);">0912377291</span><br><small>ليبيانا</small></div>
-                <div class="stat-card" onclick="copyText('0920414760')" style="cursor: pointer;"><span style="color:var(--accent);">0920414760</span><br><small>المدار</small></div>
-            </div>
-            <div class="form-group"><label>رقم الهاتف المحول منه</label><input type="number" id="senderPhone" placeholder="09xxxxxxxx"></div>
-            <div class="form-group"><label>القيمة المراد شحنها</label><input type="number" id="chargeAmount" placeholder="0.00"></div>
-            <button class="btn-main" onclick="sendWhatsAppRecharge()">إرسال طلب الشحن للمسؤول 💬</button>
-        </div>
-    </div>
-
-    <div id="settingsPage" class="page">
-        <div class="services-section">
-            <div class="wheel-container">
-                <h3 style="color:var(--gold); margin-top: 0;">🎡 عجلة الحظ اليومية</h3>
-                <div id="wheelElement"></div>
-                <button class="btn-main" style="width:auto; padding:12px 40px;" onclick="spinWheel()">جرب حظك الآن ✨</button>
-            </div>
-        </div>
-        <div class="services-section">
-            <div class="stat-card" style="margin-bottom:15px; cursor:pointer;" onclick="copyRefLink()">
-                <small style="color: var(--text-muted);">رابط الإحالة (عمولة 4%):</small><br>
-                <span id="uRefLinkShow" style="font-size:12px; color:var(--accent);">جاري التحميل...</span>
-                <span id="uRefLink" style="display:none;"></span>
-            </div>
-            <button class="btn-main" style="background:var(--error); color:white; border-radius: 12px;" onclick="firebase.auth().signOut()">تسجيل الخروج من الحساب</button>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="nav('ordersPage', this); loadUserOrders();">📦<br>طلباتي</div>
-        <div class="nav-item" onclick="nav('rechargePage', this)">💳<br>الشحن</div>
-        <div class="nav-item" onclick="nav('settingsPage', this)">⚙️<br>الإعدادات</div>
+    <div class="bottom-nav">
+        <div class="nav-tab active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
+        <div class="nav-tab" onclick="nav('socialPage', this)">📢<br>القنوات</div>
+        <div class="nav-tab" onclick="nav('earnPage', this)">💰<br>الربح</div>
+        <div class="nav-tab" onclick="nav('wheelPage', this)">🎡<br>العجلة</div>
+        <div class="nav-tab" onclick="nav('accPage', this)">👤<br>الحساب</div>
     </div>
 
     <script>
-        // تهيئة Firebase
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
-            authDomain: "cd-card-87365.firebaseapp.com", 
-            projectId: "cd-card-87365", 
-            storageBucket: "cd-card-87365.firebasestorage.app", 
-            messagingSenderId: "397926299412", 
-            appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
+            authDomain: "cd-card-87365.firebaseapp.com",
+            projectId: "cd-card-87365",
+            storageBucket: "cd-card-87365.firebasestorage.app",
+            messagingSenderId: "397926299412",
+            appId: "1:397926299412:web:efbe9ae9aae29df368f401"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(); 
+        const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let currentUserData = {};
-        window.allServices = [];
-        window.selectedService = null;
+        let user = {};
+        let services = [];
 
-        // التحقق من حالة الدخول
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                db.collection('users').doc(user.uid).onSnapshot(doc => {
-                    if(doc.exists) {
-                        currentUserData = doc.data();
-                        document.getElementById('uDisplayName').innerText = currentUserData.username || "مستخدم";
-                        document.getElementById('uBalance').innerText = Number(currentUserData.balance || 0).toFixed(2);
-                        document.getElementById('uSpent').innerText = Number(currentUserData.spent || 0).toFixed(2);
-                        document.getElementById('uStatus').innerText = currentUserData.status || "نشط";
-                        document.getElementById('uAccountEmail').innerText = user.email;
-                        
-                        const refCode = currentUserData.referralCode || user.uid.substring(0,6).toUpperCase();
-                        const refURL = window.location.origin + "/signup.html?ref=" + refCode;
-                        document.getElementById('uRefLink').innerText = refURL;
-                        document.getElementById('uRefLinkShow').innerText = refURL;
-                        
-                        document.getElementById('welcomeBox').style.display = 'block';
-                    }
-                });
-                db.collection('orders').where('userId', '==', user.uid).get().then(snap => {
-                    document.getElementById('ordersCount').innerText = snap.size;
+        auth.onAuthStateChanged(u => {
+            if(u) {
+                db.collection('users').doc(u.uid).onSnapshot(d => {
+                    user = d.data();
+                    document.getElementById('uNameDisplay').innerText = user.username;
+                    document.getElementById('uBal').innerText = user.balance.toFixed(2);
+                    document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
+                    document.getElementById('uStatus').innerText = user.status || "نشط";
+                    document.getElementById('refUrl').value = window.location.origin + "/reg?ref=" + u.uid.substring(0,6);
+                    document.getElementById('accN').innerText = user.username;
+                    document.getElementById('accE').innerText = u.email;
                 });
                 loadServices();
-            } else { 
-                window.location.href = "login.html"; 
-            }
+                db.collection('orders').where('userId', '==', u.uid).get().then(s => document.getElementById('uOrders').innerText = s.size);
+            } else { window.location.href="login.html"; }
         });
 
-        // تحميل الخدمات
         async function loadServices() {
-            try {
-                const snap = await db.collection('services').orderBy('priority', 'asc').get(); 
-                window.allServices = []; 
-                snap.forEach(doc => window.allServices.push({id: doc.id, ...doc.data()}));
-                
-                const cats = [...new Set(window.allServices.map(s => s.category))];
-                const catS = document.getElementById('catSelect'); 
-                catS.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
-                updateServiceList();
-            } catch(e) { 
-                console.error("Error loading services:", e);
-                // محاولة التحميل بدون ترتيب إذا فشل الفهرس
-                const snapNoOrder = await db.collection('services').get();
-                window.allServices = [];
-                snapNoOrder.forEach(doc => window.allServices.push({id: doc.id, ...doc.data()}));
-                updateServiceList();
+            const snap = await db.collection('services').get();
+            services = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            const cats = [...new Set(services.map(s => s.category))];
+            document.getElementById('cat').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+            loadServs();
+        }
+
+        function loadServs() {
+            const c = document.getElementById('cat').value;
+            const filtered = services.filter(s => s.category === c);
+            document.getElementById('serv').innerHTML = filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            applyLogic();
+        }
+
+        function applyLogic() {
+            const id = document.getElementById('serv').value;
+            const idx = services.findIndex(x => x.id === id);
+            const qI = document.getElementById('qty');
+            const qL = document.getElementById('qLbl');
+            if(idx >= 0 && idx <= 8) { 
+                qI.value = 1; qI.disabled = true; qL.innerText = "الكمية ثابتة (1)"; 
+            } else { 
+                qI.value = 50; qI.disabled = false; qL.innerText = "الكمية (الأدنى 50)"; 
             }
+            calc();
         }
 
-        function updateServiceList() {
-            const cat = document.getElementById('catSelect').value;
-            const sS = document.getElementById('serviceSelect'); 
-            const filtered = window.allServices.filter(s => s.category === cat);
-            sS.innerHTML = filtered.map(s => `<option value="${s.id}">${s.name} - ${s.finalPrice} د.ل</option>`).join('');
-            updateServiceDetails();
+        function calc() {
+            const id = document.getElementById('serv').value;
+            const s = services.find(x => x.id === id);
+            const idx = services.findIndex(x => x.id === id);
+            let q = parseFloat(document.getElementById('qty').value) || 0;
+            let t = (idx >= 0 && idx <= 8) ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
+            document.getElementById('total').innerText = t.toFixed(2) + " د.ل";
         }
 
-        function updateServiceDetails() {
-            window.selectedService = window.allServices.find(s => s.id === document.getElementById('serviceSelect').value);
-            if(window.selectedService) {
-                document.getElementById('serviceDesc').value = window.selectedService.description || "لا توجد تفاصيل إضافية.";
-                const isFixed = (window.selectedService.category.includes('ببجي') || window.selectedService.category.includes('بطاقات') || window.selectedService.category.includes('ماستركارد'));
-                document.getElementById('orderQty').value = isFixed ? 1 : 1000;
-                calculateTotal();
-            }
+        async function order() {
+            const total = parseFloat(document.getElementById('total').innerText);
+            if(user.balance < total) return alert("عذراً، الرصيد لا يكفي لإتمام الطلب!");
+            if(!confirm("هل أنت متأكد من تأكيد الطلب؟")) return;
+            const sId = document.getElementById('serv').value;
+            const s = services.find(x => x.id === sId);
+            await db.collection('orders').add({
+                userId: auth.currentUser.uid, service: s.name, target: document.getElementById('target').value,
+                qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY')
+            });
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total)
+            });
+            alert("تم إرسال طلبك بنجاح! شكراً لثقتكم.");
         }
 
-        function calculateTotal() { 
-            if(!window.selectedService) return;
-            const q = parseFloat(document.getElementById('orderQty').value) || 0;
-            const p = parseFloat(window.selectedService.finalPrice) || 0;
-            const isFixed = (window.selectedService.category.includes('ببجي') || window.selectedService.category.includes('بطاقات') || window.selectedService.category.includes('ماستركارد'));
-            const total = (isFixed ? p : (q/1000)*p).toFixed(3);
-            document.getElementById('totalPrice').innerText = total + " د.ل";
-        }
-
-        // تنفيذ الطلب (الإصلاح الجديد)
-        async function submitOrder() {
-            if(!window.selectedService) return alert("❗ يرجى اختيار خدمة أولاً.");
-            
-            const totalText = document.getElementById('totalPrice').innerText;
-            const total = parseFloat(totalText.replace(" د.ل", ""));
-
-            if(parseFloat(currentUserData.balance) < total) return alert("❌ عذراً، رصيدك الحالي لا يكفي لإتمام هذا الطلب.");
-            if(!confirm(`هل أنت متأكد من خصم ${total} د.ل وتأكيد الطلب؟`)) return;
-
-            const orderData = {
-                userId: auth.currentUser.uid,
-                userName: currentUserData.username || "مستخدم",
-                serviceName: window.selectedService.name,
-                category: window.selectedService.category,
-                link: document.getElementById('orderLink').value,
-                qty: document.getElementById('orderQty').value,
-                cost: total,
-                status: "قيد الانتظار",
-                date: new Date().toLocaleString('ar-LY')
-            };
-
-            try {
-                // إضافة الطلب للسجل
-                await db.collection('orders').add(orderData);
-                
-                // تحديث رصيد المستخدم وإنفاقه
-                await db.collection('users').doc(auth.currentUser.uid).update({
-                    balance: firebase.firestore.FieldValue.increment(-total),
-                    spent: firebase.firestore.FieldValue.increment(total)
-                });
-
-                // توجيه للواتساب للخدمات اليدوية
-                if(orderData.category.includes("ماستركارد") || orderData.category.includes("يدوي")) {
-                    const msg = `📦 *طلب جديد من التطبيق*\n👤 العميل: ${orderData.userName}\n🛠 الخدمة: ${orderData.serviceName}\n🔗 الرابط/الآيدي: ${orderData.link}\n💰 التكلفة: ${orderData.cost} د.ل`;
-                    window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
-                }
-
-                alert("✅ تم إرسال طلبك بنجاح! يمكنك متابعته من صفحة طلباتي.");
-            } catch(e) { 
-                console.error("Order Error:", e);
-                alert("❌ حدث خطأ تقني: " + e.message); 
-            }
-        }
-
-        async function loadUserOrders() {
-            const listDiv = document.getElementById('ordersList');
-            listDiv.innerHTML = "جاري تحميل طلباتك...";
-            try {
-                const snap = await db.collection('orders').where('userId', '==', auth.currentUser.uid).get();
-                if(snap.empty) { listDiv.innerHTML = "لا توجد طلبات سابقة لديك."; return; }
-                listDiv.innerHTML = "";
-                snap.forEach(doc => {
-                    const ord = doc.data();
-                    listDiv.innerHTML += `
-                    <div class="order-item">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                            <b style="color:var(--accent); font-size:14px;">${ord.serviceName}</b>
-                            <span style="font-size:10px; background:var(--accent); color:black; padding:2px 8px; border-radius:5px; font-weight:bold;">${ord.status}</span>
-                        </div>
-                        <div style="font-size:11px; color:var(--text-muted);">التاريخ: ${ord.date}</div>
-                        <div style="font-size:11px; color:var(--accent);">التكلفة: ${ord.cost} د.ل | الكمية: ${ord.qty}</div>
-                    </div>`;
-                });
-            } catch(e) { listDiv.innerHTML = "فشل تحميل الطلبات."; }
-        }
-
-        // عجلة الحظ
-        function spinWheel() {
-            const lastSpin = localStorage.getItem('last_spin_' + auth.currentUser.uid);
-            const now = new Date().getTime();
-            if(lastSpin && (now - lastSpin < 86400000)) return alert("لقد حصلت على فرصتك اليوم، حاول مرة أخرى بعد 24 ساعة!");
-
-            const randomDeg = Math.floor(3600 + Math.random() * 3600);
-            document.getElementById('wheelElement').style.transform = `rotate(${randomDeg}deg)`;
-
-            setTimeout(async () => {
-                const prizes = [0.10, 0, 0.25, 0, 0.50, 0, 0.05, 0];
-                const prize = prizes[Math.floor(Math.random() * prizes.length)];
-                if(prize > 0) {
-                    await db.collection('users').doc(auth.currentUser.uid).update({
-                        balance: firebase.firestore.FieldValue.increment(prize)
-                    });
-                    alert(`🎊 مبروك! ربحت ${prize} د.ل هدية أضيفت لرصيدك.`);
-                } else {
-                    alert("💔 حظ أوفر في المرة القادمة، حاول غداً!");
-                }
-                localStorage.setItem('last_spin_' + auth.currentUser.uid, now);
-            }, 4000);
-        }
-
-        // وظائف عامة
-        function copyText(txt) { navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ الرقم بنجاح.")); }
-        function copyRefLink() {
-            const link = document.getElementById('uRefLink').innerText;
-            navigator.clipboard.writeText(link).then(() => alert("✅ تم نسخ رابط الإحالة الخاص بك!"));
-        }
-
-        function sendWhatsAppRecharge() {
-            const amt = document.getElementById('chargeAmount').value;
-            const ph = document.getElementById('senderPhone').value;
-            if(!amt || !ph) return alert("يرجى إدخال المبلغ ورقم الهاتف.");
-            const msg = `طلب شحن رصيد جديد\n👤 العميل: ${currentUserData.username}\n💰 القيمة المطلوبة: ${amt} د.ل\n📱 من رقم هاتف: ${ph}`;
-            window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        // دالة التنقل (nav) - تم إصلاحها وإضافتها لتعمل الأزرار
-        function nav(id, el) { 
+        function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
+        function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم نسخ رابط الدعوة بنجاح!"); }
     </script>
 </body>
 </html>
