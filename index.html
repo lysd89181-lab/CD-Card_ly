@@ -18,6 +18,7 @@
             --text-muted: #8b949e; 
             --border: rgba(255, 255, 255, 0.1); 
             --error: #ff4d4d;
+            --gold: #ffd700;
         }
 
         body { 
@@ -27,6 +28,15 @@
             margin: 0; padding: 10px; padding-bottom: 100px; line-height: 1.6;
             overflow-x: hidden;
         }
+
+        /* شريط الأخبار المتحرك */
+        .news-ticker {
+            background: rgba(0, 255, 136, 0.1); border: 1px solid var(--border);
+            color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold;
+            overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 15px;
+        }
+        .news-ticker span { display: inline-block; animation: ticker-move 20s linear infinite; }
+        @keyframes ticker-move { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .app-header {
             display: flex; align-items: center; justify-content: center;
@@ -86,6 +96,15 @@
             padding: 15px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px;
         }
 
+        /* تنسيق عجلة الحظ */
+        .wheel-container { text-align: center; padding: 10px; margin-bottom: 15px; }
+        .wheel { 
+            width: 200px; height: 200px; border: 5px solid var(--gold); border-radius: 50%; margin: 0 auto 15px;
+            transition: 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+            background: conic-gradient(var(--accent) 0 60deg, #161b22 60deg 120deg, var(--gold) 120deg 180deg, #161b22 180deg 240deg, #00bdff 240deg 300deg, #161b22 300deg 360deg);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
         .quran-container { 
             text-align: center; padding: 25px; border-radius: 20px; border: 1px dashed rgba(0,255,136,0.2); 
             margin-top: 20px; background: rgba(0,255,136,0.02);
@@ -100,6 +119,10 @@
     </style>
 </head>
 <body>
+
+    <div class="news-ticker">
+        <span>🔥 تحديث: تم إضافة باقات ببجي الجديدة | 💳 كروت الماستركارد متوفرة الآن بجميع الفئات | 🎁 اربح رصيد مجاني من عجلة الحظ يومياً!</span>
+    </div>
 
     <div class="app-header">
         <div class="app-logo"></div>
@@ -151,16 +174,9 @@
         <div id="rechargePage" class="page">
             <div class="services-section">
                 <h3 style="text-align:center; color:var(--accent);">💳 شحن الرصيد</h3>
-                <p style="text-align:center; font-size:11px; color:var(--text-muted);">اضغط على الرقم لنسخه</p>
                 <div class="recharge-stats">
-                    <div class="stat-card" onclick="copyText('0912377291')">
-                        <span class="stat-title" style="font-size:15px;">0912377291</span>
-                        <span class="stat-value">ليبيانا (رصيد)</span>
-                    </div>
-                    <div class="stat-card" onclick="copyText('0920414760')">
-                        <span class="stat-title" style="font-size:15px;">0920414760</span>
-                        <span class="stat-value">المدار (رصيد)</span>
-                    </div>
+                    <div class="stat-card" onclick="copyText('0912377291')"><span class="stat-title" style="font-size:15px;">0912377291</span><span class="stat-value">ليبيانا (رصيد)</span></div>
+                    <div class="stat-card" onclick="copyText('0920414760')"><span class="stat-title" style="font-size:15px;">0920414760</span><span class="stat-value">المدار (رصيد)</span></div>
                 </div>
                 <div class="form-group"><label>رقمك المحول منه</label><input type="number" id="senderPhone" placeholder="09xxxxxxxx"></div>
                 <div class="form-group"><label>القيمة المحولة</label><input type="number" id="chargeAmount" placeholder="0.00"></div>
@@ -169,21 +185,31 @@
         </div>
 
         <div id="settingsPage" class="page">
+            <div class="services-section wheel-container">
+                <h3 style="color:var(--gold);">🎡 عجلة الحظ اليومية</h3>
+                <div id="wheelElement" class="wheel"></div>
+                <button class="btn-main" style="width: auto; padding: 10px 30px;" onclick="spinWheel()">إبرم العجلة ✨</button>
+            </div>
+
             <div class="services-section">
-                <h3>⚙️ الإعدادات</h3>
-                <div class="settings-item" onclick="alert('المستخدم: ' + currentUserData.username)">
-                    👤 <div><b>الحساب</b><br><small>بياناتك الشخصية</small></div>
-                </div>
+                <h3>⚙️ الإعدادات والربح</h3>
+                
                 <div class="settings-item" onclick="copyRefLink()">
-                    💰 <div><b>ربح المال</b><br><small>رابط الإحالة (4%)</small></div>
+                    💰 <div><b>كسب المال (رابط الإحالة)</b><br><small id="uRefLinkShow">انقر لنسخ رابطك وربح 4% عمولة</small></div>
                     <div id="uRefLink" style="display:none;"></div>
                 </div>
-                <div class="settings-item" onclick="window.open('https://t.me/YOUR_CHANNEL_LINK', '_blank')">
-                    📢 <div><b>قنوات الموقع</b><br><small>تابعنا لتصلك العروض</small></div>
-                </div>
+
                 <div class="settings-item" onclick="window.open('https://wa.me/218912377291', '_blank')">
-                    🛠️ <div><b>الدعم الفني</b><br><small>تحدث مع الإدارة</small></div>
+                    🛠️ <div><b>الدعم الفني</b><br><small>تحدث مع الإدارة مباشرة</small></div>
                 </div>
+                <div class="settings-item" onclick="window.open('https://t.me/YOUR_CHANNEL_LINK', '_blank')">
+                    📢 <div><b>قناة التيليجرام</b><br><small>تابع آخر العروض والتحديثات</small></div>
+                </div>
+                
+                <div class="settings-item" style="cursor: default;">
+                    👤 <div><b>بيانات الحساب</b><br><small id="uAccountEmail">...</small></div>
+                </div>
+
                 <button class="btn-main" style="background:var(--error); color:#fff; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
             </div>
         </div>
@@ -208,16 +234,20 @@
             db.collection('users').doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     currentUserData = doc.data();
-                    document.getElementById('welcomeBox').style.display = 'block';
                     document.getElementById('uDisplayName').innerText = currentUserData.username;
                     document.getElementById('uBalance').innerText = Number(currentUserData.balance).toFixed(2);
-                    document.getElementById('uSpent').innerText = Number(currentUserData.spent).toFixed(2);
+                    document.getElementById('uSpent').innerText = Number(userData ? userData.spent : currentUserData.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = currentUserData.status || "نشط";
+                    document.getElementById('uAccountEmail').innerText = user.email;
+                    
                     const refCode = currentUserData.referralCode || user.uid.substring(0,6).toUpperCase();
-                    document.getElementById('uRefLink').innerText = window.location.origin + "/signup.html?ref=" + refCode;
+                    const refURL = window.location.origin + "/signup.html?ref=" + refCode;
+                    document.getElementById('uRefLink').innerText = refURL;
+                    document.getElementById('uRefLinkShow').innerText = "رابطك: " + refURL;
+                    
+                    document.getElementById('welcomeBox').style.display = 'block';
                 }
             });
-            // تحديث عداد الطلبات الإجمالي
             db.collection('orders').where('userId', '==', user.uid).get().then(snap => {
                 document.getElementById('ordersCount').innerText = snap.size;
             });
@@ -261,8 +291,7 @@
     async function submitOrder() {
         const total = parseFloat(document.getElementById('totalPrice').innerText);
         if(parseFloat(currentUserData.balance) < total) return alert("❌ رصيدك لا يكفي.");
-        const confirmOrder = confirm(`تأكيد الطلب بقيمة ${total} د.ل؟`);
-        if(!confirmOrder) return;
+        if(!confirm(`تأكيد الطلب بقيمة ${total} د.ل؟`)) return;
 
         const orderData = {
             userId: auth.currentUser.uid,
@@ -276,7 +305,6 @@
             date: new Date().toLocaleString('ar-LY')
         };
 
-        // إرسال فاتورة واتساب لو كانت الخدمة يدوية أو بطاقات
         if(orderData.category.includes("ماستركارد") || orderData.category.includes("يدوي")) {
             const waMsg = `📦 *طلب جديد*\n👤 العميل: ${orderData.userName}\n🛠 الخدمة: ${orderData.serviceName}\n🔗 الآيدي: ${orderData.link}\n💰 التكلفة: ${orderData.cost} د.ل`;
             window.open(`https://wa.me/218912377291?text=${encodeURIComponent(waMsg)}`, '_blank');
@@ -288,7 +316,6 @@
             spent: firebase.firestore.FieldValue.increment(total)
         });
         alert("✅ تم تنفيذ الطلب بنجاح.");
-        loadUserOrders();
     }
 
     async function loadUserOrders() {
@@ -302,9 +329,31 @@
         });
     }
 
-    function copyText(txt) {
-        navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ الرقم بنجاح."));
+    // وظيفة عجلة الحظ
+    function spinWheel() {
+        const lastSpin = localStorage.getItem('last_spin_' + auth.currentUser.uid);
+        const now = new Date().getTime();
+        if(lastSpin && (now - lastSpin < 86400000)) return alert("لقد حصلت على فرصتك اليوم، حاول غداً!");
+
+        const randomDeg = Math.floor(3000 + Math.random() * 3000);
+        document.getElementById('wheelElement').style.transform = `rotate(${randomDeg}deg)`;
+
+        setTimeout(async () => {
+            const prizes = [0.10, 0, 0.25, 0, 0.50, 0];
+            const prize = prizes[Math.floor(Math.random() * prizes.length)];
+            if(prize > 0) {
+                await db.collection('users').doc(auth.currentUser.uid).update({
+                    balance: firebase.firestore.FieldValue.increment(prize)
+                });
+                alert("🎊 مبروك! ربحت رصيد مجاني بقيمة " + prize + " د.ل");
+            } else {
+                alert("💔 حظ أوفر في المرة القادمة!");
+            }
+            localStorage.setItem('last_spin_' + auth.currentUser.uid, now);
+        }, 4000);
     }
+
+    function copyText(txt) { navigator.clipboard.writeText(txt).then(() => alert("✅ تم النسخ.")); }
 
     function copyRefLink() {
         const link = document.getElementById('uRefLink').innerText;
@@ -325,4 +374,3 @@
 </script>
 </body>
 </html>
-
