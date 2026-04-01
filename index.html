@@ -20,7 +20,7 @@
         body { 
             background: radial-gradient(circle at top, #161b22 0%, #0d1117 100%);
             color: var(--text-main); font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; padding-bottom: 100px; direction: rtl;
+            margin: 0; padding-bottom: 100px; direction: rtl; overflow-x: hidden;
         }
 
         /* Header */
@@ -36,48 +36,50 @@
         }
         .app-title { font-size: 22px; font-weight: 900; color: var(--accent); }
 
+        /* شريط الأخبار */
+        .news-ticker {
+            background: rgba(0, 255, 136, 0.1); border-bottom: 1px solid var(--border);
+            white-space: nowrap; overflow: hidden; padding: 8px 0; font-size: 13px; color: var(--accent);
+        }
+        .news-ticker div { display: inline-block; animation: ticker 20s linear infinite; padding-left: 100%; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
-        /* ترويسة "ما شاء الله" باللون الذهبي وحجم أكبر 10% */
+        /* ترويسة ذهبية */
         .mashallah-banner {
-            text-align: center; padding: 25px 10px; margin-bottom: 20px;
+            text-align: center; padding: 20px 10px; margin-bottom: 20px;
             background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.05), transparent);
         }
         .mashallah-banner h1 { 
-            margin: 0; font-size: 28.6px; /* تم تكبيرها بنسبة 10% من 26px */
-            font-weight: 900; color: var(--gold); /* اللون الذهبي */
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); letter-spacing: 1px;
+            margin: 0; font-size: 28.6px; font-weight: 900; color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
-        /* المربعات الأربعة (تظهر في الرئيسية فقط) */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-box {
-            background: var(--card); border: 1px solid var(--border); padding: 15px;
-            border-radius: 18px; text-align: center;
-        }
+        .stat-box { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 18px; text-align: center; }
         .stat-val { display: block; font-size: 18px; font-weight: bold; color: var(--accent); }
         .stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
 
-        /* Panels */
-        .glass-panel {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 20px; padding: 20px; margin-bottom: 20px;
-        }
+        .glass-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
-        select, input { 
-            width: 100%; background: #000; border: 1px solid var(--border); color: #fff; 
-            padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none;
+        select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; }
+        .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; }
+
+        /* صندوق الآيات - تكبير آية الكرسي 30% */
+        .quran-footer {
+            text-align: center; padding: 25px 15px; margin-top: 10px;
+            background: rgba(22, 27, 34, 0.5); border-radius: 20px;
+            border: 1px solid var(--border); margin-bottom: 20px;
         }
-        .btn-action { 
-            width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); 
-            border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000;
+        .quran-footer h3 { color: var(--accent); font-size: 19.8px; margin-bottom: 15px; font-weight: bold; }
+        .quran-footer p { 
+            color: var(--gold); font-size: 20.8px; /* تكبير بنسبة 30% من الحجم الأصلي 16px */
+            line-height: 1.8; margin: 0; font-family: 'Traditional Arabic', serif; font-weight: bold;
         }
 
-        /* Navigation */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; background: rgba(22, 27, 34, 0.98);
-            display: flex; border-top: 1px solid var(--border); z-index: 2000;
-        }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(22, 27, 34, 0.98); display: flex; border-top: 1px solid var(--border); z-index: 2000; }
         .nav-tab { flex: 1; text-align: center; padding: 12px 0; color: var(--text-muted); font-size: 10px; cursor: pointer; }
         .nav-tab.active { color: var(--accent); font-weight: bold; }
 
@@ -92,21 +94,8 @@
             text-decoration: none; color: white;
         }
 
-        /* صندوق الآيات في الأسفل */
-        .quran-footer {
-            text-align: center; padding: 30px 15px; margin-top: 20px;
-            background: rgba(22, 27, 34, 0.5); border-radius: 20px;
-            border: 1px solid var(--border); margin-bottom: 20px;
-        }
-        /* البسملة بلون الموقع وحجم أكبر */
-        .quran-footer h3 { color: var(--accent); font-size: 19.8px; /* تكبير 10% */ margin-bottom: 15px; font-weight: bold; }
-        /* آية الكرسي باللون الذهبي وحجم أكبر */
-        .quran-footer p { 
-            color: var(--gold); /* اللون الذهبي */
-            font-size: 15.4px; /* تم تكبيرها بنسبة 10% من 14px */
-            line-height: 2; margin: 0;
-            font-family: 'Traditional Arabic', serif;
-        }
+        /* قفل العجلة */
+        .lock-overlay { padding: 20px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px dashed var(--gold); margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -116,33 +105,37 @@
         <div class="app-title">CD-Card</div>
     </div>
 
+    <div class="news-ticker">
+        <div>🔥 مرحباً بكم في CD-CARD: أفضل الأسعار لخدمات نتفليكس وشدات ببجي وتيك توك.. ✅ شحن فوري وآمن 100%.. 🚀 انضم لقناتنا على التليجرام للحصول على العروض الحصرية..</div>
+    </div>
+
     <div class="container">
         
-        <div class="mashallah-banner">
-            <h1>مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ</h1>
-        </div>
-
         <div id="homePage" class="page active">
-            <div style="margin-bottom: 15px; text-align: center;">
-                <h2 style="font-size: 20px;">مرحباً، <span id="uNameDisplay" style="color:var(--accent);">...</span> 👋</h2>
-            </div>
+            <div class="mashallah-banner"><h1>مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ</h1></div>
+            <div style="margin-bottom: 15px; text-align: center;"><h2>مرحباً، <span id="uNameDisplay" style="color:var(--accent);">...</span> 👋</h2></div>
 
             <div class="stats-grid">
-                <div class="stat-box"><span id="uBal" class="stat-val">0.00</span><span class="stat-lbl">الرصيد الحالي</span></div>
-                <div class="stat-box"><span id="uSpent" class="stat-val">0.00</span><span class="stat-lbl">إجمالي المنفق</span></div>
-                <div class="stat-box"><span id="uStatus" class="stat-val" style="font-size:14px;">نشط</span><span class="stat-lbl">حالة الحساب</span></div>
-                <div class="stat-box"><span id="uOrders" class="stat-val">0</span><span class="stat-lbl">عدد الطلبات</span></div>
+                <div class="stat-box"><span id="uBal" class="stat-val">0.00</span><span class="stat-lbl">الرصيد</span></div>
+                <div class="stat-box"><span id="uSpent" class="stat-val">0.00</span><span class="stat-lbl">المنفق</span></div>
+                <div class="stat-box"><span id="uStatus" class="stat-val" style="font-size:14px;">نشط</span><span class="stat-lbl">الحالة</span></div>
+                <div class="stat-box"><span id="uOrders" class="stat-val">0</span><span class="stat-lbl">الطلبات</span></div>
             </div>
 
             <div class="glass-panel">
-                <div style="margin-bottom:15px;"><label>القسم</label><select id="cat" onchange="loadServs()"></select></div>
-                <div style="margin-bottom:15px;"><label>الخدمة</label><select id="serv" onchange="applyLogic()"></select></div>
-                <div style="margin-bottom:15px;"><label>الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع الرابط أو الآيدي هنا"></div>
-                <div style="margin-bottom:15px;"><label id="qLbl">الكمية</label><input type="number" id="qty" value="50" oninput="calc()"></div>
-                <div style="text-align:center; padding:15px; margin-bottom:15px; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
+                <label>القسم</label><select id="cat" onchange="loadServs()"></select>
+                <label style="margin-top:10px;">الخدمة</label><select id="serv" onchange="applyLogic()"></select>
+                <label style="margin-top:10px;">الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
+                <label style="margin-top:10px;">الكمية</label><input type="number" id="qty" value="50" oninput="calc()">
+                <div style="text-align:center; padding:15px; margin:15px 0; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
                     <span id="total" style="font-size:26px; color:var(--accent); font-weight:bold;">0.00 د.ل</span>
                 </div>
                 <button class="btn-action" onclick="order()">إرسال الطلب الآن ✅</button>
+            </div>
+
+            <div class="quran-footer">
+                <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
+                <p>اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ</p>
             </div>
         </div>
 
@@ -154,71 +147,43 @@
             </div>
             <div class="glass-panel">
                 <h3 style="color:var(--blue); margin-top:0;">🛠️ الدعم الفني</h3>
-                <a href="https://wa.me/218912377291" class="list-item"><span>واتساب (إدريس)</span></a>
-                <a href="https://t.me/cdcard104" class="list-item"><span>تيليجرام (الدعم)</span></a>
-            </div>
-        </div>
-
-        <div id="earnPage" class="page">
-            <div class="glass-panel" style="text-align:center;">
-                <h2 style="color:var(--accent); margin-top:0;">💰 نظام الإحالة (4%)</h2>
-                <p style="font-size:13px; line-height:1.6;">شارك رابطك الخاص واربح عمولة 4% عن كل شحن يقوم به أصدقاؤك!</p>
-                <input type="text" id="refUrl" readonly style="text-align:center; margin-top:15px; border-style:dashed; color:var(--accent);">
-                <button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ رابط الدعوة 🔗</button>
+                <a href="https://wa.me/218912377291" class="list-item" target="_blank"><span>واتساب (إدريس)</span></a>
+                <a href="https://t.me/cdcard104" class="list-item" target="_blank"><span>تيليجرام (الدعم)</span></a>
             </div>
         </div>
 
         <div id="wheelPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--gold); margin-top:0;">🎡 عجلة الحظ</h2>
-                <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
-                <button class="btn-action" style="width:auto; padding:10px 40px;" onclick="document.getElementById('wheel').style.transform='rotate(3600deg)'; setTimeout(()=>alert('حظ أوفر المرة القادمة!'),4000)">جرب حظك</button>
-            </div>
-        </div>
-
-        <div id="accPage" class="page">
-            <div class="glass-panel">
-                <h3 style="margin-top:0;">👤 ملفي الشخصي</h3>
-                <div style="line-height:2.5; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;">
-                    <div>الاسم: <span id="accN" style="color:var(--accent)">...</span></div>
-                    <div>البريد: <span id="accE" style="color:var(--accent)">...</span></div>
+                <div id="lockArea" class="lock-overlay">
+                    <p style="font-size:13px; color:var(--text-main);">يجب عليك الاشتراك في قناتنا أولاً لتتمكن من تدوير العجلة!</p>
+                    <a href="https://t.me/CD_Card1" target="_blank" class="btn-action" style="display:block; text-decoration:none; margin-bottom:10px; background:var(--blue);" onclick="unlockWheel()">اشترك في القناة الآن 🔗</a>
+                    <span style="font-size:10px; color:var(--text-muted);">بعد الاشتراك، اضغط على الزر أعلاه وسيفتح القفل تلقائياً</span>
                 </div>
-                <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
+                <div id="wheelContent" style="opacity: 0.2; pointer-events: none;">
+                    <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
+                    <button id="spinBtn" class="btn-action" style="width:auto; padding:10px 40px;" onclick="spin()">جرب حظك</button>
+                </div>
             </div>
         </div>
 
-        <div class="quran-footer">
-            <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
-            <p>
-                اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ
-            </p>
-        </div>
-
+        <div id="earnPage" class="page"><div class="glass-panel" style="text-align:center;"><h2 style="color:var(--accent);">💰 نظام الإحالة</h2><input type="text" id="refUrl" readonly style="text-align:center; color:var(--accent); border-style:dashed;"><button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ الرابط</button></div></div>
+        <div id="accPage" class="page"><div class="glass-panel"><h3>👤 حسابي</h3><div style="line-height:2.5;">اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>البريد: <span id="accE" style="color:var(--accent)">...</span></div><button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button></div></div>
     </div>
 
     <div class="bottom-nav">
         <div class="nav-tab active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
-        <div class="nav-tab" onclick="nav('socialPage', this)">📢<br>القنوات</div>
+        <div class="nav-tab" onclick="nav('socialPage', this)">📢<br>الدعم</div>
         <div class="nav-tab" onclick="nav('earnPage', this)">💰<br>الربح</div>
         <div class="nav-tab" onclick="nav('wheelPage', this)">🎡<br>العجلة</div>
         <div class="nav-tab" onclick="nav('accPage', this)">👤<br>الحساب</div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
-            authDomain: "cd-card-87365.firebaseapp.com",
-            projectId: "cd-card-87365",
-            storageBucket: "cd-card-87365.firebasestorage.app",
-            messagingSenderId: "397926299412",
-            appId: "1:397926299412:web:efbe9ae9aae29df368f401"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        let user = {};
-        let services = [];
+        const db = firebase.firestore(), auth = firebase.auth();
+        let user = {}, services = [];
 
         auth.onAuthStateChanged(u => {
             if(u) {
@@ -240,54 +205,53 @@
         async function loadServices() {
             const snap = await db.collection('services').get();
             services = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            const cats = [...new Set(services.map(s => s.category))];
-            document.getElementById('cat').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('cat').innerHTML = [...new Set(services.map(s => s.category))].map(c => `<option value="${c}">${c}</option>`).join('');
             loadServs();
         }
 
         function loadServs() {
             const c = document.getElementById('cat').value;
-            const filtered = services.filter(s => s.category === c);
-            document.getElementById('serv').innerHTML = filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('serv').innerHTML = services.filter(s => s.category === c).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             applyLogic();
         }
 
         function applyLogic() {
-            const id = document.getElementById('serv').value;
-            const idx = services.findIndex(x => x.id === id);
+            const s = services.find(x => x.id === document.getElementById('serv').value);
             const qI = document.getElementById('qty');
-            const qL = document.getElementById('qLbl');
-            if(idx >= 0 && idx <= 8) { 
-                qI.value = 1; qI.disabled = true; qL.innerText = "الكمية ثابتة (1)"; 
-            } else { 
-                qI.value = 50; qI.disabled = false; qL.innerText = "الكمية (الأدنى 50)"; 
-            }
+            if(s.type === "Package") { qI.value = 1; qI.disabled = true; } else { qI.value = 50; qI.disabled = false; }
             calc();
         }
 
         function calc() {
-            const id = document.getElementById('serv').value;
-            const s = services.find(x => x.id === id);
-            const idx = services.findIndex(x => x.id === id);
+            const s = services.find(x => x.id === document.getElementById('serv').value);
             let q = parseFloat(document.getElementById('qty').value) || 0;
-            let t = (idx >= 0 && idx <= 8) ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
+            let t = (s.type === "Package") ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
             document.getElementById('total').innerText = t.toFixed(2) + " د.ل";
         }
 
         async function order() {
             const total = parseFloat(document.getElementById('total').innerText);
-            if(user.balance < total) return alert("عذراً، الرصيد لا يكفي لإتمام الطلب!");
-            if(!confirm("هل أنت متأكد من تأكيد الطلب؟")) return;
-            const sId = document.getElementById('serv').value;
-            const s = services.find(x => x.id === sId);
-            await db.collection('orders').add({
-                userId: auth.currentUser.uid, service: s.name, target: document.getElementById('target').value,
-                qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY')
-            });
-            await db.collection('users').doc(auth.currentUser.uid).update({
-                balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total)
-            });
-            alert("تم إرسال طلبك بنجاح! شكراً لثقتكم.");
+            if(user.balance < total) return alert("الرصيد لا يكفي!");
+            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const target = document.getElementById('target').value;
+            if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
+            await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
+            await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
+            if(s.type === "Package") {
+                const msg = `*🧾 فاتورة جديدة من CD-CARD*%0A*العميل:* ${user.username}%0A*الخدمة:* ${s.name}%0A*البيانات:* ${target}%0A*السعر:* ${total} د.ل`;
+                window.open(`https://wa.me/218912377291?text=${msg}`, '_blank');
+            } else { alert("تم إرسال الطلب للمزود!"); }
+        }
+
+        function unlockWheel() {
+            document.getElementById('lockArea').style.display = 'none';
+            document.getElementById('wheelContent').style.opacity = '1';
+            document.getElementById('wheelContent').style.pointerEvents = 'auto';
+        }
+
+        function spin() { 
+            document.getElementById('wheel').style.transform = 'rotate(3600deg)';
+            setTimeout(() => alert('حظ أوفر! العجلة متاحة مرة كل 24 ساعة.'), 4000);
         }
 
         function nav(id, el) {
@@ -296,7 +260,7 @@
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
-        function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم نسخ رابط الدعوة بنجاح!"); }
+        function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم النسخ!"); }
     </script>
 </body>
 </html>
