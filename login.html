@@ -11,71 +11,80 @@
 
     <style>
         :root { 
-            --bg: #0d1117; /* خلفية داكنة */
-            --card: #161b22; /* لون البطاقة */
-            --accent: #00ff88; /* لون التمييز الأخضر الليلي */
+            --bg: #0d1117; 
+            --card: rgba(22, 27, 34, 0.7); /* زجاجي شفاف */
+            --accent: #00ff88; 
             --text-main: #ffffff; 
             --text-muted: #8b949e; 
-            --border: #30363d; 
+            --border: rgba(255, 255, 255, 0.1); 
             --error: #ff4d4d;
         }
 
         body { 
-            background: var(--bg); 
+            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
             color: var(--text-main); 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh;
+            margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .auth-container {
             background: var(--card); 
-            padding: 40px; border-radius: 20px; 
+            backdrop-filter: blur(15px); /* تأثير الزجاج */
+            -webkit-backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 25px; 
             border: 1px solid var(--border); 
-            width: 90%; max-width: 400px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%; max-width: 420px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             text-align: center;
+            transform: perspective(1000px) rotateX(2deg); /* تأثير 3D */
+            transition: 0.5s;
         }
+        .auth-container:hover { transform: perspective(1000px) rotateX(0deg); }
 
         .app-logo {
-            width: 80px; height: 80px; 
-            background: url('cd.jpg') no-repeat center center / contain;
+            width: 85px; height: 85px; 
+            background: url('cd.jpg') no-repeat center center / cover;
             border-radius: 50%; margin: 0 auto 20px; 
             border: 2px solid var(--accent);
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        .app-title { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 30px; }
+        .app-title { font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
 
-        .form-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; padding-right: 5px; }
         input { 
-            width: 100%; background: rgba(0,0,0,0.2); 
+            width: 100%; background: rgba(0,0,0,0.4); 
             border: 1px solid var(--border); 
             color: var(--text-main); 
-            padding: 16px; border-radius: 12px; 
+            padding: 14px; border-radius: 12px; 
             box-sizing: border-box; outline: none; font-size: 15px;
             transition: 0.3s;
         }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(0,255,136,0.2); background: rgba(0,0,0,0.6); }
 
         .btn-main { 
-            width: 100%; background: var(--accent); 
-            color: #000; border: none; padding: 18px; 
+            width: 100%; background: linear-gradient(45deg, var(--accent), #00bdff); 
+            color: #000; border: none; padding: 16px; 
             border-radius: 14px; font-weight: 800; 
-            cursor: pointer; font-size: 17px; 
-            transition: 0.2s;
+            cursor: pointer; font-size: 17px; margin-top: 10px;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,255,136,0.2);
         }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,255,136,0.4); }
         .btn-main:active { transform: scale(0.98); }
 
-        .switch-text { color: var(--text-muted); font-size: 14px; margin-top: 20px; }
-        .switch-link { color: var(--accent); cursor: pointer; text-decoration: underline; }
+        .switch-text { color: var(--text-muted); font-size: 14px; margin-top: 25px; }
+        .switch-link { color: var(--accent); cursor: pointer; text-decoration: none; font-weight: bold; }
+        .switch-link:hover { text-decoration: underline; }
 
-        #msg { color: var(--error); font-size: 14px; margin-top: 15px; }
-        #success-msg { color: #00ff44; font-size: 14px; margin-top: 15px; }
+        #msg { color: var(--error); font-size: 13px; margin-top: 15px; font-weight: bold; }
+        #success-msg { color: #00ff88; font-size: 13px; margin-top: 15px; font-weight: bold; }
 
         .loader {
-            border: 4px solid var(--card); border-top: 4px solid var(--accent);
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; display: none; margin: 10px auto;
+            border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent);
+            border-radius: 50%; width: 35px; height: 35px;
+            animation: spin 1s linear infinite; display: none; margin: 15px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -87,21 +96,21 @@
         <div class="app-title">CD-Card</div>
 
         <div id="loginForm">
-            <h3 style="margin-bottom: 10px;">تسجيل الدخول</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">أهلاً بك مجدداً في متجر CD-CARD!</p>
+            <h3 style="margin: 0 0 10px;">تسجيل الدخول</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">أهلاً بك مجدداً في عالم الخدمات الرقمية.</p>
             <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@email.com"></div>
             <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-            <button class="btn-main" id="loginBtn" onclick="handleLogin()">تسجيل الدخول الآن</button>
+            <button class="btn-main" id="loginBtn" onclick="handleLogin()">دخول للمتجر 🚀</button>
             <p class="switch-text">ليس لديك حساب؟ <span class="switch-link" onclick="switchForm('register')">إنشاء حساب جديد</span></p>
         </div>
 
         <div id="registerForm" style="display: none;">
-            <h3 style="margin-bottom: 10px;">إنشاء حساب جديد</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">انضم لمتجر CD-CARD واستمتع بأفضل الخدمات الإلكترونية.</p>
-            <div class="form-group"><label>اسم المستخدم</label><input type="text" id="regUsername" placeholder="اسمك"></div>
+            <h3 style="margin: 0 0 10px;">انضم إلينا اليوم</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">أنشئ حسابك وابدأ في ربح عمولات الإحالة 4%.</p>
+            <div class="form-group"><label>اسم المستخدم (سيظهر في الترحيب)</label><input type="text" id="regUsername" placeholder="مثلاً: محمد علي"></div>
             <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="example@email.com"></div>
             <div class="form-group"><label>كلمة المرور</label><input type="password" id="regPassword" placeholder="••••••••"></div>
-            <button class="btn-main" id="regBtn" onclick="handleRegister()">إنشاء الحساب وتأكيد</button>
+            <button class="btn-main" id="regBtn" onclick="handleRegister()">تأكيد الإنشاء والبدء ✨</button>
             <p class="switch-text">لديك حساب بالفعل؟ <span class="switch-link" onclick="switchForm('login')">تسجيل الدخول</span></p>
         </div>
 
@@ -111,7 +120,6 @@
     </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -124,8 +132,8 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // تبديل بين نموذجي الدخول والتسجيل
     function switchForm(target) {
+        document.getElementById('msg').innerText = '';
         if(target === 'register') {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
@@ -135,74 +143,76 @@
         }
     }
 
-    // وظيفة تسجيل الدخول
     async function handleLogin() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPassword').value;
+        if(!email || !pass) return showMsg("أدخل البيانات كاملة!", 'error');
         showLoading(true);
         try {
             await auth.signInWithEmailAndPassword(email, pass);
-            window.location.href = "index.html"; // تحويل للصفحة الرئيسية
+            window.location.href = "index.html"; 
         } catch (error) { showMsg("خطأ: " + getErrorAr(error.code), 'error'); }
         showLoading(false);
     }
 
-    // وظيفة إنشاء حساب
     async function handleRegister() {
         const user = document.getElementById('regUsername').value;
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPassword').value;
         
+        // قراءة كود الإحالة من الرابط ?ref=CODE
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralFrom = urlParams.get('ref') || "";
+
         if(!user || !email || !pass) return showMsg("الرجاء ملء جميع البيانات!", 'error');
-        if(pass.length < 6) return showMsg("كلمة المرور يجب أن تكون 6 أحرف على الأقل.", 'error');
+        if(pass.length < 6) return showMsg("كلمة المرور ضعيفة جداً.", 'error');
 
         showLoading(true);
         try {
-            // إنشاء الحساب في Authentication
             const cred = await auth.createUserWithEmailAndPassword(email, pass);
             
-            // تخزين بيانات المستخدم في Firestore
+            // توليد كود إحالة فريد للمستخدم الجديد
+            const myNewRefCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
             await db.collection('users').doc(cred.user.uid).set({
                 username: user,
-                balance: 0.00, // رصيد ابتدائي صفر دينار ليبي
+                balance: 0.00, 
                 spent: 0.00,
+                referralCode: myNewRefCode,
+                referredBy: referralFrom, // حفظ من الذي دعا هذا المستخدم
                 status: "active",
                 dateCreated: new Date().toLocaleString('ar-LY')
             });
 
-            showMsg("✅ تم إنشاء الحساب بنجاح. جاري تحويلك...", 'success');
-            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+            showMsg("✅ تم إنشاء الحساب! جاري دخولك...", 'success');
+            setTimeout(() => { window.location.href = "index.html"; }, 1200);
 
         } catch (error) { showMsg("خطأ: " + getErrorAr(error.code), 'error'); }
         showLoading(false);
     }
 
-    // إدارة رسائل الخطأ والنجاح
     function showMsg(m, type) {
         document.getElementById('msg').innerText = type === 'error' ? m : '';
         document.getElementById('success-msg').innerText = type === 'success' ? m : '';
     }
 
-    // إدارة لودر التحميل
     function showLoading(show) {
         document.getElementById('loader').style.display = show ? 'block' : 'none';
         document.getElementById('loginBtn').disabled = show;
         document.getElementById('regBtn').disabled = show;
     }
 
-    // ترجمة رسائل خطأ Firebase للعربية
     function getErrorAr(code) {
         switch(code) {
-            case 'auth/invalid-email': return "البريد الإلكتروني غير صالح.";
-            case 'auth/user-disabled': return "هذا الحساب معطل.";
-            case 'auth/user-not-found': return "لم يتم العثور على مستخدم.";
-            case 'auth/wrong-password': return "كلمة المرور خاطئة.";
-            case 'auth/email-already-in-use': return "البريد الإلكتروني مستخدم بالفعل.";
-            case 'auth/operation-not-allowed': return "العملية غير مسموحة.";
-            case 'auth/weak-password': return "كلمة المرور ضعيفة جداً.";
-            default: return "حدث خطأ غير معروف.";
+            case 'auth/invalid-email': return "البريد الإلكتروني غير صحيح.";
+            case 'auth/user-not-found': return "المستخدم غير موجود.";
+            case 'auth/wrong-password': return "كلمة المرور خطأ.";
+            case 'auth/email-already-in-use': return "هذا البريد مسجل مسبقاً.";
+            case 'auth/weak-password': return "كلمة المرور قصيرة جداً.";
+            default: return "حدث خطأ، حاول مجدداً.";
         }
     }
 </script>
 </body>
 </html>
+
