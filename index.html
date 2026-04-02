@@ -61,12 +61,17 @@
         .stat-val { display: block; font-size: 18px; font-weight: bold; color: var(--accent); }
         .stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
 
+        /* مربعات طرق الدفع المخصصة */
+        .payment-box { border: 1px solid var(--accent); background: rgba(0, 255, 136, 0.05); }
+        .payment-val { font-size: 16px; color: var(--text-main); letter-spacing: 1px; }
+
         .glass-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
-        select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; }
-        .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; }
+        select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+        .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.3s; }
+        .btn-action:active { transform: scale(0.98); }
 
-        /* صندوق الآيات - تكبير آية الكرسي 30% */
+        /* صندوق الآيات */
         .quran-footer {
             text-align: center; padding: 25px 15px; margin-top: 10px;
             background: rgba(22, 27, 34, 0.5); border-radius: 20px;
@@ -74,7 +79,7 @@
         }
         .quran-footer h3 { color: var(--accent); font-size: 19.8px; margin-bottom: 15px; font-weight: bold; }
         .quran-footer p { 
-            color: var(--gold); font-size: 20.8px; /* تكبير بنسبة 30% من الحجم الأصلي 16px */
+            color: var(--gold); font-size: 20.8px; 
             line-height: 1.8; margin: 0; font-family: 'Traditional Arabic', serif; font-weight: bold;
         }
 
@@ -94,7 +99,6 @@
             text-decoration: none; color: white;
         }
 
-        /* قفل العجلة */
         .lock-overlay { padding: 20px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px dashed var(--gold); margin-bottom: 15px; }
     </style>
 </head>
@@ -139,6 +143,33 @@
             </div>
         </div>
 
+        <div id="topupPage" class="page">
+            <div class="mashallah-banner"><h1>شحن رصيد المحفظة</h1></div>
+            
+            <div class="stats-grid">
+                <div class="stat-box payment-box"><span class="payment-val">0912377291</span><span class="stat-lbl" style="color:var(--blue)">مدار</span></div>
+                <div class="stat-box payment-box"><span class="payment-val">0920414760</span><span class="stat-lbl" style="color:var(--accent)">لبيانا</span></div>
+            </div>
+
+            <div class="glass-panel">
+                <h3 style="text-align:center; color:var(--gold);">ارسل بيانات التحويل 📝</h3>
+                <label>رقم الهاتف الذي حولت منه</label>
+                <input type="number" id="senderNum" placeholder="09XXXXXXXX">
+                
+                <label>القيمة التي حولتها</label>
+                <input type="number" id="amountSent" placeholder="أدخل المبلغ بالدينار">
+                
+                <label>الشبكة</label>
+                <select id="networkType">
+                    <option value="مدار">مدار</option>
+                    <option value="لبيانا">لبيانا</option>
+                </select>
+
+                <p style="font-size:11px; color:var(--text-muted); text-align:center; margin:15px 0;">بعد الضغط على "شحن الآن"، سيتم توجيهك للواتساب لتأكيد طلبك.</p>
+                <button class="btn-action" onclick="requestTopup()">شحن الآن 💳</button>
+            </div>
+        </div>
+
         <div id="socialPage" class="page">
             <div class="glass-panel">
                 <h3 style="color:var(--accent); margin-top:0;">📢 القنوات الرسمية</h3>
@@ -173,8 +204,8 @@
 
     <div class="bottom-nav">
         <div class="nav-tab active" onclick="nav('homePage', this)">🏠<br>الرئيسية</div>
+        <div class="nav-tab" onclick="nav('topupPage', this)">💳<br>شحن</div>
         <div class="nav-tab" onclick="nav('socialPage', this)">📢<br>الدعم</div>
-        <div class="nav-tab" onclick="nav('earnPage', this)">💰<br>الربح</div>
         <div class="nav-tab" onclick="nav('wheelPage', this)">🎡<br>العجلة</div>
         <div class="nav-tab" onclick="nav('accPage', this)">👤<br>الحساب</div>
     </div>
@@ -202,9 +233,18 @@
             } else { window.location.href="login.html"; }
         });
 
+        // دالة جلب الخدمات مع ترتيبها
         async function loadServices() {
             const snap = await db.collection('services').get();
             services = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            
+            // ترتيب الخدمات بناءً على حقل order
+            services.sort((a, b) => {
+                let orderA = typeof a.order === 'number' ? a.order : 999;
+                let orderB = typeof b.order === 'number' ? b.order : 999;
+                return orderA - orderB;
+            });
+
             document.getElementById('cat').innerHTML = [...new Set(services.map(s => s.category))].map(c => `<option value="${c}">${c}</option>`).join('');
             loadServs();
         }
@@ -224,6 +264,7 @@
 
         function calc() {
             const s = services.find(x => x.id === document.getElementById('serv').value);
+            if(!s) return;
             let q = parseFloat(document.getElementById('qty').value) || 0;
             let t = (s.type === "Package") ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
             document.getElementById('total').innerText = t.toFixed(2) + " د.ل";
@@ -234,6 +275,7 @@
             if(user.balance < total) return alert("الرصيد لا يكفي!");
             const s = services.find(x => x.id === document.getElementById('serv').value);
             const target = document.getElementById('target').value;
+            if(!target) return alert("يرجى إدخال الرابط أو الآيدي");
             if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
             await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
             await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
@@ -241,6 +283,18 @@
                 const msg = `*🧾 فاتورة جديدة من CD-CARD*%0A*العميل:* ${user.username}%0A*الخدمة:* ${s.name}%0A*البيانات:* ${target}%0A*السعر:* ${total} د.ل`;
                 window.open(`https://wa.me/218912377291?text=${msg}`, '_blank');
             } else { alert("تم إرسال الطلب للمزود!"); }
+        }
+
+        // دالة طلب شحن الرصيد الجديدة
+        function requestTopup() {
+            const num = document.getElementById('senderNum').value;
+            const amount = document.getElementById('amountSent').value;
+            const net = document.getElementById('networkType').value;
+            
+            if(!num || !amount) return alert("يرجى تعبئة كافة البيانات!");
+            
+            const message = `*💳 طلب شحن رصيد جديد*%0A*الاسم:* ${user.username}%0A*الرقم المحول منه:* ${num}%0A*القيمة:* ${amount} د.ل%0A*الشبكة:* ${net}%0A*يرجى مراجعة التحويل وإضافة الرصيد.*`;
+            window.open(`https://wa.me/218912377291?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function unlockWheel() {
