@@ -96,7 +96,9 @@
             padding: 15px; border-radius: 15px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
             text-decoration: none; color: white;
+            transition: 0.3s;
         }
+        .list-item:active { background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
@@ -188,7 +190,34 @@
 
         <div id="earnPage" class="page"><div class="glass-panel" style="text-align:center;"><h2 style="color:var(--accent);">💰 نظام الإحالة</h2><input type="text" id="refUrl" readonly style="text-align:center; color:var(--accent); border-style:dashed;"><button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ الرابط</button></div></div>
         
-        <div id="accPage" class="page"><div class="glass-panel"><h3>👤 حسابي</h3><div style="line-height:2.5;">اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>البريد: <span id="accE" style="color:var(--accent)">...</span></div><button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button></div></div>
+        <div id="accPage" class="page">
+            <div class="glass-panel">
+                <h3 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top:0;">⚙️ الإعدادات والحساب</h3>
+                
+                <div class="list-item" onclick="alert('👤 معلومات الحساب:\nالاسم: ' + user.username + '\nالبريد: ' + auth.currentUser.email + '\nالحالة: ' + (user.status || 'نشط'))" style="cursor:pointer;">
+                    <span>👤 معلومات الحساب</span>
+                    <i>عرض البيانات →</i>
+                </div>
+
+                <a href="https://youtube.com/shorts/OTr66SF6L2M?si=BuqbtbCFnlV9b_mi" class="list-item" target="_blank">
+                    <span>💳 شرح كيفية تعبئة الرصيد</span>
+                    <i style="color:var(--gold)">شاهد الفيديو →</i>
+                </a>
+
+                <a href="https://youtube.com/shorts/yV7lfI3TmMQ?si=PUrp5ipeRPdsIMiJ" class="list-item" target="_blank">
+                    <span>💰 طريقة كسب المال عبر الرابط</span>
+                    <i style="color:var(--gold)">شاهد الفيديو →</i>
+                </a>
+
+                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border);">
+                    <div style="line-height:2.5; font-size: 14px;">
+                        اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>
+                        البريد: <span id="accE" style="color:var(--accent)">...</span>
+                    </div>
+                    <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="bottom-nav">
@@ -197,7 +226,7 @@
         <div class="nav-tab" onclick="nav('socialPage', this)">📢<br>الدعم</div>
         <div class="nav-tab" onclick="nav('wheelPage', this)">🎡<br>العجلة</div>
         <div class="nav-tab" onclick="nav('earnPage', this)">💰<br>كسب المال </div>
-        <div class="nav-tab" onclick="nav('accPage', this)">👤<br>الحساب</div>
+        <div class="nav-tab" onclick="nav('accPage', this)">⚙️<br>الإعدادات</div>
     </div>
 
     <script>
@@ -307,4 +336,3 @@
     </script>
 </body>
 </html>
-
