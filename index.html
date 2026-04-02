@@ -42,7 +42,11 @@
             white-space: nowrap; overflow: hidden; padding: 8px 0; font-size: 13px; color: var(--accent);
         }
         .news-ticker div { display: inline-block; animation: ticker 20s linear infinite; padding-left: 100%; }
-        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes ticker { 
+    0% { transform: translateX(-100%); } 
+    100% { transform: translateX(100%); } 
+}
+
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
