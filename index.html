@@ -36,7 +36,7 @@
         }
         .app-title { font-size: 22px; font-weight: 900; color: var(--accent); }
 
-        /* شريط الأخبار - معدل ليمشي من اليسار لليمين */
+        /* شريط الأخبار - حركة من اليسار إلى اليمين */
         .news-ticker {
             background: rgba(0, 255, 136, 0.1); border-bottom: 1px solid var(--border);
             white-space: nowrap; overflow: hidden; padding: 8px 0; font-size: 13px; color: var(--accent);
@@ -44,7 +44,6 @@
         .news-ticker div { 
             display: inline-block; 
             animation: ticker 20s linear infinite; 
-            padding-right: 100%; 
         }
         @keyframes ticker { 
             0% { transform: translateX(-100%); } 
@@ -53,7 +52,6 @@
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
-        /* ترويسة ذهبية */
         .mashallah-banner {
             text-align: center; padding: 20px 10px; margin-bottom: 20px;
             background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.05), transparent);
@@ -87,7 +85,6 @@
             line-height: 1.8; margin: 0; font-family: 'Traditional Arabic', serif; font-weight: bold;
         }
 
-        /* Bottom Navigation - معدل ليكون 6 خانات */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(22, 27, 34, 0.98); display: flex; border-top: 1px solid var(--border); z-index: 2000; }
         .nav-tab { flex: 1; text-align: center; padding: 10px 0; color: var(--text-muted); font-size: 9px; cursor: pointer; min-width: 0; }
         .nav-tab.active { color: var(--accent); font-weight: bold; }
@@ -102,8 +99,6 @@
             display: flex; justify-content: space-between; align-items: center;
             text-decoration: none; color: white;
         }
-
-        .lock-overlay { padding: 20px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px dashed var(--gold); margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -122,14 +117,12 @@
         <div id="homePage" class="page active">
             <div class="mashallah-banner"><h1>مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ</h1></div>
             <div style="margin-bottom: 15px; text-align: center;"><h2>مرحباً، <span id="uNameDisplay" style="color:var(--accent);">...</span> 👋</h2></div>
-
             <div class="stats-grid">
                 <div class="stat-box"><span id="uBal" class="stat-val">0.00</span><span class="stat-lbl">الرصيد</span></div>
                 <div class="stat-box"><span id="uSpent" class="stat-val">0.00</span><span class="stat-lbl">المنفق</span></div>
                 <div class="stat-box"><span id="uStatus" class="stat-val" style="font-size:14px;">نشط</span><span class="stat-lbl">الحالة</span></div>
                 <div class="stat-box"><span id="uOrders" class="stat-val">0</span><span class="stat-lbl">الطلبات</span></div>
             </div>
-
             <div class="glass-panel">
                 <label>القسم</label><select id="cat" onchange="loadServs()"></select>
                 <label style="margin-top:10px;">الخدمة</label><select id="serv" onchange="applyLogic()"></select>
@@ -140,7 +133,6 @@
                 </div>
                 <button class="btn-action" onclick="order()">إرسال الطلب الآن ✅</button>
             </div>
-
             <div class="quran-footer">
                 <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
                 <p>اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ</p>
@@ -169,9 +161,10 @@
         </div>
 
         <div id="earnPage" class="page">
+            <div class="mashallah-banner"><h1>نظام الإحالة والربح</h1></div>
             <div class="glass-panel" style="text-align:center;">
-                <h2 style="color:var(--accent);">💰 نظام الإحالة</h2>
-                <p style="font-size: 13px;">شارك رابطك واربح رصيداً عن كل صديق يشترك!</p>
+                <h2 style="color:var(--accent);">💰 اربح رصيد مجاني</h2>
+                <p style="font-size: 13px;">انسخ رابطك وشاركه مع أصدقائك للحصول على مكافآت فورية.</p>
                 <input type="text" id="refUrl" readonly style="text-align:center; color:var(--accent); border-style:dashed;">
                 <button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ رابط الدعوة</button>
             </div>
@@ -186,24 +179,24 @@
             <div class="glass-panel">
                 <h3 style="color:var(--blue); margin-top:0;">🛠️ الدعم الفني</h3>
                 <a href="https://wa.me/218912377291" class="list-item" target="_blank"><span>واتساب (إدريس)</span></a>
-                <a href="https://t.me/cdcard104" class="list-item" target="_blank"><span>تيليجرام (الدعم)</span></a>
             </div>
         </div>
 
         <div id="wheelPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--gold); margin-top:0;">🎡 عجلة الحظ</h2>
-                <div id="lockArea" class="lock-overlay">
-                    <a href="https://t.me/CD_Card1" target="_blank" class="btn-action" style="display:block; text-decoration:none; margin-bottom:10px; background:var(--blue);" onclick="unlockWheel()">اشترك في القناة لفتح العجلة 🔗</a>
-                </div>
-                <div id="wheelContent" style="opacity: 0.2; pointer-events: none;">
-                    <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
-                    <button id="spinBtn" class="btn-action" style="width:auto; padding:10px 40px;" onclick="spin()">ابدأ التدوير</button>
-                </div>
+                <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
+                <button class="btn-action" onclick="spin()">ابدأ التدوير</button>
             </div>
         </div>
 
-        <div id="accPage" class="page"><div class="glass-panel"><h3>👤 حسابي</h3><div style="line-height:2.5;">اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>البريد: <span id="accE" style="color:var(--accent)">...</span></div><button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button></div></div>
+        <div id="accPage" class="page">
+            <div class="glass-panel">
+                <h3>👤 حسابي</h3>
+                <div style="line-height:2.5;">اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>البريد: <span id="accE" style="color:var(--accent)">...</span></div>
+                <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
+            </div>
+        </div>
     </div>
 
     <div class="bottom-nav">
@@ -282,25 +275,15 @@
             } else { alert("تم إرسال الطلب للمزود!"); }
         }
 
-        // تحسين رسالة شحن الرصيد
         function requestTopup() {
             const num = document.getElementById('senderNum').value;
             const amount = document.getElementById('amountSent').value;
             const net = document.getElementById('networkType').value;
             if(!num || !amount) return alert("يرجى تعبئة كافة البيانات!");
+            
+            // رسالة منظمة للواتساب
             const message = `*💳 طلب شحن رصيد جديد*%0A--------------------------%0A*👤 العميل:* ${user.username}%0A*📱 الرقم المحول منه:* ${num}%0A*💰 القيمة:* ${amount} د.ل%0A*🌐 الشبكة:* ${net}%0A--------------------------%0A*يرجى مراجعة التحويل وتأكيد الشحن.*`;
             window.open(`https://wa.me/218912377291?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        function unlockWheel() {
-            document.getElementById('lockArea').style.display = 'none';
-            document.getElementById('wheelContent').style.opacity = '1';
-            document.getElementById('wheelContent').style.pointerEvents = 'auto';
-        }
-
-        function spin() { 
-            document.getElementById('wheel').style.transform = 'rotate(3600deg)';
-            setTimeout(() => alert('حظ أوفر! العجلة متاحة مرة كل 24 ساعة.'), 4000);
         }
 
         function nav(id, el) {
@@ -310,7 +293,7 @@
             el.classList.add('active');
         }
         function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم النسخ!"); }
+        function spin() { document.getElementById('wheel').style.transform = 'rotate(3600deg)'; setTimeout(() => alert('حظ أوفر!'), 4000); }
     </script>
 </body>
 </html>
-
