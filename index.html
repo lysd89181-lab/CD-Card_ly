@@ -65,6 +65,21 @@
         .glass-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
         select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+        
+        /* ستايل مربع الوصف الجديد */
+        #serviceDescription {
+            background: rgba(0, 255, 136, 0.03);
+            border: 1px dashed var(--accent);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #d1d5db;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            min-height: 40px;
+            text-align: center;
+        }
+
         .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-action:active { transform: scale(0.98); }
         .btn-action:disabled { background: #333; color: #888; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
@@ -128,6 +143,10 @@
             <div class="glass-panel">
                 <label>القسم</label><select id="cat" onchange="loadServs()"></select>
                 <label style="margin-top:10px;">الخدمة</label><select id="serv" onchange="applyLogic()"></select>
+                
+                <label style="margin-top:10px;">وصف الخدمة</label>
+                <div id="serviceDescription">اختر خدمة لعرض التفاصيل...</div>
+
                 <label style="margin-top:10px;">الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
                 <label style="margin-top:10px;">الكمية</label><input type="number" id="qty" value="50" oninput="calc()">
                 <div style="text-align:center; padding:15px; margin:15px 0; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
@@ -147,12 +166,10 @@
 
         <div id="topupPage" class="page">
             <div class="mashallah-banner"><h1>شحن رصيد المحفظة</h1></div>
-            
             <div class="stats-grid">
                 <div class="stat-box payment-box"><span class="payment-val">0912377291</span><span class="stat-lbl" style="color:var(--blue)">مدار</span></div>
                 <div class="stat-box payment-box"><span class="payment-val">0920414760</span><span class="stat-lbl" style="color:var(--accent)">لبيانا</span></div>
             </div>
-
             <div class="glass-panel">
                 <h3 style="text-align:center; color:var(--accent);">شحن رصيد الحساب 💳</h3>
                 <label>الرقم المحول منه</label>
@@ -209,7 +226,6 @@
         <div id="accPage" class="page">
             <div class="glass-panel">
                 <h3 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top:0;">⚙️ الإعدادات والحساب</h3>
-                
                 <div class="list-item" onclick="alert('👤 معلومات الحساب:\nالاسم: ' + user.username + '\nالبريد: ' + auth.currentUser.email + '\nالحالة: ' + (user.status || 'نشط'))" style="cursor:pointer;">
                     <div class="item-content">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -217,7 +233,6 @@
                     </div>
                     <i>عرض البيانات →</i>
                 </div>
-
                 <a href="https://youtube.com/shorts/OTr66SF6L2M?si=BuqbtbCFnlV9b_mi" class="list-item" target="_blank">
                     <div class="item-content">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00bdff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
@@ -225,7 +240,6 @@
                     </div>
                     <i style="color:var(--gold)">شاهد →</i>
                 </a>
-
                 <a href="https://youtube.com/shorts/yV7lfI3TmMQ?si=PUrp5ipeRPdsIMiJ" class="list-item" target="_blank">
                     <div class="item-content">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -233,7 +247,6 @@
                     </div>
                     <i style="color:var(--gold)">شاهد →</i>
                 </a>
-
                 <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border);">
                     <div style="line-height:2.5; font-size: 14px;">
                         اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>
@@ -309,9 +322,19 @@
             applyLogic();
         }
 
+        // تم تعديل هذه الدالة لجلب الوصف
         function applyLogic() {
             const s = services.find(x => x.id === document.getElementById('serv').value);
             const qI = document.getElementById('qty');
+            
+            // عرض وصف الخدمة من قاعدة البيانات
+            const descBox = document.getElementById('serviceDescription');
+            if(s && s.description) {
+                descBox.innerText = s.description;
+            } else {
+                descBox.innerText = "لا يوجد وصف إضافي لهذه الخدمة.";
+            }
+
             if(s.type === "Package") { qI.value = 1; qI.disabled = true; } else { qI.value = 50; qI.disabled = false; }
             calc();
         }
@@ -364,9 +387,7 @@
             window.open("https://wa.me/218912377291?text=" + encodeURIComponent(message), "_blank");
         }
 
-        function spin() { 
-            // الوظيفة معطلة حالياً برمجياً من خلال الزر
-        }
+        function spin() { }
 
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -378,4 +399,3 @@
     </script>
 </body>
 </html>
-
