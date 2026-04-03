@@ -64,25 +64,40 @@
 
         .glass-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
-        select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
         
-        /* ستايل مربع الوصف الجديد */
+        input, select { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+
+        /* Custom Dropdown Styling */
+        .custom-select-wrapper { position: relative; margin-bottom: 15px; }
+        .custom-select {
+            background: #000; border: 1px solid var(--border); color: #fff;
+            padding: 12px; border-radius: 12px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 14px; transition: 0.3s;
+        }
+        .custom-select:after { content: '▼'; font-size: 10px; color: var(--accent); }
+        .custom-options {
+            position: absolute; top: 110%; left: 0; right: 0;
+            background: #161b22; border: 1px solid var(--border);
+            border-radius: 12px; z-index: 100; max-height: 200px;
+            overflow-y: auto; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .custom-options div {
+            padding: 12px; border-bottom: 1px solid var(--border);
+            cursor: pointer; transition: 0.2s; font-size: 13px;
+        }
+        .custom-options div:hover { background: var(--accent); color: #000; }
+        .custom-select-wrapper.open .custom-options { display: block; }
+
         #serviceDescription {
-            background: rgba(0, 255, 136, 0.03);
-            border: 1px dashed var(--accent);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #d1d5db;
-            margin-bottom: 15px;
-            line-height: 1.6;
-            min-height: 40px;
-            text-align: center;
+            background: rgba(0, 255, 136, 0.03); border: 1px dashed var(--accent);
+            padding: 12px; border-radius: 12px; font-size: 13px;
+            color: #d1d5db; margin-bottom: 15px; line-height: 1.6;
+            min-height: 40px; text-align: center;
         }
 
         .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-action:active { transform: scale(0.98); }
-        .btn-action:disabled { background: #333; color: #888; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
 
         .quran-footer {
             text-align: center; padding: 25px 15px; margin-top: 10px;
@@ -90,10 +105,7 @@
             border: 1px solid var(--border); margin-bottom: 20px;
         }
         .quran-footer h3 { color: var(--accent); font-size: 19.8px; margin-bottom: 15px; font-weight: bold; }
-        .quran-footer p { 
-            color: var(--gold); font-size: 20.8px; 
-            line-height: 1.8; margin: 0; font-family: 'Traditional Arabic', serif; font-weight: bold;
-        }
+        .quran-footer p { color: var(--gold); font-size: 20.8px; line-height: 1.8; margin: 0; font-family: 'Traditional Arabic', serif; font-weight: bold; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(22, 27, 34, 0.98); display: flex; border-top: 1px solid var(--border); z-index: 2000; padding-top: 5px; }
         .nav-tab { flex: 1; text-align: center; padding: 8px 0; color: var(--text-muted); font-size: 10px; cursor: pointer; transition: 0.3s; }
@@ -109,11 +121,8 @@
             background: rgba(255,255,255,0.03); border: 1px solid var(--border);
             padding: 15px; border-radius: 15px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
-            text-decoration: none; color: white;
-            transition: 0.3s;
+            text-decoration: none; color: white; transition: 0.3s;
         }
-        .list-item:active { background: rgba(255,255,255,0.1); }
-        .item-content { display: flex; align-items: center; gap: 12px; }
     </style>
 </head>
 <body>
@@ -141,17 +150,31 @@
             </div>
 
             <div class="glass-panel">
-                <label>القسم</label><select id="cat" onchange="loadServs()"></select>
-                <label style="margin-top:10px;">الخدمة</label><select id="serv" onchange="applyLogic()"></select>
+                <label>القسم</label>
+                <div class="custom-select-wrapper" id="catWrapper">
+                    <div class="custom-select" onclick="toggleDropdown('catWrapper')">اختر القسم...</div>
+                    <div class="custom-options" id="catOptions"></div>
+                </div>
+
+                <label>الخدمة</label>
+                <div class="custom-select-wrapper" id="servWrapper">
+                    <div class="custom-select" onclick="toggleDropdown('servWrapper')">اختر الخدمة...</div>
+                    <div class="custom-options" id="servOptions"></div>
+                </div>
                 
                 <label style="margin-top:10px;">وصف الخدمة</label>
                 <div id="serviceDescription">اختر خدمة لعرض التفاصيل...</div>
 
-                <label style="margin-top:10px;">الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
-                <label style="margin-top:10px;">الكمية</label><input type="number" id="qty" value="50" oninput="calc()">
+                <label style="margin-top:10px;">الرابط / الآيدي</label>
+                <input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
+                
+                <label style="margin-top:10px;">الكمية</label>
+                <input type="number" id="qty" value="50" oninput="calc()">
+                
                 <div style="text-align:center; padding:15px; margin:15px 0; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
                     <span id="total" style="font-size:26px; color:var(--accent); font-weight:bold;">0.00 د.ل</span>
                 </div>
+                
                 <button class="btn-action" onclick="order()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     إرسال الطلب الآن
@@ -167,8 +190,8 @@
         <div id="topupPage" class="page">
             <div class="mashallah-banner"><h1>شحن رصيد المحفظة</h1></div>
             <div class="stats-grid">
-                <div class="stat-box payment-box"><span class="payment-val">0912377291</span><span class="stat-lbl" style="color:var(--blue)">مدار</span></div>
-                <div class="stat-box payment-box"><span class="payment-val">0920414760</span><span class="stat-lbl" style="color:var(--accent)">لبيانا</span></div>
+                <div class="stat-box"><span class="payment-val" style="color:var(--blue)">0912377291</span><span class="stat-lbl">مدار</span></div>
+                <div class="stat-box"><span class="payment-val" style="color:var(--accent)">0920414760</span><span class="stat-lbl">لبيانا</span></div>
             </div>
             <div class="glass-panel">
                 <h3 style="text-align:center; color:var(--accent);">شحن رصيد الحساب 💳</h3>
@@ -177,10 +200,7 @@
                 <label>القيمة المحولة</label>
                 <input type="number" id="amountSent" placeholder="أدخل المبلغ">
                 <label>الشبكة</label>
-                <select id="networkType">
-                    <option value="مدار">مدار</option>
-                    <option value="لبيانا">لبيانا</option>
-                </select>
+                <select id="networkType"><option value="مدار">مدار</option><option value="لبيانا">لبيانا</option></select>
                 <button class="btn-action" onclick="requestTopup()">إرسال بيانات التحويل</button>
             </div>
         </div>
@@ -188,36 +208,22 @@
         <div id="socialPage" class="page">
             <div class="glass-panel">
                 <h3 style="color:var(--accent); margin-top:0;">📢 القنوات الرسمية</h3>
-                <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" class="list-item" target="_blank">
-                    <div class="item-content"><span>قناة الواتساب</span></div>
-                    <i>متابعة →</i>
-                </a>
-                <a href="https://t.me/CD_Card1" class="list-item" target="_blank">
-                    <div class="item-content"><span>قناة التيليجرام</span></div>
-                    <i>انضمام →</i>
-                </a>
-            </div>
-            <div class="glass-panel">
-                <h3 style="color:var(--blue); margin-top:0;">🛠️ الدعم الفني</h3>
-                <a href="https://wa.me/218912377291" class="list-item" target="_blank"><span>واتساب المباشر</span></a>
-                <a href="https://t.me/cdcard104" class="list-item" target="_blank"><span>تيليجرام المباشر</span></a>
+                <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" class="list-item" target="_blank"><span>قناة الواتساب</span><i>متابعة →</i></a>
+                <a href="https://t.me/CD_Card1" class="list-item" target="_blank"><span>قناة التيليجرام</span><i>انضمام →</i></a>
             </div>
         </div>
 
         <div id="wheelPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--gold); margin-top:0;">🎡 عجلة الحظ</h2>
-                <div id="wheelContent">
-                    <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
-                    <button id="spinBtn" class="btn-action" style="width:auto; padding:10px 40px; margin:auto;" disabled onclick="spin()">عجلة الحظ متوقفة حالياً</button>
-                </div>
+                <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg);"></div>
+                <button class="btn-action" disabled>عجلة الحظ متوقفة حالياً</button>
             </div>
         </div>
 
         <div id="earnPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--accent);">💰 نظام الإحالة</h2>
-                <p style="font-size:12px; color:var(--text-muted);">شارك رابطك واحصل على عمولة عن كل شحن يقوم به صديقك</p>
                 <input type="text" id="refUrl" readonly style="text-align:center; color:var(--accent); border-style:dashed;">
                 <button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ رابط الدعوة</button>
             </div>
@@ -226,70 +232,29 @@
         <div id="accPage" class="page">
             <div class="glass-panel">
                 <h3 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top:0;">⚙️ الإعدادات والحساب</h3>
-                <div class="list-item" onclick="alert('👤 معلومات الحساب:\nالاسم: ' + user.username + '\nالبريد: ' + auth.currentUser.email + '\nالحالة: ' + (user.status || 'نشط'))" style="cursor:pointer;">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>معلومات الحساب</span>
-                    </div>
-                    <i>عرض البيانات →</i>
+                <div style="line-height:2.5; font-size: 14px;">
+                    اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>
+                    البريد: <span id="accE" style="color:var(--accent)">...</span>
                 </div>
-                <a href="https://youtube.com/shorts/OTr66SF6L2M?si=BuqbtbCFnlV9b_mi" class="list-item" target="_blank">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00bdff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        <span>شرح كيفية تعبئة الرصيد</span>
-                    </div>
-                    <i style="color:var(--gold)">شاهد →</i>
-                </a>
-                <a href="https://youtube.com/shorts/yV7lfI3TmMQ?si=PUrp5ipeRPdsIMiJ" class="list-item" target="_blank">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        <span>طريقة كسب المال</span>
-                    </div>
-                    <i style="color:var(--gold)">شاهد →</i>
-                </a>
-                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border);">
-                    <div style="line-height:2.5; font-size: 14px;">
-                        اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>
-                        البريد: <span id="accE" style="color:var(--accent)">...</span>
-                    </div>
-                    <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px; border:none;" onclick="auth.signOut()">تسجيل الخروج</button>
-                </div>
+                <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px; border:none;" onclick="auth.signOut()">تسجيل الخروج</button>
             </div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-tab active" onclick="nav('homePage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <br>الرئيسية
-        </div>
-        <div class="nav-tab" onclick="nav('topupPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-            <br>شحن
-        </div>
-        <div class="nav-tab" onclick="nav('socialPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            <br>الدعم
-        </div>
-        <div class="nav-tab" onclick="nav('wheelPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="12"></line><line x1="12" y1="12" x2="19" y2="19"></line></svg>
-            <br>العجلة
-        </div>
-        <div class="nav-tab" onclick="nav('earnPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
-            <br>كسب المال
-        </div>
-        <div class="nav-tab" onclick="nav('accPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <br>إعدادات
-        </div>
+        <div class="nav-tab active" onclick="nav('homePage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><br>الرئيسية</div>
+        <div class="nav-tab" onclick="nav('topupPage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg><br>شحن</div>
+        <div class="nav-tab" onclick="nav('socialPage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><br>الدعم</div>
+        <div class="nav-tab" onclick="nav('wheelPage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="12"></line><line x1="12" y1="12" x2="19" y2="19"></line></svg><br>العجلة</div>
+        <div class="nav-tab" onclick="nav('earnPage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg><br>كسب</div>
+        <div class="nav-tab" onclick="nav('accPage', this)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><br>إعدادات</div>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
-        let user = {}, services = [];
+        let user = {}, services = [], selectedCat = "", selectedServId = "";
 
         auth.onAuthStateChanged(u => {
             if(u) {
@@ -299,48 +264,68 @@
                     document.getElementById('uBal').innerText = user.balance.toFixed(2);
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
-                    document.getElementById('refUrl').value = window.location.origin + "/reg?ref=" + u.uid.substring(0,6);
                     document.getElementById('accN').innerText = user.username;
                     document.getElementById('accE').innerText = u.email;
                 });
                 loadServices();
-                db.collection('orders').where('userId', '==', u.uid).get().then(s => document.getElementById('uOrders').innerText = s.size);
             } else { window.location.href="login.html"; }
         });
+
+        // دوال القائمة المنسدلة المخصصة
+        function toggleDropdown(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.custom-select')) {
+                document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+            }
+        }
 
         async function loadServices() {
             const snap = await db.collection('services').get();
             services = snap.docs.map(d => ({id: d.id, ...d.data()}));
             services.sort((a, b) => (a.order || 999) - (b.order || 999));
-            document.getElementById('cat').innerHTML = [...new Set(services.map(s => s.category))].map(c => `<option value="${c}">${c}</option>`).join('');
-            loadServs();
+            
+            const cats = [...new Set(services.map(s => s.category))];
+            const catOptions = document.getElementById('catOptions');
+            catOptions.innerHTML = cats.map(c => `<div onclick="selectCat('${c}')">${c}</div>`).join('');
         }
 
-        function loadServs() {
-            const c = document.getElementById('cat').value;
-            document.getElementById('serv').innerHTML = services.filter(s => s.category === c).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        function selectCat(cat) {
+            selectedCat = cat;
+            document.querySelector('#catWrapper .custom-select').innerText = cat;
+            const filtered = services.filter(s => s.category === cat);
+            const servOptions = document.getElementById('servOptions');
+            servOptions.innerHTML = filtered.map(s => `<div onclick="selectServ('${s.id}', '${s.name}')">${s.name}</div>`).join('');
+            
+            // Reset service selection
+            selectedServId = "";
+            document.querySelector('#servWrapper .custom-select').innerText = "اختر الخدمة...";
+            document.getElementById('serviceDescription').innerText = "اختر خدمة لعرض التفاصيل...";
+        }
+
+        function selectServ(id, name) {
+            selectedServId = id;
+            document.querySelector('#servWrapper .custom-select').innerText = name;
             applyLogic();
         }
 
-        // تم تعديل هذه الدالة لجلب الوصف
         function applyLogic() {
-            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const s = services.find(x => x.id === selectedServId);
             const qI = document.getElementById('qty');
-            
-            // عرض وصف الخدمة من قاعدة البيانات
             const descBox = document.getElementById('serviceDescription');
-            if(s && s.description) {
-                descBox.innerText = s.description;
-            } else {
-                descBox.innerText = "لا يوجد وصف إضافي لهذه الخدمة.";
+            
+            if(s) {
+                descBox.innerText = s.description || "لا يوجد وصف إضافي.";
+                if(s.type === "Package") { qI.value = 1; qI.disabled = true; } 
+                else { qI.value = 50; qI.disabled = false; }
+                calc();
             }
-
-            if(s.type === "Package") { qI.value = 1; qI.disabled = true; } else { qI.value = 50; qI.disabled = false; }
-            calc();
         }
 
         function calc() {
-            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const s = services.find(x => x.id === selectedServId);
             if(!s) return;
             let q = parseFloat(document.getElementById('qty').value) || 0;
             let t = (s.type === "Package") ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
@@ -348,46 +333,41 @@
         }
 
         async function order() {
+            if(!selectedServId) return alert("يرجى اختيار خدمة!");
             const total = parseFloat(document.getElementById('total').innerText);
             if(user.balance < total) return alert("الرصيد لا يكفي!");
-            const s = services.find(x => x.id === document.getElementById('serv').value);
             const target = document.getElementById('target').value;
             if(!target) return alert("يرجى إدخال الرابط أو الآيدي");
-            if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
-            await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
-            await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
             
-            if(s.type === "Package") {
-                const msg = `*🧾 فاتورة جديدة من CD-CARD*\n` +
-                            `العميل: ${user.username}\n` +
-                            `الخدمة: ${s.name}\n` +
-                            `البيانات: ${target}\n` +
-                            `السعر: ${total} د.ل`;
-                window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
-            } else { alert("تم إرسال الطلب للمزود!"); }
+            const s = services.find(x => x.id === selectedServId);
+            if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
+
+            await db.collection('orders').add({
+                userId: auth.currentUser.uid,
+                service: s.name,
+                target,
+                qty: document.getElementById('qty').value,
+                cost: total,
+                status: "قيد الانتظار",
+                date: new Date().toLocaleString('ar-LY')
+            });
+
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                balance: firebase.firestore.FieldValue.increment(-total),
+                spent: firebase.firestore.FieldValue.increment(total)
+            });
+            
+            alert("تم إرسال الطلب بنجاح!");
         }
 
         function requestTopup() {
             const num = document.getElementById('senderNum').value;
             const amount = document.getElementById('amountSent').value;
             const net = document.getElementById('networkType').value;
-            const uName = user.username || "عميل";
-
             if(!num || !amount) return alert("يرجى تعبئة كافة البيانات!");
-            
-            const message = "💳 *طلب شحن رصيد محفظة*\n" +
-                            "--------------------------\n" +
-                            "👤 الاسم: " + uName + "\n" +
-                            "📱 الرقم المحول منه: " + num + "\n" +
-                            "💰 القيمة: " + amount + " د.ل\n" +
-                            "🌐 الشبكة: " + net + "\n" +
-                            "--------------------------\n" +
-                            "يرجى مراجعة التحويل وإضافة الرصيد.";
-
+            const message = `💳 طلب شحن رصيد\nالاسم: ${user.username}\nالرقم: ${num}\nالقيمة: ${amount} د.ل\nالشبكة: ${net}`;
             window.open("https://wa.me/218912377291?text=" + encodeURIComponent(message), "_blank");
         }
-
-        function spin() { }
 
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -399,3 +379,4 @@
     </script>
 </body>
 </html>
+
