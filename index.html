@@ -66,7 +66,6 @@
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 600; }
         select, input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
         
-        /* ستايل مربع الوصف الجديد */
         #serviceDescription {
             background: rgba(0, 255, 136, 0.03);
             border: 1px dashed var(--accent);
@@ -286,6 +285,14 @@
     </div>
 
     <script>
+        // كود التقاط كود الإحالة تلقائياً عند فتح الصفحة
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            localStorage.setItem('referrerCode', refCode);
+            console.log("Referral Code Saved: " + refCode);
+        }
+
         const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
@@ -299,7 +306,11 @@
                     document.getElementById('uBal').innerText = user.balance.toFixed(2);
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
-                    document.getElementById('refUrl').value = window.location.origin + "/reg?ref=" + u.uid.substring(0,6);
+                    
+                    // تعديل رابط الإحالة ليستخدم مسار الصفحة الحالية تلقائياً
+                    const currentUrl = window.location.href.split('?')[0];
+                    document.getElementById('refUrl').value = currentUrl + "?ref=" + u.uid.substring(0,6);
+                    
                     document.getElementById('accN').innerText = user.username;
                     document.getElementById('accE').innerText = u.email;
                 });
@@ -322,19 +333,11 @@
             applyLogic();
         }
 
-        // تم تعديل هذه الدالة لجلب الوصف
         function applyLogic() {
             const s = services.find(x => x.id === document.getElementById('serv').value);
             const qI = document.getElementById('qty');
-            
-            // عرض وصف الخدمة من قاعدة البيانات
             const descBox = document.getElementById('serviceDescription');
-            if(s && s.description) {
-                descBox.innerText = s.description;
-            } else {
-                descBox.innerText = "لا يوجد وصف إضافي لهذه الخدمة.";
-            }
-
+            if(s && s.description) { descBox.innerText = s.description; } else { descBox.innerText = "لا يوجد وصف إضافي لهذه الخدمة."; }
             if(s.type === "Package") { qI.value = 1; qI.disabled = true; } else { qI.value = 50; qI.disabled = false; }
             calc();
         }
@@ -352,17 +355,12 @@
             if(user.balance < total) return alert("الرصيد لا يكفي!");
             const s = services.find(x => x.id === document.getElementById('serv').value);
             const target = document.getElementById('target').value;
-            if(!target) return alert("يرجى إدخال الرابط أو الآيدي");
+            if(!target) return alert("يرجى إدخل الرابط أو الآيدي");
             if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
             await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
             await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
-            
             if(s.type === "Package") {
-                const msg = `*🧾 فاتورة جديدة من CD-CARD*\n` +
-                            `العميل: ${user.username}\n` +
-                            `الخدمة: ${s.name}\n` +
-                            `البيانات: ${target}\n` +
-                            `السعر: ${total} د.ل`;
+                const msg = `*🧾 فاتورة جديدة من CD-CARD*\nالعميل: ${user.username}\nالخدمة: ${s.name}\nالبيانات: ${target}\nالسعر: ${total} د.ل`;
                 window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
             } else { alert("تم إرسال الطلب للمزود!"); }
         }
@@ -371,24 +369,12 @@
             const num = document.getElementById('senderNum').value;
             const amount = document.getElementById('amountSent').value;
             const net = document.getElementById('networkType').value;
-            const uName = user.username || "عميل";
-
             if(!num || !amount) return alert("يرجى تعبئة كافة البيانات!");
-            
-            const message = "💳 *طلب شحن رصيد محفظة*\n" +
-                            "--------------------------\n" +
-                            "👤 الاسم: " + uName + "\n" +
-                            "📱 الرقم المحول منه: " + num + "\n" +
-                            "💰 القيمة: " + amount + " د.ل\n" +
-                            "🌐 الشبكة: " + net + "\n" +
-                            "--------------------------\n" +
-                            "يرجى مراجعة التحويل وإضافة الرصيد.";
-
+            const message = "💳 *طلب شحن رصيد محفظة*\n" + "--------------------------\n" + "👤 الاسم: " + user.username + "\n" + "📱 الرقم المحول منه: " + num + "\n" + "💰 القيمة: " + amount + " د.ل\n" + "🌐 الشبكة: " + net + "\n" + "--------------------------\n" + "يرجى مراجعة التحويل وإضافة الرصيد.";
             window.open("https://wa.me/218912377291?text=" + encodeURIComponent(message), "_blank");
         }
 
         function spin() { }
-
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
