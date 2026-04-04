@@ -337,11 +337,14 @@
     </div>
 
     <script>
-        // كود التقاط كود الإحالة تلقائياً
+        // --- تعديل منطق قراءة الرابط (الجديد والقديم) ---
         const urlParams = new URLSearchParams(window.location.search);
         const refCode = urlParams.get('ref');
+        
+        // إذا وجد كود إحالة في الرابط، نخزنه فوراً في ذاكرة المتصفح
         if (refCode) {
-            localStorage.setItem('referrerCode', refCode);
+            localStorage.setItem('pending_ref', refCode);
+            console.log("تم اكتشاف كود إحالة: " + refCode);
         }
 
         const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
@@ -357,8 +360,11 @@
                     document.getElementById('uBal').innerText = user.balance.toFixed(2);
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
+                    
+                    // توليد رابط الإحالة الخاص بالمستخدم لعرضه في صفحة "كسب المال"
                     const currentUrl = window.location.href.split('?')[0];
-                    document.getElementById('refUrl').value = currentUrl + "?ref=" + u.uid.substring(0,6);
+                    document.getElementById('refUrl').value = currentUrl + "?ref=" + user.referralCode;
+                    
                     document.getElementById('accN').innerText = user.username;
                     document.getElementById('accE').innerText = u.email;
                 });
@@ -375,10 +381,15 @@
             document.getElementById(id).classList.toggle('open');
         }
 
-        // دالة لجلب الأيقونات (تم وضع رابط الفيسبوك الافتراضي هنا)
+        // دالة جلب الأيقونات الذكية
         function getIcon(name) {
-            // يمكنك تغيير الروابط بناءً على الأسماء مستقبلاً
-            return "https://cdni.iconscout.com/illustration/premium/thumb/facebook-3d-icon-download-in-svg-png-gif-file-formats--social-media-logo-pack-logos-illustrations-4861838.png";
+            if (!name) return "https://cdn3d.iconscout.com/3d/free/thumb/free-box-3d-icon-5329705.png";
+            const n = name.toLowerCase();
+            if (n.includes("facebook")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-facebook-3d-icon-3915172.png";
+            if (n.includes("tiktok")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-tiktok-3d-icon-3915183.png";
+            if (n.includes("netflix")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-netflix-3d-logo-4696014.png";
+            if (n.includes("binance") || n.includes("usdt")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-binance-3d-icon-4419614.png";
+            return "https://cdn3d.iconscout.com/3d/free/thumb/free-generic-3d-icon-4958514.png";
         }
 
         async function loadServices() {
@@ -472,7 +483,7 @@
             if(s.type === "Package") {
                 const msg = `*🧾 فاتورة جديدة من CD-CARD*\nالعميل: ${user.username}\nالخدمة: ${s.name}\nالبيانات: ${target}\nالسعر: ${total} د.ل`;
                 window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
-            } else { alert("تم إرسال الطلب للمزود!"); }
+            } else { alert("تم إرسال الطلب بنجاح!"); }
         }
 
         function requestTopup() {
@@ -493,7 +504,6 @@
         }
         function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم النسخ!"); }
 
-        // إغلاق القوائم عند الضغط خارجها
         window.onclick = function(event) {
             if (!event.target.closest('.custom-select-wrapper')) {
                 document.querySelectorAll('.custom-options').forEach(opt => opt.classList.remove('open'));
@@ -502,3 +512,4 @@
     </script>
 </body>
 </html>
+
