@@ -23,6 +23,33 @@
             margin: 0; padding-bottom: 100px; direction: rtl; overflow-x: hidden;
         }
 
+        /* --- تنسيقات القوائم المخصصة الجديدة --- */
+        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+        .custom-select-trigger {
+            background: #000; border: 1px solid var(--border); color: #fff;
+            padding: 12px; border-radius: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: 0.3s;
+        }
+        .custom-select-trigger:hover { border-color: var(--accent); }
+        .custom-options {
+            position: absolute; top: 110%; left: 0; right: 0;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; display: none; z-index: 3000;
+            max-height: 250px; overflow-y: auto; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .custom-options.open { display: block; animation: slideDown 0.2s ease; }
+        .custom-option {
+            padding: 10px 15px; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: rgba(0, 255, 136, 0.1); }
+        .custom-option img, .selected-img { width: 28px; height: 28px; object-fit: contain; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* -------------------------------------- */
+
         .app-header {
             display: flex; align-items: center; justify-content: center;
             padding: 15px; background: var(--card); border-bottom: 1px solid var(--border);
@@ -140,14 +167,39 @@
             </div>
 
             <div class="glass-panel">
-                <label>القسم</label><select id="cat" onchange="loadServs()"></select>
-                <label style="margin-top:10px;">الخدمة</label><select id="serv" onchange="applyLogic()"></select>
+                <label>القسم</label>
+                <div class="custom-select-wrapper" style="margin-bottom: 20px;">
+                    <div class="custom-select-trigger" onclick="toggleDropdown('catOptions')">
+                        <div id="selectedCatDisplay" style="display:flex; align-items:center; gap:10px;">
+                            <span>اختر القسم...</span>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                    <div id="catOptions" class="custom-options"></div>
+                    <input type="hidden" id="cat">
+                </div>
+
+                <label>الخدمة</label>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select-trigger" onclick="toggleDropdown('servOptions')">
+                        <div id="selectedServDisplay" style="display:flex; align-items:center; gap:10px;">
+                            <span>اختر خدمة...</span>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                    <div id="servOptions" class="custom-options"></div>
+                    <input type="hidden" id="serv">
+                </div>
                 
                 <label style="margin-top:10px;">وصف الخدمة</label>
                 <div id="serviceDescription">اختر خدمة لعرض التفاصيل...</div>
 
-                <label style="margin-top:10px;">الرابط / الآيدي</label><input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
-                <label style="margin-top:10px;">الكمية</label><input type="number" id="qty" value="50" oninput="calc()">
+                <label style="margin-top:10px;">الرابط / الآيدي</label>
+                <input type="text" id="target" placeholder="ضع البيانات المطلوبة هنا">
+                
+                <label style="margin-top:10px;">الكمية</label>
+                <input type="number" id="qty" value="50" oninput="calc()">
+                
                 <div style="text-align:center; padding:15px; margin:15px 0; background:rgba(0,255,136,0.05); border-radius:12px; border:1px dashed var(--accent);">
                     <span id="total" style="font-size:26px; color:var(--accent); font-weight:bold;">0.00 د.ل</span>
                 </div>
@@ -159,7 +211,7 @@
 
             <div class="quran-footer">
                 <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
-                <p>اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ</p>
+                <p>اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهما وَهو الْعَلِيُّ الْعَظِيمُ</p>
             </div>
         </div>
 
@@ -285,12 +337,11 @@
     </div>
 
     <script>
-        // كود التقاط كود الإحالة تلقائياً عند فتح الصفحة
+        // كود التقاط كود الإحالة تلقائياً
         const urlParams = new URLSearchParams(window.location.search);
         const refCode = urlParams.get('ref');
         if (refCode) {
             localStorage.setItem('referrerCode', refCode);
-            console.log("Referral Code Saved: " + refCode);
         }
 
         const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
@@ -306,11 +357,8 @@
                     document.getElementById('uBal').innerText = user.balance.toFixed(2);
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
-                    
-                    // تعديل رابط الإحالة ليستخدم مسار الصفحة الحالية تلقائياً
                     const currentUrl = window.location.href.split('?')[0];
                     document.getElementById('refUrl').value = currentUrl + "?ref=" + u.uid.substring(0,6);
-                    
                     document.getElementById('accN').innerText = user.username;
                     document.getElementById('accE').innerText = u.email;
                 });
@@ -319,31 +367,90 @@
             } else { window.location.href="login.html"; }
         });
 
+        // دالة موحدة لفتح القوائم
+        function toggleDropdown(id) {
+            document.querySelectorAll('.custom-options').forEach(opt => {
+                if(opt.id !== id) opt.classList.remove('open');
+            });
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        // دالة لجلب الأيقونات (تم وضع رابط الفيسبوك الافتراضي هنا)
+        function getIcon(name) {
+            // يمكنك تغيير الروابط بناءً على الأسماء مستقبلاً
+            return "https://cdni.iconscout.com/illustration/premium/thumb/facebook-3d-icon-download-in-svg-png-gif-file-formats--social-media-logo-pack-logos-illustrations-4861838.png";
+        }
+
         async function loadServices() {
             const snap = await db.collection('services').get();
             services = snap.docs.map(d => ({id: d.id, ...d.data()}));
             services.sort((a, b) => (a.order || 999) - (b.order || 999));
-            document.getElementById('cat').innerHTML = [...new Set(services.map(s => s.category))].map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            const categories = [...new Set(services.map(s => s.category))];
+            const catOptions = document.getElementById('catOptions');
+            
+            catOptions.innerHTML = categories.map(c => `
+                <div class="custom-option" onclick="selectCat('${c}')">
+                    <img src="${getIcon(c)}">
+                    <span>${c}</span>
+                </div>
+            `).join('');
+            
+            if(categories.length > 0) selectCat(categories[0]);
+        }
+
+        function selectCat(catName) {
+            document.getElementById('cat').value = catName;
+            document.getElementById('selectedCatDisplay').innerHTML = `
+                <img src="${getIcon(catName)}" class="selected-img">
+                <span>${catName}</span>
+            `;
+            document.getElementById('catOptions').classList.remove('open');
             loadServs();
         }
 
         function loadServs() {
             const c = document.getElementById('cat').value;
-            document.getElementById('serv').innerHTML = services.filter(s => s.category === c).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            const filtered = services.filter(s => s.category === c);
+            const servOptions = document.getElementById('servOptions');
+            
+            servOptions.innerHTML = filtered.map(s => `
+                <div class="custom-option" onclick="selectServ('${s.id}', '${s.name}')">
+                    <img src="${getIcon(s.name)}">
+                    <span>${s.name}</span>
+                </div>
+            `).join('');
+            
+            if(filtered.length > 0) selectServ(filtered[0].id, filtered[0].name);
+        }
+
+        function selectServ(id, name) {
+            document.getElementById('serv').value = id;
+            document.getElementById('selectedServDisplay').innerHTML = `
+                <img src="${getIcon(name)}" class="selected-img">
+                <span>${name}</span>
+            `;
+            document.getElementById('servOptions').classList.remove('open');
             applyLogic();
         }
 
         function applyLogic() {
-            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const sId = document.getElementById('serv').value;
+            const s = services.find(x => x.id === sId);
             const qI = document.getElementById('qty');
             const descBox = document.getElementById('serviceDescription');
-            if(s && s.description) { descBox.innerText = s.description; } else { descBox.innerText = "لا يوجد وصف إضافي لهذه الخدمة."; }
-            if(s.type === "Package") { qI.value = 1; qI.disabled = true; } else { qI.value = 50; qI.disabled = false; }
-            calc();
+            
+            if(s) {
+                descBox.innerText = s.description || "لا يوجد وصف إضافي لهذه الخدمة.";
+                if(s.type === "Package") { qI.value = 1; qI.disabled = true; } 
+                else { qI.value = 50; qI.disabled = false; }
+                calc();
+            }
         }
 
         function calc() {
-            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const sId = document.getElementById('serv').value;
+            const s = services.find(x => x.id === sId);
             if(!s) return;
             let q = parseFloat(document.getElementById('qty').value) || 0;
             let t = (s.type === "Package") ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
@@ -353,12 +460,15 @@
         async function order() {
             const total = parseFloat(document.getElementById('total').innerText);
             if(user.balance < total) return alert("الرصيد لا يكفي!");
-            const s = services.find(x => x.id === document.getElementById('serv').value);
+            const sId = document.getElementById('serv').value;
+            const s = services.find(x => x.id === sId);
             const target = document.getElementById('target').value;
             if(!target) return alert("يرجى إدخل الرابط أو الآيدي");
             if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
+
             await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
             await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
+            
             if(s.type === "Package") {
                 const msg = `*🧾 فاتورة جديدة من CD-CARD*\nالعميل: ${user.username}\nالخدمة: ${s.name}\nالبيانات: ${target}\nالسعر: ${total} د.ل`;
                 window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
@@ -382,7 +492,13 @@
             el.classList.add('active');
         }
         function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم النسخ!"); }
+
+        // إغلاق القوائم عند الضغط خارجها
+        window.onclick = function(event) {
+            if (!event.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-options').forEach(opt => opt.classList.remove('open'));
+            }
+        }
     </script>
 </body>
 </html>
-
