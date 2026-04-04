@@ -82,7 +82,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ستايل زر فيديو الشرح الجديد */
         .btn-video-guide {
             display: inline-block; margin-top: 15px; padding: 10px 20px;
             background: rgba(255, 0, 0, 0.1); color: #ff4d4d;
@@ -140,6 +139,14 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // --- كود حفظ الإحالة من الرابط القديم أو الجديد ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode) {
+        localStorage.setItem('pending_ref', refCode);
+        console.log("تم حفظ الإحالة: " + refCode);
+    }
+
     function switchForm(target) {
         document.getElementById('msg').innerText = '';
         document.getElementById('success-msg').innerText = '';
@@ -169,8 +176,8 @@
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPassword').value;
         
-        const urlParams = new URLSearchParams(window.location.search);
-        const referralFrom = urlParams.get('ref') || "";
+        // جلب الإحالة المخزنة (لدعم الروابط القديمة)
+        const referralFrom = localStorage.getItem('pending_ref') || "";
 
         if(!user || !email || !pass) return showMsg("الرجاء ملء جميع البيانات!", 'error');
         if(pass.length < 6) return showMsg("كلمة المرور يجب أن تكون 6 خانات فأكثر.", 'error');
@@ -178,11 +185,8 @@
         showLoading(true);
         try {
             const cred = await auth.createUserWithEmailAndPassword(email, pass);
-            
-            // توليد كود إحالة للمستخدم
             const myNewRefCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-            // حفظ بيانات المستخدم مع الرصيد الابتدائي وحقل الاسم
             await db.collection('users').doc(cred.user.uid).set({
                 username: user,
                 balance: 0.00, 
@@ -193,6 +197,7 @@
                 dateCreated: new Date().toLocaleString('ar-LY')
             });
 
+            localStorage.removeItem('pending_ref'); // مسحه بعد الاستخدام
             showMsg("✅ تم إنشاء الحساب بنجاح!", 'success');
             setTimeout(() => { window.location.href = "index.html"; }, 1000);
 
@@ -224,3 +229,4 @@
 </script>
 </body>
 </html>
+
