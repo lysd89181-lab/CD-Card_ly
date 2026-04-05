@@ -498,7 +498,7 @@
             </div>
 
             <div class="quran-footer">
-                <h3>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h3>
+                <h5>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h5>
                 <p>اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهما وَهو الْعَلِيُّ الْعَظِيمُ</p>
             </div>
         </div>
@@ -724,22 +724,15 @@
         }
 
         // 6. اختيار الأيقونات بناءً على اسم الخدمة
-        function getIcon(name) {
-    if (!name) return "cd.jpg";
-    const n = name.toLowerCase();
-    
-    // تأكد أن الامتداد هنا .png ليتوافق مع تحميلات IconScout
-    if (n.includes("facebook") || n.includes("فيس")) return "Facebook.png";
-    if (n.includes("instagram") || n.includes("انستا")) return "Instagram.png";
-    if (n.includes("whatsapp") || n.includes("واتساب")) return "whatsapp.png";
-    if (n.includes("tiktok") || n.includes("تيك")) return "tiktok.png";
-    if (n.includes("pubg") || n.includes("ببجي")) return "popgi.png";
-    if (n.includes("telegram") || n.includes("تيلي")) return "teli.png";
-    if (n.includes("binance") || n.includes("بايننس")) return "binns.png";
-    
-    return "cd.jpg"; // الأيقونة الافتراضية
-}
-   cdn3d.iconscout.com/3d/free/thumb/free-generic-3d-icon-4958514.png";
+        function getSmartIcon(name) {
+            if (!name) return "";
+            const n = name.toLowerCase();
+            if (n.includes("facebook") || n.includes("فيسبوك")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-facebook-3d-icon-3915172.png";
+            if (n.includes("tiktok") || n.includes("تيك")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-tiktok-3d-icon-3915183.png";
+            if (n.includes("netflix") || n.includes("نتفلكس")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-netflix-3d-logo-4696014.png";
+            if (n.includes("pubg") || n.includes("ببجي")) return "https://cdn-icons-png.flaticon.com/512/825/825561.png";
+            if (n.includes("binance") || n.includes("usdt")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-binance-3d-icon-4419614.png";
+            return "https://cdn3d.iconscout.com/3d/free/thumb/free-generic-3d-icon-4958514.png";
         }
 
         // 7. منطق اختيار القسم
