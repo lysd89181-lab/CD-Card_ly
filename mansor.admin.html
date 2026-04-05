@@ -65,7 +65,7 @@
         .stat-card h3 { margin: 0; color: var(--accent); font-size: 24px; }
         .stat-card p { margin: 5px 0 0; color: var(--text-muted); font-size: 12px; }
 
-        /* كروت العناصر (مستخدمين/طلبات) */
+        /* كروت العناصر */
         .admin-card {
             background: var(--card);
             border-radius: 15px;
@@ -97,17 +97,19 @@
         .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
 
         /* الأزرار والمدخلات */
-        .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%; margin-top: 8px; }
+        .btn { padding: 10px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%; margin-top: 8px; }
         .btn-add { background: var(--accent); color: #000; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
         
-        input, select { 
+        input, select, textarea { 
             background: #000; border: 1px solid var(--border); color: #fff; 
             padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px;
+            font-family: inherit;
         }
 
         #loading { text-align: center; margin-top: 100px; font-size: 18px; color: var(--accent); }
+        label { font-size: 12px; color: var(--text-muted); display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -130,7 +132,7 @@
                 <div class="stat-card"><h3 id="statIncome">0</h3><p>الأرباح (د.ل)</p></div>
             </div>
             <div class="admin-card">
-                <p style="text-align:center; color:var(--text-muted);">أهلاً بك في نظام CD-CARD. استخدم الشريط السفلي للتنقل.</p>
+                <p style="text-align:center; color:var(--text-muted);">أهلاً بك منصور. تحكم بالأقسام والخدمات والمستخدمين من هنا.</p>
             </div>
         </div>
 
@@ -145,10 +147,35 @@
         </div>
 
         <div id="tab-services" class="tab-content">
-            <h3 style="color:var(--accent)">✨ الخدمات</h3>
+            <h3 style="color:var(--accent)">✨ إدارة الأقسام والخدمات</h3>
+            
             <div class="admin-card">
-                <p>قريباً: إضافة وتعديل الخدمات من هنا مباشرة.</p>
+                <h4 style="margin-top:0;">📁 إضافة قسم جديد</h4>
+                <input type="text" id="newCatName" placeholder="مثلاً: خدمات تيك توك">
+                <button class="btn btn-add" onclick="addCategory()">حفظ القسم</button>
             </div>
+
+            <div class="admin-card">
+                <h4 style="margin-top:0;">➕ إضافة خدمة جديدة</h4>
+                <label>اختر القسم:</label>
+                <select id="serviceCatSelect">
+                    <option value="">-- اختر القسم --</option>
+                </select>
+                
+                <input type="text" id="servName" placeholder="اسم الخدمة">
+                <input type="number" id="servPrice" placeholder="السعر (د.ل)">
+                
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="servMin" placeholder="الحد الأدنى">
+                    <input type="number" id="servMax" placeholder="الحد الأقصى">
+                </div>
+                
+                <textarea id="servDesc" placeholder="وصف الخدمة..." rows="3"></textarea>
+                
+                <button class="btn btn-status" style="background:var(--blue)" onclick="addService()">نشر الخدمة</button>
+            </div>
+
+            <div id="servicesListView"></div>
         </div>
     </div>
 
@@ -172,7 +199,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
 
-        // التبديل بين التبويبات
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -180,7 +206,6 @@
             el.classList.add('active');
         }
 
-        // الحماية وجلب البيانات
         auth.onAuthStateChanged(u => {
             if (u) {
                 db.collection('users').doc(u.uid).get().then(doc => {
@@ -189,6 +214,8 @@
                         document.getElementById('adminContent').style.display = 'block';
                         document.getElementById('welcomeMsg').innerText = "أهلاً منصور ⚙️";
                         loadSystem();
+                        listenToCategories();
+                        loadCurrentServices();
                     } else {
                         alert("لا تملك صلاحيات!");
                         location.href = 'index.html';
@@ -198,7 +225,7 @@
         });
 
         function loadSystem() {
-            // تحديث الإحصائيات والمستخدمين لحظياً
+            // إحصائيات ومستخدمين
             db.collection('users').onSnapshot(snap => {
                 document.getElementById('statUsers').innerText = snap.size;
                 let totalSpent = 0;
@@ -209,7 +236,6 @@
                     const u = doc.data();
                     totalSpent += (u.spent || 0);
                     const isBanned = u.status === 'محظور';
-                    
                     uList.innerHTML += `
                         <div class="admin-card">
                             <div class="card-header">
@@ -218,8 +244,8 @@
                             </div>
                             <div class="card-body">
                                 <p>الرصيد: ${u.balance.toFixed(2)} د.ل</p>
-                                <input type="number" id="charge-${doc.id}" placeholder="المبلغ لإضافته">
-                                <button class="btn btn-add" onclick="addBalance('${doc.id}', ${u.balance})">شحن الرصيد</button>
+                                <input type="number" id="charge-${doc.id}" placeholder="شحن رصيد">
+                                <button class="btn btn-add" onclick="addBalance('${doc.id}', ${u.balance})">شحن</button>
                                 <button class="btn btn-outline" onclick="toggleUserStatus('${doc.id}', '${u.status}')">
                                     ${isBanned ? 'فك الحظر' : 'حظر المستخدم'}
                                 </button>
@@ -230,15 +256,13 @@
                 document.getElementById('statIncome').innerText = totalSpent.toFixed(2);
             });
 
-            // تحديث الطلبات لحظياً
+            // طلبات
             db.collection('orders').orderBy('date', 'desc').onSnapshot(snap => {
                 document.getElementById('statOrders').innerText = snap.size;
                 const pending = snap.docs.filter(d => d.data().status === 'قيد الانتظار').length;
                 document.getElementById('statPending').innerText = pending;
-
                 const oList = document.getElementById('ordersList');
                 oList.innerHTML = '';
-
                 snap.forEach(doc => {
                     const o = doc.data();
                     oList.innerHTML += `
@@ -250,9 +274,9 @@
                             <div class="card-body">
                                 <p>الهدف: <span style="color:var(--blue)">${o.target}</span></p>
                                 <p>الكمية: ${o.qty}</p>
-                                <p>الحالة حالياً: ${o.status}</p>
+                                <p>الحالة: ${o.status}</p>
                                 <select onchange="updateOrderStatus('${doc.id}', this.value)">
-                                    <option value="">تغيير الحالة...</option>
+                                    <option value="">تحديث الحالة...</option>
                                     <option value="قيد المعالجة">⏳ قيد المعالجة</option>
                                     <option value="مكتمل">✅ مكتمل</option>
                                     <option value="ملغي">❌ ملغي</option>
@@ -262,6 +286,81 @@
                     `;
                 });
             });
+        }
+
+        // دالة إضافة قسم
+        async function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            if(!name) return alert("اكتب اسم القسم!");
+            await db.collection('categories').add({ name: name, date: new Date().toLocaleString('ar-LY') });
+            document.getElementById('newCatName').value = '';
+            alert("تم إضافة القسم!");
+        }
+
+        // جلب الأقسام للقائمة المنسدلة
+        function listenToCategories() {
+            db.collection('categories').onSnapshot(snap => {
+                const select = document.getElementById('serviceCatSelect');
+                select.innerHTML = '<option value="">-- اختر القسم --</option>';
+                snap.forEach(doc => {
+                    select.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+                });
+            });
+        }
+
+        // دالة إضافة خدمة
+        async function addService() {
+            const catId = document.getElementById('serviceCatSelect').value;
+            const catName = document.getElementById('serviceCatSelect').options[document.getElementById('serviceCatSelect').selectedIndex].text;
+            const name = document.getElementById('servName').value;
+            const price = parseFloat(document.getElementById('servPrice').value);
+            const min = document.getElementById('servMin').value;
+            const max = document.getElementById('servMax').value;
+            const desc = document.getElementById('servDesc').value;
+
+            if(!catId || !name || !price) return alert("امسح بياناتك وعاود! (الاسم والسعر والقسم مطلوبين)");
+
+            await db.collection('services').add({
+                categoryId: catId, categoryName: catName, name: name,
+                price: price, min: min, max: max, description: desc,
+                status: 'active', date: new Date().toLocaleString('ar-LY')
+            });
+
+            document.getElementById('servName').value = '';
+            document.getElementById('servPrice').value = '';
+            document.getElementById('servMin').value = '';
+            document.getElementById('servMax').value = '';
+            document.getElementById('servDesc').value = '';
+            alert("تم نشر الخدمة بنجاح ✅");
+        }
+
+        // عرض الخدمات الموجودة حالياً مع إمكانية حذفها
+        function loadCurrentServices() {
+            db.collection('services').orderBy('date', 'desc').onSnapshot(snap => {
+                const container = document.getElementById('servicesListView');
+                container.innerHTML = '<h3 style="margin-top:30px;">📋 الخدمات المنشورة</h3>';
+                snap.forEach(doc => {
+                    const s = doc.data();
+                    container.innerHTML += `
+                        <div class="admin-card" style="border-right: 4px solid var(--accent)">
+                            <div class="card-header">
+                                <span class="card-title">${s.name}</span>
+                                <span style="font-size:10px;">${s.categoryName}</span>
+                            </div>
+                            <div class="card-body">
+                                <p>السعر: ${s.price} د.ل</p>
+                                <button class="btn btn-danger" style="padding:5px;" onclick="deleteService('${doc.id}')">حذف الخدمة</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function deleteService(id) {
+            if(confirm("هل تريد حذف هذه الخدمة نهائياً؟")) {
+                await db.collection('services').doc(id).delete();
+            }
         }
 
         async function addBalance(uid, current) {
@@ -283,6 +382,7 @@
         async function updateOrderStatus(oid, status) {
             if(!status) return;
             await db.collection('orders').doc(oid).update({ status: status });
+            alert("تم تحديث الطلب");
         }
     </script>
 </body>
