@@ -223,7 +223,7 @@
             </div>
             <div class="glass-panel">
                 <h3 style="text-align:center; color:var(--accent);">شحن رصيد الحساب 💳</h3>
-                <label>الرقم المحول منه</label>
+                <label>الرقام المحول منه</label>
                 <input type="number" id="senderNum" placeholder="09XXXXXXXX">
                 <label>القيمة المحولة</label>
                 <input type="number" id="amountSent" placeholder="أدخل المبلغ">
@@ -337,11 +337,9 @@
     </div>
 
     <script>
-        // --- تعديل منطق قراءة الرابط (الجديد والقديم) ---
         const urlParams = new URLSearchParams(window.location.search);
         const refCode = urlParams.get('ref');
         
-        // إذا وجد كود إحالة في الرابط، نخزنه فوراً في ذاكرة المتصفح
         if (refCode) {
             localStorage.setItem('pending_ref', refCode);
             console.log("تم اكتشاف كود إحالة: " + refCode);
@@ -361,7 +359,6 @@
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
                     
-                    // توليد رابط الإحالة الخاص بالمستخدم لعرضه في صفحة "كسب المال"
                     const currentUrl = window.location.href.split('?')[0];
                     document.getElementById('refUrl').value = currentUrl + "?ref=" + user.referralCode;
                     
@@ -373,7 +370,6 @@
             } else { window.location.href="login.html"; }
         });
 
-        // دالة موحدة لفتح القوائم
         function toggleDropdown(id) {
             document.querySelectorAll('.custom-options').forEach(opt => {
                 if(opt.id !== id) opt.classList.remove('open');
@@ -381,15 +377,31 @@
             document.getElementById(id).classList.toggle('open');
         }
 
-        // دالة جلب الأيقونات الذكية
+        // --- تصحيح دالة الأيقونات بناءً على صور غيت هاب ---
         function getIcon(name) {
-            if (!name) return "https://cdn3d.iconscout.com/3d/free/thumb/free-box-3d-icon-5329705.png";
+            if (!name) return "cd.jpg";
             const n = name.toLowerCase();
-            if (n.includes("facebook")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-facebook-3d-icon-3915172.png";
-            if (n.includes("tiktok")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-tiktok-3d-icon-3915183.png";
-            if (n.includes("netflix")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-netflix-3d-logo-4696014.png";
-            if (n.includes("binance") || n.includes("usdt")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-binance-3d-icon-4419614.png";
-            return "https://cdn3d.iconscout.com/3d/free/thumb/free-generic-3d-icon-4958514.png";
+
+            // الربط مع أسماء الصور وحالة الأحرف الصحيحة كما في GitHub
+            if (n.includes("facebook") || n.includes("فيسبوك")) return "Facebook.jpg";
+            if (n.includes("instagram") || n.includes("انستقرام")) return "Instagram.jpg";
+            if (n.includes("netflix") || n.includes("نتفلكس")) return "Netflix.jpg";
+            if (n.includes("snapchat") || n.includes("سناب")) return "Snapchat.jpg";
+            if (n.includes("binance") || n.includes("بايننس") || n.includes("usdt")) return "binns.jpg";
+            if (n.includes("capcat") || n.includes("كاب كات")) return "capcat.jpg";
+            if (n.includes("عملات") || n.includes("tik coin")) return "etons.jpg";
+            if (n.includes("free fire") || n.includes("فري فاير")) return "frii.jpg";
+            if (n.includes("pubg") || n.includes("ببجي")) return "popgi.jpg";
+            if (n.includes("shahed") || n.includes("شاهد")) return "shahed.jpg";
+            if (n.includes("gpt") || n.includes("شات")) return "shats.jpg";
+            if (n.includes("tawtheg") || n.includes("توثيق")) return "tawtheg.jpg";
+            if (n.includes("teli") || n.includes("تيليجرام")) return "teli.jpg";
+            if (n.includes("tiktok") || n.includes("تيك توك")) return "tiktok.jpg";
+            if (n.includes("twiter") || n.includes("تويتر")) return "twiter.jpg";
+            if (n.includes("watsap") || n.includes("واتساب")) return "watsap.jpg";
+            if (n.includes("yotuop") || n.includes("يوتيوب")) return "yotuop.jpg";
+
+            return "cd.jpg";
         }
 
         async function loadServices() {
