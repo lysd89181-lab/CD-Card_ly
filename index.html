@@ -3,254 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-Card | المتجر الرسمي</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
+    <title>CD-CARD | صيانة مؤقتة</title>
     <style>
-        :root { 
-            --bg: #0d1117; 
-            --card: rgba(22, 27, 34, 0.95); 
-            --accent: #00ff88; 
-            --text-main: #ffffff; 
-            --text-muted: #8b949e; 
-            --border: rgba(255, 255, 255, 0.1); 
-            --gold: #ffd700; 
+        :root {
+            --accent: #00ff88;
+            --bg: #0d1117;
         }
 
-        body { 
-            background: var(--bg);
-            color: var(--text-main); 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; 
-            padding-bottom: 90px; 
-            direction: rtl; 
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at center, #16212e 0%, #080a0c 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
         }
 
-        .container { padding: 15px; max-width: 500px; margin: auto; }
-
-        /* ستايل القوائم المنسدلة المخصص */
-        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
-
-        .custom-select-trigger {
-            background: #000; border: 1px solid var(--border); color: #fff;
-            padding: 12px; border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between;
+        .maintenance-container {
+            padding: 20px;
+            max-width: 500px;
         }
 
-        .custom-options {
-            position: absolute; top: 105%; left: 0; right: 0;
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 12px; display: none; z-index: 3000;
-            max-height: 250px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .logo-area {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            margin: 0 auto 20px;
+            background: url('cd.jpg') center/cover;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            animation: pulse 2s infinite;
         }
 
-        .custom-options.open { display: block; }
-
-        .custom-option {
-            padding: 12px; display: flex; align-items: center; gap: 10px;
-            cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 136, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
         }
 
-        .custom-option:hover { background: rgba(0, 255, 136, 0.1); }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
 
-        .custom-option img, .selected-img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; }
+        p {
+            color: #8b949e;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
 
-        .glass-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .contact-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-        input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; box-sizing: border-box; margin-bottom: 10px; }
+        .contact-btn:hover {
+            background: var(--accent);
+            color: #000;
+        }
 
-        .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), #00bdff); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; }
+        .loader {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 40px;
+        }
 
-        #serviceDescription { font-size: 13px; color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
 
-        /* الهيدر */
-        .app-header { display: flex; align-items: center; padding: 15px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .app-logo { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; border: 2px solid var(--accent); background: url('cd.jpg') center/cover; }
-        .app-title { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
 
-        /* التنقل السفلي */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; border-top: 1px solid var(--border); z-index: 2000; padding: 10px 0; }
-        .nav-tab { flex: 1; text-align: center; color: var(--text-muted); font-size: 11px; cursor: pointer; }
-        .nav-tab.active { color: var(--accent); font-weight: bold; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-header">
-        <div class="app-logo"></div>
-        <div class="app-title">CD-Card</div>
-    </div>
-
-    <div class="container">
+    <div class="maintenance-container">
+        <div class="logo-area"></div>
+        <h1>الموقع قيد الصيانة</h1>
+        <p>نعمل حالياً على تحديث البيانات وتحسين تجربتكم في <strong>CD-CARD</strong>. سنعود إليكم قريباً بأفضل الأسعار والخدمات.</p>
         
-        <div id="homePage" class="page">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: var(--gold);">مرحباً بك في متجرك المفضل 🇱🇾</h2>
-            </div>
+        <a href="https://wa.me/218912377291" class="contact-btn">تواصل معنا عبر واتساب</a>
 
-            <div class="glass-panel">
-                <label style="color: var(--accent); font-size: 13px;">اختر القسم</label>
-                <div class="custom-select-wrapper">
-                    <div class="custom-select-trigger" onclick="toggleDropdown('catOptions')">
-                        <div id="selectedCatDisplay"><span>اختر من هنا...</span></div>
-                        <span>▼</span>
-                    </div>
-                    <div id="catOptions" class="custom-options">
-                        </div>
-                    <input type="hidden" id="cat">
-                </div>
-
-                <label style="color: var(--accent); font-size: 13px;">اختر الخدمة</label>
-                <div class="custom-select-wrapper">
-                    <div class="custom-select-trigger" onclick="toggleDropdown('servOptions')">
-                        <div id="selectedServDisplay"><span>اختر نوع الخدمة...</span></div>
-                        <span>▼</span>
-                    </div>
-                    <div id="servOptions" class="custom-options">
-                        </div>
-                    <input type="hidden" id="serv">
-                </div>
-                
-                <div id="serviceDescription">يرجى اختيار خدمة لرؤية التفاصيل...</div>
-
-                <input type="text" id="target" placeholder="الرابط / الآيدي">
-                <input type="number" id="qty" value="100" oninput="calculateTotal()">
-                
-                <div style="text-align:center; padding:15px; margin:15px 0; background:rgba(0,255,136,0.1); border-radius:12px;">
-                    السعر الإجمالي: <span id="totalDisplay" style="color:var(--accent); font-weight:bold; font-size:20px;">0.00</span> د.ل
-                </div>
-
-                <button class="btn-action" onclick="sendOrder()">تأكيد الطلب الآن</button>
-            </div>
+        <div class="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
         </div>
-
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-tab active">الرئيسية</div>
-        <div class="nav-tab">الشحن</div>
-        <div class="nav-tab">الطلبات</div>
-        <div class="nav-tab">حسابي</div>
-    </div>
-
-    <script>
-        // تكوين Firebase
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
-            authDomain: "cd-card-87365.firebaseapp.com", 
-            projectId: "cd-card-87365", 
-            storageBucket: "cd-card-87365.firebasestorage.app", 
-            messagingSenderId: "397926299412", 
-            appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
-        };
         
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        <div style="margin-top: 50px; font-size: 12px; color: #444;">
+            © 2026 CD-CARD ALL RIGHTS RESERVED
+        </div>
+    </div>
 
-        let allServices = [];
-
-        // أهم دالة: جلب الخدمات من قاعدة البيانات
-        async function fetchServices() {
-            console.log("بدأ جلب الخدمات...");
-            try {
-                const snapshot = await db.collection('services').get();
-                if (snapshot.empty) {
-                    console.error("لا توجد خدمات في قاعدة البيانات!");
-                    document.getElementById('catOptions').innerHTML = "<div class='custom-option'>لا توجد خدمات مضافة</div>";
-                    return;
-                }
-
-                allServices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("تم جلب " + allServices.length + " خدمة.");
-
-                // استخراج الأقسام الفريدة
-                const categories = [...new Set(allServices.map(s => s.category))];
-                
-                const catHtml = categories.map(cat => `
-                    <div class="custom-option" onclick="selectCategory('${cat}')">
-                        <img src="${getIcon(cat)}" onerror="this.src='cd.jpg'">
-                        <span>${cat}</span>
-                    </div>
-                `).join('');
-                
-                document.getElementById('catOptions').innerHTML = catHtml;
-
-            } catch (error) {
-                console.error("خطأ في الاتصال بقاعدة البيانات:", error);
-                alert("فشل جلب الخدمات، تأكد من إعدادات الـ Rules في Firebase.");
-            }
-        }
-
-        function selectCategory(catName) {
-            document.getElementById('cat').value = catName;
-            document.getElementById('selectedCatDisplay').innerHTML = `<span>${catName}</span>`;
-            document.getElementById('catOptions').classList.remove('open');
-
-            // تصفية الخدمات التابعة لهذا القسم
-            const filtered = allServices.filter(s => s.category === catName);
-            const servHtml = filtered.map(s => `
-                <div class="custom-option" onclick="selectService('${s.id}')">
-                    <span>${s.name}</span>
-                </div>
-            `).join('');
-
-            document.getElementById('servOptions').innerHTML = servHtml;
-            document.getElementById('selectedServDisplay').innerHTML = "<span>اختر خدمة...</span>";
-        }
-
-        function selectService(id) {
-            const service = allServices.find(s => s.id === id);
-            document.getElementById('serv').value = id;
-            document.getElementById('selectedServDisplay').innerHTML = `<span>${service.name}</span>`;
-            document.getElementById('servOptions').classList.remove('open');
-            document.getElementById('serviceDescription').innerText = service.description || "لا يوجد وصف لهذه الخدمة";
-            
-            // إذا كان نوع الخدمة طرد (Package) نقفل خانة الكمية
-            if(service.type === "Package") {
-                document.getElementById('qty').value = 1;
-                document.getElementById('qty').disabled = true;
-            } else {
-                document.getElementById('qty').disabled = false;
-            }
-            calculateTotal();
-        }
-
-        function calculateTotal() {
-            const serviceId = document.getElementById('serv').value;
-            const service = allServices.find(s => s.id === serviceId);
-            if (!service) return;
-
-            let qty = parseFloat(document.getElementById('qty').value) || 0;
-            let total = 0;
-
-            if (service.type === "Package") {
-                total = service.finalPrice;
-            } else {
-                total = (qty / 1000) * service.finalPrice;
-            }
-            document.getElementById('totalDisplay').innerText = total.toFixed(2);
-        }
-
-        function getIcon(name) {
-            name = name.toLowerCase();
-            if (name.includes("tik")) return "tiktok.jpg";
-            if (name.includes("pubg")) return "popgi.jpg";
-            if (name.includes("insta")) return "Instagram.jpg";
-            if (name.includes("face")) return "Facebook.jpg";
-            return "cd.jpg";
-        }
-
-        function toggleDropdown(id) {
-            document.getElementById(id).classList.toggle('open');
-        }
-
-        // تشغيل الجلب عند فتح الصفحة
-        window.onload = fetchServices;
-
-    </script>
 </body>
 </html>
 
