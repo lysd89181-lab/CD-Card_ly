@@ -724,15 +724,31 @@
         }
 
         // 6. اختيار الأيقونات بناءً على اسم الخدمة
-        function getSmartIcon(name) {
-            if (!name) return "";
-            const n = name.toLowerCase();
-            if (n.includes("facebook") || n.includes("فيسبوك")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-facebook-3d-icon-3915172.png";
-            if (n.includes("tiktok") || n.includes("تيك")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-tiktok-3d-icon-3915183.png";
-            if (n.includes("netflix") || n.includes("نتفلكس")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-netflix-3d-logo-4696014.png";
-            if (n.includes("pubg") || n.includes("ببجي")) return "https://cdn-icons-png.flaticon.com/512/825/825561.png";
-            if (n.includes("binance") || n.includes("usdt")) return "https://cdn3d.iconscout.com/3d/free/thumb/free-binance-3d-icon-4419614.png";
-            return "https://cdn3d.iconscout.com/3d/free/thumb/free-generic-3d-icon-4958514.png";
+        function getIcon(name) {
+    if (!name) return "cd.jpg";
+    const n = name.toLowerCase();
+
+    // ربط الأسماء التي رفعتها على GitHub بالخدمات في Firebase
+    if (n.includes("facebook") || n.includes("فيس")) return "Facebook.jpg";
+    if (n.includes("instagram") || n.includes("انستا")) return "Instagram.jpg";
+    if (n.includes("netflix") || n.includes("نتفلكس")) return "Netflix.jpg";
+    if (n.includes("snapchat") || n.includes("سناب")) return "Snapchat.jpg";
+    if (n.includes("binance") || n.includes("بايننس") || n.includes("بينانس")) return "binns.jpg";
+    if (n.includes("capcut") || n.includes("كاب كات")) return "capcat.jpg";
+    if (n.includes("تيك توك") && n.includes("عملات")) return "etons.jpg";
+    if (n.includes("free fire") || n.includes("فري فاير")) return "frii.jpg";
+    if (n.includes("pubg") || n.includes("ببجي")) return "popgi.jpg";
+    if (n.includes("shahed") || n.includes("شاهد")) return "shahed.jpg";
+    if (n.includes("chatgpt") || n.includes("شات")) return "shats.jpg";
+    if (n.includes("توثيق")) return "tawtheg.jpg";
+    if (n.includes("telegram") || n.includes("تيلي")) return "teli.jpg";
+    if (n.includes("tiktok") || n.includes("تيك")) return "tiktok.jpg";
+    if (n.includes("twitter") || n.includes("تويتر") || n.includes("اكس")) return "twiter.jpg";
+    if (n.includes("whatsapp") || n.includes("واتساب")) return "watsap.jpg";
+    if (n.includes("youtube") || n.includes("يوتيوب")) return "yotuop.jpg";
+
+    return "cd.jpg"; // الصورة الافتراضية في حال عدم وجود تطابق
+}
         }
 
         // 7. منطق اختيار القسم
