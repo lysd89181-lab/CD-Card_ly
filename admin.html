@@ -3,64 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم CD-CARD | الإدارة</title>
+    <title>إدارة CD-CARD | المتكاملة</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #fff; --border: #30363d; --error: #ff4d4d; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
-        h2 { color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        :root { --bg: #0d1117; --card: #161b22; --accent: #00ff88; --text: #fff; --border: #30363d; --blue: #218bff; --error: #ff4d4d; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         
-        .section { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        /* شريط جانبي بسيط */
+        .sidebar { position: fixed; right: 0; top: 0; width: 220px; height: 100%; background: var(--card); border-left: 1px solid var(--border); padding: 20px; box-sizing: border-box; }
+        .main-content { margin-right: 220px; padding: 30px; }
+        
+        .nav-btn { display: block; width: 100%; padding: 12px; margin-bottom: 10px; background: transparent; border: 1px solid var(--border); color: #fff; border-radius: 8px; cursor: pointer; text-align: right; font-weight: bold; }
+        .nav-btn.active { background: var(--accent); color: #000; border: none; }
+
+        .section { display: none; background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+
+        h2 { color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
         th, td { padding: 12px; text-align: right; border-bottom: 1px solid var(--border); }
-        th { color: var(--accent); }
+        th { color: var(--accent); background: rgba(0,255,136,0.05); }
 
-        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 2px; }
-        .btn-api { background: var(--accent); color: #000; }
-        .btn-cancel { background: var(--error); color: #fff; }
-        .btn-balance { background: #218bff; color: #fff; }
+        input, select, textarea { background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: var(--accent); color: #000; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-del { background: var(--error); color: #fff; }
 
-        input { background: #000; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 5px; width: 100px; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .status-badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         .pending { background: #f1c40f; color: #000; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <img src="cd.jpg" style="width: 60px; border-radius: 50%; border: 2px solid var(--accent);">
-        <h2>لوحة إدارة متجر CD-CARD 🛠️</h2>
+    <div class="sidebar">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="cd.jpg" style="width: 80px; border-radius: 50%; border: 2px solid var(--accent);">
+            <p style="font-size: 14px; color: var(--accent);">إدارة CD-CARD</p>
+        </div>
+        <button class="nav-btn active" onclick="showTab('usersSec', this)">👥 المستخدمين</button>
+        <button class="nav-btn" onclick="showTab('ordersSec', this)">📦 الطلبات</button>
+        <button class="nav-btn" onclick="showTab('addServiceSec', this)">➕ إضافة خدمة</button>
+        <button class="nav-btn" onclick="showTab('sortServiceSec', this)">📑 ترتيب الخدمات</button>
     </div>
 
-    <div class="section">
-        <h3>💰 إدارة أرصدة المستخدمين</h3>
-        <div id="usersList">جاري تحميل المستخدمين...</div>
-    </div>
+    <div class="main-content">
+        
+        <div id="usersSec" class="section active">
+            <h2>💰 إدارة أرصدة المستخدمين</h2>
+            <div id="usersList">جاري تحميل البيانات...</div>
+        </div>
 
-    <div class="section">
-        <h3>📦 طلبات الزبائن الواردة</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>الزبون</th>
-                    <th>الخدمة (ID)</th>
-                    <th>الرابط</th>
-                    <th>الكمية</th>
-                    <th>التكلفة</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="ordersTable">
-                </tbody>
-        </table>
+        <div id="ordersSec" class="section">
+            <h2>📦 طلبات الزبائن الواردة</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الزبون</th>
+                        <th>الخدمة</th>
+                        <th>البيانات</th>
+                        <th>الكمية</th>
+                        <th>التكلفة</th>
+                        <th>الحالة</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+            </table>
+        </div>
+
+        <div id="addServiceSec" class="section">
+            <h2>➕ إضافة خدمة جديدة (يدوية / تلقائية)</h2>
+            <div class="grid-form">
+                <div>
+                    <label>اسم الخدمة</label>
+                    <input type="text" id="sName" placeholder="مثلاً: 1000 متابع تيك توك">
+                    <label>القسم (Category)</label>
+                    <input type="text" id="sCat" placeholder="مثلاً: تيك توك">
+                    <label>نوع الخدمة</label>
+                    <select id="sType">
+                        <option value="Default">تلقائية (API)</option>
+                        <option value="Package">يدوية (Package)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>السعر النهائي (د.ل لكل 1000)</label>
+                    <input type="number" id="sPrice" placeholder="0.00">
+                    <label>رقم الخدمة لدى المزود (ID API)</label>
+                    <input type="text" id="sApiId" placeholder="اتركه فارغاً إذا كانت يدوية">
+                    <label>وصف الخدمة</label>
+                    <textarea id="sDesc" rows="3" placeholder="اكتب تفاصيل الخدمة هنا..."></textarea>
+                </div>
+            </div>
+            <button class="btn btn-add" style="width: 100%; padding: 15px;" onclick="saveNewService()">حفظ الخدمة في المتجر ✅</button>
+        </div>
+
+        <div id="sortServiceSec" class="section">
+            <h2>📑 قائمة الخدمات والترتيب</h2>
+            <p style="font-size: 12px; color: var(--text-muted);">يمكنك تعديل أسعار الخدمات أو حذفها أو تغيير ترتيب ظهورها.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الترتيب</th>
+                        <th>اسم الخدمة</th>
+                        <th>القسم</th>
+                        <th>السعر</th>
+                        <th>النوع</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesListTable"></tbody>
+            </table>
+        </div>
+
     </div>
 
 <script>
+    // إعدادات Firebase
     const firebaseConfig = { 
         apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
         authDomain: "cd-card-87365.firebaseapp.com", 
@@ -72,19 +139,29 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const apiKey = "bc34ac73c612e956734842221d87df60"; // مفتاح API الخاص بك
+    // إعدادات المزود API
+    const apiKey = "17867535f955dc9d0532a0aefc809f51"; 
+    const apiUrl = "https://ms1.shop/api/v2";
     const proxy = "https://cors-anywhere.herokuapp.com/";
 
-    // 1. جلب المستخدمين لتعديل أرصدتهم
+    // دالة التنقل بين الأقسام
+    function showTab(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // --- 1. إدارة المستخدمين ---
     db.collection('users').onSnapshot(snap => {
-        let html = "<table><tr><th>الاسم</th><th>الرصيد الحالي</th><th>إضافة مبلغ</th><th>عملية</th></tr>";
+        let html = "<table><tr><th>الاسم</th><th>الرصيد</th><th>شحن</th><th>الإجراء</th></tr>";
         snap.forEach(doc => {
             const u = doc.data();
             html += `<tr>
-                <td>${u.username}</td>
-                <td style="color:var(--accent)">${Number(u.balance).toFixed(2)} د.ل</td>
-                <td><input type="number" id="amt-${doc.id}" placeholder="القيمة"></td>
-                <td><button class="btn btn-balance" onclick="addBalance('${doc.id}')">إضافة ✅</button></td>
+                <td>${u.username || 'بدون اسم'}</td>
+                <td style="color:var(--accent)">${Number(u.balance || 0).toFixed(2)} د.ل</td>
+                <td><input type="number" id="amt-${doc.id}" style="width:70px" placeholder="0"></td>
+                <td><button class="btn btn-blue" onclick="addBalance('${doc.id}')">شحن ✅</button></td>
             </tr>`;
         });
         document.getElementById('usersList').innerHTML = html + "</table>";
@@ -92,61 +169,88 @@
 
     async function addBalance(uid) {
         const amt = parseFloat(document.getElementById(`amt-${uid}`).value);
-        if(!amt || amt <= 0) return alert("أدخل قيمة صحيحة");
-        await db.collection('users').doc(uid).update({
-            balance: firebase.firestore.FieldValue.increment(amt)
-        });
-        alert("تم تحديث الرصيد بنجاح!");
+        if(!amt) return;
+        await db.collection('users').doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) });
+        alert("تم الشحن!");
     }
 
-    // 2. جلب الطلبات وإدارتها
+    // --- 2. إدارة الطلبات ---
     db.collection('orders').orderBy('date', 'desc').onSnapshot(snap => {
         const table = document.getElementById('ordersTable');
         table.innerHTML = "";
         snap.forEach(doc => {
             const o = doc.data();
-            const row = `<tr>
-                <td>${o.userId.substring(0,5)}...</td>
-                <td>${o.serviceName}</td>
-                <td><small>${o.link}</small></td>
+            table.innerHTML += `<tr>
+                <td>${o.userId ? o.userId.substring(0,5) : '...'}</td>
+                <td>${o.service}</td>
+                <td><small>${o.target || o.link}</small></td>
                 <td>${o.qty}</td>
-                <td>${o.cost} د.ل</td>
+                <td>${o.cost}</td>
                 <td><span class="status-badge pending">${o.status}</span></td>
                 <td>
-                    <button class="btn btn-api" onclick="sendToProvider('${doc.id}', '${o.apiId}', '${o.link}', '${o.qty}')">إرسال للمزود 🚀</button>
-                    <button class="btn btn-cancel" onclick="deleteOrder('${doc.id}')">حذف 🗑️</button>
+                    <button class="btn btn-add" onclick="sendToProvider('${doc.id}', '${o.apiServiceId}', '${o.target || o.link}', '${o.qty}')">إرسال API</button>
+                    <button class="btn btn-del" onclick="deleteItem('orders', '${doc.id}')">حذف</button>
                 </td>
             </tr>`;
-            table.innerHTML += row;
         });
     });
 
-    // 3. وظيفة الإرسال التلقائي للمزود (API)
-    async function sendToProvider(orderDocId, apiId, link, qty) {
-        if(!apiId) return alert("هذه الخدمة لا تملك API ID صحيح!");
-        if(!confirm("هل تريد إرسال هذا الطلب للمزود وخصم قيمته من حسابك هناك؟")) return;
-
+    // إرسال للمزود
+    async function sendToProvider(docId, apiId, link, qty) {
+        if(!apiId || apiId === "undefined") return alert("هذه الخدمة يدوية وليس لها ID API");
+        if(!confirm("إرسال الطلب للمزود وخصم الرصيد؟")) return;
         try {
-            const url = `${proxy}https://ms1.shop/api/v2?key=${apiKey}&action=add&service=${apiId}&link=${link}&quantity=${qty}`;
-            const res = await fetch(url);
+            const res = await fetch(`${proxy}${apiUrl}?key=${apiKey}&action=add&service=${apiId}&link=${encodeURIComponent(link)}&quantity=${qty}`);
             const data = await res.json();
-
             if(data.order) {
-                await db.collection('orders').doc(orderDocId).update({
-                    status: "تم الإرسال (ID: " + data.order + ")",
-                    apiOrderId: data.order
-                });
-                alert("✅ تم إرسال الطلب للمزود بنجاح! رقم الطلب: " + data.order);
-            } else {
-                alert("❌ خطأ من المزود: " + (data.error || "غير معروف"));
-            }
-        } catch (e) {
-            alert("❌ فشل الاتصال: تأكد من تفعيل CORS Anywhere");
-        }
+                await db.collection('orders').doc(docId).update({ status: "تم الإرسال للمزود: " + data.order });
+                alert("تم بنجاح! رقم: " + data.order);
+            } else { alert("خطأ من المزود: " + data.error); }
+        } catch(e) { alert("فشل الاتصال بالمزود"); }
     }
 
-    async function deleteOrder(id) {
-        if(confirm("هل أنت متأكد من حذف هذا السجل؟")) await db.collection('orders').doc(id).delete();
+    // --- 3. إضافة خدمة جديدة ---
+    async function saveNewService() {
+        const name = document.getElementById('sName').value;
+        const cat = document.getElementById('sCat').value;
+        const price = parseFloat(document.getElementById('sPrice').value);
+        const apiId = document.getElementById('sApiId').value;
+        const type = document.getElementById('sType').value;
+        const desc = document.getElementById('sDesc').value;
+
+        if(!name || !cat || !price) return alert("يرجى ملء البيانات الأساسية");
+
+        await db.collection('services').add({
+            name, category: cat, finalPrice: price, apiId, type, description: desc, order: 999
+        });
+        alert("تمت إضافة الخدمة بنجاح!");
+        // مسح الحقول
+        document.querySelectorAll('#addServiceSec input, #addServiceSec textarea').forEach(i => i.value = "");
+    }
+
+    // --- 4. عرض وترتيب الخدمات ---
+    db.collection('services').orderBy('order', 'asc').onSnapshot(snap => {
+        const table = document.getElementById('servicesListTable');
+        table.innerHTML = "";
+        snap.forEach(doc => {
+            const s = doc.data();
+            table.innerHTML += `<tr>
+                <td><input type="number" value="${s.order || 0}" onchange="updateSort('${doc.id}', this.value)" style="width:50px"></td>
+                <td>${s.name}</td>
+                <td>${s.category}</td>
+                <td>${s.finalPrice} د.ل</td>
+                <td>${s.type}</td>
+                <td><button class="btn btn-del" onclick="deleteItem('services', '${doc.id}')">حذف</button></td>
+            </tr>`;
+        });
+    });
+
+    async function updateSort(id, newVal) {
+        await db.collection('services').doc(id).update({ order: parseInt(newVal) });
+    }
+
+    async function deleteItem(coll, id) {
+        if(confirm("هل أنت متأكد؟")) await db.collection(coll).doc(id).delete();
     }
 </script>
 </body>
