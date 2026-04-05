@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CD-Card | لوحة التحكم المتطورة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD-Card | لوحة التحكم السرية</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -25,141 +25,160 @@
             color: white; 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; 
-            padding: 0; 
-            direction: rtl; 
-            padding-bottom: 80px; /* مسافة للشريط السفلي */
-        }
-
-        /* رأس الصفحة */
-        .header { 
             padding: 20px; 
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            direction: rtl; 
         }
 
-        /* الحاويات والأقسام */
-        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
-        .active-tab { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px solid var(--accent); 
+        }
 
-        /* كروت الإحصائيات */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-bottom: 20px; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px; 
         }
+
         .stat-card { 
             background: var(--card); 
-            padding: 15px; 
+            padding: 20px; 
             border-radius: 15px; 
             border: 1px solid var(--border); 
             text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .stat-card h3 { margin: 0; color: var(--accent); font-size: 24px; }
-        .stat-card p { margin: 5px 0 0; color: var(--text-muted); font-size: 12px; }
 
-        /* كروت العناصر (مستخدمين/طلبات) */
-        .admin-card {
-            background: var(--card);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
+        .stat-card h3 { margin: 0; color: var(--accent); font-size: 28px; }
+        .stat-card p { margin: 5px 0 0; color: var(--text-muted); font-size: 14px; }
+
+        .section { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 30px; 
+            border: 1px solid var(--border); 
+            overflow-x: auto; 
         }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .card-title { font-weight: bold; font-size: 15px; color: var(--blue); }
-        .card-body p { margin: 5px 0; font-size: 13px; color: #ccc; }
 
-        /* الشريط السفلي */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
+        .section h3 { 
+            margin-top: 0; 
+            color: var(--blue); 
+            border-right: 4px solid var(--blue); 
+            padding-right: 10px; 
+            margin-bottom: 20px;
         }
-        .nav-item { color: var(--text-muted); text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
 
-        /* الأزرار والمدخلات */
-        .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%; margin-top: 8px; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 700px; 
+        }
+
+        th, td { 
+            padding: 15px; 
+            text-align: right; 
+            border-bottom: 1px solid var(--border); 
+        }
+
+        th { color: var(--accent); font-size: 14px; text-transform: uppercase; }
+
+        .btn { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s;
+            font-size: 12px;
+        }
+
         .btn-add { background: var(--accent); color: #000; }
+        .btn-status { background: var(--blue); color: #fff; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
-        
-        input, select { 
-            background: #000; border: 1px solid var(--border); color: #fff; 
-            padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px;
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        input[type="number"], select { 
+            background: #000; 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            padding: 8px; 
+            border-radius: 8px; 
+            outline: none;
         }
 
-        #loading { text-align: center; margin-top: 100px; font-size: 18px; color: var(--accent); }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #adminContent { display: none; }
+        #loading { text-align: center; margin-top: 100px; font-size: 20px; color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="loading">جاري فتح النظام يا منصور... 🛡️</div>
+    <div id="loading">جاري التحقق من صلاحيات المدير "منصور"... 🛡️</div>
 
-    <div id="adminContent" style="display:none;">
+    <div id="adminContent">
         <div class="header">
             <div>
-                <h2 id="welcomeMsg">لوحة التحكم</h2>
+                <h2 style="margin:0;">لوحة التحكم الإدارية ⚙️</h2>
+                <p style="color:var(--text-muted); font-size:12px;">مرحباً بك يا محمد في نظام الإدارة</p>
             </div>
-            <button class="btn btn-danger" style="width:auto; margin:0;" onclick="location.href='index.html'">المتجر</button>
+            <button class="btn btn-danger" onclick="location.href='index.html'">خروج للمتجر</button>
         </div>
 
-        <div id="tab-home" class="tab-content active-tab">
-            <div class="stats-grid">
-                <div class="stat-card"><h3 id="statUsers">0</h3><p>المستخدمين</p></div>
-                <div class="stat-card"><h3 id="statOrders">0</h3><p>الطلبات</p></div>
-                <div class="stat-card"><h3 id="statPending">0</h3><p>قيد الانتظار</p></div>
-                <div class="stat-card"><h3 id="statIncome">0</h3><p>الأرباح (د.ل)</p></div>
-            </div>
-            <div class="admin-card">
-                <p style="text-align:center; color:var(--text-muted);">أهلاً بك في نظام CD-CARD. استخدم الشريط السفلي للتنقل.</p>
-            </div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3 id="totalUsers">0</h3><p>إجمالي المستخدمين</p></div>
+            <div class="stat-card"><h3 id="totalOrders">0</h3><p>إجمالي الطلبات</p></div>
+            <div class="stat-card"><h3 id="pendingOrders">0</h3><p>طلبات قيد الانتظار</p></div>
+            <div class="stat-card"><h3 id="totalRevenue">0</h3><p>إجمالي الدخل (د.ل)</p></div>
         </div>
 
-        <div id="tab-users" class="tab-content">
-            <h3 style="color:var(--accent)">👥 إدارة المستخدمين</h3>
-            <div id="usersList"></div>
+        <div class="section">
+            <h3>👥 إدارة المستخدمين والارصدة</h3>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>الرصيد الحالي</th>
+                        <th>الحالة</th>
+                        <th>شحن رصيد</th>
+                        <th>التحكم بالحساب</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
-        <div id="tab-orders" class="tab-content">
-            <h3 style="color:var(--blue)">📦 إدارة الطلبات</h3>
-            <div id="ordersList"></div>
+        <div class="section">
+            <h3>📦 قائمة طلبات الخدمات</h3>
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الخدمة</th>
+                        <th>البيانات (الرابط)</th>
+                        <th>الكمية</th>
+                        <th>الحالة</th>
+                        <th>تحديث الحالة</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-
-        <div id="tab-services" class="tab-content">
-            <h3 style="color:var(--accent)">✨ الخدمات</h3>
-            <div class="admin-card">
-                <p>قريباً: إضافة وتعديل الخدمات من هنا مباشرة.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home', this)"><span>🏠</span>الرئيسية</div>
-        <div class="nav-item" onclick="switchTab('users', this)"><span>👥</span>المستخدمين</div>
-        <div class="nav-item" onclick="switchTab('orders', this)"><span>📦</span>الطلبات</div>
-        <div class="nav-item" onclick="switchTab('services', this)"><span>✨</span>الخدمات</div>
     </div>
 
     <script>
+        // تكوين Firebase الخاص بـ CD-Card
         const firebaseConfig = { 
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
             authDomain: "cd-card-87365.firebaseapp.com", 
@@ -172,117 +191,129 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
 
-        // التبديل بين التبويبات
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active-tab');
-            el.classList.add('active');
-        }
-
-        // الحماية وجلب البيانات
+        // التحقق من صلاحية الأدمن
         auth.onAuthStateChanged(u => {
             if (u) {
                 db.collection('users').doc(u.uid).get().then(doc => {
                     if (doc.exists && doc.data().role === 'admin') {
                         document.getElementById('loading').style.display = 'none';
                         document.getElementById('adminContent').style.display = 'block';
-                        document.getElementById('welcomeMsg').innerText = "أهلاً منصور ⚙️";
-                        loadSystem();
+                        loadAllData();
                     } else {
-                        alert("لا تملك صلاحيات!");
+                        alert("دخول غير مصرح! هذه اللوحة للمدير فقط.");
                         location.href = 'index.html';
                     }
                 });
             } else { location.href = 'login.html'; }
         });
 
-        function loadSystem() {
-            // تحديث الإحصائيات والمستخدمين لحظياً
-            db.collection('users').onSnapshot(snap => {
-                document.getElementById('statUsers').innerText = snap.size;
-                let totalSpent = 0;
-                const uList = document.getElementById('usersList');
-                uList.innerHTML = '';
+        function loadAllData() {
+            updateStats();
+            syncUsers();
+            syncOrders();
+        }
 
+        // تحديث أرقام الإحصائيات
+        async function updateStats() {
+            const users = await db.collection('users').get();
+            const orders = await db.collection('orders').get();
+            const pending = await db.collection('orders').where('status', '==', 'قيد الانتظار').get();
+            
+            let revenue = 0;
+            users.forEach(doc => revenue += (doc.data().spent || 0));
+
+            document.getElementById('totalUsers').innerText = users.size;
+            document.getElementById('totalOrders').innerText = orders.size;
+            document.getElementById('pendingOrders').innerText = pending.size;
+            document.getElementById('totalRevenue').innerText = revenue.toFixed(2);
+        }
+
+        // جلب المستخدمين وتحديثهم لحظياً
+        function syncUsers() {
+            db.collection('users').onSnapshot(snap => {
+                const tbody = document.querySelector('#usersTable tbody');
+                tbody.innerHTML = '';
                 snap.forEach(doc => {
                     const u = doc.data();
-                    totalSpent += (u.spent || 0);
-                    const isBanned = u.status === 'محظور';
-                    
-                    uList.innerHTML += `
-                        <div class="admin-card">
-                            <div class="card-header">
-                                <span class="card-title">${u.username}</span>
-                                <span style="color:${isBanned ? 'var(--danger)' : 'var(--accent)'}">${u.status || 'نشط'}</span>
-                            </div>
-                            <div class="card-body">
-                                <p>الرصيد: ${u.balance.toFixed(2)} د.ل</p>
-                                <input type="number" id="charge-${doc.id}" placeholder="المبلغ لإضافته">
-                                <button class="btn btn-add" onclick="addBalance('${doc.id}', ${u.balance})">شحن الرصيد</button>
-                                <button class="btn btn-outline" onclick="toggleUserStatus('${doc.id}', '${u.status}')">
-                                    ${isBanned ? 'فك الحظر' : 'حظر المستخدم'}
+                    const statusColor = u.status === 'محظور' ? '#ff4d4d' : '#00ff88';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${u.username}</b></td>
+                            <td style="color:var(--accent)">${u.balance.toFixed(2)} د.ل</td>
+                            <td><span class="status-badge" style="background:${statusColor}22; color:${statusColor}">${u.status || 'نشط'}</span></td>
+                            <td>
+                                <input type="number" id="amt-${doc.id}" style="width:60px" placeholder="0.00">
+                                <button class="btn btn-add" onclick="addBalance('${doc.id}', '${u.username}')">شحن</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" onclick="toggleBan('${doc.id}', '${u.status}')">
+                                    ${u.status === 'محظور' ? 'إلغاء الحظر' : 'حظر'}
                                 </button>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     `;
                 });
-                document.getElementById('statIncome').innerText = totalSpent.toFixed(2);
             });
+        }
 
-            // تحديث الطلبات لحظياً
-            db.collection('orders').orderBy('date', 'desc').onSnapshot(snap => {
-                document.getElementById('statOrders').innerText = snap.size;
-                const pending = snap.docs.filter(d => d.data().status === 'قيد الانتظار').length;
-                document.getElementById('statPending').innerText = pending;
-
-                const oList = document.getElementById('ordersList');
-                oList.innerHTML = '';
-
+        // جلب الطلبات وتحديثها لحظياً
+        function syncOrders() {
+            db.collection('orders').orderBy('date', 'desc').limit(50).onSnapshot(snap => {
+                const tbody = document.querySelector('#ordersTable tbody');
+                tbody.innerHTML = '';
                 snap.forEach(doc => {
                     const o = doc.data();
-                    oList.innerHTML += `
-                        <div class="admin-card">
-                            <div class="card-header">
-                                <span class="card-title">${o.service}</span>
-                                <span style="font-size:10px; color:var(--text-muted)">${o.date}</span>
-                            </div>
-                            <div class="card-body">
-                                <p>الهدف: <span style="color:var(--blue)">${o.target}</span></p>
-                                <p>الكمية: ${o.qty}</p>
-                                <p>الحالة حالياً: ${o.status}</p>
+                    let sCol = o.status === 'مكتمل' ? '#00ff88' : (o.status === 'ملغي' ? '#ff4d4d' : '#ffd700');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-size:11px; color:var(--text-muted)">${o.date}</td>
+                            <td>${o.service}</td>
+                            <td style="font-size:11px; max-width:150px; overflow:hidden;">${o.target}</td>
+                            <td>${o.qty}</td>
+                            <td><span style="color:${sCol}">${o.status}</span></td>
+                            <td>
                                 <select onchange="updateOrderStatus('${doc.id}', this.value)">
-                                    <option value="">تغيير الحالة...</option>
+                                    <option value="">تحديث إلى...</option>
                                     <option value="قيد المعالجة">⏳ قيد المعالجة</option>
                                     <option value="مكتمل">✅ مكتمل</option>
                                     <option value="ملغي">❌ ملغي</option>
                                 </select>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     `;
                 });
             });
         }
 
-        async function addBalance(uid, current) {
-            const input = document.getElementById('charge-'+uid);
-            const amt = parseFloat(input.value);
-            if (!amt || amt <= 0) return;
-            await db.collection('users').doc(uid).update({ balance: current + amt });
-            input.value = '';
-            alert("تم الشحن!");
-        }
-
-        async function toggleUserStatus(uid, current) {
-            const next = current === 'محظور' ? 'نشط' : 'محظور';
-            if(confirm(`تحويل حالة المستخدم إلى ${next}؟`)) {
-                await db.collection('users').doc(uid).update({ status: next });
+        // وظيفة إضافة الرصيد
+        async function addBalance(uid, name) {
+            const input = document.getElementById(`amt-${uid}`);
+            const amount = parseFloat(input.value);
+            if (!amount || amount <= 0) return alert("يرجى إدخال مبلغ صحيح");
+            
+            if(confirm(`هل تريد إضافة ${amount} د.ل إلى حساب ${name}؟`)) {
+                await db.collection('users').doc(uid).update({ 
+                    balance: firebase.firestore.FieldValue.increment(amount) 
+                });
+                input.value = '';
+                alert("تم شحن الرصيد بنجاح!");
+                updateStats();
             }
         }
 
-        async function updateOrderStatus(oid, status) {
-            if(!status) return;
-            await db.collection('orders').doc(oid).update({ status: status });
+        // وظيفة الحظر
+        async function toggleBan(uid, currentStatus) {
+            const newStatus = currentStatus === 'محظور' ? 'نشط' : 'محظور';
+            if(confirm(`هل أنت متأكد من تحويل حالة المستخدم إلى: ${newStatus}؟`)) {
+                await db.collection('users').doc(uid).update({ status: newStatus });
+            }
+        }
+
+        // وظيفة تحديث حالة الطلب
+        async function updateOrderStatus(oid, newStatus) {
+            if (!newStatus) return;
+            await db.collection('orders').doc(oid).update({ status: newStatus });
+            updateStats();
         }
     </script>
 </body>
