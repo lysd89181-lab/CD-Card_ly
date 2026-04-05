@@ -23,7 +23,7 @@
             margin: 0; padding-bottom: 100px; direction: rtl; overflow-x: hidden;
         }
 
-        /* --- تنسيقات القوائم المخصصة الجديدة --- */
+        /* --- تنسيقات القوائم المخصصة --- */
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
         .custom-select-trigger {
             background: #000; border: 1px solid var(--border); color: #fff;
@@ -48,7 +48,6 @@
         .custom-option:hover { background: rgba(0, 255, 136, 0.1); }
         .custom-option img, .selected-img { width: 28px; height: 28px; object-fit: contain; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        /* -------------------------------------- */
 
         .app-header {
             display: flex; align-items: center; justify-content: center;
@@ -108,7 +107,6 @@
 
         .btn-action { width: 100%; background: linear-gradient(45deg, var(--accent), var(--blue)); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-action:active { transform: scale(0.98); }
-        .btn-action:disabled { background: #333; color: #888; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
 
         .quran-footer {
             text-align: center; padding: 25px 15px; margin-top: 10px;
@@ -135,8 +133,7 @@
             background: rgba(255,255,255,0.03); border: 1px solid var(--border);
             padding: 15px; border-radius: 15px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
-            text-decoration: none; color: white;
-            transition: 0.3s;
+            text-decoration: none; color: white; transition: 0.3s;
         }
         .list-item:active { background: rgba(255,255,255,0.1); }
         .item-content { display: flex; align-items: center; gap: 12px; }
@@ -218,12 +215,12 @@
         <div id="topupPage" class="page">
             <div class="mashallah-banner"><h1>شحن رصيد المحفظة</h1></div>
             <div class="stats-grid">
-                <div class="stat-box payment-box"><span class="payment-val">0912377291</span><span class="stat-lbl" style="color:var(--blue)">مدار</span></div>
-                <div class="stat-box payment-box"><span class="payment-val">0920414760</span><span class="stat-lbl" style="color:var(--accent)">لبيانا</span></div>
+                <div class="stat-box"><span class="stat-val" style="font-size:15px; color:var(--blue)">0912377291</span><span class="stat-lbl">مدار</span></div>
+                <div class="stat-box"><span class="stat-val" style="font-size:15px; color:var(--accent)">0920414760</span><span class="stat-lbl">لبيانا</span></div>
             </div>
             <div class="glass-panel">
                 <h3 style="text-align:center; color:var(--accent);">شحن رصيد الحساب 💳</h3>
-                <label>الرقام المحول منه</label>
+                <label>الرقم المحول منه</label>
                 <input type="number" id="senderNum" placeholder="09XXXXXXXX">
                 <label>القيمة المحولة</label>
                 <input type="number" id="amountSent" placeholder="أدخل المبلغ">
@@ -258,17 +255,14 @@
         <div id="wheelPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--gold); margin-top:0;">🎡 عجلة الحظ</h2>
-                <div id="wheelContent">
-                    <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
-                    <button id="spinBtn" class="btn-action" style="width:auto; padding:10px 40px; margin:auto;" disabled onclick="spin()">عجلة الحظ متوقفة حالياً</button>
-                </div>
+                <div id="wheel" style="width:180px; height:180px; border:5px solid var(--gold); border-radius:50%; margin:20px auto; background:conic-gradient(var(--accent) 0 90deg, #111 90deg 180deg, var(--gold) 180deg 270deg, #111 270deg 360deg); transition:4s;"></div>
+                <button class="btn-action" style="width:auto; padding:10px 40px; margin:auto;" disabled>العجلة متوقفة حالياً</button>
             </div>
         </div>
 
         <div id="earnPage" class="page">
             <div class="glass-panel" style="text-align:center;">
                 <h2 style="color:var(--accent);">💰 نظام الإحالة</h2>
-                <p style="font-size:12px; color:var(--text-muted);">شارك رابطك واحصل على عمولة عن كل شحن يقوم به صديقك</p>
                 <input type="text" id="refUrl" readonly style="text-align:center; color:var(--accent); border-style:dashed;">
                 <button class="btn-action" style="margin-top:15px;" onclick="copyRef()">نسخ رابط الدعوة</button>
             </div>
@@ -276,35 +270,12 @@
         
         <div id="accPage" class="page">
             <div class="glass-panel">
-                <h3 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top:0;">⚙️ الإعدادات والحساب</h3>
-                <div class="list-item" onclick="alert('👤 معلومات الحساب:\nالاسم: ' + user.username + '\nالبريد: ' + auth.currentUser.email + '\nالحالة: ' + (user.status || 'نشط'))" style="cursor:pointer;">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>معلومات الحساب</span>
-                    </div>
-                    <i>عرض البيانات →</i>
+                <h3 style="color:var(--accent); margin-top:0;">⚙️ الإعدادات والحساب</h3>
+                <div style="line-height:2.5; font-size: 14px;">
+                    الاسم: <span id="accN" style="color:var(--accent)">...</span><br>
+                    البريد: <span id="accE" style="color:var(--accent)">...</span>
                 </div>
-                <a href="https://youtube.com/shorts/OTr66SF6L2M?si=BuqbtbCFnlV9b_mi" class="list-item" target="_blank">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00bdff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        <span>شرح كيفية تعبئة الرصيد</span>
-                    </div>
-                    <i style="color:var(--gold)">شاهد →</i>
-                </a>
-                <a href="https://youtube.com/shorts/yV7lfI3TmMQ?si=PUrp5ipeRPdsIMiJ" class="list-item" target="_blank">
-                    <div class="item-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        <span>طريقة كسب المال</span>
-                    </div>
-                    <i style="color:var(--gold)">شاهد →</i>
-                </a>
-                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border);">
-                    <div style="line-height:2.5; font-size: 14px;">
-                        اسم المستخدم: <span id="accN" style="color:var(--accent)">...</span><br>
-                        البريد: <span id="accE" style="color:var(--accent)">...</span>
-                    </div>
-                    <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px; border:none;" onclick="auth.signOut()">تسجيل الخروج</button>
-                </div>
+                <button class="btn-action" style="background:#ff4d4d; color:white; margin-top:20px;" onclick="auth.signOut()">تسجيل الخروج</button>
             </div>
         </div>
     </div>
@@ -323,11 +294,11 @@
             <br>الدعم
         </div>
         <div class="nav-tab" onclick="nav('wheelPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="12"></line><line x1="12" y1="12" x2="19" y2="19"></line></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="12"></line></svg>
             <br>العجلة
         </div>
         <div class="nav-tab" onclick="nav('earnPage', this)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg>
             <br>كسب المال
         </div>
         <div class="nav-tab" onclick="nav('accPage', this)">
@@ -337,18 +308,10 @@
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const refCode = urlParams.get('ref');
-        
-        if (refCode) {
-            localStorage.setItem('pending_ref', refCode);
-            console.log("تم اكتشاف كود إحالة: " + refCode);
-        }
-
         const firebaseConfig = { apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", authDomain: "cd-card-87365.firebaseapp.com", projectId: "cd-card-87365", storageBucket: "cd-card-87365.firebasestorage.app", messagingSenderId: "397926299412", appId: "1:397926299412:web:efbe9ae9aae29df368f401" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
-        let user = {}, services = [];
+        let user = {}, services = [], categories = [];
 
         auth.onAuthStateChanged(u => {
             if(u) {
@@ -358,17 +321,128 @@
                     document.getElementById('uBal').innerText = user.balance.toFixed(2);
                     document.getElementById('uSpent').innerText = (user.spent || 0).toFixed(2);
                     document.getElementById('uStatus').innerText = user.status || "نشط";
-                    
-                    const currentUrl = window.location.href.split('?')[0];
-                    document.getElementById('refUrl').value = currentUrl + "?ref=" + user.referralCode;
-                    
+                    document.getElementById('refUrl').value = window.location.href.split('?')[0] + "?ref=" + user.referralCode;
                     document.getElementById('accN').innerText = user.username;
                     document.getElementById('accE').innerText = u.email;
+                    
+                    // إذا كان المستخدم محظوراً، يتم توجيهه لصفحة تخبره بذلك أو إظهار رسالة
+                    if(user.status === 'محظور') {
+                        document.body.innerHTML = '<div style="text-align:center; padding-top:100px; color:red;"><h2>هذا الحساب محظور من النظام! ⛔</h2><p>يرجى التواصل مع الدعم الفني.</p></div>';
+                    }
                 });
-                loadServices();
+                loadDataFromFirebase();
                 db.collection('orders').where('userId', '==', u.uid).get().then(s => document.getElementById('uOrders').innerText = s.size);
             } else { window.location.href="login.html"; }
         });
+
+        // دالة جلب الأقسام والخدمات من Firebase
+        function loadDataFromFirebase() {
+            // جلب الأقسام
+            db.collection('categories').onSnapshot(snap => {
+                categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const catOptions = document.getElementById('catOptions');
+                catOptions.innerHTML = categories.map(c => `
+                    <div class="custom-option" onclick="selectCat('${c.id}', '${c.name}')">
+                        <img src="${getIcon(c.name)}">
+                        <span>${c.name}</span>
+                    </div>
+                `).join('');
+            });
+
+            // جلب الخدمات
+            db.collection('services').onSnapshot(snap => {
+                services = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            });
+        }
+
+        function selectCat(id, name) {
+            document.getElementById('cat').value = id;
+            document.getElementById('selectedCatDisplay').innerHTML = `<img src="${getIcon(name)}" class="selected-img"><span>${name}</span>`;
+            document.getElementById('catOptions').classList.remove('open');
+            
+            // تحديث قائمة الخدمات بناءً على القسم المختار
+            const filtered = services.filter(s => s.categoryId === id);
+            const servOptions = document.getElementById('servOptions');
+            servOptions.innerHTML = filtered.map(s => `
+                <div class="custom-option" onclick="selectServ('${s.id}', '${s.name}')">
+                    <img src="${getIcon(s.name)}">
+                    <span>${s.name}</span>
+                </div>
+            `).join('');
+            
+            // تصفير الخدمة المختارة عند تغيير القسم
+            document.getElementById('selectedServDisplay').innerHTML = '<span>اختر خدمة...</span>';
+            document.getElementById('serviceDescription').innerText = 'اختر خدمة لعرض التفاصيل...';
+        }
+
+        function selectServ(id, name) {
+            const s = services.find(x => x.id === id);
+            document.getElementById('serv').value = id;
+            document.getElementById('selectedServDisplay').innerHTML = `<img src="${getIcon(name)}" class="selected-img"><span>${name}</span>`;
+            document.getElementById('servOptions').classList.remove('open');
+            document.getElementById('serviceDescription').innerText = s.description || "لا يوجد وصف لهذه الخدمة.";
+            calc();
+        }
+
+        function calc() {
+            const sId = document.getElementById('serv').value;
+            const s = services.find(x => x.id === sId);
+            if(!s) return;
+            let q = parseFloat(document.getElementById('qty').value) || 0;
+            // الحساب: السعر المخزن في اللوحة هو سعر الـ 1000 قطعة
+            let t = (q / 1000) * s.price;
+            document.getElementById('total').innerText = t.toFixed(2) + " د.ل";
+        }
+
+        async function order() {
+            const sId = document.getElementById('serv').value;
+            const target = document.getElementById('target').value;
+            const qty = parseFloat(document.getElementById('qty').value);
+            const total = parseFloat(document.getElementById('total').innerText);
+
+            if(!sId) return alert("اختر خدمة أولاً!");
+            if(!target) return alert("أدخل الرابط أو الآيدي!");
+            if(user.balance < total) return alert("رصيدك لا يكفي!");
+
+            const s = services.find(x => x.id === sId);
+            if(!confirm(`تأكيد طلب ${s.name} بقيمة ${total.toFixed(2)} د.ل؟`)) return;
+
+            // إضافة الطلب لـ Firebase
+            await db.collection('orders').add({
+                userId: auth.currentUser.uid,
+                username: user.username,
+                service: s.name,
+                target: target,
+                qty: qty,
+                cost: total,
+                status: "قيد الانتظار",
+                date: new Date().toLocaleString('ar-LY')
+            });
+
+            // خصم الرصيد وتحديث المنفق
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                balance: firebase.firestore.FieldValue.increment(-total),
+                spent: firebase.firestore.FieldValue.increment(total)
+            });
+
+            alert("تم إرسال الطلب بنجاح! ✅");
+            document.getElementById('target').value = '';
+        }
+
+        function getIcon(name) {
+            if (!name) return "cd.jpg";
+            const n = name.toLowerCase();
+            if (n.includes("facebook") || n.includes("فيس")) return "Facebook.jpg";
+            if (n.includes("instagram") || n.includes("انستجرام")) return "Instagram.jpg";
+            if (n.includes("netflix") || n.includes("نتفلكس")) return "Netflix.jpg";
+            if (n.includes("snapchat") || n.includes("سناب")) return "Snapchat.jpg";
+            if (n.includes("tiktok") || n.includes("تيك")) return "tiktok.jpg";
+            if (n.includes("pubg") || n.includes("ببجي")) return "popgi.jpg";
+            if (n.includes("telegram") || n.includes("تيلي")) return "teli.jpg";
+            if (n.includes("whatsapp") || n.includes("واتساب")) return "watsap.jpg";
+            if (n.includes("youtube") || n.includes("يوتيوب")) return "yotuop.jpg";
+            return "cd.jpg";
+        }
 
         function toggleDropdown(id) {
             document.querySelectorAll('.custom-options').forEach(opt => {
@@ -377,151 +451,34 @@
             document.getElementById(id).classList.toggle('open');
         }
 
-        // --- تصحيح دالة الأيقونات بناءً على صور غيت هاب ---
-        function getIcon(name) {
-            if (!name) return "cd.jpg";
-            const n = name.toLowerCase();
-
-            // الربط مع أسماء الصور وحالة الأحرف الصحيحة كما في GitHub
-            if (n.includes("facebook") || n.includes("فيس بوك")) return "Facebook.jpg";
-            if (n.includes("instagram") || n.includes("انستجرام")) return "Instagram.jpg";
-            if (n.includes("netflix") || n.includes("نتفلكس")) return "Netflix.jpg";
-            if (n.includes("snapchat") || n.includes("سناب")) return "Snapchat.jpg";
-            if (n.includes("binance") || n.includes("بايننس") || n.includes("usdt")) return "binns.jpg";
-            if (n.includes("capcat") || n.includes("كاب كات")) return "capcat.jpg";
-            if (n.includes("عملات") || n.includes("tik coin")) return "etons.jpg";
-            if (n.includes("free fire") || n.includes("فري فاير")) return "frii.jpg";
-            if (n.includes("pubg") || n.includes("ببجي")) return "popgi.jpg";
-            if (n.includes("shahed") || n.includes("شاهد")) return "shahed.jpg";
-            if (n.includes("gpt") || n.includes("شات")) return "shats.jpg";
-            if (n.includes("tawtheg") || n.includes("توثيق")) return "tawtheg.jpg";
-            if (n.includes("teli") || n.includes("تيليجرام")) return "teli.jpg";
-            if (n.includes("tiktok") || n.includes("تيك توك")) return "tiktok.jpg";
-            if (n.includes("twiter") || n.includes("تويتر")) return "twiter.jpg";
-            if (n.includes("watsap") || n.includes("وتساب")) return "watsap.jpg";
-            if (n.includes("yotuop") || n.includes("يتيوب")) return "yotuop.jpg";
-
-            return "cd.jpg";
-        }
-
-        async function loadServices() {
-            const snap = await db.collection('services').get();
-            services = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            services.sort((a, b) => (a.order || 999) - (b.order || 999));
-            
-            const categories = [...new Set(services.map(s => s.category))];
-            const catOptions = document.getElementById('catOptions');
-            
-            catOptions.innerHTML = categories.map(c => `
-                <div class="custom-option" onclick="selectCat('${c}')">
-                    <img src="${getIcon(c)}">
-                    <span>${c}</span>
-                </div>
-            `).join('');
-            
-            if(categories.length > 0) selectCat(categories[0]);
-        }
-
-        function selectCat(catName) {
-            document.getElementById('cat').value = catName;
-            document.getElementById('selectedCatDisplay').innerHTML = `
-                <img src="${getIcon(catName)}" class="selected-img">
-                <span>${catName}</span>
-            `;
-            document.getElementById('catOptions').classList.remove('open');
-            loadServs();
-        }
-
-        function loadServs() {
-            const c = document.getElementById('cat').value;
-            const filtered = services.filter(s => s.category === c);
-            const servOptions = document.getElementById('servOptions');
-            
-            servOptions.innerHTML = filtered.map(s => `
-                <div class="custom-option" onclick="selectServ('${s.id}', '${s.name}')">
-                    <img src="${getIcon(s.name)}">
-                    <span>${s.name}</span>
-                </div>
-            `).join('');
-            
-            if(filtered.length > 0) selectServ(filtered[0].id, filtered[0].name);
-        }
-
-        function selectServ(id, name) {
-            document.getElementById('serv').value = id;
-            document.getElementById('selectedServDisplay').innerHTML = `
-                <img src="${getIcon(name)}" class="selected-img">
-                <span>${name}</span>
-            `;
-            document.getElementById('servOptions').classList.remove('open');
-            applyLogic();
-        }
-
-        function applyLogic() {
-            const sId = document.getElementById('serv').value;
-            const s = services.find(x => x.id === sId);
-            const qI = document.getElementById('qty');
-            const descBox = document.getElementById('serviceDescription');
-            
-            if(s) {
-                descBox.innerText = s.description || "لا يوجد وصف إضافي لهذه الخدمة.";
-                if(s.type === "Package") { qI.value = 1; qI.disabled = true; } 
-                else { qI.value = 50; qI.disabled = false; }
-                calc();
-            }
-        }
-
-        function calc() {
-            const sId = document.getElementById('serv').value;
-            const s = services.find(x => x.id === sId);
-            if(!s) return;
-            let q = parseFloat(document.getElementById('qty').value) || 0;
-            let t = (s.type === "Package") ? s.finalPrice : (Math.max(q, 50) / 1000) * s.finalPrice;
-            document.getElementById('total').innerText = t.toFixed(2) + " د.ل";
-        }
-
-        async function order() {
-            const total = parseFloat(document.getElementById('total').innerText);
-            if(user.balance < total) return alert("الرصيد لا يكفي!");
-            const sId = document.getElementById('serv').value;
-            const s = services.find(x => x.id === sId);
-            const target = document.getElementById('target').value;
-            if(!target) return alert("يرجى إدخل الرابط أو الآيدي");
-            if(!confirm(`تأكيد طلب ${s.name}؟`)) return;
-
-            await db.collection('orders').add({ userId: auth.currentUser.uid, service: s.name, target, qty: document.getElementById('qty').value, cost: total, status: "قيد الانتظار", date: new Date().toLocaleString('ar-LY') });
-            await db.collection('users').doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-total), spent: firebase.firestore.FieldValue.increment(total) });
-            
-            if(s.type === "Package") {
-                const msg = `*🧾 فاتورة جديدة من CD-CARD*\nالعميل: ${user.username}\nالخدمة: ${s.name}\nالبيانات: ${target}\nالسعر: ${total} د.ل`;
-                window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
-            } else { alert("تم إرسال الطلب بنجاح!"); }
-        }
-
-        function requestTopup() {
-            const num = document.getElementById('senderNum').value;
-            const amount = document.getElementById('amountSent').value;
-            const net = document.getElementById('networkType').value;
-            if(!num || !amount) return alert("يرجى تعبئة كافة البيانات!");
-            const message = "💳 *طلب شحن رصيد محفظة*\n" + "--------------------------\n" + "👤 الاسم: " + user.username + "\n" + "📱 الرقم المحول منه: " + num + "\n" + "💰 القيمة: " + amount + " د.ل\n" + "🌐 الشبكة: " + net + "\n" + "--------------------------\n" + "يرجى مراجعة التحويل وإضافة الرصيد.";
-            window.open("https://wa.me/218912377291?text=" + encodeURIComponent(message), "_blank");
-        }
-
-        function spin() { }
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
-        function copyRef() { const r = document.getElementById('refUrl'); r.select(); navigator.clipboard.writeText(r.value); alert("تم النسخ!"); }
 
-        window.onclick = function(event) {
-            if (!event.target.closest('.custom-select-wrapper')) {
+        function requestTopup() {
+            const num = document.getElementById('senderNum').value;
+            const amt = document.getElementById('amountSent').value;
+            const net = document.getElementById('networkType').value;
+            if(!num || !amt) return alert("امسح بياناتك وعاود!");
+            const msg = `💳 طلب شحن رصيد\nالاسم: ${user.username}\nالرقم: ${num}\nالقيمة: ${amt}\nالشبكة: ${net}`;
+            window.open(`https://wa.me/218912377291?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function copyRef() {
+            const r = document.getElementById('refUrl');
+            r.select();
+            navigator.clipboard.writeText(r.value);
+            alert("تم نسخ رابط الدعوة!");
+        }
+
+        window.onclick = (e) => {
+            if (!e.target.closest('.custom-select-wrapper')) {
                 document.querySelectorAll('.custom-options').forEach(opt => opt.classList.remove('open'));
             }
-        }
+        };
     </script>
 </body>
 </html>
-
