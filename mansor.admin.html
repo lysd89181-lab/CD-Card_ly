@@ -2,240 +2,387 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD Admin Panel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CD-Card | لوحة التحكم المتطورة</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-blue: #3b82f6;
-            --text-main: #f8fafc;
-            --profit-margin: 1.3; /* نسبة الربح 30% */
+        :root { 
+            --bg: #0d1117; 
+            --card: #161b22; 
+            --accent: #00ff88; 
+            --blue: #00bdff;
+            --danger: #ff4d4d;
+            --border: rgba(255, 255, 255, 0.1); 
+            --text-muted: #8b949e;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding-bottom: 80px;
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            direction: rtl; 
+            padding-bottom: 80px; /* مسافة للشريط السفلي */
         }
 
-        /* Top Header */
-        .header {
-            padding: 20px;
+        /* رأس الصفحة */
+        .header { 
+            padding: 20px; 
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .balance-card {
-            background: rgba(59, 130, 246, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--accent-blue);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* الحاويات والأقسام */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Quick Actions */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 15px;
+        /* كروت الإحصائيات */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 20px; 
         }
+        .stat-card { 
+            background: var(--card); 
+            padding: 15px; 
+            border-radius: 15px; 
+            border: 1px solid var(--border); 
+            text-align: center; 
+        }
+        .stat-card h3 { margin: 0; color: var(--accent); font-size: 24px; }
+        .stat-card p { margin: 5px 0 0; color: var(--text-muted); font-size: 12px; }
 
-        .action-btn {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
+        /* كروت العناصر */
+        .admin-card {
+            background: var(--card);
             border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .action-btn i { font-size: 20px; margin-bottom: 8px; display: block; }
-        .action-btn:hover { background: var(--accent-blue); }
-
-        /* Services List */
-        .section-title { padding: 15px; font-size: 1.2rem; }
-        
-        .service-item {
-            background: var(--card-bg);
-            margin: 10px 15px;
             padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
         }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .card-title { font-weight: bold; font-size: 15px; color: var(--blue); }
+        .card-body p { margin: 5px 0; font-size: 13px; color: #ccc; }
 
-        .price-tag { color: #4ade80; font-weight: bold; }
-
-        /* Bottom Nav */
+        /* الشريط السفلي */
         .bottom-nav {
             position: fixed;
             bottom: 0;
-            width: 100%;
-            background: #000;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid #333;
+            align-items: center;
+            z-index: 1000;
+        }
+        .nav-item { color: var(--text-muted); text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+
+        /* الأزرار والمدخلات */
+        .btn { padding: 10px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%; margin-top: 8px; }
+        .btn-add { background: var(--accent); color: #000; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+        
+        input, select, textarea { 
+            background: #000; border: 1px solid var(--border); color: #fff; 
+            padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px;
+            font-family: inherit;
         }
 
-        .nav-item { color: #64748b; text-align: center; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: var(--accent-blue); }
-
-        /* Modal for Manual Add */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 20px;
-            width: 90%;
-            z-index: 100;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-        }
-
-        .btn-main {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 10px;
-            font-weight: bold;
-        }
+        #loading { text-align: center; margin-top: 100px; font-size: 18px; color: var(--accent); }
+        label { font-size: 12px; color: var(--text-muted); display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div><strong>testpanel.net</strong> <i class="fas fa-edit"></i></div>
-        <div class="balance-card">
-            <span>$0.00</span>
-            <i class="fas fa-plus-circle"></i>
-        </div>
-    </div>
+    <div id="loading">جاري فتح النظام يا منصور... 🛡️</div>
 
-    <div class="quick-actions">
-        <div class="action-btn" onclick="openModal()">
-            <i class="fas fa-plus" style="color: #3b82f6;"></i>
-            <span>إضافة خدمة</span>
+    <div id="adminContent" style="display:none;">
+        <div class="header">
+            <div>
+                <h2 id="welcomeMsg">لوحة التحكم</h2>
+            </div>
+            <button class="btn btn-danger" style="width:auto; margin:0;" onclick="location.href='index.html'">المتجر</button>
         </div>
-        <div class="action-btn" onclick="fetchServices()">
-            <i class="fas fa-file-import" style="color: #60a5fa;"></i>
-            <span>جلب API</span>
-        </div>
-        <div class="action-btn">
-            <i class="fas fa-fire" style="color: #fb923c;"></i>
-            <span>المزودين</span>
-        </div>
-    </div>
 
-    <div class="section-title">إدارة الخدمات</div>
-    
-    <div id="services-container">
-        <p style="text-align: center; color: #64748b;">انقر على "جلب API" لتحديث الخدمات</p>
-    </div>
+        <div id="tab-home" class="tab-content active-tab">
+            <div class="stats-grid">
+                <div class="stat-card"><h3 id="statUsers">0</h3><p>المستخدمين</p></div>
+                <div class="stat-card"><h3 id="statOrders">0</h3><p>الطلبات</p></div>
+                <div class="stat-card"><h3 id="statPending">0</h3><p>قيد الانتظار</p></div>
+                <div class="stat-card"><h3 id="statIncome">0</h3><p>الأرباح (د.ل)</p></div>
+            </div>
+            <div class="admin-card">
+                <p style="text-align:center; color:var(--text-muted);">أهلاً بك منصور. تحكم بالأقسام والخدمات والمستخدمين من هنا.</p>
+            </div>
+        </div>
 
-    <div id="manualModal" class="modal">
-        <h3>إضافة خدمة يدوية</h3>
-        <input type="text" id="mName" placeholder="اسم الخدمة">
-        <select id="mCat">
-            <option>PUBG Mobile</option>
-            <option>TikTok</option>
-            <option>Free Fire</option>
-        </select>
-        <input type="number" id="mPrice" placeholder="السعر الأساسي بالدولار">
-        <button class="btn-main" onclick="addManualService()">حفظ الخدمة</button>
-        <button onclick="closeModal()" style="background:none; border:none; color:gray; margin-top:10px;">إلغاء</button>
+        <div id="tab-users" class="tab-content">
+            <h3 style="color:var(--accent)">👥 إدارة المستخدمين</h3>
+            <div id="usersList"></div>
+        </div>
+
+        <div id="tab-orders" class="tab-content">
+            <h3 style="color:var(--blue)">📦 إدارة الطلبات</h3>
+            <div id="ordersList"></div>
+        </div>
+
+        <div id="tab-services" class="tab-content">
+            <h3 style="color:var(--accent)">✨ إدارة الأقسام والخدمات</h3>
+            
+            <div class="admin-card">
+                <h4 style="margin-top:0;">📁 إضافة قسم جديد</h4>
+                <input type="text" id="newCatName" placeholder="مثلاً: خدمات تيك توك">
+                <button class="btn btn-add" onclick="addCategory()">حفظ القسم</button>
+            </div>
+
+            <div class="admin-card">
+                <h4 style="margin-top:0;">➕ إضافة خدمة جديدة</h4>
+                <label>اختر القسم:</label>
+                <select id="serviceCatSelect">
+                    <option value="">-- اختر القسم --</option>
+                </select>
+                
+                <input type="text" id="servName" placeholder="اسم الخدمة">
+                <input type="number" id="servPrice" placeholder="السعر (د.ل)">
+                
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="servMin" placeholder="الحد الأدنى">
+                    <input type="number" id="servMax" placeholder="الحد الأقصى">
+                </div>
+                
+                <textarea id="servDesc" placeholder="وصف الخدمة..." rows="3"></textarea>
+                
+                <button class="btn btn-status" style="background:var(--blue)" onclick="addService()">نشر الخدمة</button>
+            </div>
+
+            <div id="servicesListView"></div>
+        </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item"><i class="fas fa-users"></i><div>Users</div></div>
-        <div class="nav-item"><i class="fas fa-shopping-cart"></i><div>Orders</div></div>
-        <div class="nav-item active"><i class="fas fa-layer-group"></i><div>Services</div></div>
-        <div class="nav-item"><i class="fas fa-headset"></i><div>Support</div></div>
-        <div class="nav-item"><i class="fas fa-bars"></i><div>Menu</div></div>
+        <div class="nav-item active" onclick="switchTab('home', this)"><span>🏠</span>الرئيسية</div>
+        <div class="nav-item" onclick="switchTab('users', this)"><span>👥</span>المستخدمين</div>
+        <div class="nav-item" onclick="switchTab('orders', this)"><span>📦</span>الطلبات</div>
+        <div class="nav-item" onclick="switchTab('services', this)"><span>✨</span>الخدمات</div>
     </div>
 
     <script>
-        const API_URL = 'https://ms1.shop/api/v2';
-        const API_KEY = '17867535f955dc9d0532a0aefc809f51';
-        const PROFIT = 1.3; // 30% زيادة
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
+            authDomain: "cd-card-87365.firebaseapp.com", 
+            projectId: "cd-card-87365", 
+            storageBucket: "cd-card-87365.firebasestorage.app", 
+            messagingSenderId: "397926299412", 
+            appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
+        };
 
-        async function fetchServices() {
-            const container = document.getElementById('services-container');
-            container.innerHTML = '<p style="text-align: center;">جاري التحميل...</p>';
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(), auth = firebase.auth();
 
-            try {
-                // ملاحظة: قد تحتاج إلى CORS Proxy إذا كنت تجرب الكود من المتصفح مباشرة
-                const response = await fetch(`${API_URL}?key=${API_KEY}&action=services`);
-                const services = await response.json();
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active-tab');
+            el.classList.add('active');
+        }
 
-                container.innerHTML = '';
-                services.slice(0, 15).forEach(service => { // عرض أول 15 للتجربة
-                    const finalPrice = (parseFloat(service.rate) * PROFIT).toFixed(2);
-                    
-                    const div = document.createElement('div');
-                    div.className = 'service-item';
-                    div.innerHTML = `
-                        <div>
-                            <strong>${service.name}</strong><br>
-                            <small style="color:gray;">ID: ${service.service} | ${service.category}</small>
-                        </div>
-                        <div class="price-tag">$${finalPrice}</div>
-                    `;
-                    container.appendChild(div);
+        auth.onAuthStateChanged(u => {
+            if (u) {
+                db.collection('users').doc(u.uid).get().then(doc => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('adminContent').style.display = 'block';
+                        document.getElementById('welcomeMsg').innerText = "أهلاً منصور ⚙️";
+                        loadSystem();
+                        listenToCategories();
+                        loadCurrentServices();
+                    } else {
+                        alert("لا تملك صلاحيات!");
+                        location.href = 'index.html';
+                    }
                 });
-            } catch (error) {
-                container.innerHTML = '<p style="text-align: center; color: red;">خطأ في الاتصال بالـ API</p>';
+            } else { location.href = 'login.html'; }
+        });
+
+        function loadSystem() {
+            // إحصائيات ومستخدمين
+            db.collection('users').onSnapshot(snap => {
+                document.getElementById('statUsers').innerText = snap.size;
+                let totalSpent = 0;
+                const uList = document.getElementById('usersList');
+                uList.innerHTML = '';
+
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    totalSpent += (u.spent || 0);
+                    const isBanned = u.status === 'محظور';
+                    uList.innerHTML += `
+                        <div class="admin-card">
+                            <div class="card-header">
+                                <span class="card-title">${u.username}</span>
+                                <span style="color:${isBanned ? 'var(--danger)' : 'var(--accent)'}">${u.status || 'نشط'}</span>
+                            </div>
+                            <div class="card-body">
+                                <p>الرصيد: ${u.balance.toFixed(2)} د.ل</p>
+                                <input type="number" id="charge-${doc.id}" placeholder="شحن رصيد">
+                                <button class="btn btn-add" onclick="addBalance('${doc.id}', ${u.balance})">شحن</button>
+                                <button class="btn btn-outline" onclick="toggleUserStatus('${doc.id}', '${u.status}')">
+                                    ${isBanned ? 'فك الحظر' : 'حظر المستخدم'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('statIncome').innerText = totalSpent.toFixed(2);
+            });
+
+            // طلبات
+            db.collection('orders').orderBy('date', 'desc').onSnapshot(snap => {
+                document.getElementById('statOrders').innerText = snap.size;
+                const pending = snap.docs.filter(d => d.data().status === 'قيد الانتظار').length;
+                document.getElementById('statPending').innerText = pending;
+                const oList = document.getElementById('ordersList');
+                oList.innerHTML = '';
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    oList.innerHTML += `
+                        <div class="admin-card">
+                            <div class="card-header">
+                                <span class="card-title">${o.service}</span>
+                                <span style="font-size:10px; color:var(--text-muted)">${o.date}</span>
+                            </div>
+                            <div class="card-body">
+                                <p>الهدف: <span style="color:var(--blue)">${o.target}</span></p>
+                                <p>الكمية: ${o.qty}</p>
+                                <p>الحالة: ${o.status}</p>
+                                <select onchange="updateOrderStatus('${doc.id}', this.value)">
+                                    <option value="">تحديث الحالة...</option>
+                                    <option value="قيد المعالجة">⏳ قيد المعالجة</option>
+                                    <option value="مكتمل">✅ مكتمل</option>
+                                    <option value="ملغي">❌ ملغي</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // دالة إضافة قسم
+        async function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            if(!name) return alert("اكتب اسم القسم!");
+            await db.collection('categories').add({ name: name, date: new Date().toLocaleString('ar-LY') });
+            document.getElementById('newCatName').value = '';
+            alert("تم إضافة القسم!");
+        }
+
+        // جلب الأقسام للقائمة المنسدلة
+        function listenToCategories() {
+            db.collection('categories').onSnapshot(snap => {
+                const select = document.getElementById('serviceCatSelect');
+                select.innerHTML = '<option value="">-- اختر القسم --</option>';
+                snap.forEach(doc => {
+                    select.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+                });
+            });
+        }
+
+        // دالة إضافة خدمة
+        async function addService() {
+            const catId = document.getElementById('serviceCatSelect').value;
+            const catName = document.getElementById('serviceCatSelect').options[document.getElementById('serviceCatSelect').selectedIndex].text;
+            const name = document.getElementById('servName').value;
+            const price = parseFloat(document.getElementById('servPrice').value);
+            const min = document.getElementById('servMin').value;
+            const max = document.getElementById('servMax').value;
+            const desc = document.getElementById('servDesc').value;
+
+            if(!catId || !name || !price) return alert("امسح بياناتك وعاود! (الاسم والسعر والقسم مطلوبين)");
+
+            await db.collection('services').add({
+                categoryId: catId, categoryName: catName, name: name,
+                price: price, min: min, max: max, description: desc,
+                status: 'active', date: new Date().toLocaleString('ar-LY')
+            });
+
+            document.getElementById('servName').value = '';
+            document.getElementById('servPrice').value = '';
+            document.getElementById('servMin').value = '';
+            document.getElementById('servMax').value = '';
+            document.getElementById('servDesc').value = '';
+            alert("تم نشر الخدمة بنجاح ✅");
+        }
+
+        // عرض الخدمات الموجودة حالياً مع إمكانية حذفها
+        function loadCurrentServices() {
+            db.collection('services').orderBy('date', 'desc').onSnapshot(snap => {
+                const container = document.getElementById('servicesListView');
+                container.innerHTML = '<h3 style="margin-top:30px;">📋 الخدمات المنشورة</h3>';
+                snap.forEach(doc => {
+                    const s = doc.data();
+                    container.innerHTML += `
+                        <div class="admin-card" style="border-right: 4px solid var(--accent)">
+                            <div class="card-header">
+                                <span class="card-title">${s.name}</span>
+                                <span style="font-size:10px;">${s.categoryName}</span>
+                            </div>
+                            <div class="card-body">
+                                <p>السعر: ${s.price} د.ل</p>
+                                <button class="btn btn-danger" style="padding:5px;" onclick="deleteService('${doc.id}')">حذف الخدمة</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function deleteService(id) {
+            if(confirm("هل تريد حذف هذه الخدمة نهائياً؟")) {
+                await db.collection('services').doc(id).delete();
             }
         }
 
-        function openModal() { document.getElementById('manualModal').style.display = 'block'; }
-        function closeModal() { document.getElementById('manualModal').style.display = 'none'; }
+        async function addBalance(uid, current) {
+            const input = document.getElementById('charge-'+uid);
+            const amt = parseFloat(input.value);
+            if (!amt || amt <= 0) return;
+            await db.collection('users').doc(uid).update({ balance: current + amt });
+            input.value = '';
+            alert("تم الشحن!");
+        }
 
-        function addManualService() {
-            const name = document.getElementById('mName').value;
-            const price = document.getElementById('mPrice').value;
-            const finalPrice = (parseFloat(price) * PROFIT).toFixed(2);
+        async function toggleUserStatus(uid, current) {
+            const next = current === 'محظور' ? 'نشط' : 'محظور';
+            if(confirm(`تحويل حالة المستخدم إلى ${next}؟`)) {
+                await db.collection('users').doc(uid).update({ status: next });
+            }
+        }
 
-            const container = document.getElementById('services-container');
-            const div = document.createElement('div');
-            div.className = 'service-item';
-            div.style.border = "1px solid #4ade80"; // تمييز اليدوي
-            div.innerHTML = `
-                <div>
-                    <strong>${name} (يدوي)</strong><br>
-                    <small style="color:gray;">خدمة مضافة يدوياً</small>
-                </div>
-                <div class="price-tag">$${finalPrice}</div>
-            `;
-            container.prepend(div);
-            closeModal();
+        async function updateOrderStatus(oid, status) {
+            if(!status) return;
+            await db.collection('orders').doc(oid).update({ status: status });
+            alert("تم تحديث الطلب");
         }
     </script>
 </body>
