@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD-Card | لوحة التحكم السرية</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { 
+            --bg: #0d1117; 
+            --card: #161b22; 
+            --accent: #00ff88; 
+            --blue: #00bdff;
+            --danger: #ff4d4d;
+            --border: rgba(255, 255, 255, 0.1); 
+            --text-muted: #8b949e;
+        }
+
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            direction: rtl; 
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px solid var(--accent); 
+        }
+
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
+
+        .stat-card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: 1px solid var(--border); 
+            text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .stat-card h3 { margin: 0; color: var(--accent); font-size: 28px; }
+        .stat-card p { margin: 5px 0 0; color: var(--text-muted); font-size: 14px; }
+
+        .section { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 30px; 
+            border: 1px solid var(--border); 
+            overflow-x: auto; 
+        }
+
+        .section h3 { 
+            margin-top: 0; 
+            color: var(--blue); 
+            border-right: 4px solid var(--blue); 
+            padding-right: 10px; 
+            margin-bottom: 20px;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 700px; 
+        }
+
+        th, td { 
+            padding: 15px; 
+            text-align: right; 
+            border-bottom: 1px solid var(--border); 
+        }
+
+        th { color: var(--accent); font-size: 14px; text-transform: uppercase; }
+
+        .btn { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s;
+            font-size: 12px;
+        }
+
+        .btn-add { background: var(--accent); color: #000; }
+        .btn-status { background: var(--blue); color: #fff; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        input[type="number"], select { 
+            background: #000; 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            padding: 8px; 
+            border-radius: 8px; 
+            outline: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #adminContent { display: none; }
+        #loading { text-align: center; margin-top: 100px; font-size: 20px; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="loading">جاري التحقق من صلاحيات المدير "منصور"... 🛡️</div>
+
+    <div id="adminContent">
+        <div class="header">
+            <div>
+                <h2 style="margin:0;">لوحة التحكم الإدارية ⚙️</h2>
+                <p style="color:var(--text-muted); font-size:12px;">مرحباً بك يا محمد في نظام الإدارة</p>
+            </div>
+            <button class="btn btn-danger" onclick="location.href='index.html'">خروج للمتجر</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><h3 id="totalUsers">0</h3><p>إجمالي المستخدمين</p></div>
+            <div class="stat-card"><h3 id="totalOrders">0</h3><p>إجمالي الطلبات</p></div>
+            <div class="stat-card"><h3 id="pendingOrders">0</h3><p>طلبات قيد الانتظار</p></div>
+            <div class="stat-card"><h3 id="totalRevenue">0</h3><p>إجمالي الدخل (د.ل)</p></div>
+        </div>
+
+        <div class="section">
+            <h3>👥 إدارة المستخدمين والارصدة</h3>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>الرصيد الحالي</th>
+                        <th>الحالة</th>
+                        <th>شحن رصيد</th>
+                        <th>التحكم بالحساب</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>📦 قائمة طلبات الخدمات</h3>
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الخدمة</th>
+                        <th>البيانات (الرابط)</th>
+                        <th>الكمية</th>
+                        <th>الحالة</th>
+                        <th>تحديث الحالة</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // تكوين Firebase الخاص بـ CD-Card
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y", 
+            authDomain: "cd-card-87365.firebaseapp.com", 
+            projectId: "cd-card-87365", 
+            storageBucket: "cd-card-87365.firebasestorage.app", 
+            messagingSenderId: "397926299412", 
+            appId: "1:397926299412:web:efbe9ae9aae29df368f401" 
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(), auth = firebase.auth();
+
+        // التحقق من صلاحية الأدمن
+        auth.onAuthStateChanged(u => {
+            if (u) {
+                db.collection('users').doc(u.uid).get().then(doc => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('adminContent').style.display = 'block';
+                        loadAllData();
+                    } else {
+                        alert("دخول غير مصرح! هذه اللوحة للمدير فقط.");
+                        location.href = 'index.html';
+                    }
+                });
+            } else { location.href = 'login.html'; }
+        });
+
+        function loadAllData() {
+            updateStats();
+            syncUsers();
+            syncOrders();
+        }
+
+        // تحديث أرقام الإحصائيات
+        async function updateStats() {
+            const users = await db.collection('users').get();
+            const orders = await db.collection('orders').get();
+            const pending = await db.collection('orders').where('status', '==', 'قيد الانتظار').get();
+            
+            let revenue = 0;
+            users.forEach(doc => revenue += (doc.data().spent || 0));
+
+            document.getElementById('totalUsers').innerText = users.size;
+            document.getElementById('totalOrders').innerText = orders.size;
+            document.getElementById('pendingOrders').innerText = pending.size;
+            document.getElementById('totalRevenue').innerText = revenue.toFixed(2);
+        }
+
+        // جلب المستخدمين وتحديثهم لحظياً
+        function syncUsers() {
+            db.collection('users').onSnapshot(snap => {
+                const tbody = document.querySelector('#usersTable tbody');
+                tbody.innerHTML = '';
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    const statusColor = u.status === 'محظور' ? '#ff4d4d' : '#00ff88';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${u.username}</b></td>
+                            <td style="color:var(--accent)">${u.balance.toFixed(2)} د.ل</td>
+                            <td><span class="status-badge" style="background:${statusColor}22; color:${statusColor}">${u.status || 'نشط'}</span></td>
+                            <td>
+                                <input type="number" id="amt-${doc.id}" style="width:60px" placeholder="0.00">
+                                <button class="btn btn-add" onclick="addBalance('${doc.id}', '${u.username}')">شحن</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" onclick="toggleBan('${doc.id}', '${u.status}')">
+                                    ${u.status === 'محظور' ? 'إلغاء الحظر' : 'حظر'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        // جلب الطلبات وتحديثها لحظياً
+        function syncOrders() {
+            db.collection('orders').orderBy('date', 'desc').limit(50).onSnapshot(snap => {
+                const tbody = document.querySelector('#ordersTable tbody');
+                tbody.innerHTML = '';
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    let sCol = o.status === 'مكتمل' ? '#00ff88' : (o.status === 'ملغي' ? '#ff4d4d' : '#ffd700');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-size:11px; color:var(--text-muted)">${o.date}</td>
+                            <td>${o.service}</td>
+                            <td style="font-size:11px; max-width:150px; overflow:hidden;">${o.target}</td>
+                            <td>${o.qty}</td>
+                            <td><span style="color:${sCol}">${o.status}</span></td>
+                            <td>
+                                <select onchange="updateOrderStatus('${doc.id}', this.value)">
+                                    <option value="">تحديث إلى...</option>
+                                    <option value="قيد المعالجة">⏳ قيد المعالجة</option>
+                                    <option value="مكتمل">✅ مكتمل</option>
+                                    <option value="ملغي">❌ ملغي</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        // وظيفة إضافة الرصيد
+        async function addBalance(uid, name) {
+            const input = document.getElementById(`amt-${uid}`);
+            const amount = parseFloat(input.value);
+            if (!amount || amount <= 0) return alert("يرجى إدخال مبلغ صحيح");
+            
+            if(confirm(`هل تريد إضافة ${amount} د.ل إلى حساب ${name}؟`)) {
+                await db.collection('users').doc(uid).update({ 
+                    balance: firebase.firestore.FieldValue.increment(amount) 
+                });
+                input.value = '';
+                alert("تم شحن الرصيد بنجاح!");
+                updateStats();
+            }
+        }
+
+        // وظيفة الحظر
+        async function toggleBan(uid, currentStatus) {
+            const newStatus = currentStatus === 'محظور' ? 'نشط' : 'محظور';
+            if(confirm(`هل أنت متأكد من تحويل حالة المستخدم إلى: ${newStatus}؟`)) {
+                await db.collection('users').doc(uid).update({ status: newStatus });
+            }
+        }
+
+        // وظيفة تحديث حالة الطلب
+        async function updateOrderStatus(oid, newStatus) {
+            if (!newStatus) return;
+            await db.collection('orders').doc(oid).update({ status: newStatus });
+            updateStats();
+        }
+    </script>
+</body>
+</html>
+
