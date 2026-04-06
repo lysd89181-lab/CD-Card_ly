@@ -3,244 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الاحترافية | CD-CARD</title>
+    <title>CD-CARD | لوحة الإدارة الاحترافية</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* التنسيق البصري للوحة التحكم */
         :root {
-            --bg: #030303;
-            --card: #0e0e0e;
-            --neon: #39ff14;
-            --border: #1a1a1a;
-            --text: #ffffff;
-            --dim: #777;
-            --danger: #ff3131;
+            --bg-main: #050505;
+            --card-bg: #0f0f0f;
+            --neon-color: #39ff14;
+            --border-color: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --danger: #ff4444;
         }
 
-        * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--neon) #000; }
         body {
-            font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text);
+            font-family: 'Cairo', sans-serif; background: var(--bg-main); color: var(--text-main);
             margin: 0; display: flex; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* Sidebar - القائمة الجانبية */
+        /*Sidebar*/
         .sidebar {
-            width: 270px; background: var(--card); border-left: 1px solid var(--border);
-            position: fixed; height: 100vh; right: 0; display: flex; flex-direction: column; z-index: 100;
+            width: 280px; background: var(--card-bg); border-left: 1px solid var(--border-color);
+            position: fixed; height: 100%; right: 0; display: flex; flex-direction: column; z-index: 1000;
         }
-        .sidebar-brand { padding: 40px 20px; text-align: center; }
-        .sidebar-brand img { width: 90px; border-radius: 50%; border: 2px solid var(--neon); box-shadow: 0 0 15px rgba(57, 255, 20, 0.4); }
+        .sidebar-header { padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header img { width: 90px; border-radius: 50%; border: 2px solid var(--neon-color); box-shadow: 0 0 15px var(--neon-color); }
         
-        .nav-list { flex: 1; margin-top: 20px; }
-        .nav-item {
-            display: flex; align-items: center; padding: 15px 30px; color: var(--dim);
-            text-decoration: none; cursor: pointer; transition: 0.3s; border-right: 4px solid transparent;
+        .nav-links { flex-grow: 1; padding: 25px 0; }
+        .nav-links a {
+            display: flex; align-items: center; padding: 18px 30px; color: var(--text-dim);
+            text-decoration: none; transition: 0.3s; border-right: 4px solid transparent; cursor: pointer;
         }
-        .nav-item i { margin-left: 15px; font-size: 18px; width: 25px; }
-        .nav-item:hover, .nav-item.active {
-            color: var(--neon); background: rgba(57, 255, 20, 0.03); border-right-color: var(--neon);
+        .nav-links a i { margin-left: 15px; font-size: 20px; width: 25px; }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--neon-color); background: rgba(57, 255, 20, 0.05); border-right-color: var(--neon-color);
         }
 
-        /* Main Content - المحتوى الرئيسي */
-        .main { margin-right: 270px; width: calc(100% - 270px); padding: 50px; }
-        .page { display: none; animation: fadeIn 0.5s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /*Main Content*/
+        .main-content { margin-right: 280px; width: calc(100% - 280px); padding: 50px; transition: 0.3s; }
+        .section { display: none; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Typography */
-        h1 { font-size: 32px; color: var(--neon); margin-bottom: 40px; text-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
-        .section-title { font-size: 20px; margin-bottom: 20px; color: var(--text); border-right: 4px solid var(--neon); padding-right: 15px; }
+        h1 { font-size: 32px; color: var(--neon-color); margin-bottom: 40px; }
 
-        /* Dashboard Stats */
-        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .stat-box { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; transition: 0.3s; }
-        .stat-box:hover { border-color: var(--neon); transform: translateY(-5px); }
-        .stat-box h3 { font-size: 35px; margin: 10px 0; color: var(--neon); }
-        .stat-box p { color: var(--dim); font-size: 14px; margin: 0; }
+        /*Dashboard Grid*/
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 50px; }
+        .stat-card { background: var(--card-bg); padding: 35px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; }
+        .stat-card h3 { font-size: 40px; margin: 15px 0; color: var(--neon-color); }
+        .stat-card p { color: var(--text-dim); margin: 0; font-size: 14px; }
 
-        /* Tables - الجداول */
-        .table-container { background: var(--card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; margin-top: 20px; }
+        /*Tables & Forms*/
+        .data-box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; text-align: right; }
-        th { background: #111; padding: 20px; color: var(--neon); font-size: 14px; border-bottom: 1px solid var(--border); }
-        td { padding: 18px; border-bottom: 1px solid #151515; font-size: 13px; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background: rgba(255,255,255,0.01); }
-
-        /* Inputs & Buttons */
-        .controls-row { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; align-items: flex-end; }
-        .input-group { flex: 1; min-width: 200px; }
-        .input-group label { display: block; margin-bottom: 10px; color: var(--dim); font-size: 12px; }
+        th { background: #151515; padding: 20px; color: var(--neon-color); font-size: 15px; }
+        td { padding: 18px; border-bottom: 1px solid #1a1a1a; font-size: 14px; color: #ddd; }
+        
+        .input-group { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; }
         input, select {
-            width: 100%; padding: 12px 15px; background: #000; border: 1px solid var(--border);
-            color: #fff; border-radius: 12px; font-family: 'Cairo'; transition: 0.3s;
+            width: 100%; padding: 12px; margin-top: 10px; background: #000; border: 1px solid var(--border-color);
+            color: #fff; border-radius: 10px; font-family: 'Cairo';
         }
-        input:focus { border-color: var(--neon); outline: none; box-shadow: 0 0 10px rgba(57, 255, 20, 0.1); }
-
-        .btn {
-            background: transparent; color: var(--neon); border: 1px solid var(--neon);
-            padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold;
-            transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        .btn-neon {
+            background: transparent; color: var(--neon-color); border: 1px solid var(--neon-color);
+            padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s;
         }
-        .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
-        .btn-danger { color: var(--danger); border-color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px var(--danger); }
+        .btn-neon:hover { background: var(--neon-color); color: #000; box-shadow: 0 0 20px var(--neon-color); }
 
-        /* Specialized Inputs */
-        .order-input { width: 60px !important; text-align: center; color: var(--neon); font-weight: bold; border-color: #333; }
-        .edit-name { background: transparent; border: 1px dashed #444; width: auto; padding: 5px; }
-
-        /* Status Badges */
-        .badge { padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: bold; }
-        .bg-green { background: rgba(57, 255, 20, 0.1); color: var(--neon); }
-        .bg-orange { background: rgba(255, 165, 0, 0.1); color: orange; }
-
-        /* Loader */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
-            z-index: 1000; display: flex; justify-content: center; align-items: center;
-        }
-        .spinner { width: 50px; height: 50px; border: 4px solid #111; border-top-color: var(--neon); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 1024px) {
-            .sidebar { width: 80px; }
-            .sidebar-brand h4, .sidebar-brand small, .nav-item span { display: none; }
-            .main { margin-right: 80px; width: calc(100% - 80px); padding: 30px; }
-        }
+        .order-input { width: 60px; text-align: center; color: var(--neon-color); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen"><div class="spinner"></div></div>
-
     <div class="sidebar">
-        <div class="sidebar-brand">
+        <div class="sidebar-header">
             <img src="cd.jpg" alt="Admin">
-            <h4 style="margin: 15px 0 5px; color: var(--neon);">CD-CARD</h4>
-            <small style="color: var(--dim);">لوحة الإدارة v2.0</small>
+            <h4 style="margin: 15px 0 0;">محمد | CD-CARD</h4>
         </div>
-        <nav class="nav-list">
-            <a onclick="showPage('dash')" id="link-dash" class="nav-item active"><i class="fa fa-th-large"></i> <span>الإحصائيات</span></a>
-            <a onclick="showPage('manage-store')" id="link-manage-store" class="nav-item"><i class="fa fa-store"></i> <span>خدمات متجري</span></a>
-            <a onclick="showPage('fetch-api')" id="link-fetch-api" class="nav-item"><i class="fa fa-download"></i> <span>جلب من API</span></a>
-            <a onclick="showPage('users-list')" id="link-users-list" class="nav-item"><i class="fa fa-users"></i> <span>المستخدمين</span></a>
-            <a onclick="showPage('orders-list')" id="link-orders-list" class="nav-item"><i class="fa fa-shopping-bag"></i> <span>الطلبات</span></a>
-        </nav>
-        <div style="padding: 20px; border-top: 1px solid var(--border);">
-            <a href="#" onclick="signOut()" class="nav-item" style="color: var(--danger);"><i class="fa fa-sign-out-alt"></i> <span>خروج</span></a>
+        <div class="nav-links">
+            <a onclick="showSec('dash')" id="n-dash" class="active"><i class="fa fa-home"></i> الرئيسية</a>
+            <a onclick="showSec('services')" id="n-services"><i class="fa fa-list"></i> خدمات المتجر</a>
+            <a onclick="showSec('api')" id="n-api"><i class="fa fa-cloud-download-alt"></i> جلب من المزود</a>
+            <a onclick="showSec('users')" id="n-users"><i class="fa fa-users"></i> إدارة الزبائن</a>
+            <a onclick="showSec('orders')" id="n-orders"><i class="fa fa-shopping-cart"></i> الطلبات</a>
         </div>
     </div>
 
-    <div class="main">
-
-        <div id="page-dash" class="page active">
-            <h1>أهلاً بك يا محمد</h1>
-            <div class="grid-stats">
-                <div class="stat-box"><p>إجمالي الزبائن</p><h3 id="stat-u">0</h3></div>
-                <div class="stat-box"><p>الطلبات النشطة</p><h3 id="stat-o">0</h3></div>
-                <div class="stat-box"><p>خدماتك المعروضة</p><h3 id="stat-s">0</h3></div>
+    <div class="main-content">
+        <div id="dash" class="section active">
+            <h1>نظرة عامة</h1>
+            <div class="stats-grid">
+                <div class="stat-card"><p>إجمالي الزبائن</p><h3 id="st-users">0</h3></div>
+                <div class="stat-card"><p>الطلبات النشطة</p><h3 id="st-orders">3</h3></div>
+                <div class="stat-card"><p>الخدمات المعروضة</p><h3 id="st-serv">0</h3></div>
             </div>
         </div>
 
-        <div id="page-manage-store" class="page">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h1 style="margin:0">إدارة خدمات متجري</h1>
-                <p style="color: var(--dim);">تحكم في الترتيب والأسعار التي تظهر لزبائنك</p>
-            </div>
-
-            <div class="table-container">
+        <div id="services" class="section">
+            <h1>إدارة خدماتي المعروضة</h1>
+            <div class="data-box">
                 <table>
                     <thead>
                         <tr>
-                            <th width="80">الترتيب</th>
-                            <th>الاسم المعروض (قابل للتعديل)</th>
-                            <th>القسم</th>
-                            <th>السعر الحالي</th>
-                            <th>تحديث البيانات</th>
-                            <th width="100">حذف</th>
+                            <th>الترتيب</th>
+                            <th>الاسم المعروض</th>
+                            <th>السعر</th>
+                            <th>تحديث</th>
+                            <th>حذف</th>
                         </tr>
                     </thead>
-                    <tbody id="my-store-table">
-                        </tbody>
+                    <tbody id="my-services-list"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="page-fetch-api" class="page">
-            <h1>جلب من ms1.shop</h1>
-            <div class="controls-row">
-                <button class="btn" onclick="fetchFromAPI()"><i class="fa fa-sync-alt"></i> جلب الخدمات المتاحة</button>
-                <div class="input-group">
-                    <input type="text" id="api-search" placeholder="ابحث في خدمات المزود..." onkeyup="filterAPITable()">
-                </div>
+        <div id="api" class="section">
+            <h1>الجلب من ms1.shop</h1>
+            <div class="input-group">
+                <button class="btn-neon" onclick="fetchAPI()">جلب القائمة المحدثة (حل CORS)</button>
+                <input type="text" id="api-search" placeholder="ابحث في خدمات المزود..." style="margin-top: 15px;" onkeyup="filterAPI()">
             </div>
-            <div class="table-container" style="max-height: 600px; overflow-y: auto;">
+            <div class="data-box" style="max-height: 500px; overflow-y: auto;">
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>الاسم</th>
-                            <th>سعر المزود</th>
-                            <th>ترتيبها عند الإضافة</th>
+                            <th>الخدمة</th>
+                            <th>السعر</th>
+                            <th>ترتيب الإضافة</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
-                    <tbody id="api-fetch-table">
-                        <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--dim);">اضغط جلب لعرض خدمات المزود</td></tr>
-                    </tbody>
+                    <tbody id="api-fetch-list"></tbody>
                 </table>
             </div>
         </div>
-
-        <div id="page-users-list" class="page">
-            <h1>إدارة الأعضاء</h1>
-            <div class="controls-row">
-                <div class="input-group"><label>البريد الإلكتروني</label><input type="email" id="rech-mail" placeholder="user@mail.com"></div>
-                <div class="input-group"><label>المبلغ المطلوب إضافته</label><input type="number" id="rech-val" placeholder="0.00"></div>
-                <button class="btn" onclick="rechargeUser()"><i class="fa fa-plus-circle"></i> شحن الرصيد</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>البريد</th>
-                            <th>الرصيد</th>
-                            <th>الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table"></tbody>
-                </table>
-            </div>
+        
         </div>
-
-        <div id="page-orders-list" class="page">
-            <h1>قائمة الطلبات</h1>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الزبون</th>
-                            <th>الخدمة</th>
-                            <th>الرابط</th>
-                            <th>الحالة</th>
-                            <th>إتمام</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orders-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
 
     <script>
-        // 1. Firebase Config
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -249,134 +159,77 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const KEY = "958c5695446fccb28ab7b8090d5e271a";
+        const SMM_KEY = "958c5695446fccb28ab7b8090d5e271a";
 
-        // 2. Navigation
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
-            document.getElementById('link-' + id).classList.add('active');
+        function showSec(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            document.getElementById('n-' + id).classList.add('active');
         }
 
-        // 3. Main Data Sync
-        function startApp() {
-            // مزامنة خدماتي (الموجودة فعلياً في متجري)
-            db.collection("services").orderBy("orderNum", "asc").onSnapshot(snap => {
-                document.getElementById('stat-s').innerText = snap.size;
-                const table = document.getElementById('my-store-table');
-                table.innerHTML = "";
-                snap.forEach(doc => {
-                    const s = doc.data();
-                    table.innerHTML += `
-                        <tr>
-                            <td><input type="number" id="ord-${doc.id}" value="${s.orderNum}" class="order-input"></td>
-                            <td><input type="text" id="name-${doc.id}" value="${s.name}" class="edit-name"></td>
-                            <td style="color:var(--dim)">${s.category}</td>
-                            <td><input type="text" id="rate-${doc.id}" value="${s.rate}" style="width:80px"></td>
-                            <td><button class="btn btn-sm" onclick="saveEdit('${doc.id}')">حفظ التغيير</button></td>
-                            <td><button class="btn-danger btn" onclick="deleteService('${doc.id}')"><i class="fa fa-trash"></i></button></td>
-                        </tr>
-                    `;
-                });
-            });
+        // 1. Fetching logic with CORS Proxy
+        async function fetchAPI() {
+            const list = document.getElementById('api-fetch-list');
+            list.innerHTML = "<tr><td colspan='5' style='text-align:center'>جاري الجلب عبر البروكسي...</td></tr>";
+            
+            const proxy = "https://api.allorigins.win/get?url=";
+            const target = encodeURIComponent(`https://ms1.shop/api/v2?key=${SMM_KEY}&action=services`);
 
-            // مزامنة الإحصائيات الأخرى
-            db.collection("users").onSnapshot(snap => {
-                document.getElementById('stat-u').innerText = snap.size;
-                const ut = document.getElementById('users-table');
-                ut.innerHTML = "";
-                snap.forEach(d => {
-                    const u = d.data();
-                    ut.innerHTML += `<tr><td>${u.username}</td><td>${u.email}</td><td style="color:var(--neon)">${u.balance} LYD</td><td><span class="badge bg-green">نشط</span></td></tr>`;
-                });
-            });
-
-            db.collection("orders").onSnapshot(snap => {
-                document.getElementById('stat-o').innerText = snap.size;
-                const ot = document.getElementById('orders-table');
-                ot.innerHTML = "";
-                snap.forEach(d => {
-                    const o = d.data();
-                    ot.innerHTML += `<tr><td>${o.userName}</td><td>${o.serviceName}</td><td><a href="${o.link}" style="color:var(--neon)">رابط</a></td><td><span class="badge ${o.status==='مكتمل'?'bg-green':'bg-orange'}">${o.status}</span></td><td><button onclick="done('${d.id}')" class="btn btn-sm">تم</button></td></tr>`;
-                });
-            });
-
-            setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; }, 800);
-        }
-
-        // 4. دالة تعديل الخدمة الموجودة (الاسم، الترتيب، السعر)
-        async function saveEdit(id) {
-            const newOrder = parseInt(document.getElementById('ord-'+id).value);
-            const newName = document.getElementById('name-'+id).value;
-            const newRate = document.getElementById('rate-'+id).value;
-
-            await db.collection("services").doc(id).update({
-                orderNum: newOrder,
-                name: newName,
-                rate: newRate
-            });
-            alert("تم تحديث بيانات الخدمة في المتجر!");
-        }
-
-        async function deleteService(id) {
-            if(confirm("هل أنت متأكد من حذف هذه الخدمة من العرض؟")) {
-                await db.collection("services").doc(id).delete();
-            }
-        }
-
-        // 5. جلب من API
-        async function fetchFromAPI() {
-            const t = document.getElementById('api-fetch-table');
-            t.innerHTML = "<tr><td colspan='5' style='text-align:center'>جاري الاتصال بالمزود...</td></tr>";
             try {
-                const res = await fetch(`https://ms1.shop/api/v2?key=${KEY}&action=services`);
+                const res = await fetch(proxy + target);
                 const data = await res.json();
-                t.innerHTML = "";
-                data.forEach(s => {
-                    t.innerHTML += `
+                const services = JSON.parse(data.contents);
+                
+                list.innerHTML = "";
+                services.forEach(s => {
+                    list.innerHTML += `
                         <tr class="api-row">
                             <td>${s.service}</td>
-                            <td><b>${s.name}</b><br><small style="color:var(--dim)">${s.category}</small></td>
-                            <td style="color:var(--neon)">${s.rate}</td>
-                            <td><input type="number" id="sort-api-${s.service}" value="1" class="order-input"></td>
-                            <td><button class="btn" onclick="addNewToStore('${s.service}','${s.category}','${s.name}','${s.rate}')">إضافة للمتجر</button></td>
+                            <td>${s.name}</td>
+                            <td>${s.rate}</td>
+                            <td><input type="number" id="ord-${s.service}" value="1" class="order-input"></td>
+                            <td><button class="btn-neon" onclick="addService('${s.service}','${s.category}','${s.name}','${s.rate}')">إضافة</button></td>
                         </tr>
                     `;
                 });
-            } catch(e) { alert("خطأ في الاتصال"); }
+            } catch(e) { alert("خطأ في الاتصال بالمزود"); }
         }
 
-        async function addNewToStore(id, cat, name, rate) {
-            const order = parseInt(document.getElementById('sort-api-'+id).value);
+        async function addService(id, cat, name, rate) {
+            const orderNum = parseInt(document.getElementById('ord-'+id).value);
             await db.collection("services").doc(id).set({
-                serviceId: id, category: cat, name: name, rate: rate, orderNum: order, addedAt: new Date()
+                serviceId: id, category: cat, name: name, rate: rate, orderNum: orderNum
             });
-            alert("تمت الإضافة لمتجرك بنجاح!");
+            alert("تمت الإضافة للمتجر!");
         }
 
-        // 6. وظائف الشحن والإتمام
-        async function rechargeUser() {
-            const email = document.getElementById('rech-mail').value;
-            const val = parseFloat(document.getElementById('rech-val').value);
-            const q = await db.collection("users").where("email", "==", email).get();
-            if(q.empty) return alert("المستخدم غير موجود");
-            q.forEach(async d => {
-                await db.collection("users").doc(d.id).update({ balance: (d.data().balance || 0) + val });
-                alert("تم الشحن!");
+        // 2. Real-time Store Sync
+        function syncStore() {
+            db.collection("services").orderBy("orderNum", "asc").onSnapshot(snap => {
+                document.getElementById('st-serv').innerText = snap.size;
+                const list = document.getElementById('my-services-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const s = doc.data();
+                    list.innerHTML += `
+                        <tr>
+                            <td>${s.orderNum}</td>
+                            <td>${s.name}</td>
+                            <td>${s.rate}</td>
+                            <td><button class="btn-neon" onclick="updateServ('${doc.id}')">حفظ</button></td>
+                            <td><button onclick="delServ('${doc.id}')" style="color:red; background:none; border:none; cursor:pointer;">حذف</button></td>
+                        </tr>
+                    `;
+                });
+            });
+
+            db.collection("users").onSnapshot(snap => {
+                document.getElementById('st-users').innerText = snap.size;
             });
         }
 
-        async function done(id) { await db.collection("orders").doc(id).update({ status: "مكتمل" }); }
-
-        function filterAPITable() {
-            let v = document.getElementById('api-search').value.toLowerCase();
-            document.querySelectorAll('.api-row').forEach(r => r.style.display = r.innerText.toLowerCase().includes(v) ? '' : 'none');
-        }
-
-        function signOut() { firebase.auth().signOut().then(() => window.location.href="auth.html"); }
-
-        window.onload = startApp;
+        window.onload = syncStore;
     </script>
 </body>
 </html>
