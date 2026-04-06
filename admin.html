@@ -3,234 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | لوحة الإدارة الاحترافية</title>
+    <title>CD-CARD Admin | إدارة النظام الاحترافية</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* التنسيق البصري للوحة التحكم */
         :root {
-            --bg-main: #050505;
+            --neon-green: #39ff14;
+            --dark-bg: #050505;
             --card-bg: #0f0f0f;
-            --neon-color: #39ff14;
-            --border-color: #1a1a1a;
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --danger: #ff4444;
+            --border: #1a1a1a;
+            --text-gray: #888;
+            --gold: #ffcc00;
         }
 
+        * { box-sizing: border-box; transition: all 0.3s ease; }
         body {
-            font-family: 'Cairo', sans-serif; background: var(--bg-main); color: var(--text-main);
+            font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: #fff;
             margin: 0; display: flex; min-height: 100vh; overflow-x: hidden;
         }
 
-        /*Sidebar*/
+        /* Sidebar Style */
         .sidebar {
-            width: 280px; background: var(--card-bg); border-left: 1px solid var(--border-color);
-            position: fixed; height: 100%; right: 0; display: flex; flex-direction: column; z-index: 1000;
+            width: 280px; background: var(--card-bg); border-left: 1px solid var(--border);
+            height: 100vh; position: fixed; right: 0; top: 0; z-index: 100;
+            display: flex; flex-direction: column;
         }
-        .sidebar-header { padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .sidebar-header img { width: 90px; border-radius: 50%; border: 2px solid var(--neon-color); box-shadow: 0 0 15px var(--neon-color); }
+        .brand { padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .brand img { width: 80px; border-radius: 50%; border: 2px solid var(--neon-green); box-shadow: 0 0 15px var(--neon-green); }
         
-        .nav-links { flex-grow: 1; padding: 25px 0; }
-        .nav-links a {
-            display: flex; align-items: center; padding: 18px 30px; color: var(--text-dim);
-            text-decoration: none; transition: 0.3s; border-right: 4px solid transparent; cursor: pointer;
+        .nav-list { flex-grow: 1; padding: 20px 0; }
+        .nav-item {
+            display: flex; align-items: center; padding: 15px 25px; color: var(--text-gray);
+            text-decoration: none; cursor: pointer; border-right: 4px solid transparent;
         }
-        .nav-links a i { margin-left: 15px; font-size: 20px; width: 25px; }
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--neon-color); background: rgba(57, 255, 20, 0.05); border-right-color: var(--neon-color);
+        .nav-item i { margin-left: 15px; font-size: 20px; width: 25px; }
+        .nav-item:hover, .nav-item.active {
+            color: var(--neon-green); background: rgba(57, 255, 20, 0.05);
+            border-right-color: var(--neon-green);
         }
 
-        /*Main Content*/
-        .main-content { margin-right: 280px; width: calc(100% - 280px); padding: 50px; transition: 0.3s; }
-        .section { display: none; animation: fadeIn 0.5s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Main Content */
+        .main { margin-right: 280px; width: calc(100% - 280px); padding: 40px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 32px; color: var(--neon-color); margin-bottom: 40px; }
+        /* Dashboard Stats */
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .s-card {
+            background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border);
+            text-align: center; position: relative;
+        }
+        .s-card h2 { font-size: 35px; color: var(--neon-green); margin: 10px 0; }
+        .s-card i { position: absolute; left: 15px; top: 15px; opacity: 0.1; font-size: 30px; }
 
-        /*Dashboard Grid*/
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 50px; }
-        .stat-card { background: var(--card-bg); padding: 35px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; }
-        .stat-card h3 { font-size: 40px; margin: 15px 0; color: var(--neon-color); }
-        .stat-card p { color: var(--text-dim); margin: 0; font-size: 14px; }
-
-        /*Tables & Forms*/
-        .data-box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th { background: #151515; padding: 20px; color: var(--neon-color); font-size: 15px; }
-        td { padding: 18px; border-bottom: 1px solid #1a1a1a; font-size: 14px; color: #ddd; }
+        /* Tables & UI */
+        .box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); padding: 25px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: right; padding: 15px; color: var(--neon-green); border-bottom: 2px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid #151515; font-size: 14px; }
         
-        .input-group { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        input, select {
-            width: 100%; padding: 12px; margin-top: 10px; background: #000; border: 1px solid var(--border-color);
-            color: #fff; border-radius: 10px; font-family: 'Cairo';
+        .btn {
+            background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);
+            padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; font-weight: bold;
         }
-        .btn-neon {
-            background: transparent; color: var(--neon-color); border: 1px solid var(--neon-color);
-            padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s;
-        }
-        .btn-neon:hover { background: var(--neon-color); color: #000; box-shadow: 0 0 20px var(--neon-color); }
+        .btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
+        .btn-del { border-color: #ff4444; color: #ff4444; }
+        .btn-del:hover { background: #ff4444; color: #fff; }
 
-        .order-input { width: 60px; text-align: center; color: var(--neon-color); font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
+            color: #fff; border-radius: 10px; margin-top: 5px; font-family: 'Cairo';
+        }
+
+        /* Status Badges */
+        .badge { padding: 5px 10px; border-radius: 5px; font-size: 11px; }
+        .badge-green { background: rgba(57,255,20,0.1); color: var(--neon-green); }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 70px; }
+            .sidebar span, .brand h3 { display: none; }
+            .main { margin-right: 70px; width: calc(100% - 70px); padding: 20px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="cd.jpg" alt="Admin">
-            <h4 style="margin: 15px 0 0;">محمد | CD-CARD</h4>
+        <div class="brand">
+            <img src="cd.jpg" alt="Logo">
+            <h3 style="color: var(--neon-green); font-size: 18px; margin-top: 10px;">CD-CARD ADMIN</h3>
         </div>
-        <div class="nav-links">
-            <a onclick="showSec('dash')" id="n-dash" class="active"><i class="fa fa-home"></i> الرئيسية</a>
-            <a onclick="showSec('services')" id="n-services"><i class="fa fa-list"></i> خدمات المتجر</a>
-            <a onclick="showSec('api')" id="n-api"><i class="fa fa-cloud-download-alt"></i> جلب من المزود</a>
-            <a onclick="showSec('users')" id="n-users"><i class="fa fa-users"></i> إدارة الزبائن</a>
-            <a onclick="showSec('orders')" id="n-orders"><i class="fa fa-shopping-cart"></i> الطلبات</a>
+        <div class="nav-list">
+            <a onclick="move('dash')" id="m-dash" class="nav-item active"><i class="fa fa-th-large"></i> <span>الرئيسية</span></a>
+            <a onclick="move('store')" id="m-store" class="nav-item"><i class="fa fa-shopping-bag"></i> <span>خدمات المتجر</span></a>
+            <a onclick="move('fetch')" id="m-fetch" class="nav-item"><i class="fa fa-download"></i> <span>جلب من المزود</span></a>
+            <a onclick="move('users')" id="m-users" class="nav-item"><i class="fa fa-users"></i> <span>المستخدمين</span></a>
+            <a onclick="move('orders')" id="m-orders" class="nav-item"><i class="fa fa-receipt"></i> <span>الطلبات</span></a>
         </div>
     </div>
 
-    <div class="main-content">
-        <div id="dash" class="section active">
-            <h1>نظرة عامة</h1>
-            <div class="stats-grid">
-                <div class="stat-card"><p>إجمالي الزبائن</p><h3 id="st-users">0</h3></div>
-                <div class="stat-card"><p>الطلبات النشطة</p><h3 id="st-orders">3</h3></div>
-                <div class="stat-card"><p>الخدمات المعروضة</p><h3 id="st-serv">0</h3></div>
+    <div class="main">
+        <div id="dash" class="page active">
+            <div class="header-top">
+                <h1>لوحة التحكم</h1>
+                <div id="clock" style="color: var(--text-gray);">...</div>
+            </div>
+            <div class="grid-stats">
+                <div class="s-card"><i>ID</i><small>إجمالي الزبائن</small><h2 id="st-u">0</h2></div>
+                <div class="s-card"><i>ID</i><small>خدمات معروضة</small><h2 id="st-s">0</h2></div>
+                <div class="s-card"><i>ID</i><small>طلبات اليوم</small><h2 id="st-o">0</h2></div>
             </div>
         </div>
 
-        <div id="services" class="section">
-            <h1>إدارة خدماتي المعروضة</h1>
-            <div class="data-box">
+        <div id="store" class="page">
+            <h1>إدارة خدمات المتجر</h1>
+            <div class="box">
                 <table>
                     <thead>
                         <tr>
                             <th>الترتيب</th>
-                            <th>الاسم المعروض</th>
+                            <th>اسم الخدمة</th>
                             <th>السعر</th>
-                            <th>تحديث</th>
-                            <th>حذف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="my-services-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="api" class="section">
-            <h1>الجلب من ms1.shop</h1>
-            <div class="input-group">
-                <button class="btn-neon" onclick="fetchAPI()">جلب القائمة المحدثة (حل CORS)</button>
-                <input type="text" id="api-search" placeholder="ابحث في خدمات المزود..." style="margin-top: 15px;" onkeyup="filterAPI()">
-            </div>
-            <div class="data-box" style="max-height: 500px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>الخدمة</th>
-                            <th>السعر</th>
-                            <th>ترتيب الإضافة</th>
+                            <th>الفئة</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
-                    <tbody id="api-fetch-list"></tbody>
+                    <tbody id="store-tbody"></tbody>
                 </table>
             </div>
         </div>
-        
+
+        <div id="fetch" class="page">
+            <h1>الجلب التلقائي (ms1.shop)</h1>
+            <div class="box">
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button class="btn" onclick="fetchFromSMM()">تحديث قائمة المزود (CORS Fix)</button>
+                    <input type="text" id="api-search" placeholder="بحث في خدمات المزود..." onkeyup="searchAPI()">
+                </div>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>الخدمة</th>
+                                <th>سعر المزود</th>
+                                <th>إضافة للمتجر</th>
+                            </tr>
+                        </thead>
+                        <tbody id="api-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
+        <div id="users" class="page">
+            <h1>إدارة المستخدمين</h1>
+            <div class="box" id="users-list"></div>
+        </div>
+    </div>
+
     <script>
-        // Firebase Config
+        // 1. Firebase Config (بياناتك الصحيحة)
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
+            databaseURL: "https://cd-card-87365-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "cd-card-87365",
+            storageBucket: "cd-card-87365.firebasestorage.app",
+            messagingSenderId: "397926299412",
             appId: "1:397926299412:web:efbe9ae9aae29df368f401"
         };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const rtdb = firebase.database();
         const SMM_KEY = "958c5695446fccb28ab7b8090d5e271a";
 
-        function showSec(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        // 2. Navigation Logic
+        function move(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            document.getElementById('n-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('m-'+id).classList.add('active');
         }
 
-        // 1. Fetching logic with CORS Proxy
-        async function fetchAPI() {
-            const list = document.getElementById('api-fetch-list');
-            list.innerHTML = "<tr><td colspan='5' style='text-align:center'>جاري الجلب عبر البروكسي...</td></tr>";
+        // 3. Fetch from API with CORS Proxy
+        async function fetchFromSMM() {
+            const tbody = document.getElementById('api-tbody');
+            tbody.innerHTML = "<tr><td colspan='4' align='center'>جاري الاتصال بالمزود...</td></tr>";
             
             const proxy = "https://api.allorigins.win/get?url=";
-            const target = encodeURIComponent(`https://ms1.shop/api/v2?key=${SMM_KEY}&action=services`);
+            const apiUrl = encodeURIComponent(`https://ms1.shop/api/v2?key=${SMM_KEY}&action=services`);
 
             try {
-                const res = await fetch(proxy + target);
-                const data = await res.json();
-                const services = JSON.parse(data.contents);
+                const response = await fetch(proxy + apiUrl);
+                const json = await response.json();
+                const services = JSON.parse(json.contents);
                 
-                list.innerHTML = "";
+                tbody.innerHTML = "";
                 services.forEach(s => {
-                    list.innerHTML += `
+                    tbody.innerHTML += `
                         <tr class="api-row">
                             <td>${s.service}</td>
-                            <td>${s.name}</td>
-                            <td>${s.rate}</td>
-                            <td><input type="number" id="ord-${s.service}" value="1" class="order-input"></td>
-                            <td><button class="btn-neon" onclick="addService('${s.service}','${s.category}','${s.name}','${s.rate}')">إضافة</button></td>
+                            <td style="font-size:12px"><b>${s.name}</b><br><span style="color:var(--text-gray)">${s.category}</span></td>
+                            <td style="color:var(--neon-green)">${s.rate}</td>
+                            <td><button class="btn" onclick="addToMyStore('${s.service}','${s.name}','${s.category}','${s.rate}')">إضافة</button></td>
                         </tr>
                     `;
                 });
-            } catch(e) { alert("خطأ في الاتصال بالمزود"); }
+            } catch (e) {
+                alert("فشل الجلب. تأكد من مفتاح الـ API الخاص بك.");
+            }
         }
 
-        async function addService(id, cat, name, rate) {
-            const orderNum = parseInt(document.getElementById('ord-'+id).value);
-            await db.collection("services").doc(id).set({
-                serviceId: id, category: cat, name: name, rate: rate, orderNum: orderNum
-            });
-            alert("تمت الإضافة للمتجر!");
+        // 4. Add Service to Firestore
+        async function addToMyStore(id, name, cat, rate) {
+            const myRate = prompt("أدخل السعر الذي سيظهر للزبون (لكل 1000):", rate);
+            if(!myRate) return;
+
+            try {
+                await db.collection("services").doc(id).set({
+                    serviceId: id,
+                    name: name,
+                    category: cat,
+                    rate: parseFloat(myRate),
+                    originalRate: rate,
+                    orderNum: 1,
+                    desc: "خدمة سريعة وعالية الجودة"
+                });
+                alert("تمت الإضافة بنجاح!");
+            } catch(e) { console.error(e); }
         }
 
-        // 2. Real-time Store Sync
-        function syncStore() {
-            db.collection("services").orderBy("orderNum", "asc").onSnapshot(snap => {
-                document.getElementById('st-serv').innerText = snap.size;
-                const list = document.getElementById('my-services-list');
-                list.innerHTML = "";
-                snap.forEach(doc => {
-                    const s = doc.data();
-                    list.innerHTML += `
+        // 5. Sync Data
+        function sync() {
+            // Sync Stats
+            db.collection("users").onSnapshot(s => document.getElementById('st-u').innerText = s.size);
+            db.collection("services").onSnapshot(s => {
+                document.getElementById('st-s').innerText = s.size;
+                const tbody = document.getElementById('store-tbody');
+                tbody.innerHTML = "";
+                s.forEach(doc => {
+                    const data = doc.data();
+                    tbody.innerHTML += `
                         <tr>
-                            <td>${s.orderNum}</td>
-                            <td>${s.name}</td>
-                            <td>${s.rate}</td>
-                            <td><button class="btn-neon" onclick="updateServ('${doc.id}')">حفظ</button></td>
-                            <td><button onclick="delServ('${doc.id}')" style="color:red; background:none; border:none; cursor:pointer;">حذف</button></td>
+                            <td>${data.orderNum}</td>
+                            <td>${data.name}</td>
+                            <td>${data.rate} LYD</td>
+                            <td><span class="badge badge-green">${data.category}</span></td>
+                            <td><button class="btn btn-del" onclick="deleteService('${doc.id}')">حذف</button></td>
                         </tr>
                     `;
                 });
             });
+        }
 
-            db.collection("users").onSnapshot(snap => {
-                document.getElementById('st-users').innerText = snap.size;
+        async function deleteService(id) {
+            if(confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
+                await db.collection("services").doc(id).delete();
+            }
+        }
+
+        // Search logic
+        function searchAPI() {
+            let val = document.getElementById('api-search').value.toLowerCase();
+            document.querySelectorAll('.api-row').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
             });
         }
 
-        window.onload = syncStore;
+        // Clock
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-LY');
+        }, 1000);
+
+        window.onload = sync;
     </script>
 </body>
 </html>
-
