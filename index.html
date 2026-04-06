@@ -3,125 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | صيانة مؤقتة</title>
+    <title>CD-CARD | لوحة الخدمات الذكية</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
+        /* إعدادات الألوان المتطورة - نيون جرافيك */
         :root {
-            --accent: #00ff88;
-            --bg: #0d1117;
+            --bg-main: #080808;
+            --bg-card: #121212;
+            --bg-sidebar: #0f0f0f;
+            --neon-green: #39ff14;
+            --neon-glow: 0 0 15px rgba(57, 255, 20, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #999999;
+            --border-color: #222222;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at center, #16212e 0%, #080a0c 100%);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            text-align: center;
+            overflow-x: hidden;
         }
 
-        .maintenance-container {
-            padding: 20px;
-            max-width: 500px;
+        /* شاشة التحميل (Preloader) */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 9999; display: flex;
+            justify-content: center; align-items: center; transition: 0.5s;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 3px solid #111;
+            border-top: 3px solid var(--neon-green); border-radius: 50%;
+            animation: spin 1s linear infinite; box-shadow: var(--neon-glow);
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* القائمة الجانبية المتقدمة */
+        .sidebar {
+            width: 280px; height: 100vh; background: var(--bg-sidebar);
+            position: fixed; right: -280px; top: 0; z-index: 1000;
+            transition: var(--transition); border-left: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { right: 0; box-shadow: -10px 0 30px rgba(0,0,0,0.8); }
+
+        .sidebar-header { padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header img { width: 80px; border-radius: 50%; border: 2px solid var(--neon-green); box-shadow: var(--neon-glow); }
+
+        .menu-items { padding: 20px 0; flex-grow: 1; }
+        .menu-items a {
+            display: flex; align-items: center; padding: 15px 25px;
+            color: var(--text-muted); text-decoration: none; font-size: 16px;
+            transition: var(--transition); border-right: 4px solid transparent;
+        }
+        .menu-items a i { margin-left: 15px; font-size: 20px; width: 25px; }
+        .menu-items a:hover, .menu-items a.active {
+            color: var(--neon-green); background: rgba(57, 255, 20, 0.05);
+            border-right-color: var(--neon-green); text-shadow: var(--neon-glow);
         }
 
-        .logo-area {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid var(--accent);
-            margin: 0 auto 20px;
-            background: url('cd.jpg') center/cover;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-            animation: pulse 2s infinite;
+        /* منطقة المحتوى الرئيسي */
+        .main-wrapper {
+            flex: 1; padding: 20px; transition: var(--transition);
+            max-width: 800px; margin: 0 auto; width: 100%;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 136, 0.4); }
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
+        /* الهيدر العلوي */
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; margin-top: 10px;
+        }
+        .menu-toggle {
+            font-size: 24px; color: var(--neon-green); cursor: pointer;
+            background: var(--bg-card); padding: 10px; border-radius: 10px;
+            border: 1px solid var(--border-color); box-shadow: var(--neon-glow);
         }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: var(--accent);
-            letter-spacing: 1px;
+        /* كروت الإحصائيات - النيون */
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg-card); padding: 20px; border-radius: 18px;
+            border: 1px solid var(--border-color); position: relative; overflow: hidden;
+        }
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; right: 0; width: 4px;
+            height: 100%; background: var(--neon-green); box-shadow: var(--neon-glow);
+        }
+        .stat-card small { color: var(--text-muted); display: block; margin-bottom: 5px; font-size: 12px; }
+        .stat-card b { font-size: 18px; color: var(--text-main); }
+        .stat-card i { position: absolute; left: 15px; bottom: 15px; color: rgba(57, 255, 20, 0.1); font-size: 40px; }
+
+        /* الأقسام (Pages) */
+        .page { display: none; animation: slideUp 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* استايل الفورم والطلب */
+        .order-panel {
+            background: var(--bg-card); padding: 25px; border-radius: 25px;
+            border: 1px solid var(--border-color); margin-top: 20px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 10px; color: var(--neon-green); font-weight: bold; font-size: 14px; }
+        
+        select, input, textarea {
+            width: 100%; padding: 15px; background: #000; border: 1px solid var(--border-color);
+            color: #fff; border-radius: 12px; font-family: 'Cairo'; transition: 0.3s;
+        }
+        select:focus, input:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.2); outline: none; }
+
+        .price-display {
+            background: rgba(57, 255, 20, 0.05); padding: 15px; border-radius: 12px;
+            text-align: center; border: 1px dashed var(--neon-green); margin: 20px 0;
+        }
+        .price-display span { font-size: 24px; color: var(--neon-green); font-weight: bold; text-shadow: var(--neon-glow); }
+
+        .btn-action {
+            width: 100%; padding: 18px; background: transparent; color: var(--neon-green);
+            border: 2px solid var(--neon-green); border-radius: 15px; font-weight: bold;
+            font-size: 18px; cursor: pointer; transition: 0.4s; text-transform: uppercase;
+        }
+        .btn-action:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 25px var(--neon-green); }
+
+        /* الجداول والتاريخ */
+        .table-container { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { text-align: right; padding: 15px; color: var(--neon-green); border-bottom: 2px solid var(--border-color); }
+        td { padding: 15px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-completed { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); }
+        .status-pending { background: rgba(255, 255, 0, 0.1); color: yellow; }
+
+        /* التذييل وآية الكرسي */
+        .quran-section {
+            margin-top: 60px; padding: 30px; background: rgba(255,255,255,0.02);
+            border-radius: 20px; text-align: center; line-height: 2.2; color: #bbb;
+            border: 1px solid #222; font-size: 15px;
         }
 
-        p {
-            color: #8b949e;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .contact-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .contact-btn:hover {
-            background: var(--accent);
-            color: #000;
-        }
-
-        .loader {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 40px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+        /* تحسينات الموبايل */
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 85%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="maintenance-container">
-        <div class="logo-area"></div>
-        <h1>الموقع قيد الصيانة</h1>
-        <p>نعمل حالياً على تحديث البيانات وتحسين تجربتكم في <strong>CD-CARD</strong>. سنعود إليكم قريباً بأفضل الأسعار والخدمات.</p>
-        
-        <a href="https://wa.me/218912377291" class="contact-btn">تواصل معنا عبر واتساب</a>
+    <div id="loader"><div class="spinner"></div></div>
 
-        <div class="loader">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <img src="cd.jpg" alt="Logo">
+            <h3 id="side-user">جاري التحميل...</h3>
         </div>
-        
-        <div style="margin-top: 50px; font-size: 12px; color: #444;">
-            © 2026 CD-CARD ALL RIGHTS RESERVED
+        <div class="menu-items">
+            <a onclick="navigate('home')" class="active" id="nav-home"><i class="fa fa-plus-circle"></i> طلب جديد</a>
+            <a onclick="navigate('orders')" id="nav-orders"><i class="fa fa-history"></i> سجل الطلبات</a>
+            <a onclick="navigate('account')" id="nav-account"><i class="fa fa-user-cog"></i> إعدادات الحساب</a>
+            <a onclick="navigate('earn')" id="nav-earn"><i class="fa fa-coins"></i> كسب المال</a>
+            <a onclick="navigate('support')" id="nav-support"><i class="fa fa-headset"></i> الدعم الفني</a>
+            <a onclick="logout()" style="color: #ff4444;"><i class="fa fa-sign-out-alt"></i> تسجيل الخروج</a>
         </div>
     </div>
 
+    <div class="main-wrapper">
+        <div class="top-nav">
+            <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+            <div style="text-align: left;">
+                <img src="cd.jpg" width="40" style="border-radius: 50%; vertical-align: middle;">
+                <span style="font-weight: bold; margin-right: 10px;">CD-CARD</span>
+            </div>
+        </div>
+
+        <div class="mashaallah-box" style="text-align: center; color: var(--neon-green); margin-bottom: 20px; font-weight: bold;">
+            ماشاءالله لا قوة إلا بالله
+        </div>
+
+        <div id="page-home" class="page active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <small>الرصيد المتاح</small>
+                    <b id="balance">0.00</b> <span>LYD</span>
+                    <i class="fa fa-wallet"></i>
+                </div>
+                <div class="stat-card">
+                    <small>إجمالي المنفق</small>
+                    <b id="spent">0.00</b> <span>LYD</span>
+                    <i class="fa fa-shopping-bag"></i>
+                </div>
+            </div>
+
+            <div class="order-panel">
+                <div class="form-group">
+                    <label>اختر القسم (الفئة)</label>
+                    <select id="category" onchange="filterServices()">
+                        <option value="">جاري جلب الأقسام...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>الخدمة المطلوبة</label>
+                    <select id="services" onchange="updateServiceDetails()">
+                        <option value="">اختر القسم أولاً...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف الخدمة</label>
+                    <textarea id="description" readonly rows="4" placeholder="تفاصيل الخدمة ستظهر هنا..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>الرابط / اسم المستخدم</label>
+                    <input type="text" id="link" placeholder="https://www.tiktok.com/@user">
+                </div>
+
+                <div class="form-group">
+                    <label>الكمية</label>
+                    <input type="number" id="quantity" placeholder="مثال: 1000" oninput="calculateTotal()">
+                </div>
+
+                <div class="price-display">
+                    <small>السعر الإجمالي</small><br>
+                    <span id="total-price">0.00</span> <b>LYD</b>
+                </div>
+
+                <button class="btn-action" id="orderBtn" onclick="placeOrder()">إرسال الطلب الآن</button>
+            </div>
+        </div>
+
+        <div id="page-orders" class="page">
+            <h2 style="color: var(--neon-green);">سجل طلباتك</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الطلب</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list">
+                        <tr><td colspan="4" style="text-align: center;">لا يوجد طلبات سابقة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-account" class="page">
+            <h2 style="color: var(--neon-green);">إعدادات الحساب</h2>
+            <div class="order-panel">
+                <div class="form-group">
+                    <label>الاسم الظاهر</label>
+                    <input type="text" id="acc-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="text" id="acc-email" readonly>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ التسجيل</label>
+                    <input type="text" id="acc-date" readonly>
+                </div>
+                <div class="form-group">
+                    <label>حالة الحساب</label>
+                    <b id="acc-status" style="color: var(--neon-green);">نشط</b>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-earn" class="page">
+            <h2 style="color: var(--neon-green);">نظام العمولة (الإحالة)</h2>
+            <div class="order-panel" style="text-align: center;">
+                <i class="fa fa-gift" style="font-size: 50px; color: var(--neon-green); margin-bottom: 20px;"></i>
+                <p>اربح عمولة مقابل كل عملية شحن يقوم بها الأشخاص الذين يسجلون عن طريقك!</p>
+                <div class="form-group">
+                    <label>رابط الإحالة الخاص بك</label>
+                    <input type="text" id="ref-link" value="https://cd-card.com/register?ref=7882" readonly style="text-align: center; color: var(--neon-green);">
+                </div>
+                <button class="btn-action" onclick="copyRef()">نسخ الرابط</button>
+            </div>
+        </div>
+
+        <div id="page-support" class="page">
+            <h2 style="color: var(--neon-green);">الدعم الفني</h2>
+            <div class="order-panel">
+                <p>هل تواجه مشكلة؟ نحن هنا للمساعدة عبر القنوات التالية:</p>
+                <button class="btn-action" style="margin-bottom: 10px; border-color: #25D366; color: #25D366;" onclick="window.open('https://wa.me/218912377291')">
+                    <i class="fab fa-whatsapp"></i> واتساب (مباشر)
+                </button>
+                <button class="btn-action" style="border-color: #0088cc; color: #0088cc;" onclick="window.open('https://t.me/cdcard104')">
+                    <i class="fab fa-telegram"></i> قناة التيليجرام
+                </button>
+            </div>
+        </div>
+
+        <div class="quran-section">
+            <b style="color: var(--neon-green); display: block; margin-bottom: 10px;">[ آية الكرسي ]</b>
+            اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ
+        </div>
+    </div>
+
+    <script>
+        // 1. Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
+            authDomain: "cd-card-87365.firebaseapp.com",
+            projectId: "cd-card-87365",
+            storageBucket: "cd-card-87365.firebasestorage.app",
+            messagingSenderId: "397926299412",
+            appId: "1:397926299412:web:efbe9ae9aae29df368f401"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let userData = null;
+        let allServices = [];
+        let selectedServicePrice = 0;
+
+        // 2. التحقق من المستخدم وتحميل البيانات
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                db.collection("users").doc(user.uid).onSnapshot(doc => {
+                    userData = doc.data();
+                    updateUI();
+                });
+                loadServices();
+                loadUserOrders(user.uid);
+                setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display='none', 500); }, 1000);
+            } else {
+                window.location.href = "auth.html";
+            }
+        });
+
+        // 3. تحديث الواجهة بالبيانات الحقيقية
+        function updateUI() {
+            if(!userData) return;
+            document.getElementById('side-user').innerText = userData.username;
+            document.getElementById('balance').innerText = parseFloat(userData.balance).toFixed(2);
+            document.getElementById('spent').innerText = parseFloat(userData.spent).toFixed(2);
+            document.getElementById('acc-name').value = userData.username;
+            document.getElementById('acc-email').value = userData.email;
+            document.getElementById('acc-date').value = userData.dateCreated || "غير متوفر";
+            document.getElementById('acc-status').innerText = userData.status;
+        }
+
+        // 4. جلب الخدمات من Firestore (التي أضافها الأدمن)
+        async function loadServices() {
+            const snap = await db.collection("services").get();
+            const catSelect = document.getElementById('category');
+            let categories = new Set();
+            allServices = [];
+
+            snap.forEach(doc => {
+                let s = doc.data();
+                s.id = doc.id;
+                allServices.push(s);
+                categories.add(s.category);
+            });
+
+            catSelect.innerHTML = '<option value="">اختر القسم...</option>';
+            categories.forEach(c => {
+                catSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        // 5. فلترة الخدمات حسب القسم
+        function filterServices() {
+            const selectedCat = document.getElementById('category').value;
+            const servSelect = document.getElementById('services');
+            servSelect.innerHTML = '<option value="">اختر الخدمة...</option>';
+            
+            allServices.filter(s => s.category === selectedCat).forEach(s => {
+                servSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+            });
+        }
+
+        // 6. تحديث السعر والوصف عند اختيار الخدمة
+        function updateServiceDetails() {
+            const servId = document.getElementById('services').value;
+            const service = allServices.find(s => s.id === servId);
+            if(service) {
+                document.getElementById('description').value = service.desc || "لا يوجد وصف لهذه الخدمة حالياً.";
+                selectedServicePrice = parseFloat(service.rate); // السعر لكل 1000
+                calculateTotal();
+            }
+        }
+
+        // 7. حساب السعر الإجمالي
+        function calculateTotal() {
+            const qty = document.getElementById('quantity').value;
+            if(qty > 0 && selectedServicePrice > 0) {
+                const total = (qty / 1000) * selectedServicePrice;
+                document.getElementById('total-price').innerText = total.toFixed(2);
+            } else {
+                document.getElementById('total-price').innerText = "0.00";
+            }
+        }
+
+        // 8. إرسال الطلب وحفظه في Firebase
+        async function placeOrder() {
+            const servId = document.getElementById('services').value;
+            const link = document.getElementById('link').value;
+            const qty = document.getElementById('quantity').value;
+            const total = parseFloat(document.getElementById('total-price').innerText);
+
+            if(!servId || !link || qty <= 0) return alert("يرجى ملء جميع الحقول بشكل صحيح");
+            
+            if(total > userData.balance) return alert("عذراً، رصيدك غير كافٍ لإتمام هذا الطلب");
+
+            const confirmOrder = confirm(`هل أنت متأكد من طلب الخدمة بتكلفة ${total} LYD؟`);
+            if(!confirmOrder) return;
+
+            document.getElementById('orderBtn').disabled = true;
+            document.getElementById('orderBtn').innerText = "جاري المعالجة...";
+
+            try {
+                // حفظ الطلب
+                await db.collection("orders").add({
+                    userId: auth.currentUser.uid,
+                    userName: userData.username,
+                    serviceId: servId,
+                    serviceName: allServices.find(s => s.id === servId).name,
+                    link: link,
+                    quantity: qty,
+                    price: total,
+                    status: "قيد الانتظار",
+                    date: new Date()
+                });
+
+                // تحديث رصيد المستخدم
+                await db.collection("users").doc(auth.currentUser.uid).update({
+                    balance: userData.balance - total,
+                    spent: userData.spent + total
+                });
+
+                alert("تم إرسال طلبك بنجاح! يمكنك متابعته من سجل الطلبات.");
+                document.getElementById('link').value = "";
+                document.getElementById('quantity').value = "";
+                document.getElementById('total-price').innerText = "0.00";
+            } catch(e) {
+                alert("حدث خطأ أثناء إرسال الطلب: " + e.message);
+            }
+            document.getElementById('orderBtn').disabled = false;
+            document.getElementById('orderBtn').innerText = "إرسال الطلب الآن";
+        }
+
+        // 9. جلب سجل الطلبات
+        function loadUserOrders(uid) {
+            db.collection("orders").where("userId", "==", uid).orderBy("date", "desc")
+                .onSnapshot(snap => {
+                    const list = document.getElementById('orders-list');
+                    list.innerHTML = "";
+                    if(snap.empty) {
+                        list.innerHTML = '<tr><td colspan="4" style="text-align: center;">لا يوجد طلبات سابقة</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const o = doc.data();
+                        list.innerHTML += `
+                            <tr>
+                                <td>${o.serviceName}</td>
+                                <td>${o.quantity}</td>
+                                <td>${o.price}</td>
+                                <td><span class="status-badge ${o.status === 'مكتمل' ? 'status-completed' : 'status-pending'}">${o.status}</span></td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        // وظائف التنقل (Navigation)
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            document.querySelectorAll('.menu-items a').forEach(a => a.classList.remove('active'));
+            document.getElementById('nav-' + pageId).classList.add('active');
+            
+            toggleSidebar();
+            window.scrollTo(0,0);
+        }
+
+        function copyRef() {
+            const copyText = document.getElementById("ref-link");
+            copyText.select();
+            document.execCommand("copy");
+            alert("تم نسخ رابط الإحالة: " + copyText.value);
+        }
+
+        function logout() {
+            auth.signOut().then(() => window.location.href = "auth.html");
+        }
+    </script>
 </body>
 </html>
-
