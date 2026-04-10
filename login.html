@@ -2,315 +2,284 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | CD-CARD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوابة الوصول الذكية | CD-CARD</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;500;700;900&family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
 
     <style>
+        /* ================================================================
+           ULTRA-PROFESSIONAL AUTH CSS
+           ================================================================
+        */
         :root {
-            --neon-green: #39ff14;
-            --bg-dark: #080808;
-            --card-bg: #121212;
-            --input-bg: #050505;
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+            --p: #39ff14; --s: #00e5ff; --bg: #030303;
+            --card: rgba(10, 10, 10, 0.98); --border: #1e1e1e;
+            --text: #ffffff; --muted: #777; --danger: #ff003c;
         }
 
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-        body {
-            background: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            background-image: radial-gradient(circle at center, #111 0%, #080808 100%);
-        }
+        /* خلفية النيون المتحركة */
+        .bg-glow { position: absolute; width: 300px; height: 300px; background: var(--p); filter: blur(150px); opacity: 0.1; z-index: 0; animation: float 10s infinite alternate; }
+        @keyframes float { from { transform: translate(-50%, -50%); } to { transform: translate(50%, 50%); } }
 
-        /* حاوية النموذج الرئيسية */
-        .auth-wrapper {
-            width: 100%;
-            max-width: 420px;
-            padding: 20px;
-            perspective: 1000px;
-        }
+        .auth-container { width: 100%; max-width: 480px; padding: 25px; z-index: 10; }
 
         .auth-card {
-            background: var(--card-bg);
-            padding: 40px 30px;
-            border-radius: 25px;
-            border: 1px solid #222;
-            box-shadow: var(--shadow);
-            position: relative;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
+            background: var(--card); border-radius: 35px; border: 1px solid var(--border);
+            padding: 45px 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(25px); position: relative;
         }
 
-        /* تأثيرات النيون الخلفية */
-        .auth-card::before {
-            content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            background: linear-gradient(45deg, transparent, #222, var(--neon-green), transparent);
-            border-radius: 25px; z-index: -1; opacity: 0.3;
-        }
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .logo-box { width: 80px; height: 80px; margin: 0 auto 15px; border: 2px solid var(--p); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--p); background: #000; transform: rotate(-5deg); }
+        .logo-box i { font-size: 35px; color: var(--p); }
 
-        .logo-area { margin-bottom: 30px; }
-        .logo-area img {
-            width: 100px; height: 100px; border-radius: 50%;
-            border: 2px solid var(--neon-green); box-shadow: 0 0 15px var(--neon-green);
-            transition: 0.5s;
-        }
-        .logo-area img:hover { transform: rotate(360deg); }
+        .auth-header h2 { font-family: 'Orbitron'; font-size: 24px; color: var(--p); }
+        .auth-header p { color: var(--muted); font-size: 12px; }
 
-        h2 { font-size: 24px; margin-bottom: 10px; color: var(--neon-green); }
-        p.subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 30px; }
-
-        /* ستايل المدخلات */
-        .input-group { position: relative; margin-bottom: 20px; text-align: right; }
-        .input-group i {
-            position: absolute; right: 15px; top: 43px; color: var(--neon-green); font-size: 18px;
-        }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-dim); margin-right: 5px; }
+        /* ميزات الخانات الجديدة */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; margin-right: 5px; }
         
-        input {
-            width: 100%; padding: 14px 45px 14px 15px; background: var(--input-bg);
-            border: 1px solid #222; border-radius: 12px; color: #fff; font-size: 15px;
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.1); outline: none; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i.main-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--p); font-size: 16px; }
+        .input-wrapper i.toggle-pass { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); cursor: pointer; transition: 0.3s; }
+        .input-wrapper i.toggle-pass:hover { color: var(--p); }
 
-        /* الأزرار */
-        .btn-submit {
-            width: 100%; padding: 15px; background: transparent;
-            color: var(--neon-green); border: 2px solid var(--neon-green);
-            border-radius: 12px; font-size: 17px; font-weight: bold;
-            cursor: pointer; transition: 0.4s; margin-top: 10px;
+        .input-wrapper input {
+            width: 100%; background: #080808; border: 1px solid var(--border);
+            padding: 14px 45px 14px 45px; border-radius: 12px; color: #fff;
+            font-family: 'Cairo'; font-size: 14px; transition: 0.4s ease;
         }
-        .btn-submit:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
+        .input-wrapper input:focus { border-color: var(--p); box-shadow: 0 0 10px rgba(57,255,20,0.1); outline: none; background: #000; }
 
-        .toggle-btn {
-            margin-top: 25px; font-size: 14px; color: var(--text-dim); cursor: pointer;
+        /* قوة كلمة المرور */
+        .pass-strength { height: 4px; width: 100%; background: #1a1a1a; margin-top: 8px; border-radius: 2px; overflow: hidden; display: none; }
+        .pass-bar { height: 100%; width: 0%; transition: 0.5s; }
+
+        /* خيارات إضافية (تذكرني + نسيت كلمة المرور) */
+        .extra-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 12px; }
+        .remember-me { display: flex; align-items: center; gap: 8px; color: var(--muted); cursor: pointer; }
+        .remember-me input { accent-color: var(--p); }
+        .forgot-link { color: var(--p); text-decoration: none; font-weight: 700; }
+
+        .btn-auth {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: var(--p); color: #000; font-family: 'Cairo'; font-weight: 900;
+            font-size: 16px; cursor: pointer; transition: 0.4s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .toggle-btn span { color: var(--neon-green); font-weight: bold; text-decoration: underline; }
+        .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(57,255,20,0.3); }
 
-        /* رسائل الخطأ والنجاح */
-        #msg { margin-top: 15px; font-size: 13px; min-height: 20px; }
-        .error { color: #ff4444; }
-        .success { color: var(--neon-green); }
+        .toggle-mode { text-align: center; margin-top: 25px; font-size: 13px; color: var(--muted); }
+        .toggle-mode span { color: var(--p); font-weight: 900; cursor: pointer; margin-right: 5px; }
 
-        /* شاشة التحميل المصغرة */
-        .loader {
-            display: none; width: 20px; height: 20px; border: 2px solid #111;
-            border-top-color: var(--neon-green); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 0 auto;
-        }
+        #status-msg { padding: 10px; border-radius: 10px; font-size: 12px; margin-bottom: 15px; display: none; text-align: center; }
+        .msg-error { background: rgba(255,0,60,0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .msg-success { background: rgba(0,255,136,0.1); color: var(--p); border: 1px solid var(--p); }
+
+        .loader { width: 18px; height: 18px; border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* آية الكرسي في الأسفل بشكل جمالي */
-        .bottom-quran {
-            position: fixed; bottom: 10px; width: 100%; text-align: center;
-            font-size: 11px; color: #333; padding: 0 20px; pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div class="auth-wrapper">
-        <div class="auth-card" id="main-card">
+    <div class="bg-glow" style="top: 20%; left: 20%;"></div>
+    <div class="bg-glow" style="bottom: 20%; right: 20%;"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
             
-            <div class="logo-area">
-                <img src="cd.jpg" alt="CD-CARD">
+            <div id="status-msg"></div>
+
+            <div class="auth-header">
+                <div class="logo-box"><i class="fa fa-shield-halved"></i></div>
+                <h2 id="form-title">تسجيل الدخول</h2>
+                <p id="form-sub">أدخل بياناتك للوصول إلى حسابك في CD-CARD</p>
             </div>
 
-            <div id="login-form">
-                <h2>مرحباً بك مجدداً</h2>
-                <p class="subtitle">سجل دخولك للوصول إلى خدماتك</p>
+            <form id="auth-form" onsubmit="handleAuth(event)">
                 
-                <div class="input-group">
-                    <label>البريد الإلكتروني</label>
-                    <i class="fa fa-envelope"></i>
-                    <input type="email" id="l-email" placeholder="example@mail.com">
-                </div>
-
-                <div class="input-group">
-                    <label>كلمة المرور</label>
-                    <i class="fa fa-lock"></i>
-                    <input type="password" id="l-pass" placeholder="••••••••">
-                </div>
-
-                <button class="btn-submit" onclick="login()">
-                    <span id="l-text">دخول</span>
-                    <div class="loader" id="l-loader"></div>
-                </button>
-
-                <div class="toggle-btn" onclick="toggleForm('reg')">ليس لديك حساب؟ <span>إنشاء حساب جديد</span></div>
-            </div>
-
-            <div id="register-form" style="display: none;">
-                <h2>إنشاء حساب</h2>
-                <p class="subtitle">انضم إلينا واحصل على أفضل الخدمات</p>
-                
-                <div class="input-group">
-                    <label>اسم المستخدم</label>
-                    <i class="fa fa-user"></i>
-                    <input type="text" id="r-user" placeholder="أدخل اسمك">
+                <div class="input-group" id="name-group" style="display:none;">
+                    <label>الاسم بالكامل</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="u-name" placeholder="مثال: محمد الضاوي">
+                        <i class="fa fa-user main-icon"></i>
+                    </div>
                 </div>
 
                 <div class="input-group">
                     <label>البريد الإلكتروني</label>
-                    <i class="fa fa-envelope"></i>
-                    <input type="email" id="r-email" placeholder="example@mail.com">
+                    <div class="input-wrapper">
+                        <input type="email" id="u-email" required placeholder="admin@cdcard.ly">
+                        <i class="fa fa-at main-icon"></i>
+                    </div>
                 </div>
 
                 <div class="input-group">
                     <label>كلمة المرور</label>
-                    <i class="fa fa-lock"></i>
-                    <input type="password" id="r-pass" placeholder="أدخل كلمة مرور قوية">
+                    <div class="input-wrapper">
+                        <input type="password" id="u-pass" required placeholder="••••••••" oninput="checkStrength(this.value)">
+                        <i class="fa fa-lock main-icon"></i>
+                        <i class="fa fa-eye toggle-pass" onclick="togglePass()"></i>
+                    </div>
+                    <div class="pass-strength" id="strength-box">
+                        <div class="pass-bar" id="strength-bar"></div>
+                    </div>
                 </div>
 
-                <button class="btn-submit" onclick="register()">
-                    <span id="r-text">إنشاء الحساب</span>
-                    <div class="loader" id="r-loader"></div>
-                </button>
+                <div class="extra-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember"> تذكرني
+                    </label>
+                    <a href="javascript:void(0)" class="forgot-link" onclick="resetPassword()">نسيت كلمة المرور؟</a>
+                </div>
 
-                <div class="toggle-btn" onclick="toggleForm('log')">لديك حساب بالفعل؟ <span>سجل دخولك</span></div>
+                <button type="submit" class="btn-auth" id="submit-btn">
+                    <span id="btn-text">دخول آمن</span>
+                    <div class="loader" id="btn-loader"></div>
+                </button>
+            </form>
+
+            <div class="toggle-mode">
+                <p id="toggle-text">جديد على منصتنا؟ <span onclick="switchMode()">إنشاء حساب</span></p>
             </div>
 
-            <div id="msg"></div>
         </div>
     </div>
 
-    <div class="bottom-quran">
-        اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ
-    </div>
-
     <script>
-        // 1. Firebase Configuration
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
             projectId: "cd-card-87365",
-            storageBucket: "cd-card-87365.firebasestorage.app",
-            messagingSenderId: "397926299412",
             appId: "1:397926299412:web:efbe9ae9aae29df368f401"
         };
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(config);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. تبديل بين الدخول والتسجيل مع تأثير بصري
-        function toggleForm(type) {
-            const card = document.getElementById('main-card');
-            const login = document.getElementById('login-form');
-            const register = document.getElementById('register-form');
-            const msg = document.getElementById('msg');
-            
-            msg.innerText = "";
-            card.style.transform = "rotateY(10deg) scale(0.95)";
-            
-            setTimeout(() => {
-                if(type === 'reg') {
-                    login.style.display = 'none';
-                    register.style.display = 'block';
-                } else {
-                    login.style.display = 'block';
-                    register.style.display = 'none';
-                }
-                card.style.transform = "rotateY(0deg) scale(1)";
-            }, 300);
-        }
+        let isLogin = true;
 
-        // 3. وظيفة تسجيل الدخول
-        async function login() {
-            const email = document.getElementById('l-email').value;
-            const pass = document.getElementById('l-pass').value;
-            const msg = document.getElementById('msg');
-            
-            if(!email || !pass) {
-                showMsg("يرجى ملء كافة الحقول", "error");
-                return;
-            }
-
-            setLoading('l', true);
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                showMsg("تم الدخول بنجاح، جاري التحويل...", "success");
-                setTimeout(() => window.location.href = "index.html", 1000);
-            } catch(e) {
-                showMsg("خطأ: البريد أو كلمة المرور غير صحيحة", "error");
-            }
-            setLoading('l', false);
-        }
-
-        // 4. وظيفة إنشاء حساب جديد
-        async function register() {
-            const user = document.getElementById('r-user').value;
-            const email = document.getElementById('r-email').value;
-            const pass = document.getElementById('r-pass').value;
-            const msg = document.getElementById('msg');
-
-            if(!user || !email || !pass) {
-                showMsg("يرجى ملء كافة الحقول", "error");
-                return;
-            }
-
-            if(pass.length < 6) {
-                showMsg("كلمة المرور يجب أن تكون 6 أحرف على الأقل", "error");
-                return;
-            }
-
-            setLoading('r', true);
-            try {
-                const res = await auth.createUserWithEmailAndPassword(email, pass);
-                // حفظ بيانات المستخدم الإضافية في Firestore
-                await db.collection("users").doc(res.user.uid).set({
-                    username: user,
-                    email: email,
-                    balance: 0,
-                    spent: 0,
-                    status: "نشط",
-                    dateCreated: new Date().toLocaleDateString('ar-LY')
-                });
-                showMsg("تم إنشاء الحساب بنجاح!", "success");
-                setTimeout(() => window.location.href = "index.html", 1500);
-            } catch(e) {
-                if(e.code === 'auth/email-already-in-use') showMsg("البريد الإلكتروني مسجل بالفعل", "error");
-                else showMsg("حدث خطأ أثناء التسجيل، حاول مجدداً", "error");
-            }
-            setLoading('r', false);
-        }
-
-        // وظائف مساعدة للواجهة
-        function showMsg(text, type) {
-            const m = document.getElementById('msg');
-            m.innerText = text;
-            m.className = type;
-        }
-
-        function setLoading(prefix, isLoad) {
-            const text = document.getElementById(prefix + '-text');
-            const loader = document.getElementById(prefix + '-loader');
-            const btn = text.parentElement;
-
-            if(isLoad) {
-                text.style.display = 'none';
-                loader.style.display = 'block';
-                btn.disabled = true;
+        // 1. ميزة إظهار/إخفاء كلمة المرور
+        function togglePass() {
+            const passInput = document.getElementById('u-pass');
+            const icon = document.querySelector('.toggle-pass');
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                text.style.display = 'block';
-                loader.style.display = 'none';
-                btn.disabled = false;
+                passInput.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
+        }
+
+        // 2. ميزة فحص قوة كلمة المرور
+        function checkStrength(val) {
+            const box = document.getElementById('strength-box');
+            const bar = document.getElementById('strength-bar');
+            if (isLogin) { box.style.display = "none"; return; }
+            
+            box.style.display = "block";
+            let score = 0;
+            if (val.length > 6) score += 40;
+            if (/[A-Z]/.test(val)) score += 30;
+            if (/[0-9]/.test(val)) score += 30;
+
+            bar.style.width = score + "%";
+            if (score <= 40) bar.style.background = "#ff003c";
+            else if (score <= 70) bar.style.background = "#ffa600";
+            else bar.style.background = "#39ff14";
+        }
+
+        // 3. التبديل بين الأنماط
+        function switchMode() {
+            isLogin = !isLogin;
+            document.getElementById('name-group').style.display = isLogin ? "none" : "block";
+            document.getElementById('form-title').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد";
+            document.getElementById('btn-text').innerText = isLogin ? "دخول آمن" : "تسجيل الحساب";
+            document.getElementById('toggle-text').innerHTML = isLogin ? 
+                'جديد على منصتنا؟ <span onclick="switchMode()">إنشاء حساب</span>' : 
+                'لديك حساب؟ <span onclick="switchMode()">سجل دخولك</span>';
+            document.getElementById('strength-box').style.display = "none";
+        }
+
+        // 4. معالجة الدخول والتسجيل
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('u-email').value;
+            const pass = document.getElementById('u-pass').value;
+            const name = document.getElementById('u-name').value;
+            setLoading(true);
+
+            try {
+                if(isLogin) {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    msg("مرحباً بك مجدداً! جاري التحويل...", "success");
+                    checkUserRole();
+                } else {
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.collection("users").doc(res.user.uid).set({
+                        username: name,
+                        email: email,
+                        balance: 0.00,
+                        role: "user",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    msg("تم التسجيل بنجاح!", "success");
+                    setTimeout(() => window.location.href = "index.html", 1500);
+                }
+            } catch (err) {
+                msg(err.message, "error");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // 5. استعادة كلمة المرور
+        async function resetPassword() {
+            const email = prompt("أدخل بريدك الإلكتروني لإرسال رابط الاستعادة:");
+            if (email) {
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    alert("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك.");
+                } catch (err) {
+                    alert("خطأ: " + err.message);
+                }
+            }
+        }
+
+        async function checkUserRole() {
+            const user = auth.currentUser;
+            const doc = await db.collection("users").doc(user.uid).get();
+            if (doc.exists && doc.data().role === "admin") {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "index.html";
+            }
+        }
+
+        function msg(text, type) {
+            const m = document.getElementById('status-msg');
+            m.innerText = text;
+            m.className = type === "success" ? "msg-success" : "msg-error";
+            m.style.display = "block";
+        }
+
+        function setLoading(s) {
+            document.getElementById('btn-loader').style.display = s ? "block" : "none";
+            document.getElementById('btn-text').style.opacity = s ? "0.5" : "1";
+            document.getElementById('submit-btn').disabled = s;
         }
     </script>
 </body>
 </html>
+
