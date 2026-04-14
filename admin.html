@@ -22,6 +22,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
+        /*Sidebar*/
         .sidebar {
             width: 280px; background: #050505; border-left: 1px solid var(--border);
             height: 100vh; position: fixed; right: 0; top: 0; z-index: 2000;
@@ -55,8 +56,9 @@
         th { padding: 15px; font-size: 11px; color: var(--p); text-align: right; border-bottom: 2px solid var(--border); text-transform: uppercase; }
         td { padding: 15px; border-bottom: 1px solid #151515; font-size: 13px; }
 
-        .input-field { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: #fff; font-family: 'Cairo'; margin-bottom: 10px; }
-        textarea.input-field { min-height: 80px; resize: vertical; }
+        .input-field { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: #fff; font-family: 'Cairo'; margin-bottom: 15px; }
+        select.input-field { cursor: pointer; color: var(--p); font-weight: bold; }
+        
         .btn { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Cairo'; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-p { background: var(--p); color: #000; }
         .btn-s { background: transparent; border: 1px solid var(--s); color: var(--s); }
@@ -67,7 +69,7 @@
         .b-wait { background: rgba(255,170,0,0.1); color: #ffa600; }
         .b-done { background: rgba(0,255,136,0.1); color: var(--p); }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
         .modal-content { background: var(--card); width: 100%; max-width: 600px; border-radius: 25px; padding: 30px; border: 1px solid var(--border); margin: auto; }
 
         .nav-item { padding: 12px 20px; border-radius: 10px; cursor: pointer; color: #888; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
@@ -108,9 +110,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2>قاعدة الخدمات</h2>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-p" onclick="openAddModal()"><i class="fa fa-plus"></i> إضافة خدمة جديدة</button>
-                    </div>
+                    <button class="btn btn-p" onclick="openAddModal()"><i class="fa fa-plus"></i> إضافة خدمة جديدة</button>
                 </div>
                 <div id="srv-list"></div>
             </div>
@@ -155,18 +155,34 @@
 
     <div class="modal" id="srv-modal">
         <div class="modal-content">
-            <h3 id="modal-title">إدارة الخدمة</h3><br>
+            <h3 id="modal-title" style="color:var(--p);">إدارة الخدمة</h3><br>
             <input type="hidden" id="m-id">
-            <label>اسم الخدمة</label>
+            
+            <label style="font-size: 12px; color: var(--muted);">اسم الخدمة</label>
             <input type="text" id="m-name" class="input-field" placeholder="مثلاً: PUBG 60 UC">
-            <label>القسم / الفئة</label>
+            
+            <label style="font-size: 12px; color: var(--muted);">القسم / الفئة</label>
             <input type="text" id="m-cat" class="input-field" placeholder="مثلاً: ألعاب">
-            <label>سعر التكلفة (د.ل)</label>
-            <input type="number" id="m-cost" class="input-field" placeholder="0.00">
-            <label>سعر البيع للزبون (د.ل)</label>
-            <input type="number" id="m-price" class="input-field" placeholder="0.00">
-            <label>وصف الخدمة</label>
-            <textarea id="m-desc" class="input-field" placeholder="اكتب تفاصيل الخدمة أو شروط الشحن هنا..."></textarea>
+
+            <label style="font-size: 12px; color: var(--s);">نظام تسعير الكمية</label>
+            <select id="m-price-type" class="input-field">
+                <option value="Per1000">سعر لكل 1000 وحدة (متابعين، لايكات...)</option>
+                <option value="Per1">سعر ثابت لكل 1 قطعة (حسابات، اشتراكات، شحن مباشر)</option>
+            </select>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-size: 12px; color: var(--muted);">سعر التكلفة (د.ل)</label>
+                    <input type="number" id="m-cost" class="input-field" placeholder="0.00">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--muted);">سعر البيع للزبون (د.ل)</label>
+                    <input type="number" id="m-price" class="input-field" placeholder="0.00">
+                </div>
+            </div>
+
+            <label style="font-size: 12px; color: var(--muted);">وصف الخدمة</label>
+            <textarea id="m-desc" class="input-field" placeholder="اكتب تفاصيل الخدمة هنا..."></textarea>
             
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
                 <button class="btn btn-s" onclick="closeModals()">إلغاء</button>
@@ -185,7 +201,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // التنقل بين الصفحات
         function nav(id, el) {
             document.querySelectorAll('.tab-page').forEach(p => p.style.display='none');
             document.getElementById('tab-'+id).style.display='block';
@@ -200,7 +215,6 @@
             if(id === 'finance') loadFinance();
         }
 
-        // تحميل الخدمات مع خاصية التعديل
         async function loadSrv() {
             const container = document.getElementById('srv-list');
             container.innerHTML = "<p style='padding:20px;'>جاري تحميل الخدمات...</p>";
@@ -216,11 +230,13 @@
 
             for(let c in cats) {
                 let html = `<div class="panel"><h3><i class="fa fa-tag" style="color:var(--p)"></i> ${c}</h3><div class="table-wrap"><table>
-                    <thead><tr><th>الخدمة</th><th>السعر</th><th>التكلفة</th><th>الربح</th><th>إجراءات</th></tr></thead><tbody>`;
+                    <thead><tr><th>الخدمة</th><th>النظام</th><th>السعر</th><th>التكلفة</th><th>الربح</th><th>إجراءات</th></tr></thead><tbody>`;
                 cats[c].forEach(s => {
                     const profit = (s.finalPrice - (s.costPrice || 0)).toFixed(2);
+                    const typeLabel = s.priceType === 'Per1' ? '<span style="color:var(--s)">لكل 1</span>' : 'لكل 1000';
                     html += `<tr>
-                        <td><b>${s.name}</b><br><small style="color:var(--muted)">${(s.description || 'لا يوجد وصف').substring(0,30)}...</small></td>
+                        <td><b>${s.name}</b></td>
+                        <td>${typeLabel}</td>
                         <td style="color:var(--p); font-weight:bold;">${s.finalPrice} د.ل</td>
                         <td style="color:var(--muted);">${s.costPrice || 0} د.ل</td>
                         <td style="color:var(--s);">+${profit}</td>
@@ -234,19 +250,18 @@
             }
         }
 
-        // فتح نافذة الإضافة
         function openAddModal() {
             document.getElementById('modal-title').innerText = "إضافة خدمة جديدة";
             document.getElementById('m-id').value = "";
             document.getElementById('m-name').value = "";
             document.getElementById('m-cat').value = "";
+            document.getElementById('m-price-type').value = "Per1000";
             document.getElementById('m-cost').value = "";
             document.getElementById('m-price').value = "";
             document.getElementById('m-desc').value = "";
             document.getElementById('srv-modal').style.display = 'flex';
         }
 
-        // فتح نافذة التعديل وجلب البيانات
         async function openEditModal(id) {
             document.getElementById('modal-title').innerText = "تعديل الخدمة";
             const doc = await db.collection("services").doc(id).get();
@@ -255,6 +270,7 @@
             document.getElementById('m-id').value = id;
             document.getElementById('m-name').value = s.name;
             document.getElementById('m-cat').value = s.category;
+            document.getElementById('m-price-type').value = s.priceType || "Per1000";
             document.getElementById('m-cost').value = s.costPrice || 0;
             document.getElementById('m-price').value = s.finalPrice;
             document.getElementById('m-desc').value = s.description || "";
@@ -264,12 +280,12 @@
 
         function closeModals() { document.getElementById('srv-modal').style.display = 'none'; }
 
-        // معالجة الحفظ (إضافة أو تعديل)
         async function processSrv() {
             const id = document.getElementById('m-id').value;
             const s = {
                 name: document.getElementById('m-name').value,
                 category: document.getElementById('m-cat').value,
+                priceType: document.getElementById('m-price-type').value, // حفظ نوع السعر
                 costPrice: parseFloat(document.getElementById('m-cost').value) || 0,
                 finalPrice: parseFloat(document.getElementById('m-price').value) || 0,
                 description: document.getElementById('m-desc').value,
@@ -281,11 +297,9 @@
             try {
                 if(id) {
                     await db.collection("services").doc(id).update(s);
-                    alert("تم تحديث الخدمة بنجاح!");
                 } else {
                     s.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection("services").add(s);
-                    alert("تم إضافة الخدمة بنجاح!");
                 }
                 closeModals();
                 loadSrv();
@@ -293,37 +307,32 @@
         }
 
         async function delSrv(id) {
-            if(confirm("هل أنت متأكد من حذف هذه الخدمة نهائياً؟")) {
+            if(confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
                 await db.collection("services").doc(id).delete();
                 loadSrv();
             }
         }
 
-        // بقية الوظائف (مستخدمين، طلبات، شحن)
+        // --- باقي الوظائف الافتراضية ---
         async function loadUsers() {
             const list = document.getElementById('users-list');
-            list.innerHTML = "<tr><td colspan='4'>جاري جلب البيانات...</td></tr>";
             const snap = await db.collection("users").get();
             list.innerHTML = "";
             snap.forEach(doc => {
                 const u = doc.data();
                 list.innerHTML += `<tr>
-                    <td><b>${u.username || 'بدون اسم'}</b><br><small>${doc.id.substring(0,8)}</small></td>
+                    <td><b>${u.username || 'بدون اسم'}</b></td>
                     <td style="color:var(--p); font-weight:bold;">${parseFloat(u.balance || 0).toFixed(2)} د.ل</td>
                     <td><span class="badge b-done">نشط</span></td>
-                    <td><button class="btn btn-p" style="padding:5px 10px;" onclick="topUp('${doc.id}')">شحن رصيد</button></td>
+                    <td><button class="btn btn-p" style="padding:5px 10px;" onclick="topUp('${doc.id}')">شحن</button></td>
                 </tr>`;
             });
-            document.getElementById('st-users').innerText = snap.size;
         }
 
         async function topUp(uid) {
-            const amt = prompt("أدخل القيمة المراد إضافتها لحساب الزبون (د.ل):");
+            const amt = prompt("القيمة المراد إضافتها:");
             if(amt && !isNaN(amt)) {
-                await db.collection("users").doc(uid).update({
-                    balance: firebase.firestore.FieldValue.increment(parseFloat(amt))
-                });
-                alert("تمت العملية بنجاح!");
+                await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(parseFloat(amt)) });
                 loadUsers();
             }
         }
@@ -338,7 +347,7 @@
                     <td><small>${o.createdAt ? o.createdAt.toDate().toLocaleString() : '...'}</small></td>
                     <td>${o.username || 'مستخدم'}</td>
                     <td><b>${o.serviceName}</b></td>
-                    <td><input value="${o.url || o.playerID || ''}" class="input-field" style="margin:0; padding:4px; font-size:11px;" readonly></td>
+                    <td><input value="${o.target || ''}" class="input-field" style="margin:0; padding:4px;" readonly></td>
                     <td style="color:var(--p);">${o.price} د.ل</td>
                     <td><span class="badge ${o.status==='مكتمل'?'b-done':'b-wait'}">${o.status}</span></td>
                     <td><button class="btn btn-p" onclick="completeOrder('${doc.id}')">إتمام</button></td>
@@ -353,28 +362,25 @@
 
         async function loadFinance() {
             const list = document.getElementById('finance-list');
-            const snap = await db.collection("deposits").orderBy("createdAt", "desc").get();
+            const snap = await db.collection("payment_requests").orderBy("createdAt", "desc").get();
             list.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
                 list.innerHTML += `<tr>
                     <td>${d.createdAt ? d.createdAt.toDate().toLocaleDateString() : '...'}</td>
-                    <td>${d.username || 'زبون'}</td>
+                    <td>${d.phone}</td>
                     <td style="color:var(--p);">${d.amount} د.ل</td>
-                    <td>${d.method}</td>
+                    <td>كاش</td>
                     <td><span class="badge ${d.status==='مكتمل'?'b-done':'b-wait'}">${d.status}</span></td>
-                    <td><button class="btn btn-p" onclick="approveDep('${doc.id}', '${d.userId}', ${d.amount})"><i class="fa fa-check"></i></button></td>
+                    <td><button class="btn btn-p" onclick="approveDep('${doc.id}', '${d.userId}', ${d.amount})">تأكيد</button></td>
                 </tr>`;
             });
         }
 
         async function approveDep(docId, userId, amt) {
-            if(confirm("تأكيد شحن هذا المبلغ للزبون؟")) {
-                await db.collection("users").doc(userId).update({
-                    balance: firebase.firestore.FieldValue.increment(parseFloat(amt))
-                });
-                await db.collection("deposits").doc(docId).update({ status: 'مكتمل' });
-                alert("تم التفعيل!");
+            if(confirm("تأكيد شحن المبلغ؟")) {
+                await db.collection("users").doc(userId).update({ balance: firebase.firestore.FieldValue.increment(parseFloat(amt)) });
+                await db.collection("payment_requests").doc(docId).update({ status: 'مكتمل' });
                 loadFinance();
             }
         }
@@ -389,8 +395,9 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false }
             });
-            loadUsers();
+            loadSrv();
         };
     </script>
 </body>
 </html>
+
