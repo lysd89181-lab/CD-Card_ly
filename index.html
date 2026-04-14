@@ -23,10 +23,12 @@
             --border: #1a1a1a;
             --text-dim: #999;
             --font-num: 'Rajdhani', sans-serif;
+            --locked-bg: #151515;
         }
 
-        /* الأساسيات */
+        /* Basic Reset & Global Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
             font-family: 'Cairo', sans-serif;
             background-color: var(--bg-deep);
@@ -34,15 +36,17 @@
             direction: rtl;
             overflow-x: hidden;
             line-height: 1.6;
+            user-select: none;
         }
 
+        /* Utility Classes for Typography */
         .num-font, .stat-val, #total-price-view, td, .api-key, .phone-num, .price-badge {
             font-family: var(--font-num) !important;
             letter-spacing: 1.5px;
             font-weight: 700;
         }
 
-        /* Sidebar - مخصص لنصف الشاشة */
+        /* Sidebar Navigation Design */
         .side-panel {
             position: fixed; right: -50%; top: 0; width: 50%; height: 100vh;
             background: var(--bg-sidebar); border-left: 2px solid var(--border);
@@ -61,7 +65,7 @@
         .nav-link i { margin-left: 15px; font-size: 22px; width: 30px; text-align: center; }
         .nav-link.active { color: var(--primary); background: rgba(57, 255, 20, 0.08); border-right-color: var(--primary); }
 
-        /* Custom Dropdowns */
+        /* Modern UI Selectors */
         .custom-select { position: relative; margin-bottom: 25px; }
         .select-trigger {
             width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border);
@@ -69,10 +73,8 @@
             justify-content: space-between; align-items: center; font-weight: 800; transition: 0.3s;
         }
         .select-trigger:hover { border-color: var(--primary); }
-        .select-trigger i { color: var(--primary); transition: 0.4s; }
         .select-trigger.active { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
-        .select-trigger.active i { transform: rotate(180deg); }
-
+        
         .options-menu {
             position: absolute; top: 115%; left: 0; right: 0; background: #0f0f0f;
             border: 2px solid #222; border-radius: 20px; max-height: 280px; overflow-y: auto;
@@ -87,7 +89,7 @@
 
         @keyframes dropIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* إحصائيات عمودية (كل مربع في سطر) */
+        /* Stat Cards Layout */
         .stats-column { display: flex; flex-direction: column; gap: 18px; margin-bottom: 35px; }
         .stat-entry { 
             background: linear-gradient(145deg, #0a0a0a, #050505); padding: 28px; border-radius: 25px; 
@@ -100,17 +102,31 @@
         .stat-tag { font-size: 10px; color: var(--text-dim); font-weight: 900; display: block; letter-spacing: 1px; margin-bottom: 5px; }
         .stat-val { font-size: 28px; font-weight: 800; color: #fff; }
 
-        /* المحتوى */
+        /* Main App Container */
         .app-container { padding: 45px 22px; max-width: 1100px; margin: 0 auto; }
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; }
         .side-toggle { width: 55px; height: 55px; background: #111; border: 1px solid #222; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: var(--primary); cursor: pointer; font-size: 22px; transition: 0.3s; }
-        .side-toggle:hover { background: var(--primary); color: #000; }
 
         .form-card { background: var(--bg-card); border-radius: 35px; padding: 40px 30px; border: 2px solid var(--border); margin-bottom: 35px; box-shadow: 0 10px 30px #000; }
-        .field-group { margin-bottom: 30px; }
+        .field-group { margin-bottom: 30px; position: relative; }
         .field-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; font-weight: 900; }
-        .field-group input { width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border); border-radius: 20px; color: #fff; font-weight: 700; font-size: 16px; }
-        .field-group input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(57, 255, 20, 0.1); }
+        .field-group input { width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border); border-radius: 20px; color: #fff; font-weight: 700; font-size: 16px; transition: 0.3s; }
+        .field-group input:focus { border-color: var(--primary); }
+        
+        /* Locked State Style */
+        .field-group input:disabled {
+            background: var(--locked-bg);
+            border-color: #222;
+            color: #555;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .constraint-badge {
+            position: absolute; left: 15px; top: 48px; background: rgba(0,0,0,0.4);
+            padding: 5px 12px; border-radius: 10px; font-size: 10px; color: var(--primary);
+            font-weight: 800; border: 1px solid var(--border);
+        }
 
         .primary-btn {
             width: 100%; padding: 24px; background: var(--primary); color: #000; border: none;
@@ -119,7 +135,7 @@
         }
         .primary-btn:active { transform: scale(0.95); }
 
-        /* آية الكرسي */
+        /* Qur'an Box Decoration */
         .quran-box {
             background: #030303; border: 2px solid var(--primary); padding: 60px 30px;
             border-radius: 40px; text-align: center; margin-top: 50px; position: relative;
@@ -127,24 +143,25 @@
         .quran-box::before { content: "﷽"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: #020202; padding: 0 20px; color: var(--primary); font-size: 28px; }
         .quran-text { line-height: 2.6; font-size: 20px; font-weight: 700; color: #fafafa; }
 
-        /* الجداول */
+        /* Tables & Logging */
         .log-container { overflow-x: auto; border-radius: 25px; border: 2px solid var(--border); background: #070707; }
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
         th { padding: 25px; text-align: right; background: #0c0c0c; color: var(--primary); font-size: 14px; font-weight: 900; border-bottom: 2px solid #1a1a1a; }
         td { padding: 22px; font-size: 15px; border-bottom: 1px solid #111; font-weight: 700; color: #ddd; }
 
-        /* شاشة التحميل */
+        /* Loader Animation */
         #splash-loader { position: fixed; inset: 0; background: #000; z-index: 1000000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .splash-logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 10px; font-size: 35px; margin-bottom: 25px; text-shadow: 0 0 20px var(--primary); }
         .progress-container { width: 220px; height: 4px; background: #111; border-radius: 20px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; animation: fullLoad 3s cubic-bezier(0.65, 0.05, 0.36, 1) forwards; }
         @keyframes fullLoad { to { width: 100%; } }
 
+        /* Visibility Control */
         .section { display: none; }
         .section.active { display: block; animation: sectionIn 0.7s ease; }
         @keyframes sectionIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* مكونات الدعم */
+        /* Support Cards */
         .link-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .card-link { 
             display: flex; align-items: center; padding: 25px; border-radius: 25px; 
@@ -173,7 +190,7 @@
                 <img src="cd.jpg" style="width: 90px; height: 90px; border-radius: 30px; border: 3px solid var(--primary); padding: 4px; margin-bottom: 20px;">
                 <div style="position:absolute; bottom:25px; right:0; background:var(--primary); width:20px; height:20px; border-radius:50%; border:3px solid var(--bg-sidebar);"></div>
             </div>
-            <h4 id="profile-name" style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;">جارِ التحميل...</h4>
+            <h4 id="profile-name" style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;">محمد</h4>
             <span style="font-size: 11px; color: var(--primary); font-weight: 900; letter-spacing: 3px; background: rgba(57,255,20,0.1); padding: 4px 12px; border-radius: 10px; margin-top: 10px; display: inline-block;">VIP USER</span>
         </div>
         
@@ -198,7 +215,7 @@
                 <h1 style="font-family:'Orbitron'; font-weight:900; letter-spacing:5px; font-size:26px; color:var(--primary);">CD-CARD</h1>
                 <p style="font-size:10px; color:var(--text-dim); font-weight:900; letter-spacing:4px;">NEXT GEN DIGITAL SERVICES</p>
             </div>
-            <img src="cd.jpg" width="55" height="55" style="border-radius:18px; border:2px solid var(--border); box-shadow: 0 0 15px rgba(0,0,0,0.5);">
+            <img src="cd.jpg" width="55" height="55" style="border-radius:18px; border:2px solid var(--border);">
         </header>
 
         <section id="sec-home" class="section active">
@@ -236,7 +253,7 @@
 
                 <div class="stat-entry">
                     <div class="stat-data">
-                        <span class="stat-tag">أرباح الوكلاء</span>
+                        <span class="stat-tag">أرباح الوكلاء المحققة</span>
                         <div style="display:flex; align-items:baseline; gap:10px;">
                             <span class="stat-val" id="val-comm" style="color:var(--neon-yellow);">0.00</span>
                             <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
@@ -270,13 +287,14 @@
                 </div>
 
                 <div class="field-group">
-                    <label>رابط الحساب / رابط المنشور / اليوزر</label>
-                    <input type="text" id="target-link" placeholder="ضع الرابط هنا بدقة">
+                    <label id="input-label-text">رابط الحساب / اليوزر</label>
+                    <input type="text" id="target-link" placeholder="أدخل الرابط أو اليوزر">
                 </div>
 
                 <div class="field-group">
-                    <label>الكمية المطلوبة (الحد الأدنى 300 للخدمات الجماعية)</label>
+                    <label>الكمية المطلوبة</label>
                     <input type="number" id="target-qty" value="1000" oninput="calculateEngine()">
+                    <span class="constraint-badge" id="qty-limit-view">الحد الأدنى: 300</span>
                 </div>
 
                 <div style="text-align:center; padding:35px; background:rgba(57,255,20,0.02); border-radius:30px; border:2px dashed #1a1a1a; margin-bottom:35px;">
@@ -288,7 +306,7 @@
                     <p id="price-type-hint" style="font-size:11px; color:var(--neon-yellow); margin-top:10px; font-weight:700;"></p>
                 </div>
 
-                <button class="primary-btn" onclick="executeOrder()"><i class="fa fa-rocket"></i> تأكيد عملية الشراء</button>
+                <button class="primary-btn" id="btn-submit" onclick="executeOrder()"><i class="fa fa-rocket"></i> تأكيد عملية الشراء</button>
             </div>
 
             <div class="quran-box">
@@ -306,8 +324,9 @@
                         <thead>
                             <tr>
                                 <th>اسم الخدمة</th>
-                                <th>السعر المدفوع</th>
-                                <th>حالة الطلب</th>
+                                <th>التكلفة</th>
+                                <th>الكمية</th>
+                                <th>الحالة</th>
                             </tr>
                         </thead>
                         <tbody id="table-body-orders"></tbody>
@@ -319,8 +338,7 @@
         <section id="sec-wallet" class="section">
             <div class="form-card">
                 <h3 style="color:var(--primary); margin-bottom:25px;"><i class="fa fa-fill-drip"></i> شحن الرصيد</h3>
-                
-                <img src="lb.jpg" style="width:100%; border-radius:25px; margin-bottom:30px; border:2px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <img src="lb.jpg" style="width:100%; border-radius:25px; margin-bottom:30px; border:2px solid var(--border);">
                 
                 <div style="background:#080808; padding:30px; border-radius:25px; margin-bottom:30px; border:1px solid #1a1a1a;">
                     <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px; font-weight:800;">بيانات التحويل عبر (كاش لبيانا / مدار):</p>
@@ -383,7 +401,10 @@
     </div>
 
     <script>
-        // 1. Firebase Configuration
+        /**
+         * 1. FIREBASE ARCHITECTURE
+         * Configuration and global state management.
+         */
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -398,7 +419,10 @@
         let masterServices = [];
         let activeServiceID = null;
 
-        // 2. Initializing & Auth
+        /**
+         * 2. SECURITY & AUTHENTICATION
+         * Real-time user session tracking.
+         */
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.collection("users").doc(user.uid).onSnapshot(doc => {
@@ -412,38 +436,46 @@
             }
         });
 
-        // 3. Core Data Sync
+        /**
+         * 3. DATA SYNCHRONIZATION
+         * Fetches services and sets up listeners.
+         */
         async function initializeData() {
-            // Fetch Services Database
-            const servicesSnap = await db.collection("services").get();
-            masterServices = servicesSnap.docs.map(d => ({id: d.id, ...d.data()}));
-            
-            // Generate Categories
-            const categories = [...new Set(masterServices.map(s => s.category))];
-            const catMenu = document.getElementById('menu-cat');
-            catMenu.innerHTML = categories.map(c => `
-                <div class="option-item" onclick="selectCategory('${c}')">${c}</div>
-            `).join('');
+            try {
+                const servicesSnap = await db.collection("services").get();
+                masterServices = servicesSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                
+                const categories = [...new Set(masterServices.map(s => s.category))];
+                const catMenu = document.getElementById('menu-cat');
+                catMenu.innerHTML = categories.map(c => `
+                    <div class="option-item" onclick="selectCategory('${c}')">${c}</div>
+                `).join('');
 
-            // Real-time Orders Listener
-            db.collection("orders").where("userId", "==", auth.currentUser.uid).orderBy("createdAt", "desc").onSnapshot(snap => {
-                const list = document.getElementById('table-body-orders');
-                list.innerHTML = "";
-                document.getElementById('val-orders').innerText = snap.size;
-                snap.forEach(doc => {
-                    const o = doc.data();
-                    list.innerHTML += `
-                        <tr>
-                            <td style="font-weight:900;">${o.serviceName}</td>
-                            <td class="num-font" style="color:var(--primary)">${o.price.toFixed(2)}</td>
-                            <td style="font-size:12px; color:var(--neon-yellow)">${o.status}</td>
-                        </tr>
-                    `;
+                db.collection("orders").where("userId", "==", auth.currentUser.uid).orderBy("createdAt", "desc").onSnapshot(snap => {
+                    const list = document.getElementById('table-body-orders');
+                    list.innerHTML = "";
+                    document.getElementById('val-orders').innerText = snap.size;
+                    snap.forEach(doc => {
+                        const o = doc.data();
+                        list.innerHTML += `
+                            <tr>
+                                <td style="font-weight:900; font-size:13px;">${o.serviceName}</td>
+                                <td class="num-font" style="color:var(--primary)">${o.price.toFixed(2)}</td>
+                                <td class="num-font">${o.quantity}</td>
+                                <td style="font-size:11px; color:var(--neon-yellow)">${o.status}</td>
+                            </tr>
+                        `;
+                    });
                 });
-            });
+            } catch (err) {
+                console.error("Critical Sync Error:", err);
+            }
         }
 
-        // 4. Interface Controls
+        /**
+         * 4. UI INTERACTION LOGIC
+         * Handles menus and navigation tabs.
+         */
         function openMenu(menuId) {
             const menu = document.getElementById(menuId);
             const trigger = menu.previousElementSibling;
@@ -464,98 +496,153 @@
             const filteredServices = masterServices.filter(s => s.category === catName);
             const serMenu = document.getElementById('menu-ser');
             serMenu.innerHTML = filteredServices.map(s => `
-                <div class="option-item" onclick="selectService('${s.id}', '${s.name}')">${s.name}</div>
+                <div class="option-item" onclick="selectService('${s.id}')">${s.name}</div>
             `).join('');
             
             document.getElementById('label-ser').innerText = "اختر الخدمة الآن...";
             activeServiceID = null;
-            calculateEngine();
+            resetDynamicFields();
         }
 
-        function selectService(id, name) {
+        /**
+         * 5. DYNAMIC INPUT CONSTRAINTS (V2 - ENHANCED)
+         * Logical locking of inputs based on service type.
+         */
+        function selectService(id) {
             activeServiceID = id;
-            document.getElementById('label-ser').innerText = name;
+            const service = masterServices.find(s => s.id === id);
+            document.getElementById('label-ser').innerText = service.name;
             document.getElementById('menu-ser').classList.remove('show');
             document.getElementById('trig-ser').classList.remove('active');
+
+            const qtyInput = document.getElementById('target-qty');
+            const qtyBadge = document.getElementById('qty-limit-view');
+            const linkInput = document.getElementById('target-link');
+            const inputLabel = document.getElementById('input-label-text');
+
+            // --- منطق القفل الذكي للخدمات الفردية ---
+            if (service.priceType === "Per1" || service.category.includes("اشتراكات") || service.category.includes("حسابات")) {
+                qtyInput.value = 1;
+                qtyInput.disabled = true; // قفل الخانة تماماً
+                qtyBadge.innerText = "هذه الخدمة لقطعة واحدة فقط";
+                qtyBadge.style.color = "var(--neon-yellow)";
+            } else {
+                qtyInput.disabled = false; // فتح الخانة للخدمات الجماعية
+                const min = service.min || 300;
+                qtyInput.value = min;
+                qtyInput.min = min;
+                qtyBadge.innerText = `الحد الأدنى: ${min}`;
+                qtyBadge.style.color = "var(--primary)";
+            }
+
+            // --- تخصيص نوع الإدخال ---
+            if (service.inputType === "username") {
+                inputLabel.innerText = "اسم المستخدم (بدون @)";
+                linkInput.placeholder = "مثال: cd_card_libya";
+            } else if (service.inputType === "phone" || service.category.includes("رصيد")) {
+                inputLabel.innerText = "رقم الهاتف المستلم";
+                linkInput.placeholder = "09xxxxxxxx";
+            } else {
+                inputLabel.innerText = "رابط الحساب / المنشور";
+                linkInput.placeholder = "ضع الرابط الكامل هنا";
+            }
+
             calculateEngine();
         }
 
-        // 5. HYBRID PRICING ENGINE (Critical Logic)
+        function resetDynamicFields() {
+            const qtyInput = document.getElementById('target-qty');
+            qtyInput.disabled = false;
+            qtyInput.value = 1000;
+            document.getElementById('qty-limit-view').innerText = "الحد الأدنى: 300";
+            document.getElementById('total-price-view').innerText = "0.00";
+        }
+
+        /**
+         * 6. PRICING ENGINE
+         * Real-time calculation based on quantity and rate.
+         */
         function calculateEngine() {
             const priceLabel = document.getElementById('total-price-view');
             const hint = document.getElementById('price-type-hint');
             
-            if(!activeServiceID) {
-                priceLabel.innerText = "0.00";
-                hint.innerText = "";
-                return;
-            }
+            if(!activeServiceID) return;
 
             const service = masterServices.find(x => x.id === activeServiceID);
             const quantity = parseInt(document.getElementById('target-qty').value) || 0;
             
             let finalCost = 0;
-
-            // تمييز نظام السعر للألف أو السعر للقطعة
-            if(service.priceType === "Per1" || service.category.includes("اشتراكات") || service.category.includes("حسابات")) {
-                // سعر لكل قطعة (مثل نيتفلكس)
+            if(service.priceType === "Per1" || service.category.includes("اشتراكات")) {
                 finalCost = quantity * service.finalPrice;
-                hint.innerText = "نظام السعر: لكل قطعة (1)";
+                hint.innerText = "نظام الحساب: للقطعة الواحدة";
             } else {
-                // سعر لكل 1000 (مثل المتابعين)
                 finalCost = (quantity / 1000) * service.finalPrice;
-                hint.innerText = "نظام السعر: لكل 1000 وحدة";
+                hint.innerText = "نظام الحساب: لكل 1000 وحدة";
             }
-
             priceLabel.innerText = finalCost.toFixed(2);
         }
 
+        /**
+         * 7. ORDER EXECUTION
+         * Validates and submits transactions to Firebase.
+         */
         async function executeOrder() {
             const cost = parseFloat(document.getElementById('total-price-view').innerText);
             const link = document.getElementById('target-link').value;
             const qty = parseInt(document.getElementById('target-qty').value);
+            const btn = document.getElementById('btn-submit');
 
-            if(!activeServiceID || !link) return alert("خطأ: يرجى إدخال الرابط واختيار الخدمة");
+            if(!activeServiceID || !link || !qty) return alert("يرجى إكمال كافة البيانات");
             
             const service = masterServices.find(s => s.id === activeServiceID);
-            // منع طلب كميات قليلة في خدمات الألف
-            if(service.priceType !== "Per1" && qty < 300) return alert("أقل كمية للخدمات الجماعية هي 300");
             
-            if(currentUserData.balance < cost) return alert("رصيدك غير كافٍ لإتمام هذه العملية");
+            if(currentUserData.balance < cost) return alert("رصيدك غير كافٍ، يرجى شحن المحفظة");
 
-            const batch = db.batch();
-            const orderRef = db.collection("orders").doc();
-            
-            batch.set(orderRef, {
-                userId: auth.currentUser.uid,
-                serviceName: service.name,
-                price: cost,
-                target: link,
-                quantity: qty,
-                status: "قيد الانتظار",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa fa-circle-notch fa-spin"></i> جارِ الإرسال...`;
 
-            batch.update(db.collection("users").doc(auth.currentUser.uid), {
-                balance: firebase.firestore.FieldValue.increment(-cost),
-                spent: firebase.firestore.FieldValue.increment(cost)
-            });
+            try {
+                const batch = db.batch();
+                const orderRef = db.collection("orders").doc();
+                
+                batch.set(orderRef, {
+                    userId: auth.currentUser.uid,
+                    serviceName: service.name,
+                    price: cost,
+                    target: link,
+                    quantity: qty,
+                    status: "قيد التنفيذ",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
-            await batch.commit();
-            alert("تم إرسال الطلب بنجاح، سيتم التنفيذ خلال دقائق");
-            openTab('orders');
+                batch.update(db.collection("users").doc(auth.currentUser.uid), {
+                    balance: firebase.firestore.FieldValue.increment(-cost),
+                    spent: firebase.firestore.FieldValue.increment(cost)
+                });
+
+                await batch.commit();
+                alert("تم استلام طلبك بنجاح!");
+                openTab('orders');
+            } catch (err) {
+                alert("خطأ في الاتصال بالخادم");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa fa-rocket"></i> تأكيد عملية الشراء`;
+            }
         }
 
+        /**
+         * 8. SYSTEM UTILITIES
+         */
         function updateDashboardUI() {
             if(!currentUserData) return;
             document.getElementById('val-balance').innerText = currentUserData.balance.toFixed(2);
             document.getElementById('val-spent').innerText = (currentUserData.spent || 0).toFixed(2);
             document.getElementById('val-comm').innerText = (currentUserData.commission || 0).toFixed(2);
             document.getElementById('profile-name').innerText = currentUserData.username;
-            document.getElementById('api-key-display').innerText = currentUserData.apiKey || "اضغط لتوليد مفتاح API";
+            document.getElementById('api-key-display').innerText = currentUserData.apiKey || "لا يوجد مفتاح نشط";
         }
 
-        // 6. Navigation Logic
         function toggleNav(state) {
             document.getElementById('nav-panel').classList.toggle('open', state);
             document.getElementById('mask-overlay').classList.toggle('active', state);
@@ -571,15 +658,15 @@
         }
 
         async function refreshAPIKey() {
-            const newKey = "CD_AUTH_" + Math.random().toString(36).substring(2, 15).toUpperCase() + Date.now();
+            const newKey = "CD_AUTH_" + Math.random().toString(36).substring(2, 12).toUpperCase() + Date.now();
             await db.collection("users").doc(auth.currentUser.uid).update({apiKey: newKey});
-            alert("تم تحديث مفتاح البرمجة الخاص بك");
+            alert("تم تحديث مفتاح API بنجاح");
         }
 
         async function sendWalletRequest() {
             const phone = document.getElementById('wallet-phone').value;
             const amount = document.getElementById('wallet-amount').value;
-            if(!phone || !amount) return alert("يرجى إكمال بيانات التحويل");
+            if(!phone || !amount) return alert("بيانات الشحن ناقصة");
             await db.collection("payment_requests").add({
                 userId: auth.currentUser.uid,
                 phone: phone,
@@ -587,14 +674,11 @@
                 status: "قيد المراجعة",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            alert("تم استلام الطلب، سيتم إضافة الرصيد بعد التأكد من التحويل");
-            document.getElementById('wallet-phone').value = "";
-            document.getElementById('wallet-amount').value = "";
+            alert("تم إرسال الطلب للإدارة");
         }
 
         function doLogout() { auth.signOut().then(() => location.reload()); }
 
-        // Click Outside Dropdown Close
         window.onclick = (e) => {
             if (!e.target.closest('.custom-select')) {
                 document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
