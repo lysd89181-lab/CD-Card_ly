@@ -2,585 +2,388 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD | V3 ULTIMATE ROYAL EDITION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CD-CARD | المنصة الاحترافية المتكاملة</title>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@400;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- نظام الألوان المتقدم --- */
         :root {
             --primary: #39ff14; 
-            --primary-glow: rgba(57, 255, 20, 0.5);
-            --neon-yellow: #ccff00;
-            --yellow-glow: rgba(204, 255, 0, 0.7);
-            --bg-deep: #050505;
-            --bg-card: #0d0d0d;
-            --bg-sidebar: #080808;
-            --text-white: #ffffff;
-            --text-gray: #999999;
-            --border-neon: #181818;
-            --danger: #ff3131;
-            --glass: rgba(255, 255, 255, 0.03);
-            --shadow-neon: 0 0 15px rgba(57, 255, 20, 0.2);
+            --primary-glow: rgba(57, 255, 20, 0.4);
+            --neon-yellow: #ccff00; 
+            --bg-deep: #020202;
+            --bg-card: #0a0a0a;
+            --bg-sidebar: #050505;
+            --border: #1a1a1a;
+            --text-dim: #999;
+            --font-num: 'Rajdhani', sans-serif;
         }
 
-        /* --- التنسيق الأساسي --- */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: transparent; 
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) var(--bg-deep);
-        }
-        
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            background-color: var(--bg-deep); 
-            color: var(--text-white); 
-            display: flex; 
-            min-height: 100vh; 
-            overflow-x: hidden; 
+        /* الأساسيات */
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-deep);
+            color: #fff;
+            direction: rtl;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* --- شاشة التحميل الاحترافية --- */
-        #loader { 
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg-deep); 
-            z-index: 10000; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .loader-ring { 
-            width: 80px; 
-            height: 80px; 
-            border: 4px solid #111; 
-            border-top: 4px solid var(--primary); 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- القائمة الجانبية (Sidebar) --- */
-        .sidebar { 
-            width: 290px; 
-            height: 100vh; 
-            background: var(--bg-sidebar); 
-            position: fixed; 
-            right: -290px; 
-            top: 0; 
-            z-index: 2000; 
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-left: 1px solid var(--border-neon); 
-            display: flex; 
-            flex-direction: column; 
-        }
-        .sidebar.active { right: 0; box-shadow: -20px 0 60px rgba(0,0,0,0.9); }
-        .sidebar-overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.85); 
-            display: none; 
-            z-index: 1999; 
-            backdrop-filter: blur(10px); 
-        }
-        .sidebar-overlay.active { display: block; }
-
-        .sidebar-user-card { 
-            padding: 45px 20px; 
-            text-align: center; 
-            background: linear-gradient(to bottom, #111, transparent);
-            border-bottom: 1px solid var(--border-neon);
-        }
-        .sidebar-user-card img { 
-            width: 85px; 
-            height: 85px; 
-            border-radius: 22px; 
-            border: 2px solid var(--primary); 
-            padding: 4px;
-            margin-bottom: 15px; 
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-        .sidebar-user-card h3 { font-size: 18px; font-weight: 900; color: #fff; }
-        .sidebar-user-card p { font-size: 11px; color: var(--text-gray); margin-top: 5px; letter-spacing: 1px; }
-
-        .nav-scroller { flex-grow: 1; overflow-y: auto; padding: 15px 0; }
-        .nav-label { 
-            padding: 20px 30px 10px; 
-            font-size: 11px; 
-            color: var(--text-gray); 
-            font-weight: 800; 
-            text-transform: uppercase; 
+        .num-font, .stat-val, #total-price-view, td, .api-key, .phone-num, .price-badge {
+            font-family: var(--font-num) !important;
             letter-spacing: 1.5px;
-        }
-        .nav-link { 
-            display: flex; 
-            align-items: center; 
-            padding: 14px 30px; 
-            color: #ccc; 
-            text-decoration: none; 
-            cursor: pointer; 
-            transition: 0.3s all; 
-            border-right: 4px solid transparent; 
-            font-weight: 600; 
-            font-size: 14px; 
-        }
-        .nav-link i { margin-left: 18px; width: 22px; text-align: center; font-size: 18px; }
-        .nav-link:hover, .nav-link.active { 
-            background: rgba(57, 255, 20, 0.05); 
-            color: var(--primary); 
-            border-right-color: var(--primary); 
-            text-shadow: 0 0 8px var(--primary-glow);
+            font-weight: 700;
         }
 
-        /* --- حاوية المحتوى الرئيسي --- */
-        .main-container { 
-            flex: 1; 
-            padding: 25px; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            width: 100%; 
-            transition: 0.4s; 
-            padding-bottom: 120px;
+        /* Sidebar - مخصص لنصف الشاشة */
+        .side-panel {
+            position: fixed; right: -50%; top: 0; width: 50%; height: 100vh;
+            background: var(--bg-sidebar); border-left: 2px solid var(--border);
+            z-index: 9999; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex; flex-direction: column; box-shadow: -20px 0 60px #000;
         }
+        .side-panel.open { right: 0; }
+        .sidebar-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9998; display: none; backdrop-filter: blur(10px); }
+        .sidebar-mask.active { display: block; }
 
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 25px; 
+        .nav-link {
+            display: flex; align-items: center; padding: 24px 25px; color: var(--text-dim);
+            text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;
+            border-right: 4px solid transparent;
         }
-        .menu-trigger { 
-            width: 50px; 
-            height: 50px; 
-            background: var(--bg-card); 
-            border: 1px solid var(--border-neon); 
-            border-radius: 15px; 
-            color: var(--primary); 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 20px;
-            box-shadow: var(--shadow-neon);
-        }
+        .nav-link i { margin-left: 15px; font-size: 22px; width: 30px; text-align: center; }
+        .nav-link.active { color: var(--primary); background: rgba(57, 255, 20, 0.08); border-right-color: var(--primary); }
 
-        /* --- ترويسة البركة --- */
-        .blessing-banner { text-align: center; margin-bottom: 20px; }
-        .blessing-banner span { 
-            color: var(--neon-yellow); 
-            font-weight: 900; 
-            font-size: 20px; 
-            text-shadow: 0 0 20px var(--yellow-glow);
-            filter: drop-shadow(0 0 5px rgba(204, 255, 0, 0.5));
+        /* Custom Dropdowns */
+        .custom-select { position: relative; margin-bottom: 25px; }
+        .select-trigger {
+            width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border);
+            border-radius: 20px; color: #fff; cursor: pointer; display: flex; 
+            justify-content: space-between; align-items: center; font-weight: 800; transition: 0.3s;
         }
+        .select-trigger:hover { border-color: var(--primary); }
+        .select-trigger i { color: var(--primary); transition: 0.4s; }
+        .select-trigger.active { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+        .select-trigger.active i { transform: rotate(180deg); }
 
-        /* --- نظام الإحصائيات (الداشبورد) --- */
-        .dashboard-stats { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; 
-            margin-bottom: 30px; 
+        .options-menu {
+            position: absolute; top: 115%; left: 0; right: 0; background: #0f0f0f;
+            border: 2px solid #222; border-radius: 20px; max-height: 280px; overflow-y: auto;
+            z-index: 1000; display: none; box-shadow: 0 20px 50px #000; padding: 12px;
         }
-        .stat-item { 
-            background: linear-gradient(135deg, #0d0d0d 0%, #050505 100%); 
-            padding: 20px; 
-            border-radius: 24px; 
-            border: 1px solid var(--border-neon); 
-            text-align: center; 
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
+        .options-menu.show { display: block; animation: dropIn 0.4s ease; }
+        .option-item { 
+            padding: 18px 20px; font-size: 14px; cursor: pointer; border-radius: 14px; 
+            margin-bottom: 6px; transition: 0.2s; font-weight: 700; border-bottom: 1px solid #151515;
         }
-        .stat-item:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .stat-item i { font-size: 22px; color: var(--primary); margin-bottom: 10px; display: block; }
-        .stat-item .val { font-size: 22px; font-weight: 900; color: #fff; display: block; }
-        .stat-item .lbl { font-size: 11px; color: var(--text-gray); font-weight: 700; text-transform: uppercase; }
+        .option-item:hover { background: rgba(57, 255, 20, 0.15); color: var(--primary); padding-right: 30px; }
 
-        /* --- الصفحات --- */
-        .page-content { display: none; animation: pageIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        .page-content.active { display: block; }
-        @keyframes pageIn { 
-            from { opacity: 0; transform: translateY(30px); filter: blur(10px); } 
-            to { opacity: 1; transform: translateY(0); filter: blur(0); } 
-        }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- الكروت والنماذج --- */
-        .royal-card { 
-            background: var(--bg-card); 
-            padding: 30px; 
-            border-radius: 30px; 
-            border: 1px solid var(--border-neon); 
-            margin-bottom: 30px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-            position: relative;
+        /* إحصائيات عمودية (كل مربع في سطر) */
+        .stats-column { display: flex; flex-direction: column; gap: 18px; margin-bottom: 35px; }
+        .stat-entry { 
+            background: linear-gradient(145deg, #0a0a0a, #050505); padding: 28px; border-radius: 25px; 
+            border: 1.5px solid var(--border); display: flex; align-items: center; 
+            justify-content: space-between; position: relative; transition: 0.3s;
         }
-        .card-header { 
-            font-size: 18px; 
-            font-weight: 900; 
-            color: var(--primary); 
-            margin-bottom: 25px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-        }
-        .card-header i { background: rgba(57, 255, 20, 0.1); padding: 10px; border-radius: 12px; }
+        .stat-entry:hover { border-color: var(--primary); transform: translateX(-5px); }
+        .stat-entry i { font-size: 28px; color: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
+        .stat-data { flex: 1; margin-right: 25px; }
+        .stat-tag { font-size: 10px; color: var(--text-dim); font-weight: 900; display: block; letter-spacing: 1px; margin-bottom: 5px; }
+        .stat-val { font-size: 28px; font-weight: 800; color: #fff; }
 
-        .input-group { margin-bottom: 22px; }
-        .input-group label { display: block; margin-bottom: 10px; color: var(--text-gray); font-weight: 700; font-size: 13px; margin-right: 5px; }
-        .input-group input, .input-group select, .input-group textarea { 
-            width: 100%; 
-            padding: 18px; 
-            background: #000; 
-            border: 1.5px solid #1a1a1a; 
-            color: #fff; 
-            border-radius: 16px; 
-            font-family: 'Cairo'; 
-            font-size: 15px; 
-            transition: 0.3s; 
-        }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(57, 255, 20, 0.1); background: #050505; }
+        /* المحتوى */
+        .app-container { padding: 45px 22px; max-width: 1100px; margin: 0 auto; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; }
+        .side-toggle { width: 55px; height: 55px; background: #111; border: 1px solid #222; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: var(--primary); cursor: pointer; font-size: 22px; transition: 0.3s; }
+        .side-toggle:hover { background: var(--primary); color: #000; }
 
-        /* صندوق وصف الخدمة المطور */
-        .service-info-box { 
-            background: rgba(57, 255, 20, 0.02); 
-            border: 1px dashed var(--primary); 
-            padding: 20px; 
-            border-radius: 18px; 
-            margin-bottom: 25px; 
-            display: none; 
-            border-right: 5px solid var(--primary);
-        }
-        .service-info-box p { font-size: 14px; color: #bbb; line-height: 1.8; }
+        .form-card { background: var(--bg-card); border-radius: 35px; padding: 40px 30px; border: 2px solid var(--border); margin-bottom: 35px; box-shadow: 0 10px 30px #000; }
+        .field-group { margin-bottom: 30px; }
+        .field-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; font-weight: 900; }
+        .field-group input { width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border); border-radius: 20px; color: #fff; font-weight: 700; font-size: 16px; }
+        .field-group input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(57, 255, 20, 0.1); }
 
-        .price-display { 
-            text-align: center; 
-            margin: 30px 0; 
-            background: linear-gradient(to right, transparent, rgba(57,255,20,0.05), transparent); 
-            padding: 30px; 
-            border-radius: 20px; 
+        .primary-btn {
+            width: 100%; padding: 24px; background: var(--primary); color: #000; border: none;
+            border-radius: 22px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.4s;
+            box-shadow: 0 12px 30px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 12px;
         }
-        .price-display .amount { font-size: 45px; font-weight: 900; color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
-        .price-display .unit { font-size: 14px; color: var(--text-gray); font-weight: 800; }
+        .primary-btn:active { transform: scale(0.95); }
 
-        .btn-royal { 
-            width: 100%; 
-            padding: 22px; 
-            background: var(--primary); 
-            color: #000; 
-            border: none; 
-            border-radius: 20px; 
-            font-weight: 900; 
-            font-size: 18px; 
-            cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            box-shadow: 0 10px 30px rgba(57, 255, 20, 0.3);
+        /* آية الكرسي */
+        .quran-box {
+            background: #030303; border: 2px solid var(--primary); padding: 60px 30px;
+            border-radius: 40px; text-align: center; margin-top: 50px; position: relative;
         }
-        .btn-royal:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 40px var(--primary-glow); }
+        .quran-box::before { content: "﷽"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: #020202; padding: 0 20px; color: var(--primary); font-size: 28px; }
+        .quran-text { line-height: 2.6; font-size: 20px; font-weight: 700; color: #fafafa; }
 
-        /* --- قسم إنشاء المواقع المطور --- */
-        .web-pricing-card { 
-            background: rgba(204, 255, 0, 0.05); 
-            border: 1px solid var(--neon-yellow); 
-            padding: 25px; 
-            border-radius: 20px; 
-            margin-bottom: 25px; 
-            text-align: center;
-        }
-        .web-pricing-card h4 { color: var(--neon-yellow); font-size: 24px; font-weight: 900; margin-bottom: 10px; }
-        .web-pricing-card p { font-size: 14px; color: #fff; opacity: 0.9; }
+        /* الجداول */
+        .log-container { overflow-x: auto; border-radius: 25px; border: 2px solid var(--border); background: #070707; }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; }
+        th { padding: 25px; text-align: right; background: #0c0c0c; color: var(--primary); font-size: 14px; font-weight: 900; border-bottom: 2px solid #1a1a1a; }
+        td { padding: 22px; font-size: 15px; border-bottom: 1px solid #111; font-weight: 700; color: #ddd; }
 
-        /* --- قسم الدعم الفني والقنوات (Full Grid) --- */
-        .support-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .support-box { 
-            background: var(--bg-card); 
-            padding: 30px; 
-            border-radius: 25px; 
-            border: 1px solid var(--border-neon); 
-            text-align: center;
-            transition: 0.3s;
-        }
-        .support-box:hover { border-color: var(--primary); transform: scale(1.03); }
-        .support-box i { font-size: 45px; color: var(--primary); margin-bottom: 20px; }
-        .support-box h4 { font-size: 20px; margin-bottom: 10px; color: #fff; }
-        .support-box p { font-size: 14px; color: var(--text-gray); margin-bottom: 20px; }
-        .support-btn { 
-            display: inline-block; 
-            padding: 12px 30px; 
-            background: #111; 
-            color: var(--primary); 
-            text-decoration: none; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            border: 1px solid var(--primary);
-            transition: 0.3s;
-        }
-        .support-btn:hover { background: var(--primary); color: #000; }
+        /* شاشة التحميل */
+        #splash-loader { position: fixed; inset: 0; background: #000; z-index: 1000000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .splash-logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 10px; font-size: 35px; margin-bottom: 25px; text-shadow: 0 0 20px var(--primary); }
+        .progress-container { width: 220px; height: 4px; background: #111; border-radius: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; animation: fullLoad 3s cubic-bezier(0.65, 0.05, 0.36, 1) forwards; }
+        @keyframes fullLoad { to { width: 100%; } }
 
-        /* --- جداول العمليات --- */
-        .table-container { overflow-x: auto; border-radius: 20px; border: 1px solid var(--border-neon); }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #111; padding: 20px; text-align: right; color: var(--primary); font-size: 13px; font-weight: 900; }
-        td { padding: 20px; border-bottom: 1px solid #151515; font-size: 14px; color: #eee; }
-        .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
-        .status-pending { background: rgba(255, 204, 0, 0.1); color: #ffcc00; }
-        .status-completed { background: rgba(57, 255, 20, 0.1); color: var(--primary); }
+        .section { display: none; }
+        .section.active { display: block; animation: sectionIn 0.7s ease; }
+        @keyframes sectionIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- الفوتر الديني المهيب --- */
-        footer.holy-footer { 
-            margin-top: 60px; 
-            padding: 60px 20px; 
-            text-align: center; 
-            border-top: 1px solid var(--border-neon); 
-            background: linear-gradient(to bottom, transparent, #080808);
+        /* مكونات الدعم */
+        .link-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .card-link { 
+            display: flex; align-items: center; padding: 25px; border-radius: 25px; 
+            text-decoration: none; color: #fff; font-weight: 900; transition: 0.4s; 
+            border: 1px solid rgba(255,255,255,0.05); font-size: 16px;
         }
-        .basmala-text { color: var(--text-gray); font-size: 18px; margin-bottom: 20px; display: block; font-weight: 600; }
-        .aya-text { 
-            font-size: 19px; 
-            line-height: 2.5; 
-            color: var(--primary); 
-            font-weight: 600; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
-        }
+        .card-link i { font-size: 30px; margin-left: 25px; }
+        .bg-tg { background: linear-gradient(135deg, #0088cc, #005580); }
+        .bg-wa { background: linear-gradient(135deg, #25d366, #128c7e); }
+        .bg-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
-        /* --- Responsive Tweaks --- */
-        @media (max-width: 800px) {
-            .dashboard-stats { grid-template-columns: 1fr; }
-            .stat-item { padding: 15px; }
-            .main-container { padding: 15px; }
-            .aya-text { font-size: 16px; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="loader-ring"></div><p style="margin-top:20px; font-weight:900; color:var(--primary); letter-spacing:2px;">CD-CARD V3 PRO</p></div>
+    <div id="splash-loader">
+        <div class="splash-logo">CD-CARD</div>
+        <div class="progress-container"><div class="progress-bar"></div></div>
+    </div>
 
-    <div id="overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-mask" id="mask-overlay" onclick="toggleNav(false)"></div>
     
-    <aside id="sidebar" class="sidebar">
-        <div class="sidebar-user-card">
-            <img src="cd.jpg" id="side-avatar" alt="Logo">
-            <h3 id="side-username">تحميل...</h3>
-            <p id="side-uid">ID: 00000000</p>
+    <aside class="side-panel" id="nav-panel">
+        <div style="padding: 60px 30px; text-align: center; border-bottom: 2px solid #151515;">
+            <div style="position:relative; display:inline-block;">
+                <img src="cd.jpg" style="width: 90px; height: 90px; border-radius: 30px; border: 3px solid var(--primary); padding: 4px; margin-bottom: 20px;">
+                <div style="position:absolute; bottom:25px; right:0; background:var(--primary); width:20px; height:20px; border-radius:50%; border:3px solid var(--bg-sidebar);"></div>
+            </div>
+            <h4 id="profile-name" style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;">جارِ التحميل...</h4>
+            <span style="font-size: 11px; color: var(--primary); font-weight: 900; letter-spacing: 3px; background: rgba(57,255,20,0.1); padding: 4px 12px; border-radius: 10px; margin-top: 10px; display: inline-block;">VIP USER</span>
         </div>
         
-        <div class="nav-scroller">
-            <div class="nav-label">لوحة التحكم الرئيسية</div>
-            <div onclick="switchPage('home')" class="nav-link active" id="link-home"><i class="fa fa-th-large"></i> تنفيذ طلب جديد</div>
-            <div onclick="switchPage('orders')" class="nav-link" id="link-orders"><i class="fa fa-list-check"></i> سجل جميع العمليات</div>
-            
-            <div class="nav-label">العمليات المالية</div>
-            <div onclick="switchPage('wallet')" class="nav-link" id="link-wallet"><i class="fa fa-wallet"></i> شحن الرصيد الفوري</div>
-            <div onclick="switchPage('vouchers')" class="nav-link" id="link-vouchers"><i class="fa fa-ticket-alt"></i> استرداد الكوبونات</div>
-            
-            <div class="nav-label">خدمات المطورين</div>
-            <div onclick="switchPage('api')" class="nav-link" id="link-api"><i class="fa fa-plug"></i> إعدادات الربط API</div>
-            <div onclick="switchPage('web')" class="nav-link" id="link-web"><i class="fa fa-code-branch"></i> طلب إنشاء متجر</div>
+        <nav style="flex: 1; padding: 30px 0; overflow-y: auto;">
+            <a href="#" onclick="openTab('home')" class="nav-link active" id="tab-home"><i class="fa fa-shopping-bag"></i> متجر الخدمات</a>
+            <a href="#" onclick="openTab('orders')" class="nav-link" id="tab-orders"><i class="fa fa-clipboard-list"></i> سجل العمليات</a>
+            <a href="#" onclick="openTab('wallet')" class="nav-link" id="tab-wallet"><i class="fa fa-coins"></i> شحن المحفظة</a>
+            <a href="#" onclick="openTab('api')" class="nav-link" id="tab-api"><i class="fa fa-terminal"></i> بوابة المطورين</a>
+            <a href="#" onclick="openTab('support')" class="nav-link" id="tab-support"><i class="fa fa-user-shield"></i> مركز المساعدة</a>
+            <a href="#" onclick="openTab('news')" class="nav-link" id="tab-news"><i class="fa fa-rss"></i> أحدث الأخبار</a>
+        </nav>
 
-            <div class="nav-label">تواصل واكتشف</div>
-            <div onclick="switchPage('support')" class="nav-link" id="link-support"><i class="fa fa-headset"></i> الدعم الفني المباشر</div>
-            <div onclick="switchPage('channels')" class="nav-link" id="link-channels"><i class="fa fa-satellite-dish"></i> قنواتنا الرسمية</div>
-        </div>
-        
-        <div style="padding: 25px; border-top: 1px solid var(--border-neon);">
-            <button onclick="handleLogout()" class="btn-royal" style="background:var(--danger); padding:12px; font-size:14px; color:#fff;">تسجيل الخروج</button>
+        <div style="padding: 30px;">
+            <button onclick="doLogout()" style="width:100%; padding:20px; background:#111; border:2px solid #ff4d4d; color:#ff4d4d; border-radius:20px; font-weight:900; cursor:pointer; transition: 0.3s;">تسجيل خروج</button>
         </div>
     </aside>
 
-    <div class="main-container">
-        <header>
-            <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa fa-bars-staggered"></i></div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: left;">
-                    <h4 style="font-size:14px; font-weight:900; color:var(--primary);">CD-CARD</h4>
-                    <p style="font-size:9px; color:var(--text-gray);">PREMIUM SERVICE</p>
-                </div>
-                <img src="cd.jpg" width="45" style="border-radius: 12px; border: 1px solid var(--primary);">
+    <div class="app-container">
+        <header class="app-header">
+            <div class="side-toggle" onclick="toggleNav(true)"><i class="fa fa-bars-staggered"></i></div>
+            <div style="text-align:center;">
+                <h1 style="font-family:'Orbitron'; font-weight:900; letter-spacing:5px; font-size:26px; color:var(--primary);">CD-CARD</h1>
+                <p style="font-size:10px; color:var(--text-dim); font-weight:900; letter-spacing:4px;">NEXT GEN DIGITAL SERVICES</p>
             </div>
+            <img src="cd.jpg" width="55" height="55" style="border-radius:18px; border:2px solid var(--border); box-shadow: 0 0 15px rgba(0,0,0,0.5);">
         </header>
 
-        <div class="blessing-banner">
-            <span>ما شاء الله لا قوة إلا بالله</span>
-        </div>
+        <section id="sec-home" class="section active">
+            
+            <div class="stats-column">
+                <div class="stat-entry">
+                    <div class="stat-data">
+                        <span class="stat-tag">رصيدك المتوفر الآن</span>
+                        <div style="display:flex; align-items:baseline; gap:10px;">
+                            <span class="stat-val" id="val-balance">0.00</span>
+                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
+                        </div>
+                    </div>
+                    <i class="fa fa-wallet"></i>
+                </div>
 
-        <section id="page-home" class="page-content active">
-            <div class="dashboard-stats">
-                <div class="stat-item"><i class="fa fa-coins"></i><small class="lbl">الرصيد المتاح</small><span class="val" id="st-balance">0.00</span></div>
-                <div class="stat-item"><i class="fa fa-shopping-cart"></i><small class="lbl">إجمالي الطلبات</small><span class="val" id="st-orders">0</span></div>
-                <div class="stat-item"><i class="fa fa-chart-line"></i><small class="lbl">إجمالي المنفق</small><span class="val" id="st-spent">0.00</span></div>
+                <div class="stat-entry">
+                    <div class="stat-data">
+                        <span class="stat-tag">إجمالي الطلبات الناجحة</span>
+                        <span class="stat-val" id="val-orders">0</span>
+                    </div>
+                    <i class="fa fa-check-double"></i>
+                </div>
+
+                <div class="stat-entry">
+                    <div class="stat-data">
+                        <span class="stat-tag">إجمالي المشتريات</span>
+                        <div style="display:flex; align-items:baseline; gap:10px;">
+                            <span class="stat-val" id="val-spent">0.00</span>
+                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
+                        </div>
+                    </div>
+                    <i class="fa fa-fire"></i>
+                </div>
+
+                <div class="stat-entry">
+                    <div class="stat-data">
+                        <span class="stat-tag">أرباح الوكلاء</span>
+                        <div style="display:flex; align-items:baseline; gap:10px;">
+                            <span class="stat-val" id="val-comm" style="color:var(--neon-yellow);">0.00</span>
+                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
+                        </div>
+                    </div>
+                    <i class="fa fa-star"></i>
+                </div>
             </div>
 
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-cart-plus"></i> إنشاء طلب جديد</div>
-                <div class="input-group"><label>تصنيف الخدمات</label><select id="main-cat" onchange="filterServices()"></select></div>
-                <div class="input-group"><label>الخدمة المطلوبة</label><select id="main-ser" onchange="showServiceDetails()"></select></div>
+            <div class="form-card">
+                <h3 style="margin-bottom:30px; color:var(--primary); font-size:22px; font-weight:900; display:flex; align-items:center; gap:15px;">
+                    <i class="fa fa-cart-plus"></i> إنشاء طلب جديد
+                </h3>
                 
-                <div id="service-box" class="service-info-box">
-                    <h5 style="color:var(--primary); font-size:13px; margin-bottom:8px;">تفاصيل وشروط الخدمة:</h5>
-                    <p id="service-desc"></p>
+                <div class="custom-select">
+                    <label>اختر تصنيف الخدمة</label>
+                    <div class="select-trigger" id="trig-cat" onclick="openMenu('menu-cat')">
+                        <span id="label-cat">اختر التصنيف...</span>
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <div class="options-menu" id="menu-cat"></div>
                 </div>
 
-                <div class="input-group"><label>رابط الحساب / المنشور</label><input type="text" id="order-url" placeholder="https://www.instagram.com/..."></div>
-                <div class="input-group"><label>الكمية المطلوبة</label><input type="number" id="order-qty" value="1000" oninput="calculatePrice()"></div>
-                
-                <div class="price-display">
-                    <span class="unit">التكلفة النهائية:</span><br>
-                    <span class="amount" id="final-price">0.00</span> <span class="unit">دينار ليبي</span>
+                <div class="custom-select">
+                    <label>اختر الخدمة المحددة</label>
+                    <div class="select-trigger" id="trig-ser" onclick="openMenu('menu-ser')">
+                        <span id="label-ser">يرجى اختيار التصنيف أولاً...</span>
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <div class="options-menu" id="menu-ser"></div>
                 </div>
-                
-                <button class="btn-royal" onclick="processOrder()">تأكيد العملية الآن</button>
+
+                <div class="field-group">
+                    <label>رابط الحساب / رابط المنشور / اليوزر</label>
+                    <input type="text" id="target-link" placeholder="ضع الرابط هنا بدقة">
+                </div>
+
+                <div class="field-group">
+                    <label>الكمية المطلوبة (الحد الأدنى 300 للخدمات الجماعية)</label>
+                    <input type="number" id="target-qty" value="1000" oninput="calculateEngine()">
+                </div>
+
+                <div style="text-align:center; padding:35px; background:rgba(57,255,20,0.02); border-radius:30px; border:2px dashed #1a1a1a; margin-bottom:35px;">
+                    <span style="font-size:11px; color:var(--text-dim); font-weight:900; text-transform:uppercase; letter-spacing:2px;">الفاتورة النهائية</span>
+                    <div style="display:flex; align-items:baseline; justify-content:center; gap:12px; margin-top:10px;">
+                        <h2 style="color:var(--primary); font-size:55px; text-shadow: 0 0 20px var(--primary-glow);" id="total-price-view">0.00</h2>
+                        <span style="font-weight:900; color:var(--text-dim); font-size:18px;">LYD</span>
+                    </div>
+                    <p id="price-type-hint" style="font-size:11px; color:var(--neon-yellow); margin-top:10px; font-weight:700;"></p>
+                </div>
+
+                <button class="primary-btn" onclick="executeOrder()"><i class="fa fa-rocket"></i> تأكيد عملية الشراء</button>
+            </div>
+
+            <div class="quran-box">
+                <div class="quran-text">
+                    اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ
+                </div>
             </div>
         </section>
 
-        <section id="page-orders" class="page-content">
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-clock-rotate-left"></i> سجل العمليات الأخيرة</div>
-                <div class="table-container">
+        <section id="sec-orders" class="section">
+            <div class="form-card">
+                <h3 style="margin-bottom:25px;"><i class="fa fa-history"></i> سجل العمليات السابقة</h3>
+                <div class="log-container">
                     <table>
-                        <thead><tr><th>التاريخ</th><th>الخدمة</th><th>القيمة</th><th>الحالة</th></tr></thead>
-                        <tbody id="orders-list"></tbody>
+                        <thead>
+                            <tr>
+                                <th>اسم الخدمة</th>
+                                <th>السعر المدفوع</th>
+                                <th>حالة الطلب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-orders"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="page-wallet" class="page-content">
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-money-bill-transfer"></i> شحن الرصيد (تحويل رصيد)</div>
-                <div class="support-grid" style="margin-bottom: 25px;">
-                    <div class="support-box" style="padding:20px; border-color:#004a99;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Libyana_Logo.png" height="25" style="margin-bottom:10px;">
-                        <h4 style="color:#004a99">شركة لبيانا</h4>
-                        <p style="font-size:20px; font-weight:900; color:#fff;">0920414760</p>
+        <section id="sec-wallet" class="section">
+            <div class="form-card">
+                <h3 style="color:var(--primary); margin-bottom:25px;"><i class="fa fa-fill-drip"></i> شحن الرصيد</h3>
+                
+                <img src="lb.jpg" style="width:100%; border-radius:25px; margin-bottom:30px; border:2px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                
+                <div style="background:#080808; padding:30px; border-radius:25px; margin-bottom:30px; border:1px solid #1a1a1a;">
+                    <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px; font-weight:800;">بيانات التحويل عبر (كاش لبيانا / مدار):</p>
+                    <div class="phone-num" style="color:var(--primary); font-size:28px; margin-bottom:15px; display:flex; align-items:center; gap:15px;">
+                        <i class="fa fa-phone-volume" style="font-size:18px;"></i> 0920414760
                     </div>
-                    <div class="support-box" style="padding:20px; border-color:#e68a00;">
-                        <img src="https://seeklogo.com/images/A/al-madar-al-jaded-logo-F6838D64F1-seeklogo.com.png" height="25" style="margin-bottom:10px;">
-                        <h4 style="color:#e68a00">شركة المدار</h4>
-                        <p style="font-size:20px; font-weight:900; color:#fff;">0912377291</p>
-                    </div>
-                </div>
-                <div class="input-group"><label>الرقم الذي قمت بالتحويل منه</label><input type="number" id="charge-phone" placeholder="09xxxxxxx"></div>
-                <div class="input-group"><label>قيمة الرصيد الذي تم تحويله</label><input type="number" id="charge-amount" placeholder="50"></div>
-                <button class="btn-main btn-royal" onclick="sendChargeRequest()">إرسال بيانات الشحن</button>
-            </div>
-        </section>
-
-        <section id="page-vouchers" class="page-content">
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-ticket"></i> نظام الكوبونات والجوائز</div>
-                <p style="color:var(--text-gray); font-size:13px; margin-bottom:20px;">أدخل رمز الكوبون الذي حصلت عليه من قنواتنا لاسترداد الرصيد فوراً.</p>
-                <div class="input-group"><label>رمز الكوبون (Coupon Code)</label><input type="text" id="v-code" placeholder="EX: CD-GIFT-2026"></div>
-                <button class="btn-royal" style="background:var(--neon-yellow);">تفعيل الكوبون الآن</button>
-                <div style="margin-top:20px; text-align:center;"><small style="color:var(--primary)">* الكوبونات صالحة للاستخدام مرة واحدة فقط.</small></div>
-            </div>
-        </section>
-
-        <section id="page-web" class="page-content">
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-layer-group"></i> خدمة إنشاء المتاجر الإلكترونية</div>
-                <div class="web-pricing-card">
-                    <h4>70 د.ل <small style="font-size:12px;">للمرة الأولى</small></h4>
-                    <p>تشمل بناء المتجر + لوحة تحكم + ربط API + حماية كاملة.</p>
-                    <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
-                        <span style="color:var(--primary); font-weight:bold;">التجديد الشهري: 30 د.ل فقط</span>
+                    <div class="phone-num" style="color:var(--primary); font-size:28px; display:flex; align-items:center; gap:15px;">
+                        <i class="fa fa-phone-volume" style="font-size:18px;"></i> 0912377291
                     </div>
                 </div>
-                <div class="input-group"><label>اسم العميل بالكامل</label><input type="text" id="web-name" placeholder="محمد الـ ..."></div>
-                <div class="input-group"><label>اسم الموقع (النطاق المقترح)</label><input type="text" id="web-site" placeholder="MyStore-LY"></div>
-                <div class="input-group"><label>كلمة السر المطلوبة للوحة التحكم</label><input type="password" id="web-pass" placeholder="********"></div>
-                <button class="btn-royal">إرسال طلب إنشاء الموقع</button>
+
+                <div class="field-group">
+                    <label>رقم الهاتف المرسل منه</label>
+                    <input type="number" id="wallet-phone" placeholder="09xxxxxxxx">
+                </div>
+                <div class="field-group">
+                    <label>المبلغ المرسل (دينار ليبي)</label>
+                    <input type="number" id="wallet-amount" placeholder="0.00">
+                </div>
+                <button class="primary-btn" onclick="sendWalletRequest()"><i class="fa fa-paper-plane"></i> إرسال طلب الشحن</button>
             </div>
         </section>
 
-        <section id="page-api" class="page-content">
-            <div class="royal-card">
-                <div class="card-header"><i class="fa fa-key"></i> واجهة برمجة التطبيقات (API Settings)</div>
-                <p style="font-size:13px; color:var(--text-gray); margin-bottom:20px;">استخدم هذا المفتاح لربط خدماتنا بمتجرك الشخصي وتنفيذ الطلبات تلقائياً.</p>
-                <div style="background:#000; padding:20px; border-radius:15px; border:1px dashed #333; display:flex; justify-content:space-between; align-items:center;">
-                    <code style="color:var(--neon-yellow); font-family:monospace; font-size:14px;" id="api-key-text">cd_auth_live_8829xzz90021kLq</code>
-                    <i class="fa fa-copy" style="cursor:pointer; color:var(--primary);" onclick="alert('تم النسخ')"></i>
+        <section id="sec-api" class="section">
+            <div class="form-card">
+                <h3 style="color:var(--primary); margin-bottom:25px;"><i class="fa fa-code-branch"></i> أدوات المطورين</h3>
+                <p style="font-size:14px; color:var(--text-dim); margin-bottom:30px; line-height:1.8;">يمكنك ربط متجرك الخاص بمتجرنا مباشرة لتنفيذ الطلبات لزبائنك بشكل آلي عبر API KEY الخاص بك.</p>
+                <div class="api-key" id="api-key-display" style="background:#000; padding:30px; border:2px dashed var(--primary); border-radius:25px; text-align:center; color:var(--neon-yellow); word-break:break-all; font-size:14px;">
+                    CD_AUTH_KEY_************************
                 </div>
-                <div style="margin-top:25px; padding:15px; background:rgba(255,255,255,0.02); border-radius:12px;">
-                    <h5 style="margin-bottom:10px;">دليل المطورين:</h5>
-                    <ul style="font-size:12px; color:var(--text-gray); list-style:inside square;">
-                        <li>Endpoint URL: https://api.cd-card.com/v1</li>
-                        <li>Method: POST (JSON)</li>
-                        <li>Status: Active</li>
-                    </ul>
-                </div>
+                <button class="primary-btn" style="background:#111; color:#fff; border:2px solid var(--primary); margin-top:25px;" onclick="refreshAPIKey()">توليد مفتاح جديد</button>
             </div>
         </section>
 
-        <section id="page-support" class="page-content">
-            <div class="card-header" style="margin-bottom:20px;"><i class="fa fa-headset"></i> مركز المساعدة والدعم الفني</div>
-            <div class="support-grid">
-                <div class="support-box">
-                    <i class="fab fa-whatsapp"></i>
-                    <h4>قسم المبيعات والشحن</h4>
-                    <p>لحل مشاكل الرصيد والطلبات المعلقة.</p>
-                    <a href="https://wa.me/218912377291" target="_blank" class="support-btn">مراسلة واتساب</a>
-                </div>
-                <div class="support-box">
-                    <i class="fa fa-envelope-open-text"></i>
-                    <h4>الدعم الفني للمطورين</h4>
-                    <p>للمشاكل التقنية وربط الـ API.</p>
-                    <a href="mailto:support@cd-card.com" class="support-btn">إرسال إيميل</a>
-                </div>
-            </div>
-            <div class="royal-card" style="margin-top:25px;">
-                <h4 style="margin-bottom:15px; color:var(--primary);">ساعات العمل:</h4>
-                <p style="font-size:14px; color:var(--text-gray);">نحن متواجدون لخدمتك طيلة أيام الأسبوع من الساعة 10:00 صباحاً وحتى 12:00 ليلاً بتوقيت ليبيا.</p>
-            </div>
-        </section>
-
-        <section id="page-channels" class="page-content">
-            <div class="card-header" style="margin-bottom:20px;"><i class="fa fa-paper-plane"></i> تابعنا للحصول على آخر التحديثات</div>
-            <div class="support-grid">
-                <div class="support-box" style="border-bottom: 4px solid #0088cc;">
-                    <i class="fab fa-telegram-plane" style="color:#0088cc;"></i>
-                    <h4>قناة التليجرام الرئيسية</h4>
-                    <p>أول من يعلم بتحديثات الأسعار والخدمات الجديدة.</p>
-                    <a href="#" class="support-btn" style="border-color:#0088cc; color:#0088cc;">انضم الآن</a>
-                </div>
-                <div class="support-box" style="border-bottom: 4px solid #ff0000;">
-                    <i class="fab fa-youtube" style="color:#ff0000;"></i>
-                    <h4>قناة الشروحات (YouTube)</h4>
-                    <p>فيديوهات تعليمية لكيفية استخدام الموقع والربح منه.</p>
-                    <a href="#" class="support-btn" style="border-color:#ff0000; color:#ff0000;">اشترك الآن</a>
-                </div>
-                <div class="support-box" style="border-bottom: 4px solid #e1306c;">
-                    <i class="fab fa-instagram" style="color:#e1306c;"></i>
-                    <h4>انستقرام الرسمي</h4>
-                    <p>أخبار حصرية وجوائز يومية في الستوري.</p>
-                    <a href="#" class="support-btn" style="border-color:#e1306c; color:#e1306c;">تابعنا</a>
+        <section id="sec-support" class="section">
+            <div class="form-card">
+                <h3 style="text-align:center; margin-bottom:30px; font-weight:900;">الدعم الفني والمالي</h3>
+                <p style="text-align:center; color:var(--text-dim); margin-bottom:40px; font-size:15px; padding: 0 10px;">فريقنا متاح على مدار الساعة لمعالجة طلباتكم وحل المشكلات التقنية.</p>
+                <div class="link-grid">
+                    <a href="https://t.me/CD_CARD_SUPPORT" class="card-link bg-tg"><i class="fab fa-telegram-plane"></i> الدعم عبر تليجرام</a>
+                    <a href="https://wa.me/218920414760" class="card-link bg-wa"><i class="fab fa-whatsapp"></i> الدعم عبر واتساب</a>
                 </div>
             </div>
         </section>
 
-        <footer class="holy-footer">
-            <span class="basmala-text">بسم الله الرحمن الرحيم</span>
-            <p class="aya-text">
-                اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطون بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ
-            </p>
+        <section id="sec-news" class="section">
+            <div class="form-card">
+                <h3 style="text-align:center; margin-bottom:30px; font-weight:900;">قنواتنا الرسمية</h3>
+                <div class="link-grid">
+                    <a href="https://t.me/CD_Card1" target="_blank" class="card-link bg-tg"><i class="fa fa-bullhorn"></i> قناة تليجرام الرسمية</a>
+                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="card-link bg-wa"><i class="fa fa-comments"></i> قناة واتساب الرسمية</a>
+                    <a href="https://instagram.com/cd_card" target="_blank" class="card-link bg-ig"><i class="fab fa-instagram"></i> متابعتنا على انستجرام</a>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align:center; padding:60px 0; color:var(--text-dim); font-size:11px; font-weight:900; letter-spacing:5px; opacity:0.5;">
+            CD-CARD SYSTEM &copy; 2025-2026 | ALL RIGHTS RESERVED
         </footer>
     </div>
 
     <script>
-        // -- Firebase Configuration (محمد، تأكد من صحة المفاتيح هنا) --
+        // 1. Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -591,112 +394,134 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // -- Global Variables --
         let currentUserData = null;
-        let allServices = [];
+        let masterServices = [];
+        let activeServiceID = null;
 
-        // -- Auth Listener --
+        // 2. Initializing & Auth
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.collection("users").doc(user.uid).onSnapshot(doc => {
-                    if (doc.exists) {
-                        currentUserData = doc.data();
-                        updateDashboardUI();
-                    }
+                    currentUserData = doc.data();
+                    updateDashboardUI();
                 });
-                loadServicesData();
-                loadUserOrders(user.uid);
-                setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display='none', 800); }, 1500);
+                initializeData();
+                setTimeout(() => document.getElementById('splash-loader').style.display = 'none', 3000);
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // -- Update UI Elements --
-        function updateDashboardUI() {
-            document.getElementById('st-balance').innerText = currentUserData.balance.toFixed(2);
-            document.getElementById('st-spent').innerText = (currentUserData.spent || 0).toFixed(2);
-            document.getElementById('side-username').innerText = currentUserData.username;
-            document.getElementById('side-uid').innerText = "ID: " + auth.currentUser.uid.substring(0, 8).toUpperCase();
+        // 3. Core Data Sync
+        async function initializeData() {
+            // Fetch Services Database
+            const servicesSnap = await db.collection("services").get();
+            masterServices = servicesSnap.docs.map(d => ({id: d.id, ...d.data()}));
+            
+            // Generate Categories
+            const categories = [...new Set(masterServices.map(s => s.category))];
+            const catMenu = document.getElementById('menu-cat');
+            catMenu.innerHTML = categories.map(c => `
+                <div class="option-item" onclick="selectCategory('${c}')">${c}</div>
+            `).join('');
+
+            // Real-time Orders Listener
+            db.collection("orders").where("userId", "==", auth.currentUser.uid).orderBy("createdAt", "desc").onSnapshot(snap => {
+                const list = document.getElementById('table-body-orders');
+                list.innerHTML = "";
+                document.getElementById('val-orders').innerText = snap.size;
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    list.innerHTML += `
+                        <tr>
+                            <td style="font-weight:900;">${o.serviceName}</td>
+                            <td class="num-font" style="color:var(--primary)">${o.price.toFixed(2)}</td>
+                            <td style="font-size:12px; color:var(--neon-yellow)">${o.status}</td>
+                        </tr>
+                    `;
+                });
+            });
         }
 
-        // -- Load Services from Firestore --
-        async function loadServicesData() {
-            const snapshot = await db.collection("services").get();
-            allServices = [];
-            let categories = new Set();
-            
-            snapshot.forEach(doc => {
-                let s = doc.data();
-                s.id = doc.id;
-                allServices.push(s);
-                categories.add(s.category);
-            });
-
-            const catDropdown = document.getElementById('main-cat');
-            catDropdown.innerHTML = '<option value="">-- اختر القسم المناسب --</option>';
-            Array.from(categories).sort().forEach(c => {
-                catDropdown.innerHTML += `<option value="${c}">${c}</option>`;
-            });
+        // 4. Interface Controls
+        function openMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            const trigger = menu.previousElementSibling;
+            const isOpen = menu.classList.contains('show');
+            document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.select-trigger').forEach(t => t.classList.remove('active'));
+            if(!isOpen) {
+                menu.classList.add('show');
+                trigger.classList.add('active');
+            }
         }
 
-        // -- Filter Services based on Category --
-        function filterServices() {
-            const selectedCat = document.getElementById('main-cat').value;
-            const serDropdown = document.getElementById('main-ser');
-            serDropdown.innerHTML = '<option value="">-- اختر الخدمة --</option>';
+        function selectCategory(catName) {
+            document.getElementById('label-cat').innerText = catName;
+            document.getElementById('menu-cat').classList.remove('show');
+            document.getElementById('trig-cat').classList.remove('active');
             
-            allServices.filter(s => s.category === selectedCat).forEach(s => {
-                serDropdown.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-            });
-            showServiceDetails();
+            const filteredServices = masterServices.filter(s => s.category === catName);
+            const serMenu = document.getElementById('menu-ser');
+            serMenu.innerHTML = filteredServices.map(s => `
+                <div class="option-item" onclick="selectService('${s.id}', '${s.name}')">${s.name}</div>
+            `).join('');
+            
+            document.getElementById('label-ser').innerText = "اختر الخدمة الآن...";
+            activeServiceID = null;
+            calculateEngine();
         }
 
-        // -- Show Details and Description --
-        function showServiceDetails() {
-            const serviceId = document.getElementById('main-ser').value;
-            const service = allServices.find(s => s.id === serviceId);
-            const box = document.getElementById('service-box');
+        function selectService(id, name) {
+            activeServiceID = id;
+            document.getElementById('label-ser').innerText = name;
+            document.getElementById('menu-ser').classList.remove('show');
+            document.getElementById('trig-ser').classList.remove('active');
+            calculateEngine();
+        }
+
+        // 5. HYBRID PRICING ENGINE (Critical Logic)
+        function calculateEngine() {
+            const priceLabel = document.getElementById('total-price-view');
+            const hint = document.getElementById('price-type-hint');
             
-            if (service && service.description) {
-                box.style.display = 'block';
-                document.getElementById('service-desc').innerText = service.description;
+            if(!activeServiceID) {
+                priceLabel.innerText = "0.00";
+                hint.innerText = "";
+                return;
+            }
+
+            const service = masterServices.find(x => x.id === activeServiceID);
+            const quantity = parseInt(document.getElementById('target-qty').value) || 0;
+            
+            let finalCost = 0;
+
+            // تمييز نظام السعر للألف أو السعر للقطعة
+            if(service.priceType === "Per1" || service.category.includes("اشتراكات") || service.category.includes("حسابات")) {
+                // سعر لكل قطعة (مثل نيتفلكس)
+                finalCost = quantity * service.finalPrice;
+                hint.innerText = "نظام السعر: لكل قطعة (1)";
             } else {
-                box.style.display = 'none';
+                // سعر لكل 1000 (مثل المتابعين)
+                finalCost = (quantity / 1000) * service.finalPrice;
+                hint.innerText = "نظام السعر: لكل 1000 وحدة";
             }
-            calculatePrice();
+
+            priceLabel.innerText = finalCost.toFixed(2);
         }
 
-        // -- Price Calculation Logic --
-        function calculatePrice() {
-            const serviceId = document.getElementById('main-ser').value;
-            const service = allServices.find(s => s.id === serviceId);
-            if (!service) return;
+        async function executeOrder() {
+            const cost = parseFloat(document.getElementById('total-price-view').innerText);
+            const link = document.getElementById('target-link').value;
+            const qty = parseInt(document.getElementById('target-qty').value);
 
-            const qty = document.getElementById('order-qty').value;
-            let finalPrice = 0;
-
-            if (service.type === "Package") {
-                finalPrice = service.finalPrice;
-            } else {
-                finalPrice = (qty / 1000) * service.finalPrice;
-            }
+            if(!activeServiceID || !link) return alert("خطأ: يرجى إدخال الرابط واختيار الخدمة");
             
-            document.getElementById('final-price').innerText = finalPrice.toFixed(2);
-        }
-
-        // -- Process Order --
-        async function processOrder() {
-            const price = parseFloat(document.getElementById('final-price').innerText);
-            if (currentUserData.balance < price) {
-                return alert("عذراً! رصيدك غير كافٍ لإتمام هذه العملية.");
-            }
-
-            const serviceId = document.getElementById('main-ser').value;
-            const service = allServices.find(s => s.id === serviceId);
-            const url = document.getElementById('order-url').value;
-
-            if (!service || !url) return alert("يرجى إكمال كافة البيانات المطلوبة.");
+            const service = masterServices.find(s => s.id === activeServiceID);
+            // منع طلب كميات قليلة في خدمات الألف
+            if(service.priceType !== "Per1" && qty < 300) return alert("أقل كمية للخدمات الجماعية هي 300");
+            
+            if(currentUserData.balance < cost) return alert("رصيدك غير كافٍ لإتمام هذه العملية");
 
             const batch = db.batch();
             const orderRef = db.collection("orders").doc();
@@ -704,93 +529,78 @@
             batch.set(orderRef, {
                 userId: auth.currentUser.uid,
                 serviceName: service.name,
-                price: price,
-                quantity: document.getElementById('order-qty').value,
-                url: url,
+                price: cost,
+                target: link,
+                quantity: qty,
                 status: "قيد الانتظار",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
             batch.update(db.collection("users").doc(auth.currentUser.uid), {
-                balance: firebase.firestore.FieldValue.increment(-price),
-                spent: firebase.firestore.FieldValue.increment(price)
+                balance: firebase.firestore.FieldValue.increment(-cost),
+                spent: firebase.firestore.FieldValue.increment(cost)
             });
 
-            try {
-                await batch.commit();
-                alert("تم استلام طلبك بنجاح وجارٍ تنفيذه.");
-            } catch (e) {
-                alert("حدث خطأ أثناء الطلب: " + e.message);
-            }
+            await batch.commit();
+            alert("تم إرسال الطلب بنجاح، سيتم التنفيذ خلال دقائق");
+            openTab('orders');
         }
 
-        // -- Load Order History --
-        function loadUserOrders(uid) {
-            db.collection("orders")
-              .where("userId", "==", uid)
-              .orderBy("createdAt", "desc")
-              .limit(15)
-              .onSnapshot(snap => {
-                  document.getElementById('st-orders').innerText = snap.size;
-                  const list = document.getElementById('orders-list');
-                  list.innerHTML = "";
-                  
-                  snap.forEach(doc => {
-                      const o = doc.data();
-                      const date = o.createdAt ? o.createdAt.toDate().toLocaleDateString('ar-LY') : '...';
-                      const statusClass = o.status === "مكتمل" ? "status-completed" : "status-pending";
-                      
-                      list.innerHTML += `
-                        <tr>
-                            <td>${date}</td>
-                            <td style="font-weight:bold;">${o.serviceName}</td>
-                            <td>${o.price.toFixed(2)} د.ل</td>
-                            <td><span class="status-badge ${statusClass}">${o.status}</span></td>
-                        </tr>
-                      `;
-                  });
-              });
+        function updateDashboardUI() {
+            if(!currentUserData) return;
+            document.getElementById('val-balance').innerText = currentUserData.balance.toFixed(2);
+            document.getElementById('val-spent').innerText = (currentUserData.spent || 0).toFixed(2);
+            document.getElementById('val-comm').innerText = (currentUserData.commission || 0).toFixed(2);
+            document.getElementById('profile-name').innerText = currentUserData.username;
+            document.getElementById('api-key-display').innerText = currentUserData.apiKey || "اضغط لتوليد مفتاح API";
         }
 
-        // -- Charge Wallet Logic --
-        async function sendChargeRequest() {
-            const phone = document.getElementById('charge-phone').value;
-            const amount = document.getElementById('charge-amount').value;
-            if (!phone || !amount) return alert("يرجى إدخال رقم الهاتف والقيمة.");
+        // 6. Navigation Logic
+        function toggleNav(state) {
+            document.getElementById('nav-panel').classList.toggle('open', state);
+            document.getElementById('mask-overlay').classList.toggle('active', state);
+        }
 
-            await db.collection("orders").add({
+        function openTab(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            toggleNav(false);
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        async function refreshAPIKey() {
+            const newKey = "CD_AUTH_" + Math.random().toString(36).substring(2, 15).toUpperCase() + Date.now();
+            await db.collection("users").doc(auth.currentUser.uid).update({apiKey: newKey});
+            alert("تم تحديث مفتاح البرمجة الخاص بك");
+        }
+
+        async function sendWalletRequest() {
+            const phone = document.getElementById('wallet-phone').value;
+            const amount = document.getElementById('wallet-amount').value;
+            if(!phone || !amount) return alert("يرجى إكمال بيانات التحويل");
+            await db.collection("payment_requests").add({
                 userId: auth.currentUser.uid,
-                serviceName: "شحن رصيد محفظة",
-                price: parseFloat(amount),
-                phoneFrom: phone,
+                phone: phone,
+                amount: parseFloat(amount),
                 status: "قيد المراجعة",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            alert("تم إرسال طلب الشحن للإدارة بنجاح.");
+            alert("تم استلام الطلب، سيتم إضافة الرصيد بعد التأكد من التحويل");
+            document.getElementById('wallet-phone').value = "";
+            document.getElementById('wallet-amount').value = "";
         }
 
-        // -- Navigation System --
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
+        function doLogout() { auth.signOut().then(() => location.reload()); }
 
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('link-' + pageId).classList.add('active');
-            
-            if (window.innerWidth < 1000) toggleSidebar();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function handleLogout() {
-            if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-                auth.signOut().then(() => window.location.reload());
+        // Click Outside Dropdown Close
+        window.onclick = (e) => {
+            if (!e.target.closest('.custom-select')) {
+                document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
+                document.querySelectorAll('.select-trigger').forEach(t => t.classList.remove('active'));
             }
-        }
+        };
     </script>
 </body>
 </html>
