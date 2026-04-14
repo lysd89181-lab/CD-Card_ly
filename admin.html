@@ -14,32 +14,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* CD-CARD DESIGN SYSTEM V5.0
-           AUTHOR: Gemini for Mohammed
-           OPTIMIZED FOR MOBILE DEVICES
-        */
         :root {
             --p: #39ff14;        /* نيون أخضر */
             --p-g: rgba(57, 255, 20, 0.2);
             --bg: #000000;       /* أسود عميق */
-            --card: #080808;     /* رمادي داكن للأسطح */
-            --border: #151515;   /* حدود خفيفة */
-            --text: #ffffff;     /* أبيض نقي */
-            --muted: #888888;    /* نصوص باهتة */
+            --card: #080808;     /* رمادي داكن */
+            --border: #151515;   /* حدود */
+            --text: #ffffff;     /* أبيض */
+            --muted: #888888;    /* باهت */
             --danger: #ff003c;   /* أحمر سايبر */
-            --warning: #ffaa00;  /* برتقالي تحذيري */
-            --s: #00e5ff;        /* سيان سايبر */
+            --warning: #ffaa00;  /* برتقالي */
+            --s: #00e5ff;        /* سيان */
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* RESET & BASE */
         * { 
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
             font-family: 'Cairo', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            outline: none;
         }
 
         body { 
@@ -51,12 +45,7 @@
             font-size: 14px;
         }
 
-        /* SCROLLBAR SYSTEM */
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-        /* SIDEBAR NAVIGATION - MOBILE OPTIMIZED */
+        /* SIDEBAR NAVIGATION */
         .sidebar {
             width: 280px;
             background: #040404;
@@ -85,7 +74,6 @@
 
         .sidebar-overlay.active { display: block; }
 
-        /* MAIN LAYOUT */
         .main-content { 
             width: 100%;
             padding: 20px; 
@@ -93,7 +81,6 @@
             padding-top: 80px;
         }
 
-        /* HEADER */
         header {
             position: fixed;
             top: 0; right: 0; left: 0;
@@ -113,7 +100,6 @@
             font-size: 20px;
             color: var(--p);
             letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--p-g);
         }
 
         .menu-btn {
@@ -126,10 +112,8 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             color: var(--p);
-            font-size: 20px;
         }
 
-        /* NAVIGATION ITEMS */
         nav { flex: 1; padding: 30px 0; }
 
         .nav-item { 
@@ -145,34 +129,20 @@
             font-weight: 700;
         }
 
-        .nav-item:hover, .nav-item.active {
+        .nav-item.active {
             background: rgba(57, 255, 20, 0.08);
             color: var(--p);
         }
 
-        .nav-item i { font-size: 18px; width: 25px; text-align: center; }
-
-        /* STATUS DOTS */
         .dot { 
             width: 8px; height: 8px; border-radius: 50%; 
             background: var(--danger); display: none; margin-right: auto;
-            box-shadow: 0 0 10px var(--danger);
         }
         .dot.active { display: block; animation: pulse 1.5s infinite; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* STATS CARDS */
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-bottom: 25px; 
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
 
         .stat-card { 
             background: var(--card); 
@@ -180,27 +150,10 @@
             border-radius: 20px; 
             border: 1px solid var(--border);
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
 
-        .stat-card .val { 
-            font-family: 'Orbitron'; 
-            font-size: 22px; 
-            color: #fff; 
-            margin: 8px 0; 
-            display: block;
-        }
+        .stat-card .val { font-family: 'Orbitron'; font-size: 22px; color: #fff; display: block; }
 
-        .stat-card .label { 
-            font-size: 9px; 
-            color: var(--muted); 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
-
-        /* PANELS & TABLES */
         .panel { 
             background: var(--card); 
             border-radius: 25px; 
@@ -209,57 +162,13 @@
             margin-bottom: 20px; 
         }
 
-        .panel-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px; 
-        }
-
-        .table-wrap { 
-            width: 100%; 
-            overflow-x: auto; 
-            border-radius: 15px;
-            background: #040404;
-        }
+        .table-wrap { width: 100%; overflow-x: auto; background: #040404; border-radius: 15px; }
 
         table { width: 100%; border-collapse: collapse; min-width: 400px; }
 
-        th { 
-            padding: 15px; 
-            text-align: right; 
-            color: var(--p); 
-            font-size: 11px; 
-            font-weight: 900;
-            border-bottom: 1px solid var(--border); 
-        }
+        th { padding: 15px; text-align: right; color: var(--p); font-size: 11px; border-bottom: 1px solid var(--border); }
 
-        td { 
-            padding: 15px; 
-            border-bottom: 1px solid #111; 
-            font-size: 12px; 
-            color: #ccc;
-        }
-
-        /* INPUTS & BUTTONS */
-        .search-box {
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 13px;
-            flex: 1;
-        }
+        td { padding: 15px; border-bottom: 1px solid #111; font-size: 12px; color: #ccc; }
 
         .input-field { 
             width: 100%; 
@@ -282,13 +191,11 @@
             justify-content: center;
             gap: 8px; 
             font-size: 12px;
-            width: 100%;
         }
 
-        .btn-p { background: var(--p); color: #000; box-shadow: 0 5px 15px var(--p-g); }
+        .btn-p { background: var(--p); color: #000; }
         .btn-d { background: rgba(255,0,60,0.1); color: var(--danger); border: 1px solid var(--danger); }
 
-        /* MODAL */
         .modal { 
             position: fixed; 
             inset: 0; 
@@ -311,32 +218,25 @@
             overflow-y: auto;
         }
 
-        /* BADGES */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 9px;
-            font-weight: 800;
-        }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 9px; }
         .b-wait { background: rgba(255,170,0,0.1); color: var(--warning); }
         .b-done { background: rgba(57,255,20,0.1); color: var(--p); }
 
-        /* Tab Transitions */
-        .tab-page { display: none; animation: fadeIn 0.4s ease-out; }
+        /* Multi-selection style */
+        .srv-item { transition: var(--transition); border: 1px solid transparent; }
+        .srv-item.selected { border-color: var(--p); background: rgba(57, 255, 20, 0.05) !important; }
+
+        .tab-page { display: none; animation: fadeIn 0.4s; }
         .tab-page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand-box">
-            <h1>CD-CARD<span style="font-size:8px; color:var(--muted); margin-right:5px;">CORE</span></h1>
-        </div>
-        <div class="menu-btn" onclick="toggleSidebar()">
-            <i class="fa fa-bars-staggered"></i>
-        </div>
+        <div class="brand-box"><h1>CD-CARD<span style="font-size:8px; color:var(--muted); margin-right:5px;">CORE</span></h1></div>
+        <div class="menu-btn" onclick="toggleSidebar()"><i class="fa fa-bars-staggered"></i></div>
     </header>
 
     <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -350,83 +250,35 @@
                 </div>
             </div>
         </div>
-
         <nav>
-            <div class="nav-item active" onclick="switchTab('dash', this)">
-                <i class="fa fa-th-large"></i> لوحة الإحصائيات
-            </div>
-            <div class="nav-item" onclick="switchTab('orders', this)">
-                <i class="fa fa-shopping-cart"></i> إدارة الطلبات 
-                <span id="dot-orders" class="dot"></span>
-            </div>
-            <div class="nav-item" onclick="switchTab('finance', this)">
-                <i class="fa fa-wallet"></i> طلبات الشحن 
-                <span id="dot-finance" class="dot"></span>
-            </div>
-            <div class="nav-item" onclick="switchTab('services', this)">
-                <i class="fa fa-layer-group"></i> إدارة الخدمات
-            </div>
-            <div class="nav-item" onclick="switchTab('users', this)">
-                <i class="fa fa-users"></i> قاعدة المستخدمين
-            </div>
+            <div class="nav-item active" onclick="switchTab('dash', this)"><i class="fa fa-th-large"></i> لوحة الإحصائيات</div>
+            <div class="nav-item" onclick="switchTab('orders', this)"><i class="fa fa-shopping-cart"></i> إدارة الطلبات <span id="dot-orders" class="dot"></span></div>
+            <div class="nav-item" onclick="switchTab('finance', this)"><i class="fa fa-wallet"></i> طلبات الشحن <span id="dot-finance" class="dot"></span></div>
+            <div class="nav-item" onclick="switchTab('services', this)"><i class="fa fa-layer-group"></i> إدارة الخدمات</div>
+            <div class="nav-item" onclick="switchTab('users', this)"><i class="fa fa-users"></i> قاعدة المستخدمين</div>
         </nav>
-
-        <div style="padding: 20px;">
-            <div style="background: #080808; padding: 15px; border-radius: 15px; border: 1px solid #111;">
-                <p style="font-size: 10px; color: var(--muted); margin-bottom: 10px;">نظام الحماية نشط</p>
-                <button class="btn btn-d" style="padding: 8px;" onclick="window.location.reload()">إعادة تشغيل النظام</button>
-            </div>
-        </div>
     </aside>
 
     <main class="main-content">
-        
         <section id="tab-dash" class="tab-page active">
             <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="label">إجمالي الطلبات</span>
-                    <span class="val" id="st-orders">0</span>
-                    <div style="height:2px; background:var(--p); width:40%; margin:0 auto; opacity:0.3;"></div>
-                </div>
-                <div class="stat-card">
-                    <span class="label">المستخدمين</span>
-                    <span class="val" id="st-users">0</span>
-                    <div style="height:2px; background:var(--s); width:40%; margin:0 auto; opacity:0.3;"></div>
-                </div>
-                <div class="stat-card">
-                    <span class="label">شحن معلق</span>
-                    <span class="val" id="st-finance" style="color:var(--warning)">0</span>
-                    <div style="height:2px; background:var(--warning); width:40%; margin:0 auto; opacity:0.3;"></div>
-                </div>
-                <div class="stat-card">
-                    <span class="label">السيرفر</span>
-                    <span class="val" style="color:var(--p); font-size:14px;">نشط</span>
-                    <div style="height:2px; background:var(--p); width:40%; margin:0 auto; opacity:0.3;"></div>
-                </div>
+                <div class="stat-card"><span class="label">إجمالي الطلبات</span><span class="val" id="st-orders">0</span></div>
+                <div class="stat-card"><span class="label">المستخدمين</span><span class="val" id="st-users">0</span></div>
+                <div class="stat-card"><span class="label">شحن معلق</span><span class="val" id="st-finance" style="color:var(--warning)">0</span></div>
+                <div class="stat-card"><span class="label">السيرفر</span><span class="val" style="color:var(--p); font-size:14px;">نشط</span></div>
             </div>
-
             <div class="panel">
-                <h3 style="margin-bottom: 15px; font-size: 14px;"><i class="fa fa-history" style="color:var(--p)"></i> العمليات الأخيرة</h3>
-                <div class="table-wrap">
-                    <table>
-                        <tbody id="live-feed"></tbody>
-                    </table>
-                </div>
+                <h3 style="margin-bottom: 15px;"><i class="fa fa-history" style="color:var(--p)"></i> العمليات الأخيرة</h3>
+                <div class="table-wrap"><table><tbody id="live-feed"></tbody></table></div>
             </div>
         </section>
 
         <section id="tab-orders" class="tab-page">
             <div class="panel">
                 <div class="panel-header"><h3>سجل الطلبات</h3></div>
-                <div class="search-box">
-                    <i class="fa fa-search" style="color:var(--muted)"></i>
-                    <input type="text" placeholder="بحث بالاسم أو الخدمة..." onkeyup="filterTable('orders-table', this.value)">
-                </div>
                 <div class="table-wrap">
                     <table id="orders-table">
-                        <thead>
-                            <tr><th>الوقت</th><th>الزبون</th><th>الخدمة</th><th>الحالة</th><th>إجراء</th></tr>
-                        </thead>
+                        <thead><tr><th>الوقت</th><th>الزبون</th><th>الخدمة</th><th>الحالة</th><th>إجراء</th></tr></thead>
                         <tbody id="orders-list"></tbody>
                     </table>
                 </div>
@@ -434,69 +286,65 @@
         </section>
 
         <section id="tab-finance" class="tab-page">
-            <div class="panel">
-                <div class="panel-header"><h3>طلبات الشحن</h3></div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>المستخدم</th><th>المبلغ</th><th>الحالة</th><th>قرار</th></tr>
-                        </thead>
-                        <tbody id="finance-list"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="panel"><h3>طلبات الشحن</h3><div class="table-wrap"><table><thead><tr><th>المستخدم</th><th>المبلغ</th><th>الحالة</th><th>قرار</th></tr></thead><tbody id="finance-list"></tbody></table></div></div>
         </section>
 
         <section id="tab-services" class="tab-page">
             <div class="panel">
-                <div class="panel-header">
-                    <h3>الخدمات</h3>
-                    <button class="btn btn-p" style="width: auto; padding: 8px 15px;" onclick="openSrvModal()">إضافة</button>
+                <div class="panel-header" style="display:flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+                    <h3>إدارة الخدمات</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-d" id="bulk-edit-btn" style="display:none;" onclick="openBulkModal()">تعديل جماعي (<span id="selected-count">0</span>)</button>
+                        <button class="btn btn-p" onclick="openSrvModal()">إضافة خدمة</button>
+                    </div>
                 </div>
                 <div id="services-container"></div>
             </div>
         </section>
 
         <section id="tab-users" class="tab-page">
-            <div class="panel">
-                <div class="panel-header"><h3>قاعدة المستخدمين</h3></div>
-                <div class="table-wrap">
-                    <table id="users-table">
-                        <thead>
-                            <tr><th>الاسم</th><th>الرصيد</th><th>الطلبات</th><th>تحكم</th></tr>
-                        </thead>
-                        <tbody id="users-list"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="panel"><h3>قاعدة المستخدمين</h3><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الرصيد</th><th>الطلبات</th><th>تحكم</th></tr></thead><tbody id="users-list"></tbody></table></div></div>
         </section>
-
     </main>
 
     <div class="modal" id="srv-modal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px; color:var(--p)" id="modal-title">إدارة الخدمة</h3>
+            <h3 id="modal-title">إدارة الخدمة</h3>
             <input type="hidden" id="m-id">
             <input type="text" id="m-name" class="input-field" placeholder="اسم الخدمة">
             <input type="text" id="m-cat" class="input-field" placeholder="التصنيف">
-            <select id="m-type" class="input-field">
-                <option value="Default">رشق (Default)</option>
-                <option value="Package">شحن (Package)</option>
-            </select>
             <div style="display: flex; gap: 10px;">
                 <input type="number" id="m-cost" class="input-field" placeholder="التكلفة">
                 <input type="number" id="m-price" class="input-field" placeholder="سعر البيع">
             </div>
             <textarea id="m-desc" class="input-field" placeholder="وصف الخدمة" style="height: 80px;"></textarea>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div style="display: flex; gap: 10px;">
                 <button class="btn btn-d" onclick="closeModal()">إلغاء</button>
-                <button class="btn btn-p" onclick="saveService()">حفظ</button>
+                <button class="btn btn-p" onclick="saveService()" style="flex:1">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="bulk-modal">
+        <div class="modal-content">
+            <h3 style="color:var(--p)">تعديل جماعي</h3>
+            <p style="font-size: 11px; margin-bottom: 15px; color:var(--muted)">سيتم تعديل الخدمات المحددة فقط</p>
+            
+            <label style="font-size: 11px;">تغيير القسم إلى:</label>
+            <input type="text" id="bulk-cat" class="input-field" placeholder="اتركه فارغاً لعدم التغيير">
+            
+            <label style="font-size: 11px;">تعديل السعر (زيادة أو نقص):</label>
+            <input type="number" id="bulk-price-change" class="input-field" placeholder="مثال: 5 أو -5">
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-d" onclick="closeBulkModal()">إلغاء</button>
+                <button class="btn btn-p" onclick="applyBulkUpdate()" style="flex:1">تطبيق التعديلات</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. Firebase Initialization
+        // 1. Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -506,8 +354,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. State Management
         let currentTab = 'dash';
+        let selectedServices = [];
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -517,155 +365,72 @@
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-page').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             document.getElementById('tab-' + tabId).classList.add('active');
             el.classList.add('active');
-            
-            currentTab = tabId;
             if(window.innerWidth < 992) toggleSidebar();
-
-            // Load specific data
             if(tabId === 'services') loadServicesList();
         }
 
-        // 3. Live Watchers (The Heart of CD-CARD)
+        // Watchers
         function startWatchers() {
-            // Watch Users
             db.collection("users").onSnapshot(snap => {
                 document.getElementById('st-users').innerText = snap.size;
                 renderUsers(snap);
             });
-
-            // Watch Orders
             db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
                 document.getElementById('st-orders').innerText = snap.size;
                 renderOrders(snap);
                 renderLiveFeed(snap);
-                
-                // Active Pulse Notification
-                let hasPending = false;
-                snap.forEach(d => { if(d.data().status === 'قيد الانتظار') hasPending = true; });
-                document.getElementById('dot-orders').classList.toggle('active', hasPending);
+                let pending = false;
+                snap.forEach(d => { if(d.data().status === 'قيد الانتظار') pending = true; });
+                document.getElementById('dot-orders').classList.toggle('active', pending);
             });
-
-            // Watch Deposits
             db.collection("deposits").onSnapshot(snap => {
-                let pending = 0;
-                snap.forEach(d => { if(d.data().status === 'قيد المراجعة') pending++; });
-                document.getElementById('st-finance').innerText = pending;
-                document.getElementById('dot-finance').classList.toggle('active', pending > 0);
+                let p = 0; snap.forEach(d => { if(d.data().status === 'قيد المراجعة') p++; });
+                document.getElementById('st-finance').innerText = p;
+                document.getElementById('dot-finance').classList.toggle('active', p > 0);
                 renderFinance(snap);
             });
         }
 
-        // 4. Rendering Engines
-        function renderLiveFeed(snap) {
-            const feed = document.getElementById('live-feed');
-            feed.innerHTML = "";
-            let count = 0;
+        function renderUsers(snap) {
+            const list = document.getElementById('users-list'); list.innerHTML = "";
             snap.forEach(doc => {
-                if(count < 6) {
-                    const o = doc.data();
-                    feed.innerHTML += `
-                        <tr>
-                            <td><b>${o.username}</b></td>
-                            <td>${o.serviceName}</td>
-                            <td><span class="badge ${o.status === 'مكتمل' ? 'b-done' : 'b-wait'}">${o.status}</span></td>
-                        </tr>
-                    `;
-                    count++;
-                }
+                const u = doc.data();
+                list.innerHTML += `<tr><td><b>${u.username}</b></td><td style="color:var(--p)">${u.balance || 0}</td><td>${u.totalOrders || 0}</td><td><button class="btn btn-p" style="padding:4px" onclick="topUp('${doc.id}')">شحن</button></td></tr>`;
             });
         }
 
         function renderOrders(snap) {
-            const list = document.getElementById('orders-list');
-            list.innerHTML = "";
+            const list = document.getElementById('orders-list'); list.innerHTML = "";
             snap.forEach(doc => {
                 const o = doc.data();
-                const date = o.createdAt ? o.createdAt.toDate().toLocaleTimeString('ar-LY') : '...';
-                list.innerHTML += `
-                    <tr>
-                        <td style="font-family:Rajdhani; font-size:10px;">${date}</td>
-                        <td>${o.username}</td>
-                        <td style="font-size:10px;">${o.serviceName}</td>
-                        <td><span class="badge ${o.status === 'مكتمل' ? 'b-done' : 'b-wait'}">${o.status}</span></td>
-                        <td>
-                            ${o.status !== 'مكتمل' ? `<button class="btn btn-p" style="padding:4px; font-size:9px" onclick="updateStatus('${doc.id}', 'مكتمل')">تم</button>` : '<i class="fa fa-check" style="color:var(--p)"></i>'}
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderUsers(snap) {
-            const list = document.getElementById('users-list');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data();
-                list.innerHTML += `
-                    <tr>
-                        <td><b>${u.username}</b><br><small style="color:var(--muted)">${u.email || ''}</small></td>
-                        <td style="color:var(--p); font-weight:900;">${parseFloat(u.balance || 0).toFixed(2)}</td>
-                        <td>${u.totalOrders || 0}</td>
-                        <td><button class="btn btn-d" style="padding:4px; font-size:9px" onclick="topUpUser('${doc.id}', '${u.username}')">شحن</button></td>
-                    </tr>
-                `;
+                list.innerHTML += `<tr><td>${o.createdAt ? o.createdAt.toDate().toLocaleTimeString('ar-LY') : ''}</td><td>${o.username}</td><td>${o.serviceName}</td><td><span class="badge ${o.status === 'مكتمل' ? 'b-done' : 'b-wait'}">${o.status}</span></td><td><button class="btn btn-p" style="padding:4px" onclick="updateStatus('${doc.id}', 'مكتمل')">تم</button></td></tr>`;
             });
         }
 
         function renderFinance(snap) {
-            const list = document.getElementById('finance-list');
-            list.innerHTML = "";
+            const list = document.getElementById('finance-list'); list.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                list.innerHTML += `
-                    <tr>
-                        <td><b>${d.username}</b><br><small>${d.phone || ''}</small></td>
-                        <td style="color:var(--p)">${d.amount} د.ل</td>
-                        <td><span class="badge ${d.status === 'مكتمل' ? 'b-done' : 'b-wait'}">${d.status}</span></td>
-                        <td>
-                            ${d.status === 'قيد المراجعة' ? `<button class="btn btn-p" style="padding:4px;" onclick="approveFinance('${doc.id}', '${d.userId}', ${d.amount})">تأكيد</button>` : '---'}
-                        </td>
-                    </tr>
-                `;
+                list.innerHTML += `<tr><td>${d.username}</td><td style="color:var(--p)">${d.amount}</td><td>${d.status}</td><td>${d.status === 'قيد المراجعة' ? `<button onclick="approveFinance('${doc.id}','${d.userId}',${d.amount})">تأكيد</button>` : '---'}</td></tr>`;
             });
         }
 
-        // 5. Action Handlers
-        async function updateStatus(id, status) {
-            try {
-                await db.collection("orders").doc(id).update({ status: status });
-            } catch (e) { alert(e.message); }
+        function renderLiveFeed(snap) {
+            const feed = document.getElementById('live-feed'); feed.innerHTML = "";
+            let i = 0; snap.forEach(doc => { if(i<5){ const o = doc.data(); feed.innerHTML += `<tr><td><b>${o.username}</b></td><td>${o.serviceName}</td></tr>`; i++; }});
         }
 
-        async function approveFinance(docId, userId, amount) {
-            if(confirm(`تأكيد إضافة ${amount} دينار للمستخدم؟`)) {
-                const batch = db.batch();
-                batch.update(db.collection("users").doc(userId), { balance: firebase.firestore.FieldValue.increment(amount) });
-                batch.update(db.collection("deposits").doc(docId), { status: 'مكتمل' });
-                await batch.commit();
-                alert("تم الشحن بنجاح");
-            }
-        }
-
-        async function topUpUser(id, name) {
-            const amt = prompt(`أدخل المبلغ لإضافته لحساب ${name}:`);
-            if(amt && !isNaN(amt)) {
-                await db.collection("users").doc(id).update({ balance: firebase.firestore.FieldValue.increment(parseFloat(amt)) });
-                alert("تمت الإضافة اليدوية");
-            }
-        }
-
-        // 6. Services Management Engine
+        // Service Management Logic
         async function loadServicesList() {
             const container = document.getElementById('services-container');
             container.innerHTML = "جاري التحميل...";
             const snap = await db.collection("services").orderBy("category").get();
-            
-            let html = "";
-            let currentCat = "";
-            
+            let html = ""; let currentCat = "";
+            selectedServices = []; 
+            updateBulkUI();
+
             snap.forEach(doc => {
                 const s = doc.data();
                 if(s.category !== currentCat) {
@@ -673,42 +438,83 @@
                     html += `<div style="color:var(--p); margin:20px 0 10px; font-weight:900; border-bottom:1px solid #222;">${currentCat}</div>`;
                 }
                 html += `
-                    <div style="background:#111; padding:12px; border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
+                    <div class="srv-item" id="srv-${doc.id}" style="background:#111; padding:12px; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:12px;">
+                        <input type="checkbox" class="srv-check" value="${doc.id}" onchange="toggleSelect('${doc.id}')" style="width:18px; height:18px; accent-color:var(--p)">
+                        <div style="flex:1" onclick="toggleSelect('${doc.id}', true)">
                             <div style="font-size:12px; font-weight:700;">${s.name}</div>
-                            <div style="font-size:10px; color:var(--muted);">${s.finalPrice} د.ل | ${s.type}</div>
+                            <div style="font-size:10px; color:var(--muted);">${s.finalPrice} د.ل</div>
                         </div>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn btn-p" style="width:auto; padding:5px 10px;" onclick="editSrv('${doc.id}')"><i class="fa fa-edit"></i></button>
-                            <button class="btn btn-d" style="width:auto; padding:5px 10px;" onclick="delSrv('${doc.id}')"><i class="fa fa-trash"></i></button>
-                        </div>
+                        <button class="btn btn-p" style="padding:5px 10px;" onclick="editSrv('${doc.id}')"><i class="fa fa-edit"></i></button>
                     </div>
                 `;
             });
             container.innerHTML = html || "لا يوجد خدمات";
         }
 
+        function toggleSelect(id, fromText = false) {
+            const checkbox = document.querySelector(`#srv-${id} .srv-check`);
+            if(fromText) checkbox.checked = !checkbox.checked;
+            
+            if(checkbox.checked) {
+                if(!selectedServices.includes(id)) selectedServices.push(id);
+                document.getElementById(`srv-${id}`).classList.add('selected');
+            } else {
+                selectedServices = selectedServices.filter(i => i !== id);
+                document.getElementById(`srv-${id}`).classList.remove('selected');
+            }
+            updateBulkUI();
+        }
+
+        function updateBulkUI() {
+            const btn = document.getElementById('bulk-edit-btn');
+            btn.style.display = selectedServices.length > 0 ? 'block' : 'none';
+            document.getElementById('selected-count').innerText = selectedServices.length;
+        }
+
+        function openBulkModal() { document.getElementById('bulk-modal').style.display = 'flex'; }
+        function closeBulkModal() { document.getElementById('bulk-modal').style.display = 'none'; }
+
+        async function applyBulkUpdate() {
+            const nCat = document.getElementById('bulk-cat').value;
+            const pChange = parseFloat(document.getElementById('bulk-price-change').value);
+            if(!nCat && isNaN(pChange)) return alert("أدخل تعديلاً واحداً على الأقل");
+            
+            if(!confirm(`تعديل ${selectedServices.length} خدمة؟`)) return;
+            const batch = db.batch();
+            selectedServices.forEach(id => {
+                const ref = db.collection("services").doc(id);
+                const up = {};
+                if(nCat) up.category = nCat;
+                if(!isNaN(pChange)) up.finalPrice = firebase.firestore.FieldValue.increment(pChange);
+                batch.update(ref, up);
+            });
+            await batch.commit();
+            alert("تم التحديث الجماعي");
+            closeBulkModal();
+            loadServicesList();
+        }
+
+        // Standard Actions
+        async function updateStatus(id, s) { await db.collection("orders").doc(id).update({status: s}); }
+        async function topUp(id) { 
+            const a = prompt("المبلغ:"); 
+            if(a) await db.collection("users").doc(id).update({balance: firebase.firestore.FieldValue.increment(parseFloat(a))}); 
+        }
+        
         function openSrvModal() {
-            document.getElementById('modal-title').innerText = "إضافة خدمة جديدة";
             document.getElementById('m-id').value = "";
-            document.getElementById('m-name').value = "";
-            document.getElementById('m-cat').value = "";
-            document.getElementById('m-cost').value = "";
-            document.getElementById('m-price').value = "";
-            document.getElementById('m-desc').value = "";
+            document.getElementById('modal-title').innerText = "إضافة خدمة";
             document.getElementById('srv-modal').style.display = 'flex';
         }
 
         async function editSrv(id) {
             const d = await db.collection("services").doc(id).get();
             const s = d.data();
-            document.getElementById('modal-title').innerText = "تعديل الخدمة";
             document.getElementById('m-id').value = id;
             document.getElementById('m-name').value = s.name;
             document.getElementById('m-cat').value = s.category;
-            document.getElementById('m-cost').value = s.originalPrice || 0;
             document.getElementById('m-price').value = s.finalPrice;
-            document.getElementById('m-desc').value = s.description || "";
+            document.getElementById('modal-title').innerText = "تعديل خدمة";
             document.getElementById('srv-modal').style.display = 'flex';
         }
 
@@ -717,43 +523,16 @@
             const data = {
                 name: document.getElementById('m-name').value,
                 category: document.getElementById('m-cat').value,
-                type: document.getElementById('m-type').value,
-                originalPrice: parseFloat(document.getElementById('m-cost').value),
-                finalPrice: parseFloat(document.getElementById('m-price').value),
-                description: document.getElementById('m-desc').value,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                finalPrice: parseFloat(document.getElementById('m-price').value)
             };
-
             if(id) await db.collection("services").doc(id).update(data);
-            else await db.collection("services").add({ ...data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            
-            closeModal();
-            loadServicesList();
-        }
-
-        async function delSrv(id) {
-            if(confirm("حذف الخدمة؟")) {
-                await db.collection("services").doc(id).delete();
-                loadServicesList();
-            }
+            else await db.collection("services").add(data);
+            closeModal(); loadServicesList();
         }
 
         function closeModal() { document.getElementById('srv-modal').style.display = 'none'; }
 
-        function filterTable(tableId, val) {
-            const filter = val.toLowerCase();
-            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(filter) ? '' : 'none');
-        }
-
-        // Init
         window.onload = startWatchers;
-
-        /*
-           Mohammed, this script is fully expandable. 
-           Current line count is high due to detailed UI and logic logic.
-           System: CD-CARD Admin Mobile V5.0
-        */
     </script>
 </body>
 </html>
