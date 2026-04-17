@@ -55,6 +55,7 @@
         .btn-p { background: var(--p); color: #000; }
         .btn-edit { background: rgba(57, 255, 20, 0.1); color: var(--p); border: 1px solid var(--p); }
         .btn-danger { background: rgba(255, 0, 60, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-discount { background: rgba(204, 255, 0, 0.1); color: #ccff00; border: 1px solid #ccff00; }
 
         /* Form Elements */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
@@ -62,13 +63,12 @@
         .input { width: 100%; background: #000; border: 1px solid #222; padding: 12px; border-radius: 10px; color: #fff; margin-top: 10px; font-size: 14px; }
         textarea.input { height: 100px; resize: none; }
 
-        /* Tables for Users & Finance */
+        /* Tables */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { text-align: right; color: var(--p); padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; }
         td { padding: 12px; border-bottom: 1px solid #111; font-size: 13px; }
 
-        .badge { padding: 3px 8px; border-radius: 5px; font-size: 10px; }
-        .bg-wait { background: rgba(255, 170, 0, 0.1); color: #ffa000; }
+        .small-id { font-size: 10px; color: var(--muted); display: block; }
     </style>
 </head>
 <body>
@@ -86,19 +86,18 @@
                 <h3>إدارة الخدمات</h3>
                 <button class="btn btn-p" onclick="openSrvModal()">+ إضافة خدمة</button>
             </div>
-            <div id="categories-container">
-                </div>
+            <div id="categories-container"></div>
         </section>
 
         <section id="tab-finance" class="tab-content">
             <h3>طلبات الشحن المعلقة</h3>
-            <div class="category-group" style="padding:15px">
+            <div class="category-group" style="padding:15px; overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
                             <th>المستخدم</th>
-                            <th>المبلغ</th>
-                            <th>الوسيلة</th>
+                            <th>القيمة</th>
+                            <th>الرقم المحول</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
@@ -109,12 +108,13 @@
 
         <section id="tab-users" class="tab-content">
             <h3>قاعدة بيانات المستخدمين</h3>
-            <div class="category-group" style="padding:15px">
+            <div class="category-group" style="padding:15px; overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>الاسم</th>
+                            <th>الاسم / ID</th>
                             <th>الرصيد</th>
+                            <th>الخصم الحالي</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
@@ -171,7 +171,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // تبديل الأقسام
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -183,20 +182,17 @@
             if(tabId === 'users') loadUsers();
         }
 
-        // --- إدارة الخدمات (مع الوصف والأقسام المنسدلة) ---
         function loadServices() {
             db.collection("services").onSnapshot(snap => {
                 const container = document.getElementById('categories-container');
                 container.innerHTML = "";
                 const cats = {};
-
                 snap.forEach(doc => {
                     const d = doc.data();
                     const c = d.category || "غير مصنف";
                     if(!cats[c]) cats[c] = [];
                     cats[c].push({id: doc.id, ...d});
                 });
-
                 for (const name in cats) {
                     const group = document.createElement('div');
                     group.className = 'category-group';
@@ -210,22 +206,19 @@
                                 <div class="service-item">
                                     <div style="flex:1">
                                         <div style="font-weight:bold">${s.name}</div>
-                                        <div style="font-size:10px; color:var(--muted); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${s.description || 'لا يوجد وصف'}</div>
+                                        <div style="font-size:10px; color:var(--muted)">${s.description || 'لا يوجد وصف'}</div>
                                     </div>
                                     <div style="color:var(--p); margin: 0 15px;">${s.finalPrice} د.ل</div>
                                     <button class="btn btn-edit" onclick="editSrv('${s.id}')">تعديل</button>
                                 </div>
                             `).join('')}
-                        </div>
-                    `;
+                        </div>`;
                     container.appendChild(group);
                 }
             });
         }
 
-        function toggleCat(name) {
-            document.getElementById(`cat-${name}`).classList.toggle('active');
-        }
+        function toggleCat(name) { document.getElementById(`cat-${name}`).classList.toggle('active'); }
 
         async function editSrv(id) {
             const doc = await db.collection("services").doc(id).get();
@@ -264,46 +257,85 @@
 
         async function deleteService() {
             const id = document.getElementById('srv-id').value;
-            if(confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
-                await db.collection("services").doc(id).delete();
-                closeModal();
-            }
+            if(confirm("حذف الخدمة؟")) { await db.collection("services").doc(id).delete(); closeModal(); }
         }
 
-        // --- باقي الأقسام (شحن ومستخدمين) ---
         function loadFinance() {
             db.collection("deposits").where("status", "==", "قيد المراجعة").onSnapshot(snap => {
                 const list = document.getElementById('finance-list');
-                list.innerHTML = snap.empty ? "<tr><td colspan='4' style='text-align:center'>لا توجد طلبات معلقة</td></tr>" : "";
+                list.innerHTML = snap.empty ? "<tr><td colspan='4'>لا توجد طلبات</td></tr>" : "";
                 snap.forEach(doc => {
                     const d = doc.data();
                     list.innerHTML += `<tr>
-                        <td>${d.username}</td>
+                        <td>${d.username}<span class="small-id">ID: ${d.uid}</span></td>
                         <td style="color:var(--p)">${d.amount}</td>
-                        <td>${d.method}</td>
+                        <td>${d.senderPhone || 'غير مدرج'}</td>
                         <td><button class="btn btn-p" onclick="approveFinance('${doc.id}','${d.uid}',${d.amount})">قبول</button></td>
                     </tr>`;
                 });
             });
         }
 
+        async function approveFinance(docId, uid, amt) {
+            if(!confirm("تأكيد شحن " + amt + " للمستخدم؟")) return;
+            try {
+                const userRef = db.collection("users").doc(uid);
+                await db.runTransaction(async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists) throw "المستخدم غير موجود";
+                    let newBalance = (userDoc.data().balance || 0) + amt;
+                    transaction.update(userRef, { balance: newBalance });
+                    transaction.update(db.collection("deposits").doc(docId), { status: "مكتمل" });
+                });
+                Swal.fire("تم!", "تم شحن الرصيد بنجاح", "success");
+            } catch(e) { Swal.fire("خطأ", e, "error"); }
+        }
+
         function loadUsers() {
-            db.collection("users").limit(20).onSnapshot(snap => {
+            db.collection("users").limit(50).onSnapshot(snap => {
                 const list = document.getElementById('users-list');
                 list.innerHTML = "";
                 snap.forEach(doc => {
                     const u = doc.data();
                     list.innerHTML += `<tr>
-                        <td>${u.username}</td>
-                        <td style="color:var(--p)">${u.balance || 0} د.ل</td>
-                        <td><button class="btn btn-edit" onclick="topUpUser('${doc.id}')">شحن</button></td>
+                        <td>${u.username || 'بدون اسم'}<span class="small-id">${doc.id}</span></td>
+                        <td style="color:var(--p)">${(u.balance || 0).toFixed(2)}</td>
+                        <td style="color:#ccff00">${u.discount || 0}%</td>
+                        <td style="display:flex; gap:5px">
+                            <button class="btn btn-edit" onclick="topUpUser('${doc.id}')">شحن</button>
+                            <button class="btn btn-discount" onclick="setUserDiscount('${doc.id}', ${u.discount || 0})">خصم</button>
+                        </td>
                     </tr>`;
                 });
             });
         }
 
+        async function topUpUser(uid) {
+            const { value: amt } = await Swal.fire({ title: 'شحن رصيد يدوي', input: 'number', inputLabel: 'المبلغ (د.ل)' });
+            if(amt) {
+                const userRef = db.collection("users").doc(uid);
+                const doc = await userRef.get();
+                await userRef.update({ balance: (doc.data().balance || 0) + parseFloat(amt) });
+                Swal.fire("تم الشحن");
+            }
+        }
+
+        // تفعيل نظام الخصم لمستخدم معين
+        async function setUserDiscount(uid, current) {
+            const { value: disc } = await Swal.fire({ 
+                title: 'تحديد نسبة الخصم للمستخدم', 
+                input: 'number', 
+                inputLabel: 'النسبة المئوية (%)',
+                inputValue: current
+            });
+            if(disc !== undefined) {
+                await db.collection("users").doc(uid).update({ discount: parseFloat(disc) });
+                Swal.fire("تم تحديث الخصم");
+            }
+        }
+
         async function renameCat(oldName) {
-            const { value: newName } = await Swal.fire({ title: 'تغيير اسم القسم', input: 'text', inputValue: oldName, showCancelButton: true });
+            const { value: newName } = await Swal.fire({ title: 'تغيير اسم القسم', input: 'text', inputValue: oldName });
             if(newName && newName !== oldName) {
                 const batch = db.batch();
                 const snap = await db.collection("services").where("category", "==", oldName).get();
@@ -317,3 +349,4 @@
     </script>
 </body>
 </html>
+
