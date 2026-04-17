@@ -3,689 +3,628 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CD-CARD | المنصة الاحترافية المتكاملة</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050505">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@400;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <title>CD-CARD | Enterprise v8.5 Custom</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <style>
+        /* ============================================================
+        [01] THEME ENGINE - DESIGN SYSTEM
+        ============================================================ */
         :root {
-            --primary: #39ff14; 
+            --primary-neon: #39ff14; 
+            --neon-yellow: #ccff00; /* اللون الأصفر النيون المطلوب */
             --primary-glow: rgba(57, 255, 20, 0.4);
-            --neon-yellow: #ccff00; 
-            --bg-deep: #020202;
-            --bg-card: #0a0a0a;
-            --bg-sidebar: #050505;
-            --border: #1a1a1a;
-            --text-dim: #999;
-            --font-num: 'Rajdhani', sans-serif;
-            --locked-bg: #151515;
+            --yellow-glow: rgba(204, 255, 0, 0.5);
+            --bg-black: #050505;
+            --bg-card: #0d0d0d;
+            --bg-glass: rgba(10, 10, 10, 0.98);
+            --border-color: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --font-arabic: 'Almarai', 'Cairo', sans-serif;
+            --font-quran: 'Amiri', serif;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Basic Reset & Global Styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
+        /* GLOBAL RESET */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: var(--font-arabic); 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-deep);
-            color: #fff;
+            background-color: var(--bg-black);
+            color: var(--text-main);
             direction: rtl;
             overflow-x: hidden;
-            line-height: 1.6;
-            user-select: none;
+            background-image: radial-gradient(circle at 50% -10%, #151515 0%, #050505 100%);
+            min-height: 100vh;
         }
 
-        /* Utility Classes for Typography */
-        .num-font, .stat-val, #total-price-view, td, .api-key, .phone-num, .price-badge {
-            font-family: var(--font-num) !important;
-            letter-spacing: 1.5px;
-            font-weight: 700;
+        /* [CRITICAL] YELLOW NEON ALL SMALL TEXT */
+        small, .neon-small, .stat-lbl, .field-label, .q-label, .category-tag, span.small-txt {
+            color: var(--neon-yellow) !important;
+            font-weight: 800 !important;
+            font-size: 11px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px var(--yellow-glow);
         }
 
-        /* Sidebar Navigation Design */
-        .side-panel {
-            position: fixed; right: -50%; top: 0; width: 50%; height: 100vh;
-            background: var(--bg-sidebar); border-left: 2px solid var(--border);
-            z-index: 9999; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            display: flex; flex-direction: column; box-shadow: -20px 0 60px #000;
+        /* Number Font Optimization */
+        .stat-num, .price-val, .val-total, .number-font, input, .stat-row span:last-child {
+            font-family: Arial, Helvetica, sans-serif !important; 
+            letter-spacing: 0;
         }
-        .side-panel.open { right: 0; }
-        .sidebar-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9998; display: none; backdrop-filter: blur(10px); }
-        .sidebar-mask.active { display: block; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes borderPulse { 0% { border-color: #1a1a1a; } 50% { border-color: var(--neon-yellow); } 100% { border-color: #1a1a1a; } }
+
+        /* ============================================================
+        [02] LAYOUT COMPONENTS
+        ============================================================ */
+        .app-container { padding: 20px 15px 140px; max-width: 600px; margin: 0 auto; }
+
+        .glass-header {
+            position: sticky; top: 0; z-index: 1000;
+            background: var(--bg-glass); backdrop-filter: blur(40px);
+            padding: 18px 20px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-img {
+            width: 42px; height: 42px; border-radius: 12px;
+            border: 1px solid var(--primary-neon); box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* ============================================================
+        [03] NAVIGATION SYSTEM
+        ============================================================ */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9998; display: none; backdrop-filter: blur(12px); }
+        .main-sidebar {
+            position: fixed; top: 0; right: -100%; width: 310px; height: 100vh;
+            background: #060606; z-index: 9999; transition: var(--transition);
+            border-left: 1px solid var(--border-color); padding: 50px 0; overflow-y: auto;
+        }
+        .sidebar-active .main-sidebar { right: 0; }
+        .sidebar-active .sidebar-overlay { display: block; }
 
         .nav-link {
-            display: flex; align-items: center; padding: 24px 25px; color: var(--text-dim);
-            text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;
-            border-right: 4px solid transparent;
+            padding: 20px 35px; display: flex; align-items: center; gap: 18px;
+            color: var(--text-dim); text-decoration: none; font-weight: 700;
+            transition: var(--transition); border-right: 4px solid transparent;
         }
-        .nav-link i { margin-left: 15px; font-size: 22px; width: 30px; text-align: center; }
-        .nav-link.active { color: var(--primary); background: rgba(57, 255, 20, 0.08); border-right-color: var(--primary); }
+        .nav-link.active { color: var(--primary-neon); background: rgba(57,255,20,0.06); border-right-color: var(--primary-neon); }
+        .nav-link i { font-size: 20px; width: 30px; text-align: center; }
 
-        /* Modern UI Selectors */
-        .custom-select { position: relative; margin-bottom: 25px; }
-        .select-trigger {
-            width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border);
-            border-radius: 20px; color: #fff; cursor: pointer; display: flex; 
-            justify-content: space-between; align-items: center; font-weight: 800; transition: 0.3s;
+        /* ============================================================
+        [04] STATS & CARDS
+        ============================================================ */
+        .stats-vertical-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+        .stat-row {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 24px; border-radius: 24px; display: flex;
+            justify-content: space-between; align-items: center;
         }
-        .select-trigger:hover { border-color: var(--primary); }
-        .select-trigger.active { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+        .stat-num { font-size: 24px; font-weight: 900; color: #fff; }
+        .stat-num.neon { color: var(--primary-neon); text-shadow: 0 0 15px var(--primary-glow); }
+
+        .premium-card {
+            background: var(--bg-card); border-radius: 30px;
+            padding: 28px; border: 1px solid var(--border-color); margin-bottom: 25px;
+            position: relative; animation: fadeInUp 0.5s ease;
+        }
+
+        /* ============================================================
+        [05] DYNAMIC DESCRIPTION BOX (YELLOW NEON)
+        ============================================================ */
+        .desc-box {
+            background: rgba(204, 255, 0, 0.03);
+            border: 1px solid var(--neon-yellow);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none; /* يظهر برمجياً */
+            animation: fadeInUp 0.4s ease;
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
+        }
+        .desc-box.active { display: block; }
+        .desc-title { color: var(--neon-yellow); font-weight: 900; margin-bottom: 8px; display: block; }
+        .desc-text { color: #ddd; font-size: 13px; line-height: 1.6; }
+
+        /* ============================================================
+        [06] FORM INPUTS
+        ============================================================ */
+        .input-wrapper { position: relative; margin-bottom: 24px; }
         
-        .options-menu {
-            position: absolute; top: 115%; left: 0; right: 0; background: #0f0f0f;
-            border: 2px solid #222; border-radius: 20px; max-height: 280px; overflow-y: auto;
-            z-index: 1000; display: none; box-shadow: 0 20px 50px #000; padding: 12px;
+        .main-input {
+            width: 100%; background: #000; border: 1px solid #1a1a1a;
+            padding: 20px 24px; border-radius: 18px; color: #fff;
+            font-size: 15px; outline: none; transition: var(--transition);
         }
-        .options-menu.show { display: block; animation: dropIn 0.4s ease; }
-        .option-item { 
-            padding: 18px 20px; font-size: 14px; cursor: pointer; border-radius: 14px; 
-            margin-bottom: 6px; transition: 0.2s; font-weight: 700; border-bottom: 1px solid #151515;
-        }
-        .option-item:hover { background: rgba(57, 255, 20, 0.15); color: var(--primary); padding-right: 30px; }
+        .main-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 25px var(--primary-glow); }
 
-        @keyframes dropIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Stat Cards Layout */
-        .stats-column { display: flex; flex-direction: column; gap: 18px; margin-bottom: 35px; }
-        .stat-entry { 
-            background: linear-gradient(145deg, #0a0a0a, #050505); padding: 28px; border-radius: 25px; 
-            border: 1.5px solid var(--border); display: flex; align-items: center; 
-            justify-content: space-between; position: relative; transition: 0.3s;
-        }
-        .stat-entry:hover { border-color: var(--primary); transform: translateX(-5px); }
-        .stat-entry i { font-size: 28px; color: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
-        .stat-data { flex: 1; margin-right: 25px; }
-        .stat-tag { font-size: 10px; color: var(--text-dim); font-weight: 900; display: block; letter-spacing: 1px; margin-bottom: 5px; }
-        .stat-val { font-size: 28px; font-weight: 800; color: #fff; }
-
-        /* Main App Container */
-        .app-container { padding: 45px 22px; max-width: 1100px; margin: 0 auto; }
-        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; }
-        .side-toggle { width: 55px; height: 55px; background: #111; border: 1px solid #222; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: var(--primary); cursor: pointer; font-size: 22px; transition: 0.3s; }
-
-        .form-card { background: var(--bg-card); border-radius: 35px; padding: 40px 30px; border: 2px solid var(--border); margin-bottom: 35px; box-shadow: 0 10px 30px #000; }
-        .field-group { margin-bottom: 30px; position: relative; }
-        .field-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; font-weight: 900; }
-        .field-group input { width: 100%; padding: 22px; background: #0c0c0c; border: 2px solid var(--border); border-radius: 20px; color: #fff; font-weight: 700; font-size: 16px; transition: 0.3s; }
-        .field-group input:focus { border-color: var(--primary); }
-        
-        /* Locked State Style */
-        .field-group input:disabled {
-            background: var(--locked-bg);
-            border-color: #222;
-            color: #555;
-            cursor: not-allowed;
-            opacity: 0.7;
+        .select-btn {
+            background: #000; border: 1px solid #1a1a1a;
+            padding: 20px 24px; border-radius: 18px; display: flex;
+            justify-content: space-between; align-items: center; cursor: pointer;
         }
 
-        .constraint-badge {
-            position: absolute; left: 15px; top: 48px; background: rgba(0,0,0,0.4);
-            padding: 5px 12px; border-radius: 10px; font-size: 10px; color: var(--primary);
-            font-weight: 800; border: 1px solid var(--border);
+        .dropdown-panel {
+            position: absolute; top: 105%; left: 0; right: 0; background: #0a0a0a;
+            border: 1px solid #222; border-radius: 20px; z-index: 600;
+            max-height: 300px; overflow-y: auto; display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+        .dropdown-panel.show { display: block; animation: fadeInUp 0.4s ease; }
+        .drop-item { padding: 18px 24px; border-bottom: 1px solid #111; font-size: 14px; color: #ddd; }
+
+        .action-btn {
+            width: 100%; padding: 22px; background: var(--primary-neon);
+            color: #000; border: none; border-radius: 22px; font-weight: 900;
+            font-size: 18px; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 12px 30px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 14px;
         }
 
-        .primary-btn {
-            width: 100%; padding: 24px; background: var(--primary); color: #000; border: none;
-            border-radius: 22px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.4s;
-            box-shadow: 0 12px 30px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 12px;
+        /* ============================================================
+        [07] SUPPORT & CHANNELS
+        ============================================================ */
+        .channel-card {
+            background: #0a0a0a; border: 1px solid var(--border-color); padding: 22px;
+            border-radius: 24px; margin-bottom: 15px; display: flex;
+            justify-content: space-between; align-items: center; text-decoration: none;
         }
-        .primary-btn:active { transform: scale(0.95); }
+        .channel-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
-        /* Qur'an Box Decoration */
-        .quran-box {
-            background: #030303; border: 2px solid var(--primary); padding: 60px 30px;
-            border-radius: 40px; text-align: center; margin-top: 50px; position: relative;
+        .quran-box-container {
+            background: #080808; border: 2px solid var(--primary-neon);
+            border-radius: 35px; padding: 40px 30px; text-align: center; margin-top: 60px;
+            box-shadow: 0 0 30px var(--primary-glow);
         }
-        .quran-box::before { content: "﷽"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: #020202; padding: 0 20px; color: var(--primary); font-size: 28px; }
-        .quran-text { line-height: 2.6; font-size: 20px; font-weight: 700; color: #fafafa; }
+        .ayah-content { font-family: var(--font-quran); font-size: 22px; line-height: 2.6; color: #fff; }
 
-        /* Tables & Logging */
-        .log-container { overflow-x: auto; border-radius: 25px; border: 2px solid var(--border); background: #070707; }
-        table { width: 100%; border-collapse: collapse; min-width: 650px; }
-        th { padding: 25px; text-align: right; background: #0c0c0c; color: var(--primary); font-size: 14px; font-weight: 900; border-bottom: 2px solid #1a1a1a; }
-        td { padding: 22px; font-size: 15px; border-bottom: 1px solid #111; font-weight: 700; color: #ddd; }
+        .pane { display: none; }
+        .pane.active { display: block; animation: fadeInUp 0.7s ease; }
 
-        /* Loader Animation */
-        #splash-loader { position: fixed; inset: 0; background: #000; z-index: 1000000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .splash-logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 10px; font-size: 35px; margin-bottom: 25px; text-shadow: 0 0 20px var(--primary); }
-        .progress-container { width: 220px; height: 4px; background: #111; border-radius: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--primary); width: 0%; animation: fullLoad 3s cubic-bezier(0.65, 0.05, 0.36, 1) forwards; }
-        @keyframes fullLoad { to { width: 100%; } }
-
-        /* Visibility Control */
-        .section { display: none; }
-        .section.active { display: block; animation: sectionIn 0.7s ease; }
-        @keyframes sectionIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        /* Support Cards */
-        .link-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .card-link { 
-            display: flex; align-items: center; padding: 25px; border-radius: 25px; 
-            text-decoration: none; color: #fff; font-weight: 900; transition: 0.4s; 
-            border: 1px solid rgba(255,255,255,0.05); font-size: 16px;
+        #loader-screen {
+            position: fixed; inset: 0; background: #000; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .card-link i { font-size: 30px; margin-left: 25px; }
-        .bg-tg { background: linear-gradient(135deg, #0088cc, #005580); }
-        .bg-wa { background: linear-gradient(135deg, #25d366, #128c7e); }
-        .bg-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-
+        .toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #111; border: 1px solid var(--primary-neon); color: #fff;
+            padding: 16px 35px; border-radius: 60px; z-index: 100001; transition: 0.6s; font-size: 14px; font-weight: 800;
+        }
+        .toast.active { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-    <div id="splash-loader">
-        <div class="splash-logo">CD-CARD</div>
-        <div class="progress-container"><div class="progress-bar"></div></div>
+    <div id="loader-screen">
+        <div style="color:var(--primary-neon); font-size:38px; font-weight:900; margin-bottom:20px;">CD-CARD</div>
+        <div style="width: 80px; height: 4px; background: var(--primary-neon); border-radius: 10px;"></div>
+        <div style="margin-top:20px;"><small>ENTERPRISE v8.5 CUSTOM</small></div>
     </div>
 
-    <div class="sidebar-mask" id="mask-overlay" onclick="toggleNav(false)"></div>
-    
-    <aside class="side-panel" id="nav-panel">
-        <div style="padding: 60px 30px; text-align: center; border-bottom: 2px solid #151515;">
-            <div style="position:relative; display:inline-block;">
-                <img src="cd.jpg" style="width: 90px; height: 90px; border-radius: 30px; border: 3px solid var(--primary); padding: 4px; margin-bottom: 20px;">
-                <div style="position:absolute; bottom:25px; right:0; background:var(--primary); width:20px; height:20px; border-radius:50%; border:3px solid var(--bg-sidebar);"></div>
-            </div>
-            <h4 id="profile-name" style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;">محمد</h4>
-            <span style="font-size: 11px; color: var(--primary); font-weight: 900; letter-spacing: 3px; background: rgba(57,255,20,0.1); padding: 4px 12px; border-radius: 10px; margin-top: 10px; display: inline-block;">VIP USER</span>
-        </div>
-        
-        <nav style="flex: 1; padding: 30px 0; overflow-y: auto;">
-            <a href="#" onclick="openTab('home')" class="nav-link active" id="tab-home"><i class="fa fa-shopping-bag"></i> متجر الخدمات</a>
-            <a href="#" onclick="openTab('orders')" class="nav-link" id="tab-orders"><i class="fa fa-clipboard-list"></i> سجل العمليات</a>
-            <a href="#" onclick="openTab('wallet')" class="nav-link" id="tab-wallet"><i class="fa fa-coins"></i> شحن المحفظة</a>
-            <a href="#" onclick="openTab('api')" class="nav-link" id="tab-api"><i class="fa fa-terminal"></i> بوابة المطورين</a>
-            <a href="#" onclick="openTab('support')" class="nav-link" id="tab-support"><i class="fa fa-user-shield"></i> مركز المساعدة</a>
-            <a href="#" onclick="openTab('news')" class="nav-link" id="tab-news"><i class="fa fa-rss"></i> أحدث الأخبار</a>
-        </nav>
+    <div class="toast" id="main-toast"></div>
 
-        <div style="padding: 30px;">
-            <button onclick="doLogout()" style="width:100%; padding:20px; background:#111; border:2px solid #ff4d4d; color:#ff4d4d; border-radius:20px; font-weight:900; cursor:pointer; transition: 0.3s;">تسجيل خروج</button>
+    <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+
+    <aside class="main-sidebar">
+        <div style="padding: 0 40px 50px;">
+            <div style="color: var(--primary-neon); font-size: 30px; font-weight: 900;">CD-CARD</div>
+            <small>PREMIUM DIGITAL SERVICES</small>
         </div>
+        <nav>
+            <a href="#" onclick="showPane('store')" class="nav-link active" id="nav-store">
+                <i class="fa-solid fa-house"></i> <span>المتجر</span>
+            </a>
+            <a href="#" onclick="showPane('orders')" class="nav-link" id="nav-orders">
+                <i class="fa-solid fa-layer-group"></i> <span>طلباتي</span>
+            </a>
+            <a href="#" onclick="showPane('wallet')" class="nav-link" id="nav-wallet">
+                <i class="fa-solid fa-wallet"></i> <span>المحفظة</span>
+            </a>
+            <a href="#" onclick="showPane('web')" class="nav-link" id="nav-web">
+                <i class="fa-solid fa-code"></i> <span>برمجة المواقع</span>
+            </a>
+            <a href="#" onclick="showPane('account')" class="nav-link" id="nav-account">
+                <i class="fa-solid fa-user-gear"></i> <span>الحساب</span>
+            </a>
+            <a href="#" onclick="showPane('support')" class="nav-link" id="nav-support">
+                <i class="fa-solid fa-headset"></i> <span>الدعم الفني</span>
+            </a>
+            <a href="#" onclick="showPane('channels')" class="nav-link" id="nav-channels">
+                <i class="fa-solid fa-bullhorn"></i> <span>قنواتنا</span>
+            </a>
+        </nav>
     </aside>
 
+    <header class="glass-header">
+        <div style="display: flex; align-items: center; gap: 15px;" onclick="toggleSidebar(true)">
+            <div style="background:#111; padding:12px; border-radius:15px;"><i class="fa-solid fa-bars-staggered" style="color: var(--primary-neon);"></i></div>
+            <span style="font-weight:900; color:var(--primary-neon); font-size:24px;">CD-CARD</span>
+        </div>
+        <img src="cd.jpg" class="logo-img">
+    </header>
+
     <div class="app-container">
-        <header class="app-header">
-            <div class="side-toggle" onclick="toggleNav(true)"><i class="fa fa-bars-staggered"></i></div>
-            <div style="text-align:center;">
-                <h1 style="font-family:'Orbitron'; font-weight:900; letter-spacing:5px; font-size:26px; color:var(--primary);">CD-CARD</h1>
-                <p style="font-size:10px; color:var(--text-dim); font-weight:900; letter-spacing:4px;">NEXT GEN DIGITAL SERVICES</p>
-            </div>
-            <img src="cd.jpg" width="55" height="55" style="border-radius:18px; border:2px solid var(--border);">
-        </header>
 
-        <section id="sec-home" class="section active">
+        <section id="pane-store" class="pane active">
             
-            <div class="stats-column">
-                <div class="stat-entry">
-                    <div class="stat-data">
-                        <span class="stat-tag">رصيدك المتوفر الآن</span>
-                        <div style="display:flex; align-items:baseline; gap:10px;">
-                            <span class="stat-val" id="val-balance">0.00</span>
-                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
-                        </div>
-                    </div>
-                    <i class="fa fa-wallet"></i>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:30px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <small>أهلاً بك مجدداً</small>
+                    <div id="u-display-name" style="font-size:26px; font-weight:900; color:#fff; margin-top:5px;">...</div>
                 </div>
+                <i class="fa-solid fa-circle-check" style="color:var(--primary-neon); font-size:32px;"></i>
+            </div>
 
-                <div class="stat-entry">
-                    <div class="stat-data">
-                        <span class="stat-tag">إجمالي الطلبات الناجحة</span>
-                        <span class="stat-val" id="val-orders">0</span>
-                    </div>
-                    <i class="fa fa-check-double"></i>
+            <div class="stats-vertical-list">
+                <div class="stat-row">
+                    <span class="stat-lbl">رصيدك الحالي</span>
+                    <div class="stat-num neon" id="u-balance">0.00</div>
                 </div>
-
-                <div class="stat-entry">
-                    <div class="stat-data">
-                        <span class="stat-tag">إجمالي المشتريات</span>
-                        <div style="display:flex; align-items:baseline; gap:10px;">
-                            <span class="stat-val" id="val-spent">0.00</span>
-                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
-                        </div>
-                    </div>
-                    <i class="fa fa-fire"></i>
+                <div class="stat-row">
+                    <span class="stat-lbl">إجمالي المصاريف</span>
+                    <div class="stat-num" id="u-spent">0.00</div>
                 </div>
-
-                <div class="stat-entry">
-                    <div class="stat-data">
-                        <span class="stat-tag">أرباح الوكلاء المحققة</span>
-                        <div style="display:flex; align-items:baseline; gap:10px;">
-                            <span class="stat-val" id="val-comm" style="color:var(--neon-yellow);">0.00</span>
-                            <span style="font-size:12px; font-weight:900; color:var(--text-dim);">LYD</span>
-                        </div>
-                    </div>
-                    <i class="fa fa-star"></i>
+                <div class="stat-row">
+                    <span class="stat-lbl">نسبة الخصم</span>
+                    <div class="stat-num neon" id="u-discount">0%</div>
                 </div>
             </div>
 
-            <div class="form-card">
-                <h3 style="margin-bottom:30px; color:var(--primary); font-size:22px; font-weight:900; display:flex; align-items:center; gap:15px;">
-                    <i class="fa fa-cart-plus"></i> إنشاء طلب جديد
-                </h3>
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;"><i class="fa-solid fa-cart-plus"></i> إنشاء طلب جديد</div>
                 
-                <div class="custom-select">
-                    <label>اختر تصنيف الخدمة</label>
-                    <div class="select-trigger" id="trig-cat" onclick="openMenu('menu-cat')">
+                <div class="input-wrapper">
+                    <label class="field-label">تصنيف الخدمة</label>
+                    <div class="select-btn" onclick="toggleDrop('drop-cats')">
                         <span id="label-cat">اختر التصنيف...</span>
-                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa-solid fa-caret-down"></i>
                     </div>
-                    <div class="options-menu" id="menu-cat"></div>
+                    <div class="dropdown-panel" id="drop-cats"></div>
                 </div>
 
-                <div class="custom-select">
-                    <label>اختر الخدمة المحددة</label>
-                    <div class="select-trigger" id="trig-ser" onclick="openMenu('menu-ser')">
-                        <span id="label-ser">يرجى اختيار التصنيف أولاً...</span>
-                        <i class="fa fa-chevron-down"></i>
+                <div class="input-wrapper">
+                    <label class="field-label">نوع الخدمة</label>
+                    <div class="select-btn" onclick="toggleDrop('drop-srvs')">
+                        <span id="label-srv">حدد التصنيف أولاً</span>
+                        <i class="fa-solid fa-caret-down"></i>
                     </div>
-                    <div class="options-menu" id="menu-ser"></div>
+                    <div class="dropdown-panel" id="drop-srvs"></div>
                 </div>
 
-                <div class="field-group">
-                    <label id="input-label-text">رابط الحساب / اليوزر</label>
-                    <input type="text" id="target-link" placeholder="أدخل الرابط أو اليوزر">
+                <div class="desc-box" id="srv-desc-box">
+                    <span class="desc-title"><i class="fa-solid fa-circle-info"></i> تفاصيل الخدمة</span>
+                    <div class="desc-text" id="srv-desc-text">جاري جلب تفاصيل الخدمة المختارة...</div>
+                    <div style="margin-top:10px;"><small>ضمان الجودة 100%</small></div>
                 </div>
 
-                <div class="field-group">
-                    <label>الكمية المطلوبة</label>
-                    <input type="number" id="target-qty" value="1000" oninput="calculateEngine()">
-                    <span class="constraint-badge" id="qty-limit-view">الحد الأدنى: 300</span>
+                <div class="input-wrapper">
+                    <label class="field-label">الرابط / اليوزر</label>
+                    <input type="text" class="main-input" id="field-link" placeholder="أدخل الرابط المستهدف">
                 </div>
 
-                <div style="text-align:center; padding:35px; background:rgba(57,255,20,0.02); border-radius:30px; border:2px dashed #1a1a1a; margin-bottom:35px;">
-                    <span style="font-size:11px; color:var(--text-dim); font-weight:900; text-transform:uppercase; letter-spacing:2px;">الفاتورة النهائية</span>
-                    <div style="display:flex; align-items:baseline; justify-content:center; gap:12px; margin-top:10px;">
-                        <h2 style="color:var(--primary); font-size:55px; text-shadow: 0 0 20px var(--primary-glow);" id="total-price-view">0.00</h2>
-                        <span style="font-weight:900; color:var(--text-dim); font-size:18px;">LYD</span>
+                <div class="input-wrapper">
+                    <label class="field-label">الكمية</label>
+                    <input type="number" class="main-input" id="field-qty" value="1000" oninput="recalc()">
+                </div>
+
+                <div style="background:#000; padding:30px; border-radius:30px; text-align:center; border:1px solid #1a1a1a; margin-bottom:30px;">
+                    <small>إجمالي المبلغ</small>
+                    <div style="color:#fff; font-size:45px; font-weight:900;">
+                        <span id="val-total">0.00</span> <small style="font-size:18px;">LYD</small>
                     </div>
-                    <p id="price-type-hint" style="font-size:11px; color:var(--neon-yellow); margin-top:10px; font-weight:700;"></p>
                 </div>
 
-                <button class="primary-btn" id="btn-submit" onclick="executeOrder()"><i class="fa fa-rocket"></i> تأكيد عملية الشراء</button>
+                <button class="action-btn" id="btn-order" onclick="submitOrder()">إتمام عملية الشراء</button>
             </div>
 
-            <div class="quran-box">
-                <div class="quran-text">
-                    اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-orders" class="section">
-            <div class="form-card">
-                <h3 style="margin-bottom:25px;"><i class="fa fa-history"></i> سجل العمليات السابقة</h3>
-                <div class="log-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>اسم الخدمة</th>
-                                <th>التكلفة</th>
-                                <th>الكمية</th>
-                                <th>الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body-orders"></tbody>
-                    </table>
+            <div class="quran-box-container">
+                <small style="display:block; margin-bottom:20px;">آية الكرسي</small>
+                <div class="ayah-content">
+                    اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفظُهُمَا وَهو الْعَلِيُّ الْعَظِيمُ
                 </div>
             </div>
         </section>
 
-        <section id="sec-wallet" class="section">
-            <div class="form-card">
-                <h3 style="color:var(--primary); margin-bottom:25px;"><i class="fa fa-fill-drip"></i> شحن الرصيد</h3>
-                <img src="lb.jpg" style="width:100%; border-radius:25px; margin-bottom:30px; border:2px solid var(--border);">
+        <section id="pane-support" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">الدعم المباشر</div>
+                <small>نحن هنا لمساعدتك دائماً</small>
                 
-                <div style="background:#080808; padding:30px; border-radius:25px; margin-bottom:30px; border:1px solid #1a1a1a;">
-                    <p style="font-size:13px; color:var(--text-dim); margin-bottom:20px; font-weight:800;">بيانات التحويل عبر (كاش لبيانا / مدار):</p>
-                    <div class="phone-num" style="color:var(--primary); font-size:28px; margin-bottom:15px; display:flex; align-items:center; gap:15px;">
-                        <i class="fa fa-phone-volume" style="font-size:18px;"></i> 0920414760
-                    </div>
-                    <div class="phone-num" style="color:var(--primary); font-size:28px; display:flex; align-items:center; gap:15px;">
-                        <i class="fa fa-phone-volume" style="font-size:18px;"></i> 0912377291
-                    </div>
-                </div>
+                <div style="margin-top:25px; display:grid; gap:15px;">
+                    <a href="https://wa.me/2181923772910" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">الواتساب المباشر</div>
+                                <small>01923772910</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
 
-                <div class="field-group">
-                    <label>رقم الهاتف المرسل منه</label>
-                    <input type="number" id="wallet-phone" placeholder="09xxxxxxxx">
-                </div>
-                <div class="field-group">
-                    <label>المبلغ المرسل (دينار ليبي)</label>
-                    <input type="number" id="wallet-amount" placeholder="0.00">
-                </div>
-                <button class="primary-btn" onclick="sendWalletRequest()"><i class="fa fa-paper-plane"></i> إرسال طلب الشحن</button>
-            </div>
-        </section>
-
-        <section id="sec-api" class="section">
-            <div class="form-card">
-                <h3 style="color:var(--primary); margin-bottom:25px;"><i class="fa fa-code-branch"></i> أدوات المطورين</h3>
-                <p style="font-size:14px; color:var(--text-dim); margin-bottom:30px; line-height:1.8;">يمكنك ربط متجرك الخاص بمتجرنا مباشرة لتنفيذ الطلبات لزبائنك بشكل آلي عبر API KEY الخاص بك.</p>
-                <div class="api-key" id="api-key-display" style="background:#000; padding:30px; border:2px dashed var(--primary); border-radius:25px; text-align:center; color:var(--neon-yellow); word-break:break-all; font-size:14px;">
-                    CD_AUTH_KEY_************************
-                </div>
-                <button class="primary-btn" style="background:#111; color:#fff; border:2px solid var(--primary); margin-top:25px;" onclick="refreshAPIKey()">توليد مفتاح جديد</button>
-            </div>
-        </section>
-
-        <section id="sec-support" class="section">
-            <div class="form-card">
-                <h3 style="text-align:center; margin-bottom:30px; font-weight:900;">الدعم الفني والمالي</h3>
-                <p style="text-align:center; color:var(--text-dim); margin-bottom:40px; font-size:15px; padding: 0 10px;">فريقنا متاح على مدار الساعة لمعالجة طلباتكم وحل المشكلات التقنية.</p>
-                <div class="link-grid">
-                    <a href="https://t.me/CD_CARD_SUPPORT" class="card-link bg-tg"><i class="fab fa-telegram-plane"></i> الدعم عبر تليجرام</a>
-                    <a href="https://wa.me/218920414760" class="card-link bg-wa"><i class="fab fa-whatsapp"></i> الدعم عبر واتساب</a>
+                    <a href="https://t.me/cdcard104" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(0,136,204,0.1); color:#0088cc;"><i class="fa-brands fa-telegram"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">التليجرام</div>
+                                <small>@cdcard104</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section id="sec-news" class="section">
-            <div class="form-card">
-                <h3 style="text-align:center; margin-bottom:30px; font-weight:900;">قنواتنا الرسمية</h3>
-                <div class="link-grid">
-                    <a href="https://t.me/CD_Card1" target="_blank" class="card-link bg-tg"><i class="fa fa-bullhorn"></i> قناة تليجرام الرسمية</a>
-                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="card-link bg-wa"><i class="fa fa-comments"></i> قناة واتساب الرسمية</a>
-                    <a href="https://instagram.com/cd_card" target="_blank" class="card-link bg-ig"><i class="fab fa-instagram"></i> متابعتنا على انستجرام</a>
+        <section id="pane-channels" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">قنواتنا الرسمية</div>
+                <small>تابع آخر الأخبار والعروض</small>
+
+                <div style="margin-top:25px; display:grid; gap:15px;">
+                    
+                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">فيسبوك</div>
+                                <small>تابع الصفحة الرسمية</small>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">قناة الواتساب</div>
+                                <small>اشترك لتصلك العروض</small>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.instagram.com/cd.ly.104?igsh=MXZyZXU0ODBvMG1jYw==" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(225,48,108,0.1); color:#e1306c;"><i class="fa-brands fa-instagram"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">انستقرام</div>
+                                <small>@cd.ly.104</small>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.tiktok.com/@cd_card?_r=1&_t=ZS-95bojZDIv4O" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">تيك توك</div>
+                                <small>@cd_card</small>
+                            </div>
+                        </div>
+                    </a>
+
                 </div>
             </div>
         </section>
 
-        <footer style="text-align:center; padding:60px 0; color:var(--text-dim); font-size:11px; font-weight:900; letter-spacing:5px; opacity:0.5;">
-            CD-CARD SYSTEM &copy; 2025-2026 | ALL RIGHTS RESERVED
-        </footer>
+        <section id="pane-wallet" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
+                <div class="lb-img-container" style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;">
+                    <img src="lb.jpg" style="width:100%;">
+                </div>
+                <div class="stat-row" style="margin-bottom:12px;">
+                    <div><small>مدار</small><div style="font-weight:800; color:#fff;">0912377291</div></div>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0912377291')"></i>
+                </div>
+                <div class="stat-row" style="margin-bottom:25px;">
+                    <div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0920414760')"></i>
+                </div>
+                <div class="input-wrapper"><label class="field-label">المبلغ</label><input type="number" id="field-dep-amt" class="main-input"></div>
+                <div class="input-wrapper"><label class="field-label">رقم الهاتف المرسل</label><input type="number" id="field-dep-ph" class="main-input"></div>
+                <button class="action-btn" onclick="requestDeposit()">تبليغ عن تحويل</button>
+            </div>
+        </section>
+
+        <section id="pane-orders" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">تتبع طلباتك</div>
+                <div id="list-orders-cont" style="display:grid; gap:12px;">
+                    <div style="text-align:center; padding:50px; color:#222;"><small>جاري المزامنة...</small></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pane-web" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px;">برمجة المواقع</div>
+                <div style="background:#000; border:1px solid var(--primary-neon); padding:30px; border-radius:30px; text-align:center; margin-bottom:25px;">
+                    <small>عرض المتاجر الحصري</small>
+                    <div style="font-size:38px; font-weight:900; margin:10px 0; color:#fff;">70 <small>دينار</small></div>
+                    <small>تأسيس كامل + استضافة 30د/شهرياً</small>
+                </div>
+                <div class="input-wrapper"><label class="field-label">اسم الموقع</label><input type="text" id="web-site-name" class="main-input"></div>
+                <div class="input-wrapper"><label class="field-label">التفاصيل</label><textarea id="web-site-desc" class="main-input" style="height:120px;"></textarea></div>
+                <button class="action-btn" onclick="orderWebsite()">إرسال الطلب</button>
+            </div>
+        </section>
+
+        <section id="pane-account" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">الملف الشخصي</div>
+                <div class="stat-row">
+                    <small>UID الشخصي</small>
+                    <span id="acc-uid" style="font-size:12px; color:var(--primary-neon); font-family:monospace !important;">...</span>
+                </div>
+                <button class="action-btn" style="background:#111; border:1px solid #ff003c; color:#ff003c; margin-top:30px;" onclick="logOut()">تسجيل خروج</button>
+            </div>
+        </section>
+
     </div>
 
     <script>
-        /**
-         * 1. FIREBASE ARCHITECTURE
-         * Configuration and global state management.
-         */
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
             projectId: "cd-card-87365",
             appId: "1:397926299412:web:efbe9ae9aae29df368f401"
         };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let currentUserData = null;
-        let masterServices = [];
-        let activeServiceID = null;
+        let uData = null;
+        let srvs = [];
+        let curSrv = null;
 
-        /**
-         * 2. SECURITY & AUTHENTICATION
-         * Real-time user session tracking.
-         */
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                db.collection("users").doc(user.uid).onSnapshot(doc => {
-                    currentUserData = doc.data();
-                    updateDashboardUI();
-                });
-                initializeData();
-                setTimeout(() => document.getElementById('splash-loader').style.display = 'none', 3000);
+        // AUTH CONTROL
+        auth.onAuthStateChanged(u => {
+            if (u) {
+                document.getElementById('acc-uid').innerText = u.uid;
+                syncSystem(u.uid);
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        /**
-         * 3. DATA SYNCHRONIZATION
-         * Fetches services and sets up listeners.
-         */
-        async function initializeData() {
-            try {
-                const servicesSnap = await db.collection("services").get();
-                masterServices = servicesSnap.docs.map(d => ({id: d.id, ...d.data()}));
-                
-                const categories = [...new Set(masterServices.map(s => s.category))];
-                const catMenu = document.getElementById('menu-cat');
-                catMenu.innerHTML = categories.map(c => `
-                    <div class="option-item" onclick="selectCategory('${c}')">${c}</div>
-                `).join('');
+        async function syncSystem(uid) {
+            // Realtime Profile
+            db.collection("users").doc(uid).onSnapshot(doc => {
+                if (doc.exists) {
+                    uData = doc.data();
+                    document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
+                    document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
+                    document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
+                    document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
+                    document.getElementById('loader-screen').style.display = 'none';
+                }
+            });
 
-                db.collection("orders").where("userId", "==", auth.currentUser.uid).orderBy("createdAt", "desc").onSnapshot(snap => {
-                    const list = document.getElementById('table-body-orders');
-                    list.innerHTML = "";
-                    document.getElementById('val-orders').innerText = snap.size;
-                    snap.forEach(doc => {
-                        const o = doc.data();
-                        list.innerHTML += `
-                            <tr>
-                                <td style="font-weight:900; font-size:13px;">${o.serviceName}</td>
-                                <td class="num-font" style="color:var(--primary)">${o.price.toFixed(2)}</td>
-                                <td class="num-font">${o.quantity}</td>
-                                <td style="font-size:11px; color:var(--neon-yellow)">${o.status}</td>
-                            </tr>
-                        `;
-                    });
-                });
-            } catch (err) {
-                console.error("Critical Sync Error:", err);
-            }
+            // Load Services & History
+            fetchServices();
+            monitorOrders(uid);
         }
 
-        /**
-         * 4. UI INTERACTION LOGIC
-         * Handles menus and navigation tabs.
-         */
-        function openMenu(menuId) {
-            const menu = document.getElementById(menuId);
-            const trigger = menu.previousElementSibling;
-            const isOpen = menu.classList.contains('show');
-            document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
-            document.querySelectorAll('.select-trigger').forEach(t => t.classList.remove('active'));
-            if(!isOpen) {
-                menu.classList.add('show');
-                trigger.classList.add('active');
-            }
+        async function fetchServices() {
+            const snap = await db.collection("services").get();
+            srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const cats = [...new Set(srvs.map(s => s.category))].sort();
+            document.getElementById('drop-cats').innerHTML = cats.map(c => `<div class="drop-item" onclick="selectCat('${c}')">${c}</div>`).join('');
         }
 
-        function selectCategory(catName) {
-            document.getElementById('label-cat').innerText = catName;
-            document.getElementById('menu-cat').classList.remove('show');
-            document.getElementById('trig-cat').classList.remove('active');
-            
-            const filteredServices = masterServices.filter(s => s.category === catName);
-            const serMenu = document.getElementById('menu-ser');
-            serMenu.innerHTML = filteredServices.map(s => `
-                <div class="option-item" onclick="selectService('${s.id}')">${s.name}</div>
-            `).join('');
-            
-            document.getElementById('label-ser').innerText = "اختر الخدمة الآن...";
-            activeServiceID = null;
-            resetDynamicFields();
+        function selectCat(c) {
+            document.getElementById('label-cat').innerText = c;
+            const filtered = srvs.filter(s => s.category === c);
+            document.getElementById('drop-srvs').innerHTML = filtered.map(s => `<div class="drop-item" onclick="selectSrv('${s.id}')">${s.name}</div>`).join('');
+            document.getElementById('label-srv').innerText = "اختر الخدمة الآن...";
+            toggleDrop('drop-cats');
         }
 
-        /**
-         * 5. DYNAMIC INPUT CONSTRAINTS (V2 - ENHANCED)
-         * Logical locking of inputs based on service type.
-         */
-        function selectService(id) {
-            activeServiceID = id;
-            const service = masterServices.find(s => s.id === id);
-            document.getElementById('label-ser').innerText = service.name;
-            document.getElementById('menu-ser').classList.remove('show');
-            document.getElementById('trig-ser').classList.remove('active');
-
-            const qtyInput = document.getElementById('target-qty');
-            const qtyBadge = document.getElementById('qty-limit-view');
-            const linkInput = document.getElementById('target-link');
-            const inputLabel = document.getElementById('input-label-text');
-
-            // --- منطق القفل الذكي للخدمات الفردية ---
-            if (service.priceType === "Per1" || service.category.includes("اشتراكات") || service.category.includes("حسابات")) {
-                qtyInput.value = 1;
-                qtyInput.disabled = true; // قفل الخانة تماماً
-                qtyBadge.innerText = "هذه الخدمة لقطعة واحدة فقط";
-                qtyBadge.style.color = "var(--neon-yellow)";
-            } else {
-                qtyInput.disabled = false; // فتح الخانة للخدمات الجماعية
-                const min = service.min || 300;
-                qtyInput.value = min;
-                qtyInput.min = min;
-                qtyBadge.innerText = `الحد الأدنى: ${min}`;
-                qtyBadge.style.color = "var(--primary)";
-            }
-
-            // --- تخصيص نوع الإدخال ---
-            if (service.inputType === "username") {
-                inputLabel.innerText = "اسم المستخدم (بدون @)";
-                linkInput.placeholder = "مثال: cd_card_libya";
-            } else if (service.inputType === "phone" || service.category.includes("رصيد")) {
-                inputLabel.innerText = "رقم الهاتف المستلم";
-                linkInput.placeholder = "09xxxxxxxx";
-            } else {
-                inputLabel.innerText = "رابط الحساب / المنشور";
-                linkInput.placeholder = "ضع الرابط الكامل هنا";
-            }
-
-            calculateEngine();
+        function selectSrv(id) {
+            curSrv = srvs.find(s => s.id === id);
+            document.getElementById('label-srv').innerText = curSrv.name;
+            
+            // تحديث مربع الوصف النيون الأصفر
+            const descBox = document.getElementById('srv-desc-box');
+            const descText = document.getElementById('srv-desc-text');
+            
+            descText.innerText = curSrv.description || "هذه الخدمة تتميز بالسرعة العالية والثبات التام، يتم التنفيذ فوراً بعد الطلب.";
+            descBox.classList.add('active');
+            
+            toggleDrop('drop-srvs');
+            recalc();
         }
 
-        function resetDynamicFields() {
-            const qtyInput = document.getElementById('target-qty');
-            qtyInput.disabled = false;
-            qtyInput.value = 1000;
-            document.getElementById('qty-limit-view').innerText = "الحد الأدنى: 300";
-            document.getElementById('total-price-view').innerText = "0.00";
+        function recalc() {
+            if(!curSrv) return;
+            const q = parseFloat(document.getElementById('field-qty').value) || 0;
+            let pr = curSrv.finalPrice;
+            if(uData.discount > 0) pr = pr - (pr * (uData.discount / 100));
+            let total = curSrv.category.includes("اشتراك") ? pr : (q/1000) * pr;
+            document.getElementById('val-total').innerText = total.toFixed(2);
         }
 
-        /**
-         * 6. PRICING ENGINE
-         * Real-time calculation based on quantity and rate.
-         */
-        function calculateEngine() {
-            const priceLabel = document.getElementById('total-price-view');
-            const hint = document.getElementById('price-type-hint');
-            
-            if(!activeServiceID) return;
+        async function submitOrder() {
+            const cost = parseFloat(document.getElementById('val-total').innerText);
+            const link = document.getElementById('field-link').value;
+            if(!curSrv || !link) return notify("⚠️ أكمل البيانات المطلوبة");
+            if(uData.balance < cost) return notify("❌ رصيدك غير كافٍ");
 
-            const service = masterServices.find(x => x.id === activeServiceID);
-            const quantity = parseInt(document.getElementById('target-qty').value) || 0;
-            
-            let finalCost = 0;
-            if(service.priceType === "Per1" || service.category.includes("اشتراكات")) {
-                finalCost = quantity * service.finalPrice;
-                hint.innerText = "نظام الحساب: للقطعة الواحدة";
-            } else {
-                finalCost = (quantity / 1000) * service.finalPrice;
-                hint.innerText = "نظام الحساب: لكل 1000 وحدة";
-            }
-            priceLabel.innerText = finalCost.toFixed(2);
-        }
-
-        /**
-         * 7. ORDER EXECUTION
-         * Validates and submits transactions to Firebase.
-         */
-        async function executeOrder() {
-            const cost = parseFloat(document.getElementById('total-price-view').innerText);
-            const link = document.getElementById('target-link').value;
-            const qty = parseInt(document.getElementById('target-qty').value);
-            const btn = document.getElementById('btn-submit');
-
-            if(!activeServiceID || !link || !qty) return alert("يرجى إكمال كافة البيانات");
-            
-            const service = masterServices.find(s => s.id === activeServiceID);
-            
-            if(currentUserData.balance < cost) return alert("رصيدك غير كافٍ، يرجى شحن المحفظة");
-
+            const btn = document.getElementById('btn-order');
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa fa-circle-notch fa-spin"></i> جارِ الإرسال...`;
-
             try {
                 const batch = db.batch();
-                const orderRef = db.collection("orders").doc();
-                
-                batch.set(orderRef, {
-                    userId: auth.currentUser.uid,
-                    serviceName: service.name,
-                    price: cost,
-                    target: link,
-                    quantity: qty,
-                    status: "قيد التنفيذ",
+                batch.set(db.collection("orders").doc(), {
+                    userId: auth.currentUser.uid, serviceName: curSrv.name, price: cost, target: link,
+                    quantity: document.getElementById('field-qty').value, status: "قيد المراجعة",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
                 batch.update(db.collection("users").doc(auth.currentUser.uid), {
                     balance: firebase.firestore.FieldValue.increment(-cost),
-                    spent: firebase.firestore.FieldValue.increment(cost)
+                    totalSpent: firebase.firestore.FieldValue.increment(cost)
                 });
-
                 await batch.commit();
-                alert("تم استلام طلبك بنجاح!");
-                openTab('orders');
-            } catch (err) {
-                alert("خطأ في الاتصال بالخادم");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa fa-rocket"></i> تأكيد عملية الشراء`;
-            }
+                notify("✅ تم إرسال الطلب بنجاح");
+                showPane('orders');
+            } catch(e) { notify("🔴 فشل الاتصال"); } finally { btn.disabled = false; }
         }
 
-        /**
-         * 8. SYSTEM UTILITIES
-         */
-        function updateDashboardUI() {
-            if(!currentUserData) return;
-            document.getElementById('val-balance').innerText = currentUserData.balance.toFixed(2);
-            document.getElementById('val-spent').innerText = (currentUserData.spent || 0).toFixed(2);
-            document.getElementById('val-comm').innerText = (currentUserData.commission || 0).toFixed(2);
-            document.getElementById('profile-name').innerText = currentUserData.username;
-            document.getElementById('api-key-display').innerText = currentUserData.apiKey || "لا يوجد مفتاح نشط";
-        }
-
-        function toggleNav(state) {
-            document.getElementById('nav-panel').classList.toggle('open', state);
-            document.getElementById('mask-overlay').classList.toggle('active', state);
-        }
-
-        function openTab(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('sec-' + id).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('tab-' + id).classList.add('active');
-            toggleNav(false);
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        async function refreshAPIKey() {
-            const newKey = "CD_AUTH_" + Math.random().toString(36).substring(2, 12).toUpperCase() + Date.now();
-            await db.collection("users").doc(auth.currentUser.uid).update({apiKey: newKey});
-            alert("تم تحديث مفتاح API بنجاح");
-        }
-
-        async function sendWalletRequest() {
-            const phone = document.getElementById('wallet-phone').value;
-            const amount = document.getElementById('wallet-amount').value;
-            if(!phone || !amount) return alert("بيانات الشحن ناقصة");
-            await db.collection("payment_requests").add({
-                userId: auth.currentUser.uid,
-                phone: phone,
-                amount: parseFloat(amount),
-                status: "قيد المراجعة",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        function monitorOrders(uid) {
+            db.collection("orders").where("userId", "==", uid).orderBy("createdAt", "desc").limit(10).onSnapshot(s => {
+                const cont = document.getElementById('list-orders-cont');
+                if(s.empty) { cont.innerHTML = "<small>لا توجد طلبات</small>"; return; }
+                cont.innerHTML = "";
+                s.forEach(doc => {
+                    const o = doc.data();
+                    cont.innerHTML += `
+                        <div class="stat-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                            <div style="width:100%; display:flex; justify-content:space-between;">
+                                <div style="font-weight:900; font-size:13px;">${o.serviceName}</div>
+                                <div style="color:var(--primary-neon); font-weight:800; font-size:12px;">${o.status}</div>
+                            </div>
+                            <small style="text-transform:none;">${o.target}</small>
+                        </div>
+                    `;
+                });
             });
-            alert("تم إرسال الطلب للإدارة");
         }
 
-        function doLogout() { auth.signOut().then(() => location.reload()); }
+        // NAVIGATION LOGIC
+        function showPane(id) {
+            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('pane-'+id).classList.add('active');
+            document.getElementById('nav-'+id).classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo(0,0);
+        }
 
-        window.onclick = (e) => {
-            if (!e.target.closest('.custom-select')) {
-                document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
-                document.querySelectorAll('.select-trigger').forEach(t => t.classList.remove('active'));
-            }
-        };
+        function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
+        function toggleDrop(id) { document.getElementById(id).classList.toggle('show'); }
+        function notify(m) { const t = document.getElementById('main-toast'); t.innerText = m; t.classList.add('active'); setTimeout(()=>t.classList.remove('active'),3500); }
+        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم نسخ: " + t); }
+        function logOut() { if(confirm("خروج؟")) auth.signOut().then(()=>location.reload()); }
+        
+        // Prevent Inspect
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
-
