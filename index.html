@@ -393,6 +393,48 @@
             </div>
         </section>
 
+        <section id="pane-account" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:22px;">
+                    <i class="fa-solid fa-id-card"></i> معلومات الحساب
+                </div>
+                
+                <div class="stats-vertical-list">
+                    <div class="stat-row">
+                        <span class="stat-lbl">اسم المستخدم</span>
+                        <div class="stat-num neon" id="acc-username">...</div>
+                    </div>
+
+                    <div class="stat-row" style="cursor: pointer;" onclick="copyToClipboard(uData.uid)">
+                        <span class="stat-lbl">المعرف الرقمي (ID)</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                             <div class="stat-num" id="acc-uid" style="font-size: 14px; color: #aaa;">...</div>
+                             <i class="fa-solid fa-copy" style="color: var(--primary-neon); font-size: 14px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-lbl">مفتاح الـ API</span>
+                        <div class="stat-num neon" id="acc-email" style="font-size: 14px;">...</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-lbl">تاريخ الانضمام</span>
+                        <div class="stat-num" style="font-size: 16px;">2026/04/17</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(204, 255, 0, 0.05); border: 1px solid var(--neon-yellow); padding: 20px; border-radius: 20px; text-align: center;">
+                    <small>نصيحة أمنية</small>
+                    <p style="color: #ccc; font-size: 12px; margin-top: 5px;">لا تشارك معرف حسابك أو بيانات الدخول مع أي شخص لضمان أمان رصيدك.</p>
+                </div>
+
+                <button class="action-btn" style="margin-top: 30px; background: #ff3131; color: #fff; box-shadow: 0 12px 30px rgba(255, 49, 49, 0.3);" onclick="auth.signOut()">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                </button>
+            </div>
+        </section>
+
         <section id="pane-web" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;">
@@ -591,23 +633,33 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "" };
+        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "" };
         let srvs = [];
         let curSrv = null;
 
         auth.onAuthStateChanged(u => {
-            if (u) { syncSystem(u.uid); } 
+            if (u) { 
+                uData.email = u.email;
+                syncSystem(u.uid); 
+            } 
             else { window.location.href = "login.html"; }
         });
 
         async function syncSystem(uid) {
             db.collection("users").doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
-                    uData = { uid: uid, ...doc.data() };
+                    uData = { uid: uid, email: uData.email, ...doc.data() };
+                    
+                    // تحديث واجهة المتجر
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
                     document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
+                    
+                    // [UPDATE] تحديث واجهة الحساب
+                    document.getElementById('acc-username').innerText = uData.username || "غير معرف";
+                    document.getElementById('acc-uid').innerText = uid;
+                    document.getElementById('acc-email').innerText = uData.email || "API_OFFLINE";
                 }
             });
             fetchServices();
@@ -675,7 +727,6 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 notify("تم إرسال طلب البرمجة بنجاح! سنتواصل معك.");
-                // تفريغ الحقول
                 document.getElementById('web-name').value = "";
                 document.getElementById('web-site-name').value = "";
                 document.getElementById('web-pass').value = "";
@@ -705,10 +756,9 @@
         }
         function copyToClipboard(t) { 
             navigator.clipboard.writeText(t); 
-            notify("تم نسخ: " + t); 
+            notify("تم نسخ المعلومات بنجاح"); 
         }
         
-        // منع القائمة المنسدلة الافتراضية للحماية
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
