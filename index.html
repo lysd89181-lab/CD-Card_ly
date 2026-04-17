@@ -576,7 +576,16 @@
                     <div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div>
                     <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0920414760')"></i>
                 </div>
-                <div class="input-wrapper"><label class="field-label">المبلغ</label><input type="number" id="field-dep-amt" class="main-input"></div>
+                
+                <div class="input-wrapper">
+                    <label class="field-label">الرقم المحول منه</label>
+                    <input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx">
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">القيمة المحولة (د.ل)</label>
+                    <input type="number" id="field-dep-amt" class="main-input" placeholder="0.00">
+                </div>
+                
                 <button class="action-btn" onclick="requestDeposit()">تبليغ عن تحويل</button>
             </div>
         </section>
@@ -633,7 +642,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "" };
+        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "", username: "" };
         let srvs = [];
         let curSrv = null;
 
@@ -650,16 +659,16 @@
                 if (doc.exists) {
                     uData = { uid: uid, email: uData.email, ...doc.data() };
                     
-                    // تحديث واجهة المتجر
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
                     document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
                     
-                    // [UPDATE] تحديث واجهة الحساب
                     document.getElementById('acc-username').innerText = uData.username || "غير معرف";
                     document.getElementById('acc-uid').innerText = uid;
                     document.getElementById('acc-email').innerText = uData.email || "API_OFFLINE";
+                    
+                    if(curSrv) recalc(); // إعادة الحساب عند تغير نسبة الخصم
                 }
             });
             fetchServices();
@@ -697,12 +706,42 @@
             if(!curSrv) return;
             const q = parseFloat(document.getElementById('field-qty').value) || 0;
             let pr = curSrv.finalPrice;
+            // تفعيل نظام الخصم
             if(uData.discount > 0) pr = pr - (pr * (uData.discount / 100));
-            let total = (q/1000) * pr;
+            
+            let factor = curSrv.type == "1000" ? 1000 : 1;
+            let total = (q / factor) * pr;
+            
             document.getElementById('val-total').innerText = total.toFixed(2);
         }
 
-        // وظيفة طلب البرمجة
+        // إرسال طلب شحن
+        async function requestDeposit() {
+            const phone = document.getElementById('field-dep-phone').value;
+            const amt = parseFloat(document.getElementById('field-dep-amt').value);
+
+            if(!phone || !amt) {
+                notify("يرجى إدخال رقم الهاتف والمبلغ");
+                return;
+            }
+
+            try {
+                await db.collection("deposits").add({
+                    uid: uData.uid,
+                    username: uData.username || uData.email,
+                    amount: amt,
+                    senderPhone: phone,
+                    status: "قيد المراجعة",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                notify("تم إرسال طلب الشحن بنجاح! انتظر التأكيد.");
+                document.getElementById('field-dep-phone').value = "";
+                document.getElementById('field-dep-amt').value = "";
+            } catch(e) {
+                notify("حدث خطأ في الإرسال");
+            }
+        }
+
         async function submitWebProject() {
             const name = document.getElementById('web-name').value;
             const site = document.getElementById('web-site-name').value;
