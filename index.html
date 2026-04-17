@@ -18,11 +18,11 @@
 
     <style>
         /* ============================================================
-        [01] THEME ENGINE - DESIGN SYSTEM
+        [01] THEME ENGINE - نظام الألوان والهوية البصرية
         ============================================================ */
         :root {
             --primary-neon: #39ff14; 
-            --neon-yellow: #ccff00; /* اللون الأصفر النيون المطلوب */
+            --neon-yellow: #ccff00; 
             --primary-glow: rgba(57, 255, 20, 0.4);
             --yellow-glow: rgba(204, 255, 0, 0.5);
             --bg-black: #050505;
@@ -53,7 +53,7 @@
         }
 
         /* [CRITICAL] YELLOW NEON ALL SMALL TEXT */
-        small, .neon-small, .stat-lbl, .field-label, .q-label, .category-tag, span.small-txt {
+        small, .neon-small, .stat-lbl, .field-label, .q-label, .category-tag, span.small-txt, .timer-label {
             color: var(--neon-yellow) !important;
             font-weight: 800 !important;
             font-size: 11px !important;
@@ -62,17 +62,60 @@
             text-shadow: 0 0 8px var(--yellow-glow);
         }
 
-        /* Number Font Optimization */
+        /* تحسين مظهر الأرقام */
         .stat-num, .price-val, .val-total, .number-font, input, .stat-row span:last-child {
             font-family: Arial, Helvetica, sans-serif !important; 
             letter-spacing: 0;
         }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes borderPulse { 0% { border-color: #1a1a1a; } 50% { border-color: var(--neon-yellow); } 100% { border-color: #1a1a1a; } }
 
         /* ============================================================
-        [02] LAYOUT COMPONENTS
+        [02] FAST LOADER & AD NOTICE
+        ============================================================ */
+        #loader-screen {
+            position: fixed; inset: 0; background: #000; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.5s opacity ease;
+        }
+        .loader-logo {
+            color: var(--primary-neon); font-size: 38px; font-weight: 900; 
+            margin-bottom: 20px; text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .loader-progress-container {
+            width: 120px; height: 4px; background: #111; border-radius: 10px; overflow: hidden;
+        }
+        .loader-progress-fill {
+            width: 0%; height: 100%; background: var(--primary-neon); 
+            box-shadow: 0 0 15px var(--primary-neon);
+        }
+
+        #ad-notice-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px); z-index: 99999;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; visibility: hidden; transition: 0.6s ease;
+        }
+        #ad-notice-overlay.active { opacity: 1; visibility: visible; }
+        
+        .ad-notice-card {
+            background: var(--bg-card); border: 2px solid var(--neon-yellow);
+            border-radius: 35px; padding: 40px; width: 100%; max-width: 450px;
+            text-align: center; box-shadow: 0 0 40px rgba(204, 255, 0, 0.15);
+            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #ad-notice-overlay.active .ad-notice-card { transform: scale(1); }
+
+        .ad-timer-display { margin-top: 20px; margin-bottom: 20px; }
+        .skip-btn {
+            background: transparent; border: 1px solid var(--neon-yellow);
+            color: var(--neon-yellow); padding: 12px 35px; border-radius: 50px;
+            font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s;
+        }
+        .skip-btn:hover { background: var(--neon-yellow); color: #000; }
+
+        /* ============================================================
+        [03] LAYOUT & NAVIGATION
         ============================================================ */
         .app-container { padding: 20px 15px 140px; max-width: 600px; margin: 0 auto; }
 
@@ -88,9 +131,6 @@
             border: 1px solid var(--primary-neon); box-shadow: 0 0 15px var(--primary-glow);
         }
 
-        /* ============================================================
-        [03] NAVIGATION SYSTEM
-        ============================================================ */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9998; display: none; backdrop-filter: blur(12px); }
         .main-sidebar {
             position: fixed; top: 0; right: -100%; width: 310px; height: 100vh;
@@ -109,7 +149,7 @@
         .nav-link i { font-size: 20px; width: 30px; text-align: center; }
 
         /* ============================================================
-        [04] STATS & CARDS
+        [04] STATS & CARDS SYSTEM
         ============================================================ */
         .stats-vertical-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
         .stat-row {
@@ -126,16 +166,13 @@
             position: relative; animation: fadeInUp 0.5s ease;
         }
 
-        /* ============================================================
-        [05] DYNAMIC DESCRIPTION BOX (YELLOW NEON)
-        ============================================================ */
         .desc-box {
             background: rgba(204, 255, 0, 0.03);
             border: 1px solid var(--neon-yellow);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 25px;
-            display: none; /* يظهر برمجياً */
+            display: none; 
             animation: fadeInUp 0.4s ease;
             box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
         }
@@ -144,7 +181,7 @@
         .desc-text { color: #ddd; font-size: 13px; line-height: 1.6; }
 
         /* ============================================================
-        [06] FORM INPUTS
+        [05] INPUTS & DROPDOWNS
         ============================================================ */
         .input-wrapper { position: relative; margin-bottom: 24px; }
         
@@ -178,13 +215,15 @@
         }
 
         /* ============================================================
-        [07] SUPPORT & CHANNELS
+        [06] QURAN BOX & SUPPORT & CHANNELS
         ============================================================ */
         .channel-card {
             background: #0a0a0a; border: 1px solid var(--border-color); padding: 22px;
             border-radius: 24px; margin-bottom: 15px; display: flex;
             justify-content: space-between; align-items: center; text-decoration: none;
+            transition: 0.3s;
         }
+        .channel-card:active { transform: scale(0.98); background: #111; }
         .channel-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
         .quran-box-container {
@@ -197,10 +236,6 @@
         .pane { display: none; }
         .pane.active { display: block; animation: fadeInUp 0.7s ease; }
 
-        #loader-screen {
-            position: fixed; inset: 0; background: #000; z-index: 100000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
         .toast {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: #111; border: 1px solid var(--primary-neon); color: #fff;
@@ -212,9 +247,27 @@
 <body>
 
     <div id="loader-screen">
-        <div style="color:var(--primary-neon); font-size:38px; font-weight:900; margin-bottom:20px;">CD-CARD</div>
-        <div style="width: 80px; height: 4px; background: var(--primary-neon); border-radius: 10px;"></div>
-        <div style="margin-top:20px;"><small>ENTERPRISE v8.5 CUSTOM</small></div>
+        <div class="loader-logo">CD-CARD</div>
+        <div class="loader-progress-container">
+            <div class="loader-progress-fill" id="loader-bar"></div>
+        </div>
+        <div style="margin-top:20px;"><small>PREMIUM DIGITAL SERVICES</small></div>
+    </div>
+
+    <div id="ad-notice-overlay">
+        <div class="ad-notice-card">
+            <div style="background:rgba(204,255,0,0.1); width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                <i class="fa-solid fa-bell" style="font-size:30px; color:var(--neon-yellow);"></i>
+            </div>
+            <h2 style="font-weight:900; margin-bottom:15px; color:#fff;">تحديث الخدمات الجديد</h2>
+            <p style="color:#888; font-size:14px; line-height:1.7;">أهلاً بك في CD-CARD. تم تحديث كافة أسعار المتابعين والعملات الرقمية للألعاب. استمتع بأفضل الأسعار في ليبيا.</p>
+            
+            <div class="ad-timer-display">
+                <div id="ad-countdown-lbl"><small>سيختفي الإعلان بعد 10 ثوانٍ</small></div>
+            </div>
+            
+            <button class="skip-btn" onclick="closeAdNotice()">تخطي الإشعار</button>
+        </div>
     </div>
 
     <div class="toast" id="main-toast"></div>
@@ -262,7 +315,6 @@
     <div class="app-container">
 
         <section id="pane-store" class="pane active">
-            
             <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:30px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <small>أهلاً بك مجدداً</small>
@@ -341,6 +393,102 @@
             </div>
         </section>
 
+        <section id="pane-web" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;">
+                    <i class="fa-solid fa-code"></i> طلب إنشاء موقع
+                </div>
+                
+                <div style="background:rgba(57,255,20,0.05); border:1px dashed var(--primary-neon); padding:20px; border-radius:20px; margin-bottom:25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:800; color:#fff;">سعر إنشاء الموقع:</span>
+                        <span style="color:var(--primary-neon); font-weight:900; font-size:20px;">70 د.ل</span>
+                    </div>
+                    <div style="margin-top:10px; border-top:1px solid #222; pt-10px;">
+                        <small>ملاحظة هامة:</small>
+                        <div style="color:#ddd; font-size:13px; margin-top:5px;">تجديد الاشتراك الشهري للموقع بقيمة <b>30 د.ل</b> فقط.</div>
+                    </div>
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="field-label">الاسم الكامل</label>
+                    <input type="text" class="main-input" id="web-name" placeholder="أدخل اسمك بالكامل">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="field-label">اسم الموقع المطلوب</label>
+                    <input type="text" class="main-input" id="web-site-name" placeholder="مثال: متجر الهيبة">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="field-label">كلمة السر الخاصة بالموقع</label>
+                    <input type="password" class="main-input" id="web-pass" placeholder="اختر كلمة سر قوية">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="field-label">تفاصيل إضافية عن الموقع</label>
+                    <textarea class="main-input" id="web-details" rows="4" style="resize:none;" placeholder="اكتب هنا نوع الموقع، الألوان المفضلة، الأقسام..."></textarea>
+                </div>
+
+                <button class="action-btn" onclick="submitWebProject()">
+                    <i class="fa-solid fa-paper-plane"></i> إرسال الطلب للمراجعة
+                </button>
+            </div>
+        </section>
+
+        <section id="pane-channels" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">قنواتنا الرسمية</div>
+                <small>تابع آخر الأخبار والعروض والمسابقات</small>
+                
+                <div style="margin-top:25px; display:grid; gap:15px;">
+                    <a href="https://www.tiktok.com/@cd_card?_r=1&_t=ZS-95bojZDIv4O" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">تيك توك</div>
+                                <small>CD_CARD الرسمي</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+
+                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">فيسبوك</div>
+                                <small>تابع الصفحة الرسمية</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+
+                    <a href="https://www.instagram.com/cd.ly.104?igsh=MXZyZXU0ODBvMG1jYw==" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(225,48,108,0.1); color:#e1306c;"><i class="fa-brands fa-instagram"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">انستقرام</div>
+                                <small>cd.ly.104</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+
+                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">قناة الواتساب</div>
+                                <small>اشترك لتصلك العروض</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <section id="pane-support" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">الدعم المباشر</div>
@@ -372,57 +520,6 @@
             </div>
         </section>
 
-        <section id="pane-channels" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">قنواتنا الرسمية</div>
-                <small>تابع آخر الأخبار والعروض</small>
-
-                <div style="margin-top:25px; display:grid; gap:15px;">
-                    
-                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">فيسبوك</div>
-                                <small>تابع الصفحة الرسمية</small>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">قناة الواتساب</div>
-                                <small>اشترك لتصلك العروض</small>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://www.instagram.com/cd.ly.104?igsh=MXZyZXU0ODBvMG1jYw==" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(225,48,108,0.1); color:#e1306c;"><i class="fa-brands fa-instagram"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">انستقرام</div>
-                                <small>@cd.ly.104</small>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://www.tiktok.com/@cd_card?_r=1&_t=ZS-95bojZDIv4O" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">تيك توك</div>
-                                <small>@cd_card</small>
-                            </div>
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-        </section>
-
         <section id="pane-wallet" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
@@ -438,96 +535,91 @@
                     <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0920414760')"></i>
                 </div>
                 <div class="input-wrapper"><label class="field-label">المبلغ</label><input type="number" id="field-dep-amt" class="main-input"></div>
-                <div class="input-wrapper"><label class="field-label">رقم الهاتف المرسل</label><input type="number" id="field-dep-ph" class="main-input"></div>
                 <button class="action-btn" onclick="requestDeposit()">تبليغ عن تحويل</button>
-            </div>
-        </section>
-
-        <section id="pane-orders" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">تتبع طلباتك</div>
-                <div id="list-orders-cont" style="display:grid; gap:12px;">
-                    <div style="text-align:center; padding:50px; color:#222;"><small>جاري المزامنة...</small></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="pane-web" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px;">برمجة المواقع</div>
-                <div style="background:#000; border:1px solid var(--primary-neon); padding:30px; border-radius:30px; text-align:center; margin-bottom:25px;">
-                    <small>عرض المتاجر الحصري</small>
-                    <div style="font-size:38px; font-weight:900; margin:10px 0; color:#fff;">70 <small>دينار</small></div>
-                    <small>تأسيس كامل + استضافة 30د/شهرياً</small>
-                </div>
-                <div class="input-wrapper"><label class="field-label">اسم الموقع</label><input type="text" id="web-site-name" class="main-input"></div>
-                <div class="input-wrapper"><label class="field-label">التفاصيل</label><textarea id="web-site-desc" class="main-input" style="height:120px;"></textarea></div>
-                <button class="action-btn" onclick="orderWebsite()">إرسال الطلب</button>
-            </div>
-        </section>
-
-        <section id="pane-account" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">الملف الشخصي</div>
-                <div class="stat-row">
-                    <small>UID الشخصي</small>
-                    <span id="acc-uid" style="font-size:12px; color:var(--primary-neon); font-family:monospace !important;">...</span>
-                </div>
-                <button class="action-btn" style="background:#111; border:1px solid #ff003c; color:#ff003c; margin-top:30px;" onclick="logOut()">تسجيل خروج</button>
             </div>
         </section>
 
     </div>
 
     <script>
+        // 1. نظام التحميل السريع (2 ثانية)
+        let loaderProgress = 0;
+        const loaderBar = document.getElementById('loader-bar');
+        const loaderScreen = document.getElementById('loader-screen');
+
+        const loaderInterval = setInterval(() => {
+            loaderProgress += 5;
+            loaderBar.style.width = loaderProgress + '%';
+            if (loaderProgress >= 100) {
+                clearInterval(loaderInterval);
+                setTimeout(() => {
+                    loaderScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loaderScreen.style.display = 'none';
+                        initAdProcess(); 
+                    }, 500);
+                }, 100);
+            }
+        }, 100);
+
+        // 2. نظام إشعار الإعلان (10 ثواني)
+        let adSeconds = 10;
+        let adTimer;
+        function initAdProcess() {
+            const overlay = document.getElementById('ad-notice-overlay');
+            const label = document.getElementById('ad-countdown-lbl');
+            overlay.classList.add('active');
+            adTimer = setInterval(() => {
+                adSeconds--;
+                label.innerHTML = `<small>سيختفي الإشعار بعد ${adSeconds} ثوانٍ</small>`;
+                if (adSeconds <= 0) { closeAdNotice(); }
+            }, 1000);
+        }
+        function closeAdNotice() {
+            clearInterval(adTimer);
+            document.getElementById('ad-notice-overlay').classList.remove('active');
+        }
+
+        // 3. إعدادات FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
             projectId: "cd-card-87365",
             appId: "1:397926299412:web:efbe9ae9aae29df368f401"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let uData = null;
+        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "" };
         let srvs = [];
         let curSrv = null;
 
-        // AUTH CONTROL
         auth.onAuthStateChanged(u => {
-            if (u) {
-                document.getElementById('acc-uid').innerText = u.uid;
-                syncSystem(u.uid);
-            } else {
-                window.location.href = "login.html";
-            }
+            if (u) { syncSystem(u.uid); } 
+            else { window.location.href = "login.html"; }
         });
 
         async function syncSystem(uid) {
-            // Realtime Profile
             db.collection("users").doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
-                    uData = doc.data();
+                    uData = { uid: uid, ...doc.data() };
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
                     document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
-                    document.getElementById('loader-screen').style.display = 'none';
                 }
             });
-
-            // Load Services & History
             fetchServices();
-            monitorOrders(uid);
         }
 
         async function fetchServices() {
-            const snap = await db.collection("services").get();
-            srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            const cats = [...new Set(srvs.map(s => s.category))].sort();
-            document.getElementById('drop-cats').innerHTML = cats.map(c => `<div class="drop-item" onclick="selectCat('${c}')">${c}</div>`).join('');
+            try {
+                const snap = await db.collection("services").get();
+                srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const cats = [...new Set(srvs.map(s => s.category))].sort();
+                document.getElementById('drop-cats').innerHTML = cats.map(c => `<div class="drop-item" onclick="selectCat('${c}')">${c}</div>`).join('');
+            } catch(e) { console.error(e); }
         }
 
         function selectCat(c) {
@@ -541,14 +633,10 @@
         function selectSrv(id) {
             curSrv = srvs.find(s => s.id === id);
             document.getElementById('label-srv').innerText = curSrv.name;
-            
-            // تحديث مربع الوصف النيون الأصفر
             const descBox = document.getElementById('srv-desc-box');
             const descText = document.getElementById('srv-desc-text');
-            
-            descText.innerText = curSrv.description || "هذه الخدمة تتميز بالسرعة العالية والثبات التام، يتم التنفيذ فوراً بعد الطلب.";
+            descText.innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية.";
             descBox.classList.add('active');
-            
             toggleDrop('drop-srvs');
             recalc();
         }
@@ -558,72 +646,69 @@
             const q = parseFloat(document.getElementById('field-qty').value) || 0;
             let pr = curSrv.finalPrice;
             if(uData.discount > 0) pr = pr - (pr * (uData.discount / 100));
-            let total = curSrv.category.includes("اشتراك") ? pr : (q/1000) * pr;
+            let total = (q/1000) * pr;
             document.getElementById('val-total').innerText = total.toFixed(2);
         }
 
-        async function submitOrder() {
-            const cost = parseFloat(document.getElementById('val-total').innerText);
-            const link = document.getElementById('field-link').value;
-            if(!curSrv || !link) return notify("⚠️ أكمل البيانات المطلوبة");
-            if(uData.balance < cost) return notify("❌ رصيدك غير كافٍ");
+        // وظيفة طلب البرمجة
+        async function submitWebProject() {
+            const name = document.getElementById('web-name').value;
+            const site = document.getElementById('web-site-name').value;
+            const pass = document.getElementById('web-pass').value;
+            const info = document.getElementById('web-details').value;
 
-            const btn = document.getElementById('btn-order');
-            btn.disabled = true;
+            if(!name || !site || !pass) {
+                notify("يرجى ملء البيانات الأساسية للطلب");
+                return;
+            }
+
             try {
-                const batch = db.batch();
-                batch.set(db.collection("orders").doc(), {
-                    userId: auth.currentUser.uid, serviceName: curSrv.name, price: cost, target: link,
-                    quantity: document.getElementById('field-qty').value, status: "قيد المراجعة",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                await db.collection("web_orders").add({
+                    userId: uData.uid,
+                    userName: name,
+                    websiteName: site,
+                    password: pass,
+                    details: info,
+                    status: "pending",
+                    price: 70,
+                    renewal: 30,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                batch.update(db.collection("users").doc(auth.currentUser.uid), {
-                    balance: firebase.firestore.FieldValue.increment(-cost),
-                    totalSpent: firebase.firestore.FieldValue.increment(cost)
-                });
-                await batch.commit();
-                notify("✅ تم إرسال الطلب بنجاح");
-                showPane('orders');
-            } catch(e) { notify("🔴 فشل الاتصال"); } finally { btn.disabled = false; }
+                notify("تم إرسال طلب البرمجة بنجاح! سنتواصل معك.");
+                // تفريغ الحقول
+                document.getElementById('web-name').value = "";
+                document.getElementById('web-site-name').value = "";
+                document.getElementById('web-pass').value = "";
+                document.getElementById('web-details').value = "";
+            } catch(e) {
+                notify("حدث خطأ أثناء الإرسال، حاول لاحقاً.");
+            }
         }
 
-        function monitorOrders(uid) {
-            db.collection("orders").where("userId", "==", uid).orderBy("createdAt", "desc").limit(10).onSnapshot(s => {
-                const cont = document.getElementById('list-orders-cont');
-                if(s.empty) { cont.innerHTML = "<small>لا توجد طلبات</small>"; return; }
-                cont.innerHTML = "";
-                s.forEach(doc => {
-                    const o = doc.data();
-                    cont.innerHTML += `
-                        <div class="stat-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                            <div style="width:100%; display:flex; justify-content:space-between;">
-                                <div style="font-weight:900; font-size:13px;">${o.serviceName}</div>
-                                <div style="color:var(--primary-neon); font-weight:800; font-size:12px;">${o.status}</div>
-                            </div>
-                            <small style="text-transform:none;">${o.target}</small>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // NAVIGATION LOGIC
         function showPane(id) {
             document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById('pane-'+id).classList.add('active');
-            document.getElementById('nav-'+id).classList.add('active');
+            const navLink = document.getElementById('nav-'+id);
+            if(navLink) navLink.classList.add('active');
             toggleSidebar(false);
             window.scrollTo(0,0);
         }
 
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
         function toggleDrop(id) { document.getElementById(id).classList.toggle('show'); }
-        function notify(m) { const t = document.getElementById('main-toast'); t.innerText = m; t.classList.add('active'); setTimeout(()=>t.classList.remove('active'),3500); }
-        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم نسخ: " + t); }
-        function logOut() { if(confirm("خروج؟")) auth.signOut().then(()=>location.reload()); }
+        function notify(m) { 
+            const t = document.getElementById('main-toast'); 
+            t.innerText = m; 
+            t.classList.add('active'); 
+            setTimeout(()=>t.classList.remove('active'), 3500); 
+        }
+        function copyToClipboard(t) { 
+            navigator.clipboard.writeText(t); 
+            notify("تم نسخ: " + t); 
+        }
         
-        // Prevent Inspect
+        // منع القائمة المنسدلة الافتراضية للحماية
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
