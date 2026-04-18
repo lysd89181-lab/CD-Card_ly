@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD PRO | النظام الإداري المتكامل</title>
+    <title>CD-CARD PRO | الإدارة الاحترافية</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -15,66 +15,62 @@
     <style>
         :root {
             --p: #39ff14; --bg: #000; --card: #0d0d0d; --border: #1a1a1a;
-            --text: #fff; --muted: #888; --danger: #ff003c;
+            --text: #fff; --muted: #888; --danger: #ff003c; --warning: #ffcc00; --discount: #ccff00;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
 
-        /* Navigation Tabs */
+        /* Navigation */
         .tabs-nav { 
             position: sticky; top: 0; background: rgba(0,0,0,0.9); 
             display: flex; justify-content: space-around; padding: 15px; 
             border-bottom: 1px solid var(--border); z-index: 1000; backdrop-filter: blur(10px);
         }
-        .tab-btn { color: var(--muted); cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        .tab-btn { color: var(--muted); cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 13px; }
         .tab-btn.active { color: var(--p); border-bottom: 2px solid var(--p); padding-bottom: 5px; }
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .tab-content { display: none; animation: fadeIn 0.2s ease; }
         .tab-content.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Category & Services UI */
-        .category-group { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
-        .category-header { 
-            background: #151515; padding: 18px; cursor: pointer; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        /* UI Elements */
+        .category-group { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
+        .category-header { background: #151515; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .services-list { display: none; background: #080808; padding: 5px; border-top: 1px solid var(--border); }
         .services-list.active { display: block; }
 
-        .service-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px; border-bottom: 1px solid #111; 
-        }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #111; }
 
-        /* Buttons & Badges */
-        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
+        .btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; font-size: 11px; }
         .btn-p { background: var(--p); color: #000; }
         .btn-edit { background: rgba(57, 255, 20, 0.1); color: var(--p); border: 1px solid var(--p); }
         .btn-danger { background: rgba(255, 0, 60, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-discount { background: rgba(204, 255, 0, 0.1); color: #ccff00; border: 1px solid #ccff00; }
+        .btn-warning { background: rgba(255, 204, 0, 0.1); color: var(--warning); border: 1px solid var(--warning); }
 
-        /* Form Elements */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 500px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
-        .input { width: 100%; background: #000; border: 1px solid #222; padding: 12px; border-radius: 10px; color: #fff; margin-top: 10px; font-size: 14px; }
-        textarea.input { height: 100px; resize: none; }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-wrap { overflow-x: auto; background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { text-align: right; color: var(--p); padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; }
         td { padding: 12px; border-bottom: 1px solid #111; font-size: 13px; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .status-pending { background: #444; color: #fff; }
+        .status-processing { background: var(--warning); color: #000; }
+        .status-completed { background: var(--p); color: #000; }
+        .status-cancelled { background: var(--danger); color: #fff; }
 
-        .small-id { font-size: 10px; color: var(--muted); display: block; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid var(--border); }
+        .input { width: 100%; background: #000; border: 1px solid #222; padding: 12px; border-radius: 8px; color: #fff; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <nav class="tabs-nav">
         <div class="tab-btn active" onclick="switchTab('services', this)"><i class="fa fa-boxes"></i> الخدمات</div>
+        <div class="tab-btn" onclick="switchTab('orders', this)"><i class="fa fa-shopping-cart"></i> الطلبات</div>
         <div class="tab-btn" onclick="switchTab('finance', this)"><i class="fa fa-wallet"></i> الشحن</div>
         <div class="tab-btn" onclick="switchTab('users', this)"><i class="fa fa-users"></i> المستخدمين</div>
     </nav>
@@ -82,22 +78,42 @@
     <div class="container">
         
         <section id="tab-services" class="tab-content active">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-                <h3>إدارة الخدمات</h3>
-                <button class="btn btn-p" onclick="openSrvModal()">+ إضافة خدمة</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items: center;">
+                <h3>الأقسام والخدمات</h3>
+                <div style="display:flex; gap:10px">
+                    <button class="btn btn-warning" onclick="bulkPriceUpdate()">تعديل جماعي لأسعار قسم</button>
+                    <button class="btn btn-p" onclick="openSrvModal()">+ إضافة خدمة</button>
+                </div>
             </div>
             <div id="categories-container"></div>
         </section>
 
+        <section id="tab-orders" class="tab-content">
+            <h3>إدارة الطلبات</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الخدمة</th>
+                            <th>المستخدم</th>
+                            <th>الحالة</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list"></tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="tab-finance" class="tab-content">
-            <h3>طلبات الشحن المعلقة</h3>
-            <div class="category-group" style="padding:15px; overflow-x: auto;">
+            <h3>طلبات الشحن</h3>
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
                             <th>المستخدم</th>
-                            <th>القيمة</th>
-                            <th>الرقم المحول</th>
+                            <th>المبلغ</th>
+                            <th>رقم المحول</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
@@ -107,15 +123,15 @@
         </section>
 
         <section id="tab-users" class="tab-content">
-            <h3>قاعدة بيانات المستخدمين</h3>
-            <div class="category-group" style="padding:15px; overflow-x: auto;">
+            <h3>قاعدة بيانات المستخدمين (من الأحدث للأقدم)</h3>
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
                             <th>الاسم / ID</th>
                             <th>الرصيد</th>
-                            <th>الخصم الحالي</th>
-                            <th>إجراء</th>
+                            <th>الخصم %</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="users-list"></tbody>
@@ -129,34 +145,14 @@
         <div class="modal-content">
             <h3 id="modal-title" style="color:var(--p)">إدارة الخدمة</h3>
             <input type="hidden" id="srv-id">
-            
-            <label style="font-size:12px; color:var(--muted)">اسم الخدمة</label>
-            <input type="text" id="srv-name" class="input">
-            
-            <label style="font-size:12px; color:var(--muted); margin-top:10px; display:block">القسم / التصنيف</label>
-            <input type="text" id="srv-cat" class="input">
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                <div>
-                    <label style="font-size:12px; color:var(--muted); margin-top:10px; display:block">نوع السعر</label>
-                    <select id="srv-type" class="input">
-                        <option value="1">ثابت (1x)</option>
-                        <option value="1000">لكل 1000 وحدة</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size:12px; color:var(--muted); margin-top:10px; display:block">السعر (د.ل)</label>
-                    <input type="number" id="srv-price" step="0.01" class="input">
-                </div>
-            </div>
-
-            <label style="font-size:12px; color:var(--muted); margin-top:10px; display:block">وصف الخدمة (يظهر للزبون)</label>
-            <textarea id="srv-desc" class="input" placeholder="اكتب تفاصيل الخدمة أو شروط التنفيذ..."></textarea>
-
+            <input type="text" id="srv-name" class="input" placeholder="اسم الخدمة">
+            <input type="text" id="srv-cat" class="input" placeholder="القسم (مثال: شدات ببجي)">
+            <input type="number" id="srv-price" step="0.01" class="input" placeholder="السعر د.ل">
+            <textarea id="srv-desc" class="input" placeholder="شروط التنفيذ..."></textarea>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-danger" id="btn-delete-srv" style="display:none" onclick="deleteService()">حذف</button>
-                <button class="btn" style="flex:1; background:#222; color:#fff" onclick="closeModal()">إلغاء</button>
-                <button class="btn btn-p" style="flex:2" onclick="saveService()">حفظ البيانات</button>
+                <button class="btn btn-danger" id="btn-delete-srv" onclick="deleteService()">حذف</button>
+                <button class="btn btn-p" style="flex:1" onclick="saveService()">حفظ</button>
+                <button class="btn" style="background:#222; color:#fff" onclick="closeModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -178,10 +174,12 @@
             el.classList.add('active');
             
             if(tabId === 'services') loadServices();
+            if(tabId === 'orders') loadOrders();
             if(tabId === 'finance') loadFinance();
             if(tabId === 'users') loadUsers();
         }
 
+        // 1. إدارة الخدمات والتعديل الجماعي
         function loadServices() {
             db.collection("services").onSnapshot(snap => {
                 const container = document.getElementById('categories-container');
@@ -194,143 +192,52 @@
                     cats[c].push({id: doc.id, ...d});
                 });
                 for (const name in cats) {
-                    const group = document.createElement('div');
-                    group.className = 'category-group';
-                    group.innerHTML = `
+                    const div = document.createElement('div');
+                    div.className = 'category-group';
+                    div.innerHTML = `
                         <div class="category-header" onclick="toggleCat('${name}')">
-                            <span style="font-weight:bold; color:var(--p)">${name}</span>
-                            <button class="btn btn-edit" style="font-size:10px" onclick="event.stopPropagation(); renameCat('${name}')">تعديل الاسم</button>
+                            <span style="color:var(--p); font-weight:bold"><i class="fa fa-folder-open"></i> ${name}</span>
+                            <button class="btn btn-edit" onclick="event.stopPropagation(); renameCat('${name}')">تعديل اسم القسم</button>
                         </div>
                         <div class="services-list" id="cat-${name}">
                             ${cats[name].map(s => `
-                                <div class="service-item">
-                                    <div style="flex:1">
-                                        <div style="font-weight:bold">${s.name}</div>
-                                        <div style="font-size:10px; color:var(--muted)">${s.description || 'لا يوجد وصف'}</div>
-                                    </div>
-                                    <div style="color:var(--p); margin: 0 15px;">${s.finalPrice} د.ل</div>
+                                <div class="item-row">
+                                    <span>${s.name} <b style="color:var(--p)">${s.finalPrice} د.ل</b></span>
                                     <button class="btn btn-edit" onclick="editSrv('${s.id}')">تعديل</button>
                                 </div>
                             `).join('')}
                         </div>`;
-                    container.appendChild(group);
+                    container.appendChild(div);
                 }
             });
         }
 
-        function toggleCat(name) { document.getElementById(`cat-${name}`).classList.toggle('active'); }
+        async function bulkPriceUpdate() {
+            const { value: formValues } = await Swal.fire({
+                title: 'تعديل أسعار جماعي',
+                html:
+                    '<input id="swal-cat" class="swal2-input" placeholder="اسم القسم بالضبط">' +
+                    '<input id="swal-val" type="number" class="swal2-input" placeholder="القيمة المضافة (مثال: 0.50 أو -0.50)">',
+                focusConfirm: false,
+                preConfirm: () => [
+                    document.getElementById('swal-cat').value,
+                    document.getElementById('swal-val').value
+                ]
+            });
 
-        async function editSrv(id) {
-            const doc = await db.collection("services").doc(id).get();
-            const s = doc.data();
-            document.getElementById('srv-id').value = id;
-            document.getElementById('srv-name').value = s.name;
-            document.getElementById('srv-cat').value = s.category;
-            document.getElementById('srv-price').value = s.finalPrice;
-            document.getElementById('srv-type').value = s.type || "1";
-            document.getElementById('srv-desc').value = s.description || "";
-            document.getElementById('btn-delete-srv').style.display = 'block';
-            document.getElementById('modal-srv').style.display = 'flex';
-        }
-
-        function openSrvModal() {
-            document.getElementById('srv-id').value = "";
-            document.getElementById('srv-desc').value = "";
-            document.getElementById('btn-delete-srv').style.display = 'none';
-            document.getElementById('modal-srv').style.display = 'flex';
-        }
-
-        async function saveService() {
-            const id = document.getElementById('srv-id').value;
-            const data = {
-                name: document.getElementById('srv-name').value,
-                category: document.getElementById('srv-cat').value,
-                finalPrice: parseFloat(document.getElementById('srv-price').value),
-                type: document.getElementById('srv-type').value,
-                description: document.getElementById('srv-desc').value,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            if(id) await db.collection("services").doc(id).update(data);
-            else await db.collection("services").add(data);
-            closeModal();
-        }
-
-        async function deleteService() {
-            const id = document.getElementById('srv-id').value;
-            if(confirm("حذف الخدمة؟")) { await db.collection("services").doc(id).delete(); closeModal(); }
-        }
-
-        function loadFinance() {
-            db.collection("deposits").where("status", "==", "قيد المراجعة").onSnapshot(snap => {
-                const list = document.getElementById('finance-list');
-                list.innerHTML = snap.empty ? "<tr><td colspan='4'>لا توجد طلبات</td></tr>" : "";
+            if (formValues && formValues[0] && formValues[1]) {
+                const catName = formValues[0];
+                const changeVal = parseFloat(formValues[1]);
+                const snap = await db.collection("services").where("category", "==", catName).get();
+                if(snap.empty) return Swal.fire("خطأ", "القسم غير موجود", "error");
+                
+                const batch = db.batch();
                 snap.forEach(doc => {
-                    const d = doc.data();
-                    list.innerHTML += `<tr>
-                        <td>${d.username}<span class="small-id">ID: ${d.uid}</span></td>
-                        <td style="color:var(--p)">${d.amount}</td>
-                        <td>${d.senderPhone || 'غير مدرج'}</td>
-                        <td><button class="btn btn-p" onclick="approveFinance('${doc.id}','${d.uid}',${d.amount})">قبول</button></td>
-                    </tr>`;
+                    const newPrice = (doc.data().finalPrice || 0) + changeVal;
+                    batch.update(doc.ref, { finalPrice: Math.max(0, newPrice) });
                 });
-            });
-        }
-
-        async function approveFinance(docId, uid, amt) {
-            if(!confirm("تأكيد شحن " + amt + " للمستخدم؟")) return;
-            try {
-                const userRef = db.collection("users").doc(uid);
-                await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists) throw "المستخدم غير موجود";
-                    let newBalance = (userDoc.data().balance || 0) + amt;
-                    transaction.update(userRef, { balance: newBalance });
-                    transaction.update(db.collection("deposits").doc(docId), { status: "مكتمل" });
-                });
-                Swal.fire("تم!", "تم شحن الرصيد بنجاح", "success");
-            } catch(e) { Swal.fire("خطأ", e, "error"); }
-        }
-
-        function loadUsers() {
-            db.collection("users").limit(50).onSnapshot(snap => {
-                const list = document.getElementById('users-list');
-                list.innerHTML = "";
-                snap.forEach(doc => {
-                    const u = doc.data();
-                    list.innerHTML += `<tr>
-                        <td>${u.username || 'بدون اسم'}<span class="small-id">${doc.id}</span></td>
-                        <td style="color:var(--p)">${(u.balance || 0).toFixed(2)}</td>
-                        <td style="color:#ccff00">${u.discount || 0}%</td>
-                        <td style="display:flex; gap:5px">
-                            <button class="btn btn-edit" onclick="topUpUser('${doc.id}')">شحن</button>
-                            <button class="btn btn-discount" onclick="setUserDiscount('${doc.id}', ${u.discount || 0})">خصم</button>
-                        </td>
-                    </tr>`;
-                });
-            });
-        }
-
-        async function topUpUser(uid) {
-            const { value: amt } = await Swal.fire({ title: 'شحن رصيد يدوي', input: 'number', inputLabel: 'المبلغ (د.ل)' });
-            if(amt) {
-                const userRef = db.collection("users").doc(uid);
-                const doc = await userRef.get();
-                await userRef.update({ balance: (doc.data().balance || 0) + parseFloat(amt) });
-                Swal.fire("تم الشحن");
-            }
-        }
-
-        // تفعيل نظام الخصم لمستخدم معين
-        async function setUserDiscount(uid, current) {
-            const { value: disc } = await Swal.fire({ 
-                title: 'تحديد نسبة الخصم للمستخدم', 
-                input: 'number', 
-                inputLabel: 'النسبة المئوية (%)',
-                inputValue: current
-            });
-            if(disc !== undefined) {
-                await db.collection("users").doc(uid).update({ discount: parseFloat(disc) });
-                Swal.fire("تم تحديث الخصم");
+                await batch.commit();
+                Swal.fire("تم!", `تم تحديث أسعار ${snap.size} خدمة`, "success");
             }
         }
 
@@ -344,8 +251,139 @@
             }
         }
 
+        // 2. إدارة المستخدمين (الأحدث أولاً + الكل متاح)
+        function loadUsers() {
+            // الترتيب حسب تاريخ الإنشاء - سيجلب الكل مرتبين
+            db.collection("users").orderBy("createdAt", "desc").onSnapshot(snap => {
+                const list = document.getElementById('users-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    list.innerHTML += `<tr>
+                        <td><b>${u.username || 'مستخدم جديد'}</b><span class="small-id">ID: ${doc.id}</span></td>
+                        <td style="color:var(--p)">${(u.balance || 0).toFixed(2)} د.ل</td>
+                        <td style="color:var(--discount)">${u.discount || 0}%</td>
+                        <td>
+                            <div style="display:flex; gap:5px">
+                                <button class="btn btn-edit" title="شحن" onclick="userBalance('${doc.id}', 'add')"><i class="fa fa-plus"></i></button>
+                                <button class="btn btn-danger" title="خصم" onclick="userBalance('${doc.id}', 'sub')"><i class="fa fa-minus"></i></button>
+                                <button class="btn btn-warning" title="خصم مئوي" onclick="userDiscount('${doc.id}', ${u.discount || 0})">%</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            });
+        }
+
+        async function userBalance(uid, type) {
+            const { value: amt } = await Swal.fire({ title: type === 'add' ? 'شحن رصيد' : 'خصم رصيد', input: 'number' });
+            if(amt) {
+                const ref = db.collection("users").doc(uid);
+                const u = (await ref.get()).data();
+                const newBal = type === 'add' ? (u.balance || 0) + parseFloat(amt) : (u.balance || 0) - parseFloat(amt);
+                await ref.update({ balance: newBal });
+                Swal.fire("تم تحديث الرصيد");
+            }
+        }
+
+        async function userDiscount(uid, current) {
+            const { value: disc } = await Swal.fire({ title: 'نسبة الخصم المئوية %', input: 'number', inputValue: current });
+            if(disc !== null) await db.collection("users").doc(uid).update({ discount: parseFloat(disc) });
+        }
+
+        // 3. إدارة الطلبات
+        function loadOrders() {
+            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
+                const list = document.getElementById('orders-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    const st = o.status || "قيد الانتظار";
+                    const stClass = {"قيد الانتظار":"status-pending","قيد التنفيذ":"status-processing","مكتمل":"status-completed","ملغي":"status-cancelled"}[st];
+                    list.innerHTML += `<tr>
+                        <td><b>${o.serviceName}</b><br><small style="color:var(--muted)">${o.target || ''}</small></td>
+                        <td>${o.username || 'عميل'}</td>
+                        <td><span class="status-badge ${stClass}">${st}</span></td>
+                        <td>
+                            <select onchange="updateStatus('${doc.id}', this.value)" class="btn" style="background:#111; color:#fff; border:1px solid #333">
+                                <option value="">إجراء</option>
+                                <option value="قيد الانتظار">انتظار</option>
+                                <option value="قيد التنفيذ">تنفيذ</option>
+                                <option value="مكتمل">مكتمل</option>
+                                <option value="ملغي">ملغي</option>
+                            </select>
+                        </td>
+                    </tr>`;
+                });
+            });
+        }
+
+        async function updateStatus(id, s) { if(s) await db.collection("orders").doc(id).update({status: s}); }
+
+        // 4. الشحن
+        function loadFinance() {
+            db.collection("deposits").where("status", "==", "قيد المراجعة").onSnapshot(snap => {
+                const list = document.getElementById('finance-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    list.innerHTML += `<tr>
+                        <td>${d.username}</td>
+                        <td style="color:var(--p)">${d.amount} د.ل</td>
+                        <td>${d.senderPhone || '-'}</td>
+                        <td><button class="btn btn-p" onclick="approveDep('${doc.id}','${d.uid}',${d.amount})">قبول</button></td>
+                    </tr>`;
+                });
+            });
+        }
+
+        async function approveDep(id, uid, amt) {
+            const userRef = db.collection("users").doc(uid);
+            await db.runTransaction(async (t) => {
+                const u = await t.get(userRef);
+                t.update(userRef, { balance: (u.data().balance || 0) + amt });
+                t.update(db.collection("deposits").doc(id), { status: "مكتمل" });
+            });
+            Swal.fire("تم شحن الحساب");
+        }
+
+        // Helpers
+        function toggleCat(n) { document.getElementById(`cat-${n}`).classList.toggle('active'); }
+        function openSrvModal() { 
+            document.getElementById('srv-id').value = ""; 
+            document.getElementById('modal-srv').style.display = 'flex'; 
+            document.getElementById('btn-delete-srv').style.display = 'none';
+        }
+        async function editSrv(id) {
+            const s = (await db.collection("services").doc(id).get()).data();
+            document.getElementById('srv-id').value = id;
+            document.getElementById('srv-name').value = s.name;
+            document.getElementById('srv-cat').value = s.category;
+            document.getElementById('srv-price').value = s.finalPrice;
+            document.getElementById('srv-desc').value = s.description || "";
+            document.getElementById('btn-delete-srv').style.display = 'block';
+            document.getElementById('modal-srv').style.display = 'flex';
+        }
+        async function saveService() {
+            const id = document.getElementById('srv-id').value;
+            const data = {
+                name: document.getElementById('srv-name').value,
+                category: document.getElementById('srv-cat').value,
+                finalPrice: parseFloat(document.getElementById('srv-price').value),
+                description: document.getElementById('srv-desc').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            id ? await db.collection("services").doc(id).update(data) : await db.collection("services").add(data);
+            closeModal();
+        }
+        async function deleteService() {
+            const id = document.getElementById('srv-id').value;
+            if(confirm("حذف الخدمة؟")) { await db.collection("services").doc(id).delete(); closeModal(); }
+        }
         function closeModal() { document.getElementById('modal-srv').style.display = 'none'; }
+        
         window.onload = loadServices;
     </script>
 </body>
 </html>
+
