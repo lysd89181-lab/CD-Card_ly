@@ -168,7 +168,7 @@
             if(v==='finance') loadFinance();
         }
 
-        // --- الخدمات (مع ميزة 1/1000) ---
+        // --- الخدمات (مع دعم الكمية المقفولة) ---
         function loadServices() {
             db.collection("services").onSnapshot(snap => {
                 const list = document.getElementById('services-list');
@@ -184,12 +184,14 @@
                 Object.keys(cats).sort().forEach(cName => {
                     const card = document.createElement('div');
                     card.className = `cat-box ${bulkMode ? 'edit-mode-active' : ''}`;
-                    const items = cats[cName].map(s => `
+                    const items = cats[cName].map(s => {
+                        let typeText = s.priceType === '1000' ? 'لكل 1000' : (s.priceType === 'fixed' ? 'كمية ثابتة' : 'لكل 1');
+                        return `
                         <div class="srv-row">
                             <div class="srv-main">
                                 <div class="srv-info"><b>${s.name}</b></div>
                                 <div class="srv-price-badge">
-                                    <span>لكل ${s.priceType || '1'}</span>
+                                    <span>${typeText}</span>
                                     ${bulkMode ? 
                                         `<input type="number" step="0.01" class="bulk-input" data-id="${s.id}" value="${s.finalPrice}">` : 
                                         `<b>${s.finalPrice} د.ل</b>`
@@ -199,7 +201,7 @@
                             </div>
                             ${s.description ? `<div class="srv-desc">${s.description}</div>` : ''}
                         </div>
-                    `).join('');
+                    `}).join('');
 
                     card.innerHTML = `
                         <div class="cat-top" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -231,7 +233,7 @@
             Swal.fire("تم حفظ جميع الأسعار");
         }
 
-        // --- إضافة خدمة (مع نوع الكمية والوصف) ---
+        // --- إضافة خدمة (مع خيار الكمية المقفولة 1) ---
         function addSrv() {
             Swal.fire({
                 title: 'إضافة خدمة جديدة',
@@ -241,8 +243,9 @@
                     <label class="swal-label">الوصف</label><textarea id="d" class="swal2-textarea" placeholder="اكتب تفاصيل الخدمة هنا..."></textarea>
                     <div class="swal-grid">
                         <div><label class="swal-label">السعر</label><input id="p" type="number" class="swal2-input"></div>
-                        <div><label class="swal-label">الكمية</label><select id="t" class="swal2-input">
-                            <option value="1">لكل 1</option>
+                        <div><label class="swal-label">نوع الكمية</label><select id="t" class="swal2-input">
+                            <option value="1">لكل 1 (مفتوح)</option>
+                            <option value="fixed">كمية مقفولة (1 فقط)</option>
                             <option value="1000">لكل 1000</option>
                         </select></div>
                     </div>
@@ -258,7 +261,7 @@
             }).then(r => { if(r.value) db.collection("services").add(r.value); });
         }
 
-        // --- تعديل خدمة (شامل) ---
+        // --- تعديل خدمة (مع خيار الكمية المقفولة 1) ---
         async function editSrv(id) {
             const s = (await db.collection("services").doc(id).get()).data();
             Swal.fire({
@@ -268,8 +271,9 @@
                     <label class="swal-label">الوصف</label><textarea id="d" class="swal2-textarea">${s.description || ''}</textarea>
                     <div class="swal-grid">
                         <div><label class="swal-label">السعر</label><input id="p" type="number" class="swal2-input" value="${s.finalPrice}"></div>
-                        <div><label class="swal-label">الكمية</label><select id="t" class="swal2-input">
-                            <option value="1" ${s.priceType==='1'?'selected':''}>لكل 1</option>
+                        <div><label class="swal-label">نوع الكمية</label><select id="t" class="swal2-input">
+                            <option value="1" ${s.priceType==='1'?'selected':''}>لكل 1 (مفتوح)</option>
+                            <option value="fixed" ${s.priceType==='fixed'?'selected':''}>كمية مقفولة (1 فقط)</option>
                             <option value="1000" ${s.priceType==='1000'?'selected':''}>لكل 1000</option>
                         </select></div>
                     </div>
@@ -369,3 +373,4 @@
     </script>
 </body>
 </html>
+
