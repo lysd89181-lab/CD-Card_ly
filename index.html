@@ -193,11 +193,11 @@
         .main-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 25px var(--primary-glow); }
         
         .main-input[readonly] {
-            background-color: #0d0d0d;
-            border-color: #333;
-            color: var(--text-dim);
+            background-color: #0d0d0d !important;
+            border-color: var(--neon-yellow) !important;
+            color: var(--neon-yellow) !important;
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.9;
         }
 
         .select-btn {
@@ -740,9 +740,13 @@
             toggleDrop('drop-cats');
         }
 
+        // ============================================================
+        // UPDATED FUNCTIONS [selectSrv & recalc]
+        // ============================================================
         function selectSrv(id) {
             curSrv = srvs.find(s => s.id === id);
             document.getElementById('label-srv').innerText = curSrv.name;
+
             const descBox = document.getElementById('srv-desc-box');
             const descText = document.getElementById('srv-desc-text');
             const qtyInput = document.getElementById('field-qty');
@@ -751,32 +755,42 @@
             descBox.classList.add('active');
             toggleDrop('drop-srvs');
 
-            // --- تعديل: قفل الكمية بناءً على السعر ---
-            if (parseFloat(curSrv.finalPrice) === 1) {
+            if (curSrv.priceType === "fixed") {
                 qtyInput.readOnly = true;
                 qtyInput.value = 1;
             } else {
                 qtyInput.readOnly = false;
-                if(qtyInput.value == 1) qtyInput.value = 1000;
+                if (qtyInput.value == 1) qtyInput.value = 1000;
             }
-            // -------------------------------------
 
             recalc();
         }
 
         function recalc() {
-            if(!curSrv) return;
-            const qInput = document.getElementById('field-qty');
-            const q = parseFloat(qInput.value) || 0;
-            let pr = curSrv.finalPrice;
-            
-            if(uData.discount > 0) pr = pr - (pr * (uData.discount / 100));
-            
-            let factor = curSrv.type == "1000" ? 1000 : 1;
-            let total = (q / factor) * pr;
-            
+            if (!curSrv) return;
+
+            const q = parseFloat(document.getElementById('field-qty').value) || 0;
+            let price = parseFloat(curSrv.finalPrice) || 0;
+
+            if (uData.discount > 0) {
+                price -= price * (uData.discount / 100);
+            }
+
+            let total = 0;
+
+            if (curSrv.priceType === "fixed") {
+                total = price;
+            } 
+            else if (curSrv.priceType === "1000") {
+                total = (q / 1000) * price;
+            } 
+            else {
+                total = q * price;
+            }
+
             document.getElementById('val-total').innerText = total.toFixed(2);
         }
+        // ============================================================
 
         async function requestDeposit() {
             const phone = document.getElementById('field-dep-phone').value;
@@ -864,4 +878,3 @@
     </script>
 </body>
 </html>
-
