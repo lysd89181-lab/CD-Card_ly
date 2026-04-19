@@ -192,7 +192,6 @@
         }
         .main-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 25px var(--primary-glow); }
         
-        /* شكل الحقل المقفل للكمية */
         .main-input[readonly] {
             background-color: #0d0d0d;
             border-color: #333;
@@ -224,7 +223,29 @@
         }
 
         /* ============================================================
-        [06] QURAN BOX & SUPPORT & CHANNELS
+        [06] WALLET GUIDE STEPS
+        ============================================================ */
+        .wallet-guide {
+            margin-top: 25px;
+            background: rgba(57, 255, 20, 0.03);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px dashed var(--primary-neon);
+        }
+        .step-item {
+            display: flex; gap: 15px; margin-bottom: 18px; align-items: flex-start;
+        }
+        .step-idx {
+            background: var(--primary-neon); color: #000;
+            min-width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 13px; flex-shrink: 0;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+        .step-desc { color: #eee; font-size: 13px; line-height: 1.6; }
+
+        /* ============================================================
+        [07] QURAN BOX & SUPPORT & CHANNELS
         ============================================================ */
         .channel-card {
             background: #0a0a0a; border: 1px solid var(--border-color); padding: 22px;
@@ -272,7 +293,7 @@
             <p style="color:#888; font-size:14px; line-height:1.7;">أهلاً بك في CD-CARD. تم تحديث كافة أسعار المتابعين والعملات الرقمية للألعاب. استمتع بأفضل الأسعار في ليبيا.</p>
             
             <div class="ad-timer-display">
-                <div id="ad-countdown-lbl"><small>سيختفي الإعلان بعد 10 ثوانٍ</small></div>
+                <div id="ad-countdown-lbl"><small>سيختفي الإشعار بعد 10 ثوانٍ</small></div>
             </div>
             
             <button class="skip-btn" onclick="closeAdNotice()">تخطي الإشعار</button>
@@ -574,28 +595,47 @@
         <section id="pane-wallet" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
+                
                 <div class="lb-img-container" style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;">
                     <img src="lb.jpg" style="width:100%;">
                 </div>
+
                 <div class="stat-row" style="margin-bottom:12px;">
                     <div><small>مدار</small><div style="font-weight:800; color:#fff;">0912377291</div></div>
-                    <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0912377291')"></i>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0912377291')"></i>
                 </div>
                 <div class="stat-row" style="margin-bottom:25px;">
                     <div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div>
-                    <i class="fa-solid fa-copy" style="color:var(--primary-neon);" onclick="copyToClipboard('0920414760')"></i>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0920414760')"></i>
+                </div>
+
+                <div class="wallet-guide">
+                    <div style="margin-bottom:15px;"><small>خطوات الشحن</small></div>
+                    <div class="step-item">
+                        <div class="step-idx">1</div>
+                        <div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-idx">2</div>
+                        <div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-idx">3</div>
+                        <div class="step-desc">أدخل رقمك الذي حولت منه والقيمة، ثم اضغط تبليغ.</div>
+                    </div>
                 </div>
                 
-                <div class="input-wrapper">
-                    <label class="field-label">الرقم المحول منه</label>
-                    <input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx">
+                <div style="margin-top:25px;">
+                    <div class="input-wrapper">
+                        <label class="field-label">الرقم المحول منه</label>
+                        <input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="field-label">القيمة المحولة (د.ل)</label>
+                        <input type="number" id="field-dep-amt" class="main-input" placeholder="0.00">
+                    </div>
+                    <button class="action-btn" onclick="requestDeposit()">إرسال التبليغ الآن</button>
                 </div>
-                <div class="input-wrapper">
-                    <label class="field-label">القيمة المحولة (د.ل)</label>
-                    <input type="number" id="field-dep-amt" class="main-input" placeholder="0.00">
-                </div>
-                
-                <button class="action-btn" onclick="requestDeposit()">تبليغ عن تحويل</button>
             </div>
         </section>
 
@@ -711,17 +751,15 @@
             descBox.classList.add('active');
             toggleDrop('drop-srvs');
 
-            // --- إضافة ميزة قفل الكمية ---
-            // إذا كان السعر الأساسي للخدمة هو 1، نقفل الخانة
+            // --- تعديل: قفل الكمية بناءً على السعر ---
             if (parseFloat(curSrv.finalPrice) === 1) {
                 qtyInput.readOnly = true;
                 qtyInput.value = 1;
             } else {
                 qtyInput.readOnly = false;
-                // يمكنك وضع قيمة افتراضية هنا للخدمات العادية مثل 1000
                 if(qtyInput.value == 1) qtyInput.value = 1000;
             }
-            // ---------------------------
+            // -------------------------------------
 
             recalc();
         }
