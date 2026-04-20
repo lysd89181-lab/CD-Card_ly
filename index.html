@@ -689,13 +689,11 @@
         }
 
         function selectCat(c, icon) {
-            // تحديث واجهة التصنيف
             document.getElementById('label-cat-container').innerHTML = `
                 <img src="${icon}" class="selected-img">
                 <span id="label-cat">${c}</span>
             `;
             
-            // تصفير الخدمة المختارة وإخفاء صندوق الوصف عند تغيير القسم
             curSrv = null;
             document.getElementById('label-srv-container').innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
             document.getElementById('srv-desc-box').classList.remove('active');
@@ -848,13 +846,18 @@
 
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
         
+        // تعديل الوظيفة لمنع التعارض وفتح قائمة واحدة فقط
         function toggleDrop(id) { 
-            const panel = document.getElementById(id);
-            // إخفاء الصندوق الوصفي وتصفير الحقول إذا فتحنا القوائم لضمان عدم التعارض
-            if (!panel.classList.contains('show')) {
-                // اختياري: يمكنك إضافة منطق إضافي هنا عند فتح القائمة
-            }
-            panel.classList.toggle('show'); 
+            const targetPanel = document.getElementById(id);
+            const allPanels = document.querySelectorAll('.dropdown-panel');
+            
+            // إغلاق أي قائمة أخرى مفتوحة غير القائمة التي تم النقر عليها
+            allPanels.forEach(p => {
+                if(p.id !== id) p.classList.remove('show');
+            });
+
+            // تبديل حالة القائمة الحالية
+            targetPanel.classList.toggle('show'); 
         }
 
         function notify(m) { 
@@ -867,3 +870,4 @@
     </script>
 </body>
 </html>
+
