@@ -633,7 +633,6 @@
         let srvs = [];
         let curSrv = null;
 
-        // مصفوفة الصور التي أرسلتها لربطها تلقائياً بالأسماء
         const localIcons = {
             "فيس بوك": "Facebook.jpg",
             "انستجرام": "Instagram.jpg",
@@ -677,10 +676,8 @@
                 const cats = [...new Set(srvs.map(s => s.category))].sort();
                 
                 document.getElementById('drop-cats').innerHTML = cats.map(c => {
-                    // محاولة إيجاد أيقونة مناسبة للتصنيف
                     let iconSrc = "cd.jpg"; 
                     for (let key in localIcons) { if(c.includes(key)) iconSrc = localIcons[key]; }
-
                     return `
                         <div class="drop-item" onclick="selectCat('${c}', '${iconSrc}')">
                             <img src="${iconSrc}" onerror="this.src='cd.jpg'">
@@ -692,14 +689,21 @@
         }
 
         function selectCat(c, icon) {
+            // تحديث واجهة التصنيف
             document.getElementById('label-cat-container').innerHTML = `
                 <img src="${icon}" class="selected-img">
                 <span id="label-cat">${c}</span>
             `;
             
+            // تصفير الخدمة المختارة وإخفاء صندوق الوصف عند تغيير القسم
+            curSrv = null;
+            document.getElementById('label-srv-container').innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
+            document.getElementById('srv-desc-box').classList.remove('active');
+            document.getElementById('val-total').innerText = "0.00";
+            
             const filtered = srvs.filter(s => s.category === c);
             document.getElementById('drop-srvs').innerHTML = filtered.map(s => {
-                let sIcon = icon; // نستخدم أيقونة التصنيف كافتراضية للخدمة
+                let sIcon = icon;
                 return `
                     <div class="drop-item" onclick="selectSrv('${s.id}', '${sIcon}')">
                         <img src="${sIcon}" onerror="this.src='cd.jpg'">
@@ -708,26 +712,21 @@
                 `;
             }).join('');
             
-            document.getElementById('label-srv').innerText = "اختر الخدمة الآن...";
             toggleDrop('drop-cats');
         }
 
         function selectSrv(id, icon) {
             curSrv = srvs.find(s => s.id === id);
-            
             document.getElementById('label-srv-container').innerHTML = `
                 <img src="${icon}" class="selected-img">
                 <span id="label-srv">${curSrv.name}</span>
             `;
-
             const descBox = document.getElementById('srv-desc-box');
             const descText = document.getElementById('srv-desc-text');
             const qtyInput = document.getElementById('field-qty');
-
             descText.innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية.";
             descBox.classList.add('active');
             toggleDrop('drop-srvs');
-
             if (curSrv.priceType === "fixed") {
                 qtyInput.readOnly = true;
                 qtyInput.value = 1;
@@ -748,6 +747,58 @@
             else if (curSrv.priceType === "1000") { total = (q / 1000) * price; } 
             else { total = q * price; }
             document.getElementById('val-total').innerText = total.toFixed(2);
+        }
+
+        async function submitOrder() {
+            const link = document.getElementById('field-link').value;
+            const qty = parseFloat(document.getElementById('field-qty').value);
+            const total = parseFloat(document.getElementById('val-total').innerText);
+            const btn = document.getElementById('btn-order');
+
+            if (!curSrv) { notify("يرجى اختيار خدمة أولاً"); return; }
+            if (!link) { notify("يرجى إدخال الرابط أو اليوزر"); return; }
+            if (qty <= 0) { notify("الكمية غير صالحة"); return; }
+
+            if (uData.balance < total) {
+                notify("عذراً، رصيدك غير كافٍ لإتمام الطلب");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "جاري معالجة الطلب...";
+
+                await db.collection("orders").add({
+                    userId: uData.uid,
+                    userName: uData.username || uData.email,
+                    serviceId: curSrv.id,
+                    serviceName: curSrv.name,
+                    category: curSrv.category,
+                    link: link,
+                    quantity: qty,
+                    totalPrice: total,
+                    status: "pending",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                const newBalance = uData.balance - total;
+                const newSpent = (uData.totalSpent || 0) + total;
+
+                await db.collection("users").doc(uData.uid).update({
+                    balance: newBalance,
+                    totalSpent: newSpent
+                });
+
+                notify("تم استلام طلبك بنجاح! شكراً لثقتك");
+                document.getElementById('field-link').value = "";
+                
+            } catch (error) {
+                console.error("Order Error:", error);
+                notify("حدث خطأ أثناء معالجة الطلب");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`;
+            }
         }
 
         async function requestDeposit() {
@@ -796,7 +847,16 @@
         }
 
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
-        function toggleDrop(id) { document.getElementById(id).classList.toggle('show'); }
+        
+        function toggleDrop(id) { 
+            const panel = document.getElementById(id);
+            // إخفاء الصندوق الوصفي وتصفير الحقول إذا فتحنا القوائم لضمان عدم التعارض
+            if (!panel.classList.contains('show')) {
+                // اختياري: يمكنك إضافة منطق إضافي هنا عند فتح القائمة
+            }
+            panel.classList.toggle('show'); 
+        }
+
         function notify(m) { 
             const t = document.getElementById('main-toast'); 
             t.innerText = m; t.classList.add('active'); 
@@ -807,4 +867,3 @@
     </script>
 </body>
 </html>
-
