@@ -62,7 +62,6 @@
             text-shadow: 0 0 8px var(--yellow-glow);
         }
 
-        /* تحسين مظهر الأرقام */
         .stat-num, .price-val, .val-total, .number-font, input, .stat-row span:last-child {
             font-family: Arial, Helvetica, sans-serif !important; 
             letter-spacing: 0;
@@ -181,7 +180,7 @@
         .desc-text { color: #ddd; font-size: 13px; line-height: 1.6; }
 
         /* ============================================================
-        [05] INPUTS & DROPDOWNS
+        [05] INPUTS & DROPDOWNS [MODIFIED FOR ICONS/IMAGES]
         ============================================================ */
         .input-wrapper { position: relative; margin-bottom: 24px; }
         
@@ -202,18 +201,40 @@
 
         .select-btn {
             background: #000; border: 1px solid #1a1a1a;
-            padding: 20px 24px; border-radius: 18px; display: flex;
+            padding: 16px 24px; border-radius: 18px; display: flex;
             justify-content: space-between; align-items: center; cursor: pointer;
+            min-height: 64px;
         }
 
         .dropdown-panel {
             position: absolute; top: 105%; left: 0; right: 0; background: #0a0a0a;
             border: 1px solid #222; border-radius: 20px; z-index: 600;
-            max-height: 300px; overflow-y: auto; display: none;
+            max-height: 350px; overflow-y: auto; display: none;
             box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
         .dropdown-panel.show { display: block; animation: fadeInUp 0.4s ease; }
-        .drop-item { padding: 18px 24px; border-bottom: 1px solid #111; font-size: 14px; color: #ddd; }
+        
+        /* Flexbox Alignment for Drop Items */
+        .drop-item { 
+            padding: 18px 24px; 
+            border-bottom: 1px solid #111; 
+            font-size: 14px; 
+            color: #ddd; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .drop-item:hover { background: rgba(57, 255, 20, 0.05); color: #fff; }
+
+        .drop-item img, .selected-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #222;
+        }
 
         .action-btn {
             width: 100%; padding: 22px; background: var(--primary-neon);
@@ -223,30 +244,20 @@
         }
 
         /* ============================================================
-        [06] WALLET GUIDE STEPS
+        [06] WALLET GUIDE STEPS & QURAN
         ============================================================ */
         .wallet-guide {
-            margin-top: 25px;
-            background: rgba(57, 255, 20, 0.03);
-            border-radius: 24px;
-            padding: 25px;
-            border: 1px dashed var(--primary-neon);
+            margin-top: 25px; background: rgba(57, 255, 20, 0.03);
+            border-radius: 24px; padding: 25px; border: 1px dashed var(--primary-neon);
         }
-        .step-item {
-            display: flex; gap: 15px; margin-bottom: 18px; align-items: flex-start;
-        }
+        .step-item { display: flex; gap: 15px; margin-bottom: 18px; align-items: flex-start; }
         .step-idx {
-            background: var(--primary-neon); color: #000;
-            min-width: 26px; height: 26px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 13px; flex-shrink: 0;
+            background: var(--primary-neon); color: #000; min-width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; flex-shrink: 0;
             box-shadow: 0 0 10px var(--primary-glow);
         }
         .step-desc { color: #eee; font-size: 13px; line-height: 1.6; }
 
-        /* ============================================================
-        [07] QURAN BOX & SUPPORT & CHANNELS
-        ============================================================ */
         .channel-card {
             background: #0a0a0a; border: 1px solid var(--border-color); padding: 22px;
             border-radius: 24px; margin-bottom: 15px; display: flex;
@@ -291,17 +302,14 @@
             </div>
             <h2 style="font-weight:900; margin-bottom:15px; color:#fff;">تحديث الخدمات الجديد</h2>
             <p style="color:#888; font-size:14px; line-height:1.7;">أهلاً بك في CD-CARD. تم تحديث كافة أسعار المتابعين والعملات الرقمية للألعاب. استمتع بأفضل الأسعار في ليبيا.</p>
-            
             <div class="ad-timer-display">
                 <div id="ad-countdown-lbl"><small>سيختفي الإشعار بعد 10 ثوانٍ</small></div>
             </div>
-            
             <button class="skip-btn" onclick="closeAdNotice()">تخطي الإشعار</button>
         </div>
     </div>
 
     <div class="toast" id="main-toast"></div>
-
     <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
     <aside class="main-sidebar">
@@ -374,7 +382,9 @@
                 <div class="input-wrapper">
                     <label class="field-label">تصنيف الخدمة</label>
                     <div class="select-btn" onclick="toggleDrop('drop-cats')">
-                        <span id="label-cat">اختر التصنيف...</span>
+                        <div id="label-cat-container" style="display:flex; align-items:center; gap:12px;">
+                            <span id="label-cat">اختر التصنيف...</span>
+                        </div>
                         <i class="fa-solid fa-caret-down"></i>
                     </div>
                     <div class="dropdown-panel" id="drop-cats"></div>
@@ -383,7 +393,9 @@
                 <div class="input-wrapper">
                     <label class="field-label">نوع الخدمة</label>
                     <div class="select-btn" onclick="toggleDrop('drop-srvs')">
-                        <span id="label-srv">حدد التصنيف أولاً</span>
+                        <div id="label-srv-container" style="display:flex; align-items:center; gap:12px;">
+                            <span id="label-srv">حدد التصنيف أولاً</span>
+                        </div>
                         <i class="fa-solid fa-caret-down"></i>
                     </div>
                     <div class="dropdown-panel" id="drop-srvs"></div>
@@ -428,13 +440,11 @@
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:22px;">
                     <i class="fa-solid fa-id-card"></i> معلومات الحساب
                 </div>
-                
                 <div class="stats-vertical-list">
                     <div class="stat-row">
                         <span class="stat-lbl">اسم المستخدم</span>
                         <div class="stat-num neon" id="acc-username">...</div>
                     </div>
-
                     <div class="stat-row" style="cursor: pointer;" onclick="copyToClipboard(uData.uid)">
                         <span class="stat-lbl">المعرف الرقمي (ID)</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -442,23 +452,19 @@
                              <i class="fa-solid fa-copy" style="color: var(--primary-neon); font-size: 14px;"></i>
                         </div>
                     </div>
-
                     <div class="stat-row">
                         <span class="stat-lbl">مفتاح الـ API</span>
                         <div class="stat-num neon" id="acc-email" style="font-size: 14px;">...</div>
                     </div>
-
                     <div class="stat-row">
                         <span class="stat-lbl">تاريخ الانضمام</span>
                         <div class="stat-num" style="font-size: 16px;">2026/04/17</div>
                     </div>
                 </div>
-
                 <div style="background: rgba(204, 255, 0, 0.05); border: 1px solid var(--neon-yellow); padding: 20px; border-radius: 20px; text-align: center;">
                     <small>نصيحة أمنية</small>
                     <p style="color: #ccc; font-size: 12px; margin-top: 5px;">لا تشارك معرف حسابك أو بيانات الدخول مع أي شخص لضمان أمان رصيدك.</p>
                 </div>
-
                 <button class="action-btn" style="margin-top: 30px; background: #ff3131; color: #fff; box-shadow: 0 12px 30px rgba(255, 49, 49, 0.3);" onclick="auth.signOut()">
                     <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
                 </button>
@@ -470,7 +476,6 @@
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;">
                     <i class="fa-solid fa-code"></i> طلب إنشاء موقع
                 </div>
-                
                 <div style="background:rgba(57,255,20,0.05); border:1px dashed var(--primary-neon); padding:20px; border-radius:20px; margin-bottom:25px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-weight:800; color:#fff;">سعر إنشاء الموقع:</span>
@@ -481,27 +486,22 @@
                         <div style="color:#ddd; font-size:13px; margin-top:5px;">تجديد الاشتراك الشهري للموقع بقيمة <b>30 د.ل</b> فقط.</div>
                     </div>
                 </div>
-
                 <div class="input-wrapper">
                     <label class="field-label">الاسم الكامل</label>
                     <input type="text" class="main-input" id="web-name" placeholder="أدخل اسمك بالكامل">
                 </div>
-
                 <div class="input-wrapper">
                     <label class="field-label">اسم الموقع المطلوب</label>
                     <input type="text" class="main-input" id="web-site-name" placeholder="مثال: متجر الهيبة">
                 </div>
-
                 <div class="input-wrapper">
                     <label class="field-label">كلمة السر الخاصة بالموقع</label>
                     <input type="password" class="main-input" id="web-pass" placeholder="اختر كلمة سر قوية">
                 </div>
-
                 <div class="input-wrapper">
                     <label class="field-label">تفاصيل إضافية عن الموقع</label>
                     <textarea class="main-input" id="web-details" rows="4" style="resize:none;" placeholder="اكتب هنا نوع الموقع، الألوان المفضلة، الأقسام..."></textarea>
                 </div>
-
                 <button class="action-btn" onclick="submitWebProject()">
                     <i class="fa-solid fa-paper-plane"></i> إرسال الطلب للمراجعة
                 </button>
@@ -511,49 +511,18 @@
         <section id="pane-channels" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">قنواتنا الرسمية</div>
-                <small>تابع آخر الأخبار والعروض والمسابقات</small>
-                
                 <div style="margin-top:25px; display:grid; gap:15px;">
-                    <a href="https://www.tiktok.com/@cd_card?_r=1&_t=ZS-95bojZDIv4O" target="_blank" class="channel-card">
+                    <a href="https://www.tiktok.com/@cd_card" target="_blank" class="channel-card">
                         <div style="display:flex; align-items:center; gap:20px;">
                             <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">تيك توك</div>
-                                <small>CD_CARD الرسمي</small>
-                            </div>
+                            <div><div style="font-weight:800; color:#fff;">تيك توك</div><small>CD_CARD الرسمي</small></div>
                         </div>
                         <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
                     </a>
-
                     <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
                         <div style="display:flex; align-items:center; gap:20px;">
                             <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">فيسبوك</div>
-                                <small>تابع الصفحة الرسمية</small>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
-
-                    <a href="https://www.instagram.com/cd.ly.104?igsh=MXZyZXU0ODBvMG1jYw==" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(225,48,108,0.1); color:#e1306c;"><i class="fa-brands fa-instagram"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">انستقرام</div>
-                                <small>cd.ly.104</small>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
-
-                    <a href="https://whatsapp.com/channel/0029Vb7xpppGpLHGt77Uxt0Q" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">قناة الواتساب</div>
-                                <small>اشترك لتصلك العروض</small>
-                            </div>
+                            <div><div style="font-weight:800; color:#fff;">فيسبوك</div><small>تابع الصفحة الرسمية</small></div>
                         </div>
                         <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
                     </a>
@@ -564,27 +533,11 @@
         <section id="pane-support" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">الدعم المباشر</div>
-                <small>نحن هنا لمساعدتك دائماً</small>
-                
                 <div style="margin-top:25px; display:grid; gap:15px;">
                     <a href="https://wa.me/2181923772910" target="_blank" class="channel-card">
                         <div style="display:flex; align-items:center; gap:20px;">
                             <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">الواتساب المباشر</div>
-                                <small>01923772910</small>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
-
-                    <a href="https://t.me/cdcard104" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(0,136,204,0.1); color:#0088cc;"><i class="fa-brands fa-telegram"></i></div>
-                            <div>
-                                <div style="font-weight:800; color:#fff;">التليجرام</div>
-                                <small>@cdcard104</small>
-                            </div>
+                            <div><div style="font-weight:800; color:#fff;">الواتساب المباشر</div><small>01923772910</small></div>
                         </div>
                         <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
                     </a>
@@ -595,11 +548,9 @@
         <section id="pane-wallet" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
-                
                 <div class="lb-img-container" style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;">
                     <img src="lb.jpg" style="width:100%;">
                 </div>
-
                 <div class="stat-row" style="margin-bottom:12px;">
                     <div><small>مدار</small><div style="font-weight:800; color:#fff;">0912377291</div></div>
                     <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0912377291')"></i>
@@ -608,23 +559,11 @@
                     <div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div>
                     <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0920414760')"></i>
                 </div>
-
                 <div class="wallet-guide">
                     <div style="margin-bottom:15px;"><small>خطوات الشحن</small></div>
-                    <div class="step-item">
-                        <div class="step-idx">1</div>
-                        <div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-idx">2</div>
-                        <div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-idx">3</div>
-                        <div class="step-desc">أدخل رقمك الذي حولت منه والقيمة، ثم اضغط تبليغ.</div>
-                    </div>
+                    <div class="step-item"><div class="step-idx">1</div><div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div></div>
+                    <div class="step-item"><div class="step-idx">2</div><div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div></div>
                 </div>
-                
                 <div style="margin-top:25px;">
                     <div class="input-wrapper">
                         <label class="field-label">الرقم المحول منه</label>
@@ -642,11 +581,10 @@
     </div>
 
     <script>
-        // 1. نظام التحميل السريع (2 ثانية)
+        // 1. Loader Logic
         let loaderProgress = 0;
         const loaderBar = document.getElementById('loader-bar');
         const loaderScreen = document.getElementById('loader-screen');
-
         const loaderInterval = setInterval(() => {
             loaderProgress += 5;
             loaderBar.style.width = loaderProgress + '%';
@@ -662,7 +600,7 @@
             }
         }, 100);
 
-        // 2. نظام إشعار الإعلان (10 ثواني)
+        // 2. Ad Notice Logic
         let adSeconds = 10;
         let adTimer;
         function initAdProcess() {
@@ -680,7 +618,7 @@
             document.getElementById('ad-notice-overlay').classList.remove('active');
         }
 
-        // 3. إعدادات FIREBASE
+        // 3. Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -695,11 +633,23 @@
         let srvs = [];
         let curSrv = null;
 
+        // مصفوفة الصور التي أرسلتها لربطها تلقائياً بالأسماء
+        const localIcons = {
+            "فيسبوك": "Facebook.jpg",
+            "انستغرام": "Instagram.jpg",
+            "نتفلكس": "Netflix.jpg",
+            "سناب شات": "Snapchat.jpg",
+            "تيك توك": "tiktok.jpg",
+            "واتساب": "watsap.jpg",
+            "يتيوب": "yotuop.jpg",
+            "تليجرام": "teli.jpg",
+            "تويتر": "twiter.jpg",
+            "شاهد": "shahed.jpg",
+            "ببجي": "popgi.jpg"
+        };
+
         auth.onAuthStateChanged(u => {
-            if (u) { 
-                uData.email = u.email;
-                syncSystem(u.uid); 
-            } 
+            if (u) { uData.email = u.email; syncSystem(u.uid); } 
             else { window.location.href = "login.html"; }
         });
 
@@ -707,16 +657,13 @@
             db.collection("users").doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
                     uData = { uid: uid, email: uData.email, ...doc.data() };
-                    
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
                     document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
-                    
                     document.getElementById('acc-username').innerText = uData.username || "غير معرف";
                     document.getElementById('acc-uid').innerText = uid;
                     document.getElementById('acc-email').innerText = uData.email || "API_OFFLINE";
-                    
                     if(curSrv) recalc(); 
                 }
             });
@@ -728,24 +675,50 @@
                 const snap = await db.collection("services").get();
                 srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const cats = [...new Set(srvs.map(s => s.category))].sort();
-                document.getElementById('drop-cats').innerHTML = cats.map(c => `<div class="drop-item" onclick="selectCat('${c}')">${c}</div>`).join('');
+                
+                document.getElementById('drop-cats').innerHTML = cats.map(c => {
+                    // محاولة إيجاد أيقونة مناسبة للتصنيف
+                    let iconSrc = "cd.jpg"; 
+                    for (let key in localIcons) { if(c.includes(key)) iconSrc = localIcons[key]; }
+
+                    return `
+                        <div class="drop-item" onclick="selectCat('${c}', '${iconSrc}')">
+                            <img src="${iconSrc}" onerror="this.src='cd.jpg'">
+                            <span>${c}</span>
+                        </div>
+                    `;
+                }).join('');
             } catch(e) { console.error(e); }
         }
 
-        function selectCat(c) {
-            document.getElementById('label-cat').innerText = c;
+        function selectCat(c, icon) {
+            document.getElementById('label-cat-container').innerHTML = `
+                <img src="${icon}" class="selected-img">
+                <span id="label-cat">${c}</span>
+            `;
+            
             const filtered = srvs.filter(s => s.category === c);
-            document.getElementById('drop-srvs').innerHTML = filtered.map(s => `<div class="drop-item" onclick="selectSrv('${s.id}')">${s.name}</div>`).join('');
+            document.getElementById('drop-srvs').innerHTML = filtered.map(s => {
+                let sIcon = icon; // نستخدم أيقونة التصنيف كافتراضية للخدمة
+                return `
+                    <div class="drop-item" onclick="selectSrv('${s.id}', '${sIcon}')">
+                        <img src="${sIcon}" onerror="this.src='cd.jpg'">
+                        <span>${s.name}</span>
+                    </div>
+                `;
+            }).join('');
+            
             document.getElementById('label-srv').innerText = "اختر الخدمة الآن...";
             toggleDrop('drop-cats');
         }
 
-        // ============================================================
-        // UPDATED FUNCTIONS [selectSrv & recalc]
-        // ============================================================
-        function selectSrv(id) {
+        function selectSrv(id, icon) {
             curSrv = srvs.find(s => s.id === id);
-            document.getElementById('label-srv').innerText = curSrv.name;
+            
+            document.getElementById('label-srv-container').innerHTML = `
+                <img src="${icon}" class="selected-img">
+                <span id="label-srv">${curSrv.name}</span>
+            `;
 
             const descBox = document.getElementById('srv-desc-box');
             const descText = document.getElementById('srv-desc-text');
@@ -762,45 +735,25 @@
                 qtyInput.readOnly = false;
                 if (qtyInput.value == 1) qtyInput.value = 1000;
             }
-
             recalc();
         }
 
         function recalc() {
             if (!curSrv) return;
-
             const q = parseFloat(document.getElementById('field-qty').value) || 0;
             let price = parseFloat(curSrv.finalPrice) || 0;
-
-            if (uData.discount > 0) {
-                price -= price * (uData.discount / 100);
-            }
-
+            if (uData.discount > 0) { price -= price * (uData.discount / 100); }
             let total = 0;
-
-            if (curSrv.priceType === "fixed") {
-                total = price;
-            } 
-            else if (curSrv.priceType === "1000") {
-                total = (q / 1000) * price;
-            } 
-            else {
-                total = q * price;
-            }
-
+            if (curSrv.priceType === "fixed") { total = price; } 
+            else if (curSrv.priceType === "1000") { total = (q / 1000) * price; } 
+            else { total = q * price; }
             document.getElementById('val-total').innerText = total.toFixed(2);
         }
-        // ============================================================
 
         async function requestDeposit() {
             const phone = document.getElementById('field-dep-phone').value;
             const amt = parseFloat(document.getElementById('field-dep-amt').value);
-
-            if(!phone || !amt) {
-                notify("يرجى إدخال رقم الهاتف والمبلغ");
-                return;
-            }
-
+            if(!phone || !amt) { notify("يرجى إدخال رقم الهاتف والمبلغ"); return; }
             try {
                 await db.collection("deposits").add({
                     uid: uData.uid,
@@ -810,12 +763,10 @@
                     status: "قيد المراجعة",
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب الشحن بنجاح! انتظر التأكيد.");
+                notify("تم إرسال طلب الشحن بنجاح!");
                 document.getElementById('field-dep-phone').value = "";
                 document.getElementById('field-dep-amt').value = "";
-            } catch(e) {
-                notify("حدث خطأ في الإرسال");
-            }
+            } catch(e) { notify("حدث خطأ في الإرسال"); }
         }
 
         async function submitWebProject() {
@@ -823,32 +774,15 @@
             const site = document.getElementById('web-site-name').value;
             const pass = document.getElementById('web-pass').value;
             const info = document.getElementById('web-details').value;
-
-            if(!name || !site || !pass) {
-                notify("يرجى ملء البيانات الأساسية للطلب");
-                return;
-            }
-
+            if(!name || !site || !pass) { notify("يرجى ملء البيانات الأساسية"); return; }
             try {
                 await db.collection("web_orders").add({
-                    userId: uData.uid,
-                    userName: name,
-                    websiteName: site,
-                    password: pass,
-                    details: info,
-                    status: "pending",
-                    price: 70,
-                    renewal: 30,
+                    userId: uData.uid, userName: name, websiteName: site, password: pass,
+                    details: info, status: "pending", price: 70, renewal: 30,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب البرمجة بنجاح! سنتواصل معك.");
-                document.getElementById('web-name').value = "";
-                document.getElementById('web-site-name').value = "";
-                document.getElementById('web-pass').value = "";
-                document.getElementById('web-details').value = "";
-            } catch(e) {
-                notify("حدث خطأ أثناء الإرسال، حاول لاحقاً.");
-            }
+                notify("تم إرسال طلب البرمجة بنجاح!");
+            } catch(e) { notify("حدث خطأ أثناء الإرسال"); }
         }
 
         function showPane(id) {
@@ -865,16 +799,12 @@
         function toggleDrop(id) { document.getElementById(id).classList.toggle('show'); }
         function notify(m) { 
             const t = document.getElementById('main-toast'); 
-            t.innerText = m; 
-            t.classList.add('active'); 
+            t.innerText = m; t.classList.add('active'); 
             setTimeout(()=>t.classList.remove('active'), 3500); 
         }
-        function copyToClipboard(t) { 
-            navigator.clipboard.writeText(t); 
-            notify("تم نسخ المعلومات بنجاح"); 
-        }
-        
+        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم نسخ المعلومات بنجاح"); }
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
+
