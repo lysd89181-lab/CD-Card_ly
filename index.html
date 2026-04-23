@@ -191,6 +191,7 @@
         }
         .main-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 25px var(--primary-glow); }
         
+        /* [NEW] STYLE FOR LOCKED QUANTITY */
         .main-input[readonly] {
             background-color: #0d0d0d !important;
             border-color: var(--neon-yellow) !important;
@@ -451,12 +452,10 @@
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:22px;">
                     <i class="fa-brands fa-youtube"></i> شروحات الفيديو
                 </div>
-                
                 <div class="video-card">
                     <iframe class="video-frame" src="https://www.youtube.com/embed/Ev50veF7X7k" frameborder="0" allowfullscreen></iframe>
                     <div style="text-align:center;"><small>شرح طريقة إنشاء حساب جديد</small></div>
                 </div>
-
                 <div class="video-card">
                     <iframe class="video-frame" src="https://www.youtube.com/embed/v1WKw9-hIQo" frameborder="0" allowfullscreen></iframe>
                     <div style="text-align:center;"><small>شرح طريقة إضافة الأموال للمحفظة</small></div>
@@ -470,10 +469,7 @@
                     <i class="fa-solid fa-id-card"></i> معلومات الحساب
                 </div>
                 <div class="stats-vertical-list">
-                    <div class="stat-row">
-                        <span class="stat-lbl">اسم المستخدم</span>
-                        <div class="stat-num neon" id="acc-username">...</div>
-                    </div>
+                    <div class="stat-row"><span class="stat-lbl">اسم المستخدم</span><div class="stat-num neon" id="acc-username">...</div></div>
                     <div class="stat-row" style="cursor: pointer;" onclick="copyToClipboard(uData.uid)">
                         <span class="stat-lbl">المعرف الرقمي (ID)</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -481,27 +477,13 @@
                              <i class="fa-solid fa-copy" style="color: var(--primary-neon); font-size: 14px;"></i>
                         </div>
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-lbl">رابط الـ API</span>
-                        <div class="stat-num neon" style="font-size: 12px; font-family: monospace;">https://cdcard.ly/api/v1</div>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-lbl">مفتاح الـ API الخاص بك</span>
-                        <div class="stat-num neon" id="acc-api-key" style="font-size: 12px;">...</div>
-                    </div>
+                    <div class="stat-row"><span class="stat-lbl">رابط الـ API</span><div class="stat-num neon" style="font-size: 12px; font-family: monospace;">https://cdcard.ly/api/v1</div></div>
+                    <div class="stat-row"><span class="stat-lbl">مفتاح الـ API الخاص بك</span><div class="stat-num neon" id="acc-api-key" style="font-size: 12px;">...</div></div>
                 </div>
-
                 <div style="margin-top: 30px;">
-                    <div class="input-wrapper">
-                        <label class="field-label">رابط المزود (للمطورين)</label>
-                        <input type="text" class="main-input" value="https://cdcard.ly/api/v1" readonly>
-                    </div>
-                    <div class="input-wrapper">
-                        <label class="field-label">مفتاح الـ API للربط</label>
-                        <input type="text" class="main-input" id="field-api-key-display" readonly>
-                    </div>
+                    <div class="input-wrapper"><label class="field-label">رابط المزود (للمطورين)</label><input type="text" class="main-input" value="https://cdcard.ly/api/v1" readonly></div>
+                    <div class="input-wrapper"><label class="field-label">مفتاح الـ API للربط</label><input type="text" class="main-input" id="field-api-key-display" readonly></div>
                 </div>
-
                 <button class="action-btn" style="margin-top: 30px; background: #ff3131; color: #fff; box-shadow: 0 12px 30px rgba(255, 49, 49, 0.3);" onclick="auth.signOut()">
                     <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
                 </button>
@@ -510,38 +492,16 @@
 
         <section id="pane-web" class="pane">
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;">
-                    <i class="fa-solid fa-code"></i> طلب إنشاء موقع
-                </div>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;"><i class="fa-solid fa-code"></i> طلب إنشاء موقع</div>
                 <div style="background:rgba(57,255,20,0.05); border:1px dashed var(--primary-neon); padding:20px; border-radius:20px; margin-bottom:25px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:800; color:#fff;">سعر إنشاء الموقع:</span>
-                        <span style="color:var(--primary-neon); font-weight:900; font-size:20px;">70 د.ل</span>
-                    </div>
-                    <div style="margin-top:10px; border-top:1px solid #222; pt-10px;">
-                        <small>ملاحظة هامة:</small>
-                        <div style="color:#ddd; font-size:13px; margin-top:5px;">تجديد الاشتراك الشهري للموقع بقيمة <b>30 د.ل</b> فقط.</div>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; color:#fff;">سعر إنشاء الموقع:</span><span style="color:var(--primary-neon); font-weight:900; font-size:20px;">70 د.ل</span></div>
+                    <div style="margin-top:10px; border-top:1px solid #222; pt-10px;"><small>ملاحظة هامة:</small><div style="color:#ddd; font-size:13px; margin-top:5px;">تجديد الاشتراك الشهري للموقع بقيمة <b>30 د.ل</b> فقط.</div></div>
                 </div>
-                <div class="input-wrapper">
-                    <label class="field-label">الاسم الكامل</label>
-                    <input type="text" class="main-input" id="web-name" placeholder="أدخل اسمك بالكامل">
-                </div>
-                <div class="input-wrapper">
-                    <label class="field-label">اسم الموقع المطلوب</label>
-                    <input type="text" class="main-input" id="web-site-name" placeholder="مثال: متجر الهيبة">
-                </div>
-                <div class="input-wrapper">
-                    <label class="field-label">كلمة السر الخاصة بالموقع</label>
-                    <input type="password" class="main-input" id="web-pass" placeholder="اختر كلمة سر قوية">
-                </div>
-                <div class="input-wrapper">
-                    <label class="field-label">تفاصيل إضافية عن الموقع</label>
-                    <textarea class="main-input" id="web-details" rows="4" style="resize:none;" placeholder="اكتب هنا نوع الموقع، الألوان المفضلة، الأقسام..."></textarea>
-                </div>
-                <button class="action-btn" onclick="submitWebProject()">
-                    <i class="fa-solid fa-paper-plane"></i> إرسال الطلب للمراجعة
-                </button>
+                <div class="input-wrapper"><label class="field-label">الاسم الكامل</label><input type="text" class="main-input" id="web-name" placeholder="أدخل اسمك بالكامل"></div>
+                <div class="input-wrapper"><label class="field-label">اسم الموقع المطلوب</label><input type="text" class="main-input" id="web-site-name" placeholder="مثال: متجر الهيبة"></div>
+                <div class="input-wrapper"><label class="field-label">كلمة السر الخاصة بالموقع</label><input type="password" class="main-input" id="web-pass" placeholder="اختر كلمة سر قوية"></div>
+                <div class="input-wrapper"><label class="field-label">تفاصيل إضافية عن الموقع</label><textarea class="main-input" id="web-details" rows="4" style="resize:none;" placeholder="اكتب هنا نوع الموقع، الألوان المفضلة، الأقسام..."></textarea></div>
+                <button class="action-btn" onclick="submitWebProject()"><i class="fa-solid fa-paper-plane"></i> إرسال الطلب للمراجعة</button>
             </div>
         </section>
 
@@ -549,20 +509,8 @@
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">قنواتنا الرسمية</div>
                 <div style="margin-top:25px; display:grid; gap:15px;">
-                    <a href="https://www.tiktok.com/@cd_card" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div>
-                            <div><div style="font-weight:800; color:#fff;">تيك توك</div><small>CD_CARD الرسمي</small></div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
-                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div>
-                            <div><div style="font-weight:800; color:#fff;">فيسبوك</div><small>تابع الصفحة الرسمية</small></div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
+                    <a href="https://www.tiktok.com/@cd_card" target="_blank" class="channel-card"><div style="display:flex; align-items:center; gap:20px;"><div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="fa-brands fa-tiktok"></i></div><div><div style="font-weight:800; color:#fff;">تيك توك</div><small>CD_CARD الرسمي</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
+                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card"><div style="display:flex; align-items:center; gap:20px;"><div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;"><i class="fa-brands fa-facebook"></i></div><div><div style="font-weight:800; color:#fff;">فيسبوك</div><small>تابع الصفحة الرسمية</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
                 </div>
             </div>
         </section>
@@ -571,13 +519,7 @@
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">الدعم المباشر</div>
                 <div style="margin-top:25px; display:grid; gap:15px;">
-                    <a href="https://wa.me/2181923772910" target="_blank" class="channel-card">
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div>
-                            <div><div style="font-weight:800; color:#fff;">الواتساب المباشر</div><small>01923772910</small></div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
-                    </a>
+                    <a href="https://wa.me/2181923772910" target="_blank" class="channel-card"><div style="display:flex; align-items:center; gap:20px;"><div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div><div><div style="font-weight:800; color:#fff;">الواتساب المباشر</div><small>01923772910</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
                 </div>
             </div>
         </section>
@@ -585,31 +527,17 @@
         <section id="pane-wallet" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
-                <div class="lb-img-container" style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;">
-                    <img src="lb.jpg" style="width:100%;">
-                </div>
-                <div class="stat-row" style="margin-bottom:12px;">
-                    <div><small>مدار</small><div style="font-weight:800; color:#fff;">0912377291</div></div>
-                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0912377291')"></i>
-                </div>
-                <div class="stat-row" style="margin-bottom:25px;">
-                    <div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div>
-                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0920414760')"></i>
-                </div>
+                <div class="lb-img-container" style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;"><img src="lb.jpg" style="width:100%;"></div>
+                <div class="stat-row" style="margin-bottom:12px;"><div><small>مدار</small><div style="font-weight:800; color:#fff;">0912377291</div></div><i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0912377291')"></i></div>
+                <div class="stat-row" style="margin-bottom:25px;"><div><small>ليبيانا</small><div style="font-weight:800; color:#fff;">0920414760</div></div><i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyToClipboard('0920414760')"></i></div>
                 <div class="wallet-guide">
                     <div style="margin-bottom:15px;"><small>خطوات الشحن</small></div>
                     <div class="step-item"><div class="step-idx">1</div><div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div></div>
                     <div class="step-item"><div class="step-idx">2</div><div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div></div>
                 </div>
                 <div style="margin-top:25px;">
-                    <div class="input-wrapper">
-                        <label class="field-label">الرقم المحول منه</label>
-                        <input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx">
-                    </div>
-                    <div class="input-wrapper">
-                        <label class="field-label">القيمة المحولة (د.ل)</label>
-                        <input type="number" id="field-dep-amt" class="main-input" placeholder="0.00">
-                    </div>
+                    <div class="input-wrapper"><label class="field-label">الرقم المحول منه</label><input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx"></div>
+                    <div class="input-wrapper"><label class="field-label">القيمة المحولة (د.ل)</label><input type="number" id="field-dep-amt" class="main-input" placeholder="0.00"></div>
                     <button class="action-btn" onclick="requestDeposit()">إرسال التبليغ الآن</button>
                 </div>
             </div>
@@ -673,7 +601,6 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // [PROVIDER API INFO] - بيانات المزود الرسمي
         const PROVIDER_API_URL = "https://libyaplus1.com/api/v2";
         const PROVIDER_API_KEY = "958c5695446fccb28ab7b8090d5e271a";
 
@@ -718,15 +645,14 @@
         }
 
         // ============================================================
-        // [04] SERVICES LOGIC - جلب وترتيب الأقسام (معدل)
+        // [04] SERVICES LOGIC - جلب وترتيب الأقسام (تعديل الترتيب)
         // ============================================================
         async function fetchServices() {
             try {
-                // تعديل: جلب الخدمات مرتبة حسب حقل catOrder الذي تم إنشاؤه في لوحة التحكم
+                // التعديل 1: ترتيب الخدمات حسب catOrder (الموجود في Firebase)
                 db.collection("services").orderBy("catOrder", "asc").onSnapshot(snap => {
                     srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     
-                    // استخراج الأقسام الفريدة مع الحفاظ على الترتيب الأصلي للبيانات
                     const cats = [];
                     srvs.forEach(s => {
                         const c = s.category || "عام";
@@ -753,18 +679,13 @@
         function selectCat(c, icon) {
             const labelContainer = document.getElementById('label-cat-container');
             if(labelContainer) {
-                labelContainer.innerHTML = `
-                    <img src="${icon}" class="selected-img">
-                    <span id="label-cat">${c}</span>
-                `;
+                labelContainer.innerHTML = `<img src="${icon}" class="selected-img"><span id="label-cat">${c}</span>`;
             }
             curSrv = null;
             const labelSrv = document.getElementById('label-srv-container');
             if(labelSrv) labelSrv.innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
-            
             const descBox = document.getElementById('srv-desc-box');
             if(descBox) descBox.classList.remove('active');
-            
             const totalDisplay = document.getElementById('val-total');
             if(totalDisplay) totalDisplay.innerText = "0.00";
 
@@ -785,10 +706,7 @@
             curSrv = srvs.find(s => s.id === id);
             const labelSrvContainer = document.getElementById('label-srv-container');
             if(labelSrvContainer) {
-                labelSrvContainer.innerHTML = `
-                    <img src="${icon}" class="selected-img">
-                    <span id="label-srv">${curSrv.name}</span>
-                `;
+                labelSrvContainer.innerHTML = `<img src="${icon}" class="selected-img"><span id="label-srv">${curSrv.name}</span>`;
             }
             const descBox = document.getElementById('srv-desc-box');
             const descText = document.getElementById('srv-desc-text');
@@ -799,6 +717,7 @@
             
             toggleDrop('drop-srvs');
             
+            // التعديل 2: تأمين الكمية للسعر الثابت (fixed)
             if (curSrv.priceType === "fixed") {
                 if(qtyInput) {
                     qtyInput.readOnly = true;
@@ -831,7 +750,7 @@
         }
 
         // ============================================================
-        // [05] ORDER SUBMISSION - معالجة الطلبات والتحقق من الرصيد
+        // [05] ORDER SUBMISSION - معالجة الطلبات
         // ============================================================
         async function sendToProvider(providerSrvId, link, qty) {
             const params = new URLSearchParams({
@@ -842,10 +761,7 @@
                 const response = await fetch(PROVIDER_API_URL + "?" + params.toString());
                 const result = await response.json();
                 return result.order || null;
-            } catch (e) {
-                console.error("Provider Error:", e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function submitOrder() {
@@ -869,7 +785,6 @@
                 let providerOrderId = null;
                 if (curSrv.isAuto && curSrv.providerServiceId) {
                     providerOrderId = await sendToProvider(curSrv.providerServiceId, link, qty);
-                    if (!providerOrderId) notify("خطأ في الاتصال بالمزود، سيتم معالجة الطلب يدوياً");
                 }
 
                 await db.collection("orders").add({
@@ -889,9 +804,8 @@
                 notify("تم استلام طلبك بنجاح!");
                 if(linkField) linkField.value = "";
                 
-            } catch (error) {
-                notify("حدث خطأ أثناء الطلب، يرجى مراجعة الدعم");
-            } finally {
+            } catch (error) { notify("حدث خطأ أثناء الطلب"); }
+            finally {
                 if(btn) {
                     btn.disabled = false;
                     btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`;
@@ -899,15 +813,12 @@
             }
         }
 
-        // ============================================================
-        // [06] DEPOSITS & PROJECTS - الشحن وطلب المواقع
-        // ============================================================
+        // [06] DEPOSITS & PROJECTS
         async function requestDeposit() {
             const phoneField = document.getElementById('field-dep-phone');
             const amtField = document.getElementById('field-dep-amt');
             const phone = phoneField ? phoneField.value : "";
             const amt = parseFloat(amtField ? amtField.value : 0);
-            
             if(!phone || !amt) { notify("يرجى إدخال البيانات كاملة"); return; }
             try {
                 await db.collection("deposits").add({
@@ -916,22 +827,15 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 notify("تم إرسال طلب الشحن بنجاح!");
-                if(phoneField) phoneField.value = "";
-                if(amtField) amtField.value = "";
+                if(phoneField) phoneField.value = ""; if(amtField) amtField.value = "";
             } catch(e) { notify("حدث خطأ في النظام"); }
         }
 
         async function submitWebProject() {
-            const n = document.getElementById('web-name');
-            const s = document.getElementById('web-site-name');
-            const p = document.getElementById('web-pass');
-            const d = document.getElementById('web-details');
-            
-            const name = n ? n.value : "";
-            const site = s ? s.value : "";
-            const pass = p ? p.value : "";
-            const info = d ? d.value : "";
-
+            const n = document.getElementById('web-name'); const s = document.getElementById('web-site-name');
+            const p = document.getElementById('web-pass'); const d = document.getElementById('web-details');
+            const name = n ? n.value : ""; const site = s ? s.value : "";
+            const pass = p ? p.value : ""; const info = d ? d.value : "";
             if(!name || !site || !pass) { notify("يرجى ملء جميع الحقول المطلوبة"); return; }
             try {
                 await db.collection("web_orders").add({
@@ -943,43 +847,27 @@
             } catch(e) { notify("فشل في إرسال طلب البرمجة"); }
         }
 
-        // ============================================================
-        // [07] UTILS - وظائف مساعدة للنظام
-        // ============================================================
+        // [07] UTILS
         function showPane(id) {
             document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            const target = document.getElementById('pane-'+id);
-            if(target) target.classList.add('active');
-            const navLink = document.getElementById('nav-'+id);
-            if(navLink) navLink.classList.add('active');
-            toggleSidebar(false);
-            window.scrollTo(0,0);
+            const target = document.getElementById('pane-'+id); if(target) target.classList.add('active');
+            const navLink = document.getElementById('nav-'+id); if(navLink) navLink.classList.add('active');
+            toggleSidebar(false); window.scrollTo(0,0);
         }
-
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
-        
         function toggleDrop(id) { 
             const p = document.getElementById(id);
             document.querySelectorAll('.dropdown-panel').forEach(x => { if(x.id !== id) x.classList.remove('show'); });
             if(p) p.classList.toggle('show'); 
         }
-        
         function notify(m) { 
             const t = document.getElementById('main-toast'); 
-            if(t) {
-                t.innerText = m; t.classList.add('active'); 
-                setTimeout(()=>t.classList.remove('active'), 3500); 
-            }
+            if(t) { t.innerText = m; t.classList.add('active'); setTimeout(()=>t.classList.remove('active'), 3500); }
         }
-        
-        function copyToClipboard(t) { 
-            navigator.clipboard.writeText(t); 
-            notify("تم النسخ إلى الحافظة"); 
-        }
-
-        // منع القائمة المنبثقة لزيادة الأمان والحفاظ على التصميم
+        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم النسخ إلى الحافظة"); }
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
+
