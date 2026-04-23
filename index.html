@@ -618,44 +618,51 @@
     </div>
 
     <script>
-        // 1. Loader Logic
+        // ============================================================
+        // [01] LOADER SYSTEM - نظام التحميل
+        // ============================================================
         let loaderProgress = 0;
         const loaderBar = document.getElementById('loader-bar');
         const loaderScreen = document.getElementById('loader-screen');
         const loaderInterval = setInterval(() => {
             loaderProgress += 5;
-            loaderBar.style.width = loaderProgress + '%';
+            if(loaderBar) loaderBar.style.width = loaderProgress + '%';
             if (loaderProgress >= 100) {
                 clearInterval(loaderInterval);
                 setTimeout(() => {
-                    loaderScreen.style.opacity = '0';
+                    if(loaderScreen) loaderScreen.style.opacity = '0';
                     setTimeout(() => {
-                        loaderScreen.style.display = 'none';
+                        if(loaderScreen) loaderScreen.style.display = 'none';
                         initAdProcess(); 
                     }, 500);
                 }, 100);
             }
         }, 100);
 
-        // 2. Ad Notice Logic
+        // ============================================================
+        // [02] AD NOTIFICATION LOGIC - نظام الإشعارات الإعلانية
+        // ============================================================
         let adSeconds = 10;
         let adTimer;
         function initAdProcess() {
             const overlay = document.getElementById('ad-notice-overlay');
             const label = document.getElementById('ad-countdown-lbl');
-            overlay.classList.add('active');
+            if(overlay) overlay.classList.add('active');
             adTimer = setInterval(() => {
                 adSeconds--;
-                label.innerHTML = `<small>سيختفي الإشعار بعد ${adSeconds} ثوانٍ</small>`;
+                if(label) label.innerHTML = `<small>سيختفي الإشعار بعد ${adSeconds} ثوانٍ</small>`;
                 if (adSeconds <= 0) { closeAdNotice(); }
             }, 1000);
         }
         function closeAdNotice() {
             clearInterval(adTimer);
-            document.getElementById('ad-notice-overlay').classList.remove('active');
+            const overlay = document.getElementById('ad-notice-overlay');
+            if(overlay) overlay.classList.remove('active');
         }
 
-        // 3. Firebase Configuration
+        // ============================================================
+        // [03] FIREBASE CORE - إعدادات وقواعد البيانات
+        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -666,7 +673,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // [PROVIDER API INFO]
+        // [PROVIDER API INFO] - بيانات المزود الرسمي
         const PROVIDER_API_URL = "https://libyaplus1.com/api/v2";
         const PROVIDER_API_KEY = "958c5695446fccb28ab7b8090d5e271a";
 
@@ -675,22 +682,11 @@
         let curSrv = null;
 
         const localIcons = {
-            "فيس بوك": "Facebook.jpg",
-            "انستجرام": "Instagram.jpg",
-            "نتفلكس": "Netflix.jpg",
-            "سناب شات": "Snapchat.jpg",
-            "تيك توك": "tiktok.jpg",
-            "وتساب": "watsap.jpg",
-            "يتيوب": "yotuop.jpg",
-            "بينانس": "binns.jpg", 
-            " فاير": "frii.jpg", 
-            "جي بي": "shats.jpg", 
-            "توثيق": "tawtheg.jpg", 
-            "كات": "capcat.jpg", 
-            "تليجرام": "teli.jpg",
-            "تويتر": "twiter.jpg",
-            "shahed": "shahed.jpg",
-            "ببجي": "popgi.jpg", 
+            "فيس بوك": "Facebook.jpg", "انستجرام": "Instagram.jpg", "نتفلكس": "Netflix.jpg",
+            "سناب شات": "Snapchat.jpg", "تيك توك": "tiktok.jpg", "وتساب": "watsap.jpg",
+            "يتيوب": "yotuop.jpg", "بينانس": "binns.jpg", " فاير": "frii.jpg", 
+            "جي بي": "shats.jpg", "توثيق": "tawtheg.jpg", "كات": "capcat.jpg", 
+            "تليجرام": "teli.jpg", "تويتر": "twiter.jpg", "shahed": "shahed.jpg", "ببجي": "popgi.jpg", 
         };
 
         auth.onAuthStateChanged(u => {
@@ -703,13 +699,10 @@
                 if (doc.exists) {
                     const data = doc.data();
                     uData = { uid: uid, email: uData.email, ...data };
-                    
-                    // توليد مفتاح API لو مش موجود
                     if (!data.apiKey) {
                         const newKey = btoa(uid + Date.now()).substring(0, 32);
                         db.collection("users").doc(uid).update({ apiKey: newKey });
                     }
-
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
@@ -718,97 +711,137 @@
                     document.getElementById('acc-uid').innerText = uid;
                     document.getElementById('acc-api-key').innerText = data.apiKey || "...";
                     document.getElementById('field-api-key-display').value = data.apiKey || "";
-                    
                     if(curSrv) recalc(); 
                 }
             });
             fetchServices();
         }
 
+        // ============================================================
+        // [04] SERVICES LOGIC - جلب وترتيب الأقسام (معدل)
+        // ============================================================
         async function fetchServices() {
             try {
-                const snap = await db.collection("services").get();
-                srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                const cats = [...new Set(srvs.map(s => s.category))].sort();
-                
-                document.getElementById('drop-cats').innerHTML = cats.map(c => {
-                    let iconSrc = "cd.jpg"; 
-                    for (let key in localIcons) { if(c.includes(key)) iconSrc = localIcons[key]; }
-                    return `
-                        <div class="drop-item" onclick="selectCat('${c}', '${iconSrc}')">
-                            <img src="${iconSrc}" onerror="this.src='cd.jpg'">
-                            <span>${c}</span>
-                        </div>
-                    `;
-                }).join('');
-            } catch(e) { console.error(e); }
+                // تعديل: جلب الخدمات مرتبة حسب حقل catOrder الذي تم إنشاؤه في لوحة التحكم
+                db.collection("services").orderBy("catOrder", "asc").onSnapshot(snap => {
+                    srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    // استخراج الأقسام الفريدة مع الحفاظ على الترتيب الأصلي للبيانات
+                    const cats = [];
+                    srvs.forEach(s => {
+                        const c = s.category || "عام";
+                        if (!cats.includes(c)) cats.push(c);
+                    });
+
+                    const dropCats = document.getElementById('drop-cats');
+                    if(dropCats) {
+                        dropCats.innerHTML = cats.map(c => {
+                            let iconSrc = "cd.jpg"; 
+                            for (let key in localIcons) { if(c.includes(key)) iconSrc = localIcons[key]; }
+                            return `
+                                <div class="drop-item" onclick="selectCat('${c}', '${iconSrc}')">
+                                    <img src="${iconSrc}" onerror="this.src='cd.jpg'">
+                                    <span>${c}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                });
+            } catch(e) { console.error("Error fetching sorted services:", e); }
         }
 
         function selectCat(c, icon) {
-            document.getElementById('label-cat-container').innerHTML = `
-                <img src="${icon}" class="selected-img">
-                <span id="label-cat">${c}</span>
-            `;
+            const labelContainer = document.getElementById('label-cat-container');
+            if(labelContainer) {
+                labelContainer.innerHTML = `
+                    <img src="${icon}" class="selected-img">
+                    <span id="label-cat">${c}</span>
+                `;
+            }
             curSrv = null;
-            document.getElementById('label-srv-container').innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
-            document.getElementById('srv-desc-box').classList.remove('active');
-            document.getElementById('val-total').innerText = "0.00";
+            const labelSrv = document.getElementById('label-srv-container');
+            if(labelSrv) labelSrv.innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
+            
+            const descBox = document.getElementById('srv-desc-box');
+            if(descBox) descBox.classList.remove('active');
+            
+            const totalDisplay = document.getElementById('val-total');
+            if(totalDisplay) totalDisplay.innerText = "0.00";
+
             const filtered = srvs.filter(s => s.category === c);
-            document.getElementById('drop-srvs').innerHTML = filtered.map(s => {
-                return `<div class="drop-item" onclick="selectSrv('${s.id}', '${icon}')">
-                    <img src="${icon}" onerror="this.src='cd.jpg'">
-                    <span>${s.name}</span>
-                </div>`;
-            }).join('');
+            const dropSrvs = document.getElementById('drop-srvs');
+            if(dropSrvs) {
+                dropSrvs.innerHTML = filtered.map(s => {
+                    return `<div class="drop-item" onclick="selectSrv('${s.id}', '${icon}')">
+                        <img src="${icon}" onerror="this.src='cd.jpg'">
+                        <span>${s.name}</span>
+                    </div>`;
+                }).join('');
+            }
             toggleDrop('drop-cats');
         }
 
         function selectSrv(id, icon) {
             curSrv = srvs.find(s => s.id === id);
-            document.getElementById('label-srv-container').innerHTML = `
-                <img src="${icon}" class="selected-img">
-                <span id="label-srv">${curSrv.name}</span>
-            `;
+            const labelSrvContainer = document.getElementById('label-srv-container');
+            if(labelSrvContainer) {
+                labelSrvContainer.innerHTML = `
+                    <img src="${icon}" class="selected-img">
+                    <span id="label-srv">${curSrv.name}</span>
+                `;
+            }
             const descBox = document.getElementById('srv-desc-box');
+            const descText = document.getElementById('srv-desc-text');
             const qtyInput = document.getElementById('field-qty');
-            document.getElementById('srv-desc-text').innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية.";
-            descBox.classList.add('active');
+            
+            if(descText) descText.innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية تم فحصها من قبل فريق CD-CARD.";
+            if(descBox) descBox.classList.add('active');
+            
             toggleDrop('drop-srvs');
+            
             if (curSrv.priceType === "fixed") {
-                qtyInput.readOnly = true;
-                qtyInput.value = 1;
+                if(qtyInput) {
+                    qtyInput.readOnly = true;
+                    qtyInput.value = 1;
+                }
             } else {
-                qtyInput.readOnly = false;
-                if (qtyInput.value == 1) qtyInput.value = 1000;
+                if(qtyInput) {
+                    qtyInput.readOnly = false;
+                    if (qtyInput.value == 1) qtyInput.value = 1000;
+                }
             }
             recalc();
         }
 
         function recalc() {
             if (!curSrv) return;
-            const q = parseFloat(document.getElementById('field-qty').value) || 0;
+            const qtyField = document.getElementById('field-qty');
+            const q = parseFloat(qtyField ? qtyField.value : 0) || 0;
             let price = parseFloat(curSrv.finalPrice) || 0;
+            
             if (uData.discount > 0) { price -= price * (uData.discount / 100); }
+            
             let total = 0;
             if (curSrv.priceType === "fixed") total = price;
             else if (curSrv.priceType === "1000") total = (q / 1000) * price;
             else total = q * price;
-            document.getElementById('val-total').innerText = total.toFixed(2);
+            
+            const totalDisplay = document.getElementById('val-total');
+            if(totalDisplay) totalDisplay.innerText = total.toFixed(2);
         }
 
-        // [CRITICAL] API INTEGRATION FOR AUTOMATIC ORDERS
+        // ============================================================
+        // [05] ORDER SUBMISSION - معالجة الطلبات والتحقق من الرصيد
+        // ============================================================
         async function sendToProvider(providerSrvId, link, qty) {
             const params = new URLSearchParams({
-                key: PROVIDER_API_KEY,
-                action: 'add',
-                service: providerSrvId,
-                link: link,
-                quantity: qty
+                key: PROVIDER_API_KEY, action: 'add', service: providerSrvId,
+                link: link, quantity: qty
             });
             try {
                 const response = await fetch(PROVIDER_API_URL + "?" + params.toString());
                 const result = await response.json();
-                return result.order || null; // يرجع معرف الطلب عند المزود
+                return result.order || null;
             } catch (e) {
                 console.error("Provider Error:", e);
                 return null;
@@ -816,10 +849,14 @@
         }
 
         async function submitOrder() {
-            const link = document.getElementById('field-link').value;
-            const qty = parseFloat(document.getElementById('field-qty').value);
-            const total = parseFloat(document.getElementById('val-total').innerText);
+            const linkField = document.getElementById('field-link');
+            const qtyField = document.getElementById('field-qty');
+            const totalField = document.getElementById('val-total');
             const btn = document.getElementById('btn-order');
+
+            const link = linkField ? linkField.value : "";
+            const qty = parseFloat(qtyField ? qtyField.value : 0);
+            const total = parseFloat(totalField ? totalField.innerText : 0);
 
             if (!curSrv) { notify("يرجى اختيار خدمة أولاً"); return; }
             if (!link) { notify("يرجى إدخال الرابط أو اليوزر"); return; }
@@ -827,26 +864,18 @@
             if (uData.balance < total) { notify("عذراً، رصيدك غير كافٍ"); return; }
 
             try {
-                btn.disabled = true;
-                btn.innerText = "جاري المعالجة...";
+                if(btn) { btn.disabled = true; btn.innerText = "جاري المعالجة..."; }
 
                 let providerOrderId = null;
-                // إذا كانت الخدمة تلقائية ولديها ID مزود
                 if (curSrv.isAuto && curSrv.providerServiceId) {
                     providerOrderId = await sendToProvider(curSrv.providerServiceId, link, qty);
-                    if (!providerOrderId) {
-                        notify("خطأ في الاتصال بالمزود، سيتم معالجة الطلب يدوياً");
-                    }
+                    if (!providerOrderId) notify("خطأ في الاتصال بالمزود، سيتم معالجة الطلب يدوياً");
                 }
 
                 await db.collection("orders").add({
-                    userId: uData.uid,
-                    userName: uData.username || uData.email,
-                    serviceId: curSrv.id,
-                    serviceName: curSrv.name,
-                    link: link,
-                    quantity: qty,
-                    totalPrice: total,
+                    userId: uData.uid, userName: uData.username || uData.email,
+                    serviceId: curSrv.id, serviceName: curSrv.name,
+                    link: link, quantity: qty, totalPrice: total,
                     status: providerOrderId ? "completed" : "pending",
                     providerOrderId: providerOrderId || "manual",
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -858,48 +887,65 @@
                 });
 
                 notify("تم استلام طلبك بنجاح!");
-                document.getElementById('field-link').value = "";
+                if(linkField) linkField.value = "";
                 
             } catch (error) {
-                notify("حدث خطأ أثناء الطلب");
+                notify("حدث خطأ أثناء الطلب، يرجى مراجعة الدعم");
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`;
+                if(btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`;
+                }
             }
         }
 
+        // ============================================================
+        // [06] DEPOSITS & PROJECTS - الشحن وطلب المواقع
+        // ============================================================
         async function requestDeposit() {
-            const phone = document.getElementById('field-dep-phone').value;
-            const amt = parseFloat(document.getElementById('field-dep-amt').value);
-            if(!phone || !amt) { notify("يرجى إدخال البيانات"); return; }
+            const phoneField = document.getElementById('field-dep-phone');
+            const amtField = document.getElementById('field-dep-amt');
+            const phone = phoneField ? phoneField.value : "";
+            const amt = parseFloat(amtField ? amtField.value : 0);
+            
+            if(!phone || !amt) { notify("يرجى إدخال البيانات كاملة"); return; }
             try {
                 await db.collection("deposits").add({
                     uid: uData.uid, username: uData.username || uData.email,
                     amount: amt, senderPhone: phone, status: "قيد المراجعة",
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب الشحن!");
-                document.getElementById('field-dep-phone').value = "";
-                document.getElementById('field-dep-amt').value = "";
-            } catch(e) { notify("حدث خطأ"); }
+                notify("تم إرسال طلب الشحن بنجاح!");
+                if(phoneField) phoneField.value = "";
+                if(amtField) amtField.value = "";
+            } catch(e) { notify("حدث خطأ في النظام"); }
         }
 
         async function submitWebProject() {
-            const name = document.getElementById('web-name').value;
-            const site = document.getElementById('web-site-name').value;
-            const pass = document.getElementById('web-pass').value;
-            const info = document.getElementById('web-details').value;
-            if(!name || !site || !pass) { notify("بيانات ناقصة"); return; }
+            const n = document.getElementById('web-name');
+            const s = document.getElementById('web-site-name');
+            const p = document.getElementById('web-pass');
+            const d = document.getElementById('web-details');
+            
+            const name = n ? n.value : "";
+            const site = s ? s.value : "";
+            const pass = p ? p.value : "";
+            const info = d ? d.value : "";
+
+            if(!name || !site || !pass) { notify("يرجى ملء جميع الحقول المطلوبة"); return; }
             try {
                 await db.collection("web_orders").add({
                     userId: uData.uid, userName: name, websiteName: site, password: pass,
                     details: info, status: "pending", price: 70, renewal: 30,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب البرمجة!");
-            } catch(e) { notify("خطأ في الإرسال"); }
+                notify("تم إرسال طلب البرمجة للمراجعة!");
+            } catch(e) { notify("فشل في إرسال طلب البرمجة"); }
         }
 
+        // ============================================================
+        // [07] UTILS - وظائف مساعدة للنظام
+        // ============================================================
         function showPane(id) {
             document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -912,19 +958,28 @@
         }
 
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
+        
         function toggleDrop(id) { 
             const p = document.getElementById(id);
             document.querySelectorAll('.dropdown-panel').forEach(x => { if(x.id !== id) x.classList.remove('show'); });
-            p.classList.toggle('show'); 
+            if(p) p.classList.toggle('show'); 
         }
+        
         function notify(m) { 
             const t = document.getElementById('main-toast'); 
-            t.innerText = m; t.classList.add('active'); 
-            setTimeout(()=>t.classList.remove('active'), 3500); 
+            if(t) {
+                t.innerText = m; t.classList.add('active'); 
+                setTimeout(()=>t.classList.remove('active'), 3500); 
+            }
         }
-        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم النسخ بنجاح"); }
+        
+        function copyToClipboard(t) { 
+            navigator.clipboard.writeText(t); 
+            notify("تم النسخ إلى الحافظة"); 
+        }
+
+        // منع القائمة المنبثقة لزيادة الأمان والحفاظ على التصميم
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
-
