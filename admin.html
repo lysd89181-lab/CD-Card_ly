@@ -112,7 +112,6 @@
         }
         .sw-input:focus { border-color: var(--p); }
 
-        /* Tables */
         .scroll-box { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: right; min-width: 700px; }
         th { padding: 12px; background: #0f0f0f; color: var(--muted); font-size: 12px; }
@@ -192,8 +191,7 @@
 
         <section id="view-users" class="view-section">
             <div class="page-head"><h2>إدارة المستخدمين والأرصدة</h2></div>
-            <div id="users-list-area">
-                </div>
+            <div id="users-list-area"></div>
         </section>
 
     </div>
@@ -248,6 +246,7 @@
                             <div style="display:flex; align-items:center; gap:8px;">
                                 <div class="srv-pricing"><b>${s.finalPrice} د.ل</b><small>${s.priceType == '1' ? 'ثابت' : 'متغير'}</small></div>
                                 <button class="btn btn-outline btn-sm" onclick="fullEditService('${s.id}')"><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteServiceDirect('${s.id}')"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>`).join('');
                     box.innerHTML = `
@@ -256,8 +255,9 @@
                                 <div class="order-circle" onclick="updateCatOrder('${cat.name}', ${cat.order})">${cat.order}</div>
                                 <span class="cat-title" onclick="toggleCat(this)">${cat.name}</span>
                             </div>
-                            <div class="cat-actions">
-                                <button class="btn btn-outline btn-sm" onclick="renameCatGroup('${cat.name}')">الاسم</button>
+                            <div class="cat-actions" style="display:flex; gap:5px;">
+                                <button class="btn btn-outline btn-sm" onclick="renameCatGroup('${cat.name}')"><i class="fa fa-pen"></i> الاسم</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCategoryGroup('${cat.name}')"><i class="fa fa-trash"></i> حذف القسم</button>
                                 <button class="btn btn-outline btn-sm" onclick="toggleCat(this)"><i class="fa fa-chevron-down"></i></button>
                             </div>
                         </div>
@@ -269,6 +269,49 @@
 
         function toggleCat(el) {
             el.closest('.cat-box').querySelector('.cat-body').classList.toggle('open');
+        }
+
+        // حذف خدمة واحدة
+        async function deleteServiceDirect(id) {
+            const confirm = await Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم حذف هذه الخدمة نهائياً!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                cancelButtonColor: '#333',
+                confirmButtonText: 'نعم، احذفها',
+                cancelButtonText: 'إلغاء',
+                background: '#0d0d0d', color: '#fff'
+            });
+            if (confirm.isConfirmed) {
+                await db.collection("services").doc(id).delete();
+                Swal.fire({ icon: 'success', title: 'تم الحذف', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        // حذف قسم بالكامل (حذف جماعي)
+        async function deleteCategoryGroup(catName) {
+            const confirm = await Swal.fire({
+                title: 'حذف قسم كامل؟',
+                text: `سيتم حذف قسم "${catName}" وجميع الخدمات الموجودة بداخله!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                cancelButtonColor: '#333',
+                confirmButtonText: 'نعم، حذف الكل',
+                cancelButtonText: 'إلغاء',
+                background: '#0d0d0d', color: '#fff'
+            });
+
+            if (confirm.isConfirmed) {
+                Swal.fire({ title: 'جاري الحذف الجماعي...', didOpen: () => Swal.showLoading() });
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", catName).get();
+                snap.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+                Swal.fire('تم حذف القسم بنجاح', '', 'success');
+            }
         }
 
         async function fullEditService(id) {
@@ -286,7 +329,7 @@
                         <option value="1000" ${s.priceType == '1000' ? 'selected' : ''}>متغير (1000)</option>
                     </select>
                     <textarea id="f-desc" class="sw-input" style="height:80px">${s.description || ''}</textarea>`,
-                showDenyButton: true, denyButtonText: 'حذف', confirmButtonText: 'حفظ'
+                showConfirmButton: true, confirmButtonText: 'حفظ التعديلات'
             });
             if (form) {
                 await db.collection("services").doc(id).update({
@@ -297,15 +340,12 @@
                     description: document.getElementById('f-desc').value
                 });
                 Swal.fire('تم التحديث', '', 'success');
-            } else if (Swal.getDenyButton() && Swal.isDenied) {
-                await db.collection("services").doc(id).delete();
-                Swal.fire('حُذفت', '', 'success');
             }
         }
 
         async function addSrvManual() {
             const { value: res } = await Swal.fire({
-                title: 'إضافة خدمة',
+                title: 'إضافة خدمة جديدة',
                 background: '#0d0d0d', color: '#fff',
                 html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="اسم القسم"><input id="add-p" type="number" class="sw-input" placeholder="السعر"><select id="add-t" class="sw-input"><option value="1000">1000</option><option value="1">1</option></select><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea>`,
                 preConfirm: () => ({ n: document.getElementById('add-n').value, c: document.getElementById('add-c').value, p: document.getElementById('add-p').value, t: document.getElementById('add-t').value, d: document.getElementById('add-d').value })
@@ -332,7 +372,7 @@
         }
 
         async function renameCatGroup(old) {
-            const { value: n } = await Swal.fire({ title: 'اسم القسم', input: 'text', inputValue: old });
+            const { value: n } = await Swal.fire({ title: 'إعادة تسمية القسم', input: 'text', inputValue: old });
             if(n && n !== old) {
                 const batch = db.batch();
                 const snap = await db.collection("services").where("category", "==", old).get();
@@ -384,14 +424,12 @@
             if (amount) {
                 const userRef = db.collection("users").doc(id);
                 const val = parseFloat(amount);
-                
                 await db.runTransaction(async (transaction) => {
                     const userDoc = await transaction.get(userRef);
                     if (!userDoc.exists) return;
                     const newBalance = action === 'add' ? (userDoc.data().balance || 0) + val : (userDoc.data().balance || 0) - val;
                     transaction.update(userRef, { balance: newBalance });
                 });
-                
                 Swal.fire('تم التحديث', `الرصيد الجديد جاهز`, 'success');
             }
         }
@@ -402,16 +440,16 @@
             if(!text) return;
             await db.collection("notifications").add({ message: text, active: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('notif-text').value = "";
-            Swal.fire('تم البث', '', 'success');
+            Swal.fire('تم البث بنجاح', '', 'success');
         }
 
         function loadNotifHistory() {
-            db.collection("notifications").orderBy("createdAt", "desc").limit(3).onSnapshot(snap => {
+            db.collection("notifications").orderBy("createdAt", "desc").limit(5).onSnapshot(snap => {
                 const h = document.getElementById('notif-history');
                 h.innerHTML = "";
                 snap.forEach(doc => {
                     const n = doc.data();
-                    h.innerHTML += `<div class="form-card" style="padding:10px; margin-bottom:5px; font-size:11px;">${n.message} <button class="btn btn-danger btn-sm" style="float:left" onclick="deleteNotif('${doc.id}')">X</button></div>`;
+                    h.innerHTML += `<div class="form-card" style="padding:12px; margin-bottom:8px; font-size:12px;">${n.message} <button class="btn btn-danger btn-sm" style="float:left" onclick="deleteNotif('${doc.id}')"><i class="fa fa-times"></i></button></div>`;
                 });
             });
         }
@@ -422,23 +460,23 @@
             const url = document.getElementById('api-url').value;
             const key = document.getElementById('api-key').value;
             const profit = parseFloat(document.getElementById('api-profit').value) || 0;
-            Swal.fire({ title: 'جاري الجلب...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'جاري سحب الخدمات...', didOpen: () => Swal.showLoading() });
             try {
                 const res = await fetch(`${url}?key=${key}&action=services`);
                 const data = await res.json();
                 let html = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>`;
                 data.forEach(s => {
                     const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit/100))).toFixed(2);
-                    html += `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b><br><small>${s.category}</small></td><td style="color:var(--p)">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${s.name.replace(/'/g,"")}','${s.category.replace(/'/g,"")}',${final})">إضافة</button></td></tr>`;
+                    html += `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b><br><small>${s.category}</small></td><td style="color:var(--p)">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${s.name.replace(/'/g,"")}','${s.category.replace(/'/g,"")}',${final})">إضافة للمتجر</button></td></tr>`;
                 });
                 document.getElementById('api-results-box').innerHTML = html + `</tbody></table></div>`;
                 Swal.close();
-            } catch (e) { Swal.fire('خطأ', 'فشل الربط', 'error'); }
+            } catch (e) { Swal.fire('خطأ', 'فشل الاتصال بالمزود', 'error'); }
         }
 
         async function importFromAPI(eid, n, c, p) {
             await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: p, priceType: "1000", catOrder: 99, srvOrder: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            Swal.fire({ icon: 'success', title: 'تم', toast: true, position: 'top-end', timer: 1000 });
+            Swal.fire({ icon: 'success', title: 'تمت الإضافة', toast: true, position: 'top-end', timer: 1000, showConfirmButton: false });
         }
 
         /* --- الطلبات --- */
@@ -448,13 +486,13 @@
                 rows.innerHTML = "";
                 snap.forEach(doc => {
                     const o = doc.data();
-                    rows.innerHTML += `<tr><td><b>${o.serviceName}</b></td><td>${o.username}</td><td><span class="id-badge">${o.target}</span></td><td>${o.status || 'معلق'}</td><td><button class="btn btn-outline btn-sm" onclick="changeStatus('${doc.id}')"><i class="fa fa-sync"></i></button></td></tr>`;
+                    rows.innerHTML += `<tr><td><b>${o.serviceName}</b></td><td>${o.username}</td><td><span class="id-badge">${o.target}</span></td><td>${o.status || 'معلق'}</td><td><button class="btn btn-outline btn-sm" onclick="changeStatus('${doc.id}')"><i class="fa fa-sync"></i> الحالة</button></td></tr>`;
                 });
             });
         }
 
         async function changeStatus(id) {
-            const { value: st } = await Swal.fire({ title: 'تحديث الحالة', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'ملغي': 'ملغي', 'قيد التنفيذ': 'قيد التنفيذ' } });
+            const { value: st } = await Swal.fire({ title: 'تحديث حالة الطلب', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'ملغي': 'ملغي', 'قيد التنفيذ': 'قيد التنفيذ' }, background: '#0d0d0d', color: '#fff' });
             if(st) await db.collection("orders").doc(id).update({ status: st });
         }
 
