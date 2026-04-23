@@ -180,7 +180,7 @@
         .desc-text { color: #ddd; font-size: 13px; line-height: 1.6; }
 
         /* ============================================================
-        [05] INPUTS & DROPDOWNS [MODIFIED FOR ICONS/IMAGES]
+        [05] INPUTS & DROPDOWNS
         ============================================================ */
         .input-wrapper { position: relative; margin-bottom: 24px; }
         
@@ -214,7 +214,6 @@
         }
         .dropdown-panel.show { display: block; animation: fadeInUp 0.4s ease; }
         
-        /* Flexbox Alignment for Drop Items */
         .drop-item { 
             padding: 18px 24px; 
             border-bottom: 1px solid #111; 
@@ -244,7 +243,7 @@
         }
 
         /* ============================================================
-        [06] WALLET GUIDE STEPS & QURAN
+        [06] WALLET GUIDE STEPS & QURAN & VIDEOS
         ============================================================ */
         .wallet-guide {
             margin-top: 25px; background: rgba(57, 255, 20, 0.03);
@@ -266,6 +265,15 @@
         }
         .channel-card:active { transform: scale(0.98); background: #111; }
         .channel-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        .video-card {
+            background: #0f0f0f; border: 1px solid #222; border-radius: 20px;
+            padding: 15px; margin-bottom: 15px;
+        }
+        .video-frame {
+            width: 100%; height: 200px; border-radius: 15px; border: 1px solid var(--primary-neon);
+            margin-bottom: 10px;
+        }
 
         .quran-box-container {
             background: #080808; border: 2px solid var(--primary-neon);
@@ -326,6 +334,9 @@
             </a>
             <a href="#" onclick="showPane('wallet')" class="nav-link" id="nav-wallet">
                 <i class="fa-solid fa-wallet"></i> <span>المحفظة</span>
+            </a>
+            <a href="#" onclick="showPane('tutorials')" class="nav-link" id="nav-tutorials">
+                <i class="fa-brands fa-youtube" style="color: #ff0000;"></i> <span>شروحات الموقع</span>
             </a>
             <a href="#" onclick="showPane('web')" class="nav-link" id="nav-web">
                 <i class="fa-solid fa-code"></i> <span>برمجة المواقع</span>
@@ -435,6 +446,24 @@
             </div>
         </section>
 
+        <section id="pane-tutorials" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:22px;">
+                    <i class="fa-brands fa-youtube"></i> شروحات الفيديو
+                </div>
+                
+                <div class="video-card">
+                    <iframe class="video-frame" src="https://www.youtube.com/embed/Ev50veF7X7k" frameborder="0" allowfullscreen></iframe>
+                    <div style="text-align:center;"><small>شرح طريقة إنشاء حساب جديد</small></div>
+                </div>
+
+                <div class="video-card">
+                    <iframe class="video-frame" src="https://www.youtube.com/embed/v1WKw9-hIQo" frameborder="0" allowfullscreen></iframe>
+                    <div style="text-align:center;"><small>شرح طريقة إضافة الأموال للمحفظة</small></div>
+                </div>
+            </div>
+        </section>
+
         <section id="pane-account" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:22px;">
@@ -453,18 +482,26 @@
                         </div>
                     </div>
                     <div class="stat-row">
-                        <span class="stat-lbl">مفتاح الـ API</span>
-                        <div class="stat-num neon" id="acc-email" style="font-size: 14px;">...</div>
+                        <span class="stat-lbl">رابط الـ API</span>
+                        <div class="stat-num neon" style="font-size: 12px; font-family: monospace;">https://cdcard.ly/api/v1</div>
                     </div>
                     <div class="stat-row">
-                        <span class="stat-lbl">تاريخ الانضمام</span>
-                        <div class="stat-num" style="font-size: 16px;">2026/04/17</div>
+                        <span class="stat-lbl">مفتاح الـ API الخاص بك</span>
+                        <div class="stat-num neon" id="acc-api-key" style="font-size: 12px;">...</div>
                     </div>
                 </div>
-                <div style="background: rgba(204, 255, 0, 0.05); border: 1px solid var(--neon-yellow); padding: 20px; border-radius: 20px; text-align: center;">
-                    <small>نصيحة أمنية</small>
-                    <p style="color: #ccc; font-size: 12px; margin-top: 5px;">لا تشارك معرف حسابك أو بيانات الدخول مع أي شخص لضمان أمان رصيدك.</p>
+
+                <div style="margin-top: 30px;">
+                    <div class="input-wrapper">
+                        <label class="field-label">رابط المزود (للمطورين)</label>
+                        <input type="text" class="main-input" value="https://cdcard.ly/api/v1" readonly>
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="field-label">مفتاح الـ API للربط</label>
+                        <input type="text" class="main-input" id="field-api-key-display" readonly>
+                    </div>
                 </div>
+
                 <button class="action-btn" style="margin-top: 30px; background: #ff3131; color: #fff; box-shadow: 0 12px 30px rgba(255, 49, 49, 0.3);" onclick="auth.signOut()">
                     <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
                 </button>
@@ -629,7 +666,11 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "", username: "" };
+        // [PROVIDER API INFO]
+        const PROVIDER_API_URL = "https://libyaplus1.com/api/v2";
+        const PROVIDER_API_KEY = "958c5695446fccb28ab7b8090d5e271a";
+
+        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "", username: "", apiKey: "" };
         let srvs = [];
         let curSrv = null;
 
@@ -641,7 +682,7 @@
             "تيك توك": "tiktok.jpg",
             "وتساب": "watsap.jpg",
             "يتيوب": "yotuop.jpg",
-            "بينانس": "binns.,jpg", 
+            "بينانس": "binns.jpg", 
             " فاير": "frii.jpg", 
             "جي بي": "shats.jpg", 
             "توثيق": "tawtheg.jpg", 
@@ -660,14 +701,24 @@
         async function syncSystem(uid) {
             db.collection("users").doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
-                    uData = { uid: uid, email: uData.email, ...doc.data() };
+                    const data = doc.data();
+                    uData = { uid: uid, email: uData.email, ...data };
+                    
+                    // توليد مفتاح API لو مش موجود
+                    if (!data.apiKey) {
+                        const newKey = btoa(uid + Date.now()).substring(0, 32);
+                        db.collection("users").doc(uid).update({ apiKey: newKey });
+                    }
+
                     document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
                     document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
                     document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
                     document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
                     document.getElementById('acc-username').innerText = uData.username || "غير معرف";
                     document.getElementById('acc-uid').innerText = uid;
-                    document.getElementById('acc-email').innerText = uData.email || "API_OFFLINE";
+                    document.getElementById('acc-api-key').innerText = data.apiKey || "...";
+                    document.getElementById('field-api-key-display').value = data.apiKey || "";
+                    
                     if(curSrv) recalc(); 
                 }
             });
@@ -698,23 +749,17 @@
                 <img src="${icon}" class="selected-img">
                 <span id="label-cat">${c}</span>
             `;
-            
             curSrv = null;
             document.getElementById('label-srv-container').innerHTML = `<span id="label-srv">اختر الخدمة الآن...</span>`;
             document.getElementById('srv-desc-box').classList.remove('active');
             document.getElementById('val-total').innerText = "0.00";
-            
             const filtered = srvs.filter(s => s.category === c);
             document.getElementById('drop-srvs').innerHTML = filtered.map(s => {
-                let sIcon = icon;
-                return `
-                    <div class="drop-item" onclick="selectSrv('${s.id}', '${sIcon}')">
-                        <img src="${sIcon}" onerror="this.src='cd.jpg'">
-                        <span>${s.name}</span>
-                    </div>
-                `;
+                return `<div class="drop-item" onclick="selectSrv('${s.id}', '${icon}')">
+                    <img src="${icon}" onerror="this.src='cd.jpg'">
+                    <span>${s.name}</span>
+                </div>`;
             }).join('');
-            
             toggleDrop('drop-cats');
         }
 
@@ -725,9 +770,8 @@
                 <span id="label-srv">${curSrv.name}</span>
             `;
             const descBox = document.getElementById('srv-desc-box');
-            const descText = document.getElementById('srv-desc-text');
             const qtyInput = document.getElementById('field-qty');
-            descText.innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية.";
+            document.getElementById('srv-desc-text').innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية.";
             descBox.classList.add('active');
             toggleDrop('drop-srvs');
             if (curSrv.priceType === "fixed") {
@@ -746,10 +790,29 @@
             let price = parseFloat(curSrv.finalPrice) || 0;
             if (uData.discount > 0) { price -= price * (uData.discount / 100); }
             let total = 0;
-            if (curSrv.priceType === "fixed") { total = price; } 
-            else if (curSrv.priceType === "1000") { total = (q / 1000) * price; } 
-            else { total = q * price; }
+            if (curSrv.priceType === "fixed") total = price;
+            else if (curSrv.priceType === "1000") total = (q / 1000) * price;
+            else total = q * price;
             document.getElementById('val-total').innerText = total.toFixed(2);
+        }
+
+        // [CRITICAL] API INTEGRATION FOR AUTOMATIC ORDERS
+        async function sendToProvider(providerSrvId, link, qty) {
+            const params = new URLSearchParams({
+                key: PROVIDER_API_KEY,
+                action: 'add',
+                service: providerSrvId,
+                link: link,
+                quantity: qty
+            });
+            try {
+                const response = await fetch(PROVIDER_API_URL + "?" + params.toString());
+                const result = await response.json();
+                return result.order || null; // يرجع معرف الطلب عند المزود
+            } catch (e) {
+                console.error("Provider Error:", e);
+                return null;
+            }
         }
 
         async function submitOrder() {
@@ -761,43 +824,44 @@
             if (!curSrv) { notify("يرجى اختيار خدمة أولاً"); return; }
             if (!link) { notify("يرجى إدخال الرابط أو اليوزر"); return; }
             if (qty <= 0) { notify("الكمية غير صالحة"); return; }
-
-            if (uData.balance < total) {
-                notify("عذراً، رصيدك غير كافٍ لإتمام الطلب");
-                return;
-            }
+            if (uData.balance < total) { notify("عذراً، رصيدك غير كافٍ"); return; }
 
             try {
                 btn.disabled = true;
-                btn.innerText = "جاري معالجة الطلب...";
+                btn.innerText = "جاري المعالجة...";
+
+                let providerOrderId = null;
+                // إذا كانت الخدمة تلقائية ولديها ID مزود
+                if (curSrv.isAuto && curSrv.providerServiceId) {
+                    providerOrderId = await sendToProvider(curSrv.providerServiceId, link, qty);
+                    if (!providerOrderId) {
+                        notify("خطأ في الاتصال بالمزود، سيتم معالجة الطلب يدوياً");
+                    }
+                }
 
                 await db.collection("orders").add({
                     userId: uData.uid,
                     userName: uData.username || uData.email,
                     serviceId: curSrv.id,
                     serviceName: curSrv.name,
-                    category: curSrv.category,
                     link: link,
                     quantity: qty,
                     totalPrice: total,
-                    status: "pending",
+                    status: providerOrderId ? "completed" : "pending",
+                    providerOrderId: providerOrderId || "manual",
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                const newBalance = uData.balance - total;
-                const newSpent = (uData.totalSpent || 0) + total;
-
                 await db.collection("users").doc(uData.uid).update({
-                    balance: newBalance,
-                    totalSpent: newSpent
+                    balance: uData.balance - total,
+                    totalSpent: (uData.totalSpent || 0) + total
                 });
 
-                notify("تم استلام طلبك بنجاح! شكراً لثقتك");
+                notify("تم استلام طلبك بنجاح!");
                 document.getElementById('field-link').value = "";
                 
             } catch (error) {
-                console.error("Order Error:", error);
-                notify("حدث خطأ أثناء معالجة الطلب");
+                notify("حدث خطأ أثناء الطلب");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`;
@@ -807,20 +871,17 @@
         async function requestDeposit() {
             const phone = document.getElementById('field-dep-phone').value;
             const amt = parseFloat(document.getElementById('field-dep-amt').value);
-            if(!phone || !amt) { notify("يرجى إدخال رقم الهاتف والمبلغ"); return; }
+            if(!phone || !amt) { notify("يرجى إدخال البيانات"); return; }
             try {
                 await db.collection("deposits").add({
-                    uid: uData.uid,
-                    username: uData.username || uData.email,
-                    amount: amt,
-                    senderPhone: phone,
-                    status: "قيد المراجعة",
+                    uid: uData.uid, username: uData.username || uData.email,
+                    amount: amt, senderPhone: phone, status: "قيد المراجعة",
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب الشحن بنجاح!");
+                notify("تم إرسال طلب الشحن!");
                 document.getElementById('field-dep-phone').value = "";
                 document.getElementById('field-dep-amt').value = "";
-            } catch(e) { notify("حدث خطأ في الإرسال"); }
+            } catch(e) { notify("حدث خطأ"); }
         }
 
         async function submitWebProject() {
@@ -828,21 +889,22 @@
             const site = document.getElementById('web-site-name').value;
             const pass = document.getElementById('web-pass').value;
             const info = document.getElementById('web-details').value;
-            if(!name || !site || !pass) { notify("يرجى ملء البيانات الأساسية"); return; }
+            if(!name || !site || !pass) { notify("بيانات ناقصة"); return; }
             try {
                 await db.collection("web_orders").add({
                     userId: uData.uid, userName: name, websiteName: site, password: pass,
                     details: info, status: "pending", price: 70, renewal: 30,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                notify("تم إرسال طلب البرمجة بنجاح!");
-            } catch(e) { notify("حدث خطأ أثناء الإرسال"); }
+                notify("تم إرسال طلب البرمجة!");
+            } catch(e) { notify("خطأ في الإرسال"); }
         }
 
         function showPane(id) {
             document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('pane-'+id).classList.add('active');
+            const target = document.getElementById('pane-'+id);
+            if(target) target.classList.add('active');
             const navLink = document.getElementById('nav-'+id);
             if(navLink) navLink.classList.add('active');
             toggleSidebar(false);
@@ -850,27 +912,17 @@
         }
 
         function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
-        
-        // تعديل الوظيفة لمنع التعارض وفتح قائمة واحدة فقط
         function toggleDrop(id) { 
-            const targetPanel = document.getElementById(id);
-            const allPanels = document.querySelectorAll('.dropdown-panel');
-            
-            // إغلاق أي قائمة أخرى مفتوحة غير القائمة التي تم النقر عليها
-            allPanels.forEach(p => {
-                if(p.id !== id) p.classList.remove('show');
-            });
-
-            // تبديل حالة القائمة الحالية
-            targetPanel.classList.toggle('show'); 
+            const p = document.getElementById(id);
+            document.querySelectorAll('.dropdown-panel').forEach(x => { if(x.id !== id) x.classList.remove('show'); });
+            p.classList.toggle('show'); 
         }
-
         function notify(m) { 
             const t = document.getElementById('main-toast'); 
             t.innerText = m; t.classList.add('active'); 
             setTimeout(()=>t.classList.remove('active'), 3500); 
         }
-        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم نسخ المعلومات بنجاح"); }
+        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم النسخ بنجاح"); }
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
