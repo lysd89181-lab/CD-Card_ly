@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CD-CARD PRO | الإدارة الاحترافية</title>
+    <title>CD-CARD Ultimate Admin | محمد</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -17,143 +17,189 @@
             --p: #39ff14; --bg: #050505; --card: #0d0d0d; --border: #1a1a1a;
             --text: #ffffff; --muted: #888888; --danger: #ff003c; --accent: #0088ff;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 100px; direction: rtl; }
 
         /* Navigation */
         .admin-nav {
-            position: sticky; top: 0; background: rgba(0,0,0,0.95);
+            position: sticky; top: 0; background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(10px); z-index: 2000; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: center; gap: 5px; padding: 12px; overflow-x: auto;
+            display: flex; justify-content: center; gap: 8px; padding: 12px; overflow-x: auto;
         }
+
         .nav-link {
             padding: 10px 15px; color: var(--muted); cursor: pointer; font-weight: 700;
-            font-size: 12px; border-radius: 10px; transition: 0.3s; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+            font-size: 13px; border-radius: 10px; transition: 0.3s; white-space: nowrap;
         }
-        .nav-link.active { color: var(--p); background: rgba(57, 255, 20, 0.1); }
+
+        .nav-link.active { color: var(--p); background: rgba(57, 255, 20, 0.1); border: 1px solid rgba(57, 255, 20, 0.2); }
 
         .container { max-width: 1100px; margin: 25px auto; padding: 0 15px; }
-        .view-section { display: none; animation: fadeIn 0.4s ease; }
+
+        /* Sections Visibility */
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Page Head */
-        .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .page-head h2 { font-weight: 900; font-size: 22px; color: var(--p); }
-
-        /* Buttons */
-        .btn {
-            padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer;
-            font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        .page-head { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; border-right: 4px solid var(--p); padding-right: 15px;
         }
-        .btn-p { background: var(--p); color: #000; }
-        .btn-save { background: var(--accent); color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .btn-outline:hover { border-color: var(--p); color: var(--p); }
-        .btn-danger { background: rgba(255, 0, 60, 0.1); color: var(--danger); border: 1px solid var(--danger); }
 
-        /* Accordion & Services */
-        .cat-box { background: var(--card); border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
-        .cat-top { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #111; }
-        .cat-info { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; }
-        .order-btns { display: flex; flex-direction: column; gap: 2px; }
-        .order-btns button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; }
-        .order-btns button:hover { color: var(--p); }
-        
-        .cat-body { display: none; padding: 10px; background: #080808; }
+        /* Category Card Styles */
+        .cat-box { 
+            background: var(--card); border-radius: 12px; border: 1px solid var(--border); 
+            margin-bottom: 15px; overflow: hidden; 
+        }
+
+        .cat-top { 
+            padding: 12px 18px; display: flex; justify-content: space-between; 
+            align-items: center; background: #0a0a0a; border-bottom: 1px solid #151515;
+        }
+
+        .cat-info-side { display: flex; align-items: center; gap: 12px; }
+
+        .order-circle {
+            background: #1a1a1a; border: 1px solid #333; color: var(--p);
+            width: 35px; height: 35px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; font-weight: 900;
+            cursor: pointer; font-size: 14px;
+        }
+        .order-circle:hover { background: var(--p); color: #000; }
+
+        .cat-title { font-size: 15px; font-weight: 700; cursor: pointer; color: #fff; }
+
+        .cat-body { display: none; background: #070707; }
         .cat-body.open { display: block; }
 
-        .srv-row { display: flex; flex-direction: column; padding: 15px; border-bottom: 1px solid #151515; gap: 8px; }
-        .srv-main { display: flex; align-items: center; gap: 15px; }
-        .srv-info { flex: 1; }
-        .srv-price-badge { background: #1a1a1a; padding: 4px 10px; border-radius: 6px; border: 1px solid #333; }
-        .srv-price-badge b { color: var(--p); font-size: 14px; }
+        /* Service & User Row */
+        .srv-row, .user-row { 
+            display: flex; align-items: center; padding: 12px 18px; 
+            border-bottom: 1px solid #111; justify-content: space-between; gap: 10px;
+        }
+        .srv-row:hover, .user-row:hover { background: #0c0c0c; }
 
-        /* API Import Styling */
-        .api-card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .api-input-group { margin-bottom: 15px; }
-        .api-input-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted); }
-        .api-input { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; }
+        .srv-meta, .user-meta { display: flex; align-items: center; gap: 10px; flex: 1; }
         
-        /* Table Styles */
-        .data-table-card { background: var(--card); border-radius: 15px; border: 1px solid var(--border); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; text-align: right; }
-        th { padding: 15px; background: #111; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid #111; font-size: 13px; }
+        .srv-main-text b, .user-main-text b { font-size: 13px; color: #fff; display: block; }
+        .srv-main-text span, .user-main-text span { color: var(--muted); font-size: 10px; display: block; }
 
-        .id-txt { font-family: monospace; color: var(--accent); background: #111; padding: 2px 5px; border-radius: 4px; font-size: 11px; }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; }
-        .bg-pending { background: rgba(255,180,0,0.1); color: #ffb400; }
-        .bg-success { background: rgba(57,255,20,0.1); color: var(--p); }
+        .srv-pricing, .user-balance { 
+            background: #151515; padding: 5px 10px; border-radius: 8px; 
+            border: 1px solid #222; text-align: center; min-width: 90px;
+        }
+        .srv-pricing b, .user-balance b { color: var(--p); font-size: 13px; }
+        .user-balance b { color: #00d4ff; }
+        .srv-pricing small, .user-balance small { display: block; font-size: 9px; color: #666; }
 
-        .swal-custom-field { width: 100%; background: #111; border: 1px solid var(--border); color: #fff; border-radius: 10px; padding: 12px; margin-top: 10px; }
+        /* UI Buttons */
+        .btn {
+            padding: 8px 15px; border-radius: 8px; border: none; 
+            cursor: pointer; font-weight: 700; font-size: 12px; display: inline-flex; 
+            align-items: center; gap: 6px; transition: 0.3s;
+        }
+        .btn-p { background: var(--p); color: #000; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-danger { background: rgba(255, 0, 60, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-sm { padding: 5px 10px; font-size: 10px; }
+
+        /* Inputs & Forms */
+        .form-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .sw-input, .api-input {
+            width: 100%; padding: 10px; background: #000; border: 1px solid #222;
+            color: #fff; border-radius: 8px; margin-top: 8px; text-align: right; outline: none;
+        }
+        .sw-input:focus { border-color: var(--p); }
+
+        /* Tables */
+        .scroll-box { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: right; min-width: 700px; }
+        th { padding: 12px; background: #0f0f0f; color: var(--muted); font-size: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #111; font-size: 13px; }
+
+        .id-badge { font-family: monospace; color: var(--accent); background: rgba(0, 136, 255, 0.1); padding: 2px 5px; border-radius: 4px; font-size: 10px; }
+
     </style>
 </head>
 <body>
 
     <nav class="admin-nav">
-        <div class="nav-link active" onclick="showView('services', this)"><i class="fa fa-cubes"></i> الخدمات</div>
-        <div class="nav-link" onclick="showView('api', this)"><i class="fa fa-plug"></i> جلب الخدمات</div>
+        <div class="nav-link active" onclick="showView('services', this)"><i class="fa fa-layer-group"></i> المتجر والترتيب</div>
+        <div class="nav-link" onclick="showView('api', this)"><i class="fa fa-plug"></i> جلب API</div>
+        <div class="nav-link" onclick="showView('notif', this)"><i class="fa fa-bell"></i> الإشعارات</div>
         <div class="nav-link" onclick="showView('orders', this)"><i class="fa fa-shopping-cart"></i> الطلبات</div>
         <div class="nav-link" onclick="showView('users', this)"><i class="fa fa-users"></i> المستخدمين</div>
-        <div class="nav-link" onclick="showView('finance', this)"><i class="fa fa-wallet"></i> الشحن</div>
     </nav>
 
     <div class="container">
 
         <section id="view-services" class="view-section active">
             <div class="page-head">
-                <h2>إدارة المتجر</h2>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-save" id="save-bulk-btn" style="display:none" onclick="saveBulk()">حفظ الأسعار</button>
-                    <button class="btn btn-outline" onclick="toggleBulk()">تعديل الأسعار</button>
-                    <button class="btn btn-p" onclick="addSrv()">+ خدمة يدوية</button>
-                </div>
+                <h2>إدارة المحتوى والترتيب</h2>
+                <button class="btn btn-p" onclick="addSrvManual()">
+                    <i class="fa fa-plus-circle"></i> إضافة خدمة يدوية
+                </button>
             </div>
-            <div id="services-list"></div>
+            <div id="master-services-list"></div>
         </section>
 
         <section id="view-api" class="view-section">
-            <div class="page-head"><h2>جلب الخدمات (API)</h2></div>
-            <div class="api-card">
-                <div class="api-input-group">
-                    <label>رابط المزود (URL)</label>
-                    <input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2">
-                </div>
-                <div class="api-input-group">
-                    <label>مفتاح الـ API (Key)</label>
-                    <input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a">
-                </div>
-                <div class="api-input-group">
-                    <label>نسبة الربح الافتراضية (%)</label>
-                    <input type="number" id="profit-percent" class="api-input" value="10">
-                </div>
-                <button class="btn btn-p" style="width:100%; justify-content:center" onclick="fetchExternalServices()">
-                    <i class="fa fa-sync"></i> جلب جميع الخدمات من المزود
+            <div class="page-head"><h2>سحب خدمات API</h2></div>
+            <div class="form-card">
+                <label style="font-size: 11px; color: var(--muted);">رابط المزود</label>
+                <input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2">
+                <label style="font-size: 11px; color: var(--muted); margin-top: 10px; display: block;">API KEY</label>
+                <input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a">
+                <label style="font-size: 11px; color: var(--muted); margin-top: 10px; display: block;">نسبة الربح المضافة (%)</label>
+                <input type="number" id="api-profit" class="api-input" value="10">
+                <button class="btn btn-p" style="width:100%; margin-top:15px; height:45px;" onclick="fetchExternalAPI()">
+                    <i class="fa fa-sync"></i> فحص وجلب الخدمات
                 </button>
             </div>
-            <div id="external-services-container"></div>
+            <div id="api-results-box"></div>
+        </section>
+
+        <section id="view-notif" class="view-section">
+            <div class="page-head"><h2>إرسال إشعارات للمستخدمين</h2></div>
+            <div class="form-card" style="border-right: 4px solid var(--accent);">
+                <label>نص الإشعار</label>
+                <textarea id="notif-text" class="sw-input" style="height:80px;" placeholder="اكتب التنبيه هنا..."></textarea>
+                <button class="btn btn-p" style="width:100%; margin-top:15px;" onclick="sendGlobalNotification()">
+                    <i class="fa fa-paper-plane"></i> بث الإشعار (10 ثوانٍ)
+                </button>
+            </div>
+            <div id="notif-history"></div>
         </section>
 
         <section id="view-orders" class="view-section">
             <div class="page-head"><h2>سجل الطلبات</h2></div>
-            <div class="data-table-card"><table><thead><tr><th>الخدمة</th><th>المستخدم</th><th>الهدف</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="orders-rows"></tbody></table></div>
+            <div class="scroll-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الخدمة</th>
+                            <th>الزبون</th>
+                            <th>الهدف</th>
+                            <th>الحالة</th>
+                            <th>تحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-rows"></tbody>
+                </table>
+            </div>
         </section>
 
         <section id="view-users" class="view-section">
-            <div class="page-head"><h2>إدارة الأعضاء</h2></div>
-            <div class="data-table-card"><table><thead><tr><th>الاسم / ID</th><th>الرصيد</th><th>الخصم %</th><th>إدارة مالية</th></tr></thead><tbody id="users-rows"></tbody></table></div>
-        </section>
-
-        <section id="view-finance" class="view-section">
-            <div class="page-head"><h2>طلبات الشحن المعلقة</h2></div>
-            <div class="data-table-card"><table><thead><tr><th>المستخدم</th><th>المبلغ</th><th>الهاتف</th><th>إجراء</th></tr></thead><tbody id="finance-rows"></tbody></table></div>
+            <div class="page-head"><h2>إدارة المستخدمين والأرصدة</h2></div>
+            <div id="users-list-area">
+                </div>
         </section>
 
     </div>
 
     <script>
-        // تكوين Firebase
+        // تكوين Firebase محمد
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -163,239 +209,256 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let bulkMode = false;
-
+        // نظام التنقل
         function showView(v, el) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById('view-'+v).classList.add('active');
             el.classList.add('active');
-            if(v==='services') loadServices();
-            if(v==='orders') loadOrders();
-            if(v==='users') loadUsers();
-            if(v==='finance') loadFinance();
-        }
-
-        // جلب الخدمات من السيرفر الخارجي
-        async function fetchExternalServices() {
-            const url = document.getElementById('api-url').value;
-            const key = document.getElementById('api-key').value;
             
-            Swal.fire({ title: 'جاري التحميل...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            try {
-                const response = await fetch(`${url}?key=${key}&action=services`);
-                const services = await response.json();
-                displayExternalServices(services);
-                Swal.close();
-            } catch (error) {
-                Swal.fire('خطأ', 'تعذر الاتصال بالمزود، تأكد من الرابط والمفتاح', 'error');
-            }
+            if(v==='services') loadMasterData();
+            if(v==='orders') loadAdminOrders();
+            if(v==='notif') loadNotifHistory();
+            if(v==='users') loadUsersData();
         }
 
-        function displayExternalServices(services) {
-            const container = document.getElementById('external-services-container');
-            container.innerHTML = `<h3 style="margin:20px 0; color:var(--p)">الخدمات المتاحة (${services.length})</h3>`;
-            
-            const table = document.createElement('div');
-            table.className = "data-table-card";
-            let rows = services.map(s => `
-                <tr>
-                    <td><small class="id-txt">${s.service}</small></td>
-                    <td><b>${s.name}</b><br><small style="color:#666">${s.category}</small></td>
-                    <td>${s.rate} د.ل</td>
-                    <td><button class="btn btn-p" onclick="importSingleService('${s.service}', '${s.name.replace(/'/g, "")}', '${s.category.replace(/'/g, "")}', ${s.rate})">إضافة</button></td>
-                </tr>
-            `).join('');
-            
-            table.innerHTML = `<table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر الأصلي</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table>`;
-            container.appendChild(table);
-        }
-
-        async function importSingleService(id, name, cat, rate) {
-            const profit = parseFloat(document.getElementById('profit-percent').value) || 0;
-            const finalPrice = (rate + (rate * (profit / 100))).toFixed(2);
-
-            await db.collection("services").add({
-                externalId: id,
-                name: name,
-                category: cat,
-                finalPrice: parseFloat(finalPrice),
-                originalPrice: rate,
-                priceType: "1000",
-                order: 0,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            Swal.fire({ title: 'تمت الإضافة', icon: 'success', toast: true, position: 'top-end', timer: 2000, showConfirmButton: false });
-        }
-
-        // إدارة الخدمات وترتيب الأقسام
-        function loadServices() {
+        /* --- نظام إدارة الخدمات والترتيب --- */
+        function loadMasterData() {
             db.collection("services").onSnapshot(snap => {
-                const list = document.getElementById('services-list');
-                list.innerHTML = "";
+                const area = document.getElementById('master-services-list');
+                area.innerHTML = "";
                 const cats = {};
-                
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const c = d.category || "عام";
-                    if(!cats[c]) cats[c] = { name: c, order: d.catOrder || 0, items: [] };
+                    const c = d.category || "غير مصنف";
+                    if(!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] };
                     cats[c].items.push({id: doc.id, ...d});
                 });
-
-                // ترتيب الأقسام بناءً على الحقل catOrder
-                const sortedCats = Object.values(cats).sort((a, b) => a.order - b.order);
-
+                const sortedCats = Object.values(cats).sort((a,b) => a.order - b.order);
                 sortedCats.forEach(cat => {
-                    const card = document.createElement('div');
-                    card.className = `cat-box`;
-                    const items = cat.items.map(s => `
+                    const box = document.createElement('div');
+                    box.className = 'cat-box';
+                    const sortedItems = cat.items.sort((a,b) => (a.srvOrder || 0) - (b.srvOrder || 0));
+                    const itemsHtml = sortedItems.map(s => `
                         <div class="srv-row">
-                            <div class="srv-main">
-                                <div class="srv-info"><b>${s.name}</b></div>
-                                <div class="srv-price-badge">
-                                    ${bulkMode ? `<input type="number" step="0.01" class="bulk-input srv-input" data-id="${s.id}" value="${s.finalPrice}" style="width:70px; background:#000; color:var(--p); border:1px solid #333">` : `<b>${s.finalPrice} د.ل</b>`}
-                                </div>
-                                <button class="btn btn-outline" style="padding:5px" onclick="editSrv('${s.id}')"><i class="fa fa-pen"></i></button>
+                            <div class="srv-meta">
+                                <div class="order-circle" style="width:25px; height:25px; font-size:10px;" onclick="updateSrvOrder('${s.id}', ${s.srvOrder || 0})">${s.srvOrder || 0}</div>
+                                <div class="srv-main-text"><b>${s.name}</b><span>${s.description || 'لا يوجد وصف'}</span></div>
                             </div>
-                        </div>
-                    `).join('');
-
-                    card.innerHTML = `
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div class="srv-pricing"><b>${s.finalPrice} د.ل</b><small>${s.priceType == '1' ? 'ثابت' : 'متغير'}</small></div>
+                                <button class="btn btn-outline btn-sm" onclick="fullEditService('${s.id}')"><i class="fa fa-edit"></i></button>
+                            </div>
+                        </div>`).join('');
+                    box.innerHTML = `
                         <div class="cat-top">
-                            <div class="order-btns">
-                                <button onclick="moveCat('${cat.name}', -1)"><i class="fa fa-chevron-up"></i></button>
-                                <button onclick="moveCat('${cat.name}', 1)"><i class="fa fa-chevron-down"></i></button>
+                            <div class="cat-info-side">
+                                <div class="order-circle" onclick="updateCatOrder('${cat.name}', ${cat.order})">${cat.order}</div>
+                                <span class="cat-title" onclick="toggleCat(this)">${cat.name}</span>
                             </div>
-                            <div class="cat-info" onclick="this.parentElement.nextElementSibling.classList.toggle('open')">
-                                <b><i class="fa fa-folder-open" style="margin-left:8px; color:var(--p)"></i> ${cat.name}</b>
+                            <div class="cat-actions">
+                                <button class="btn btn-outline btn-sm" onclick="renameCatGroup('${cat.name}')">الاسم</button>
+                                <button class="btn btn-outline btn-sm" onclick="toggleCat(this)"><i class="fa fa-chevron-down"></i></button>
                             </div>
-                            <button class="btn btn-outline" style="font-size:10px" onclick="renameCat('${cat.name}')">تسمية</button>
                         </div>
-                        <div class="cat-body">${items}</div>
-                    `;
-                    list.appendChild(card);
+                        <div class="cat-body">${itemsHtml}</div>`;
+                    area.appendChild(box);
                 });
             });
         }
 
-        async function moveCat(catName, direction) {
-            const snap = await db.collection("services").where("category", "==", catName).get();
-            const batch = db.batch();
-            snap.forEach(doc => {
-                const currentOrder = doc.data().catOrder || 0;
-                batch.update(doc.ref, { catOrder: currentOrder + direction });
-            });
-            await batch.commit();
+        function toggleCat(el) {
+            el.closest('.cat-box').querySelector('.cat-body').classList.toggle('open');
         }
 
-        function toggleBulk() {
-            bulkMode = !bulkMode;
-            document.getElementById('save-bulk-btn').style.display = bulkMode ? 'block' : 'none';
-            loadServices();
-        }
-
-        async function saveBulk() {
-            const batch = db.batch();
-            document.querySelectorAll('.srv-input').forEach(i => {
-                batch.update(db.collection("services").doc(i.dataset.id), { finalPrice: parseFloat(i.value) });
-            });
-            await batch.commit();
-            toggleBulk();
-            Swal.fire("تم الحفظ بنجاح");
-        }
-
-        // الوظائف الأساسية المتبقية
-        async function addSrv() {
-            const { value: formValues } = await Swal.fire({
-                title: 'إضافة خدمة يدوية',
-                background: '#050505', color: '#fff',
+        async function fullEditService(id) {
+            const doc = await db.collection("services").doc(id).get();
+            const s = doc.data();
+            const { value: form } = await Swal.fire({
+                title: 'تعديل الخدمة',
+                background: '#0d0d0d', color: '#fff',
                 html: `
-                    <input id="swal-n" class="swal-custom-field" placeholder="اسم الخدمة">
-                    <input id="swal-c" class="swal-custom-field" placeholder="القسم">
-                    <input id="swal-p" type="number" class="swal-custom-field" placeholder="السعر">
-                `,
-                preConfirm: () => [
-                    document.getElementById('swal-n').value,
-                    document.getElementById('swal-c').value,
-                    document.getElementById('swal-p').value
-                ]
+                    <input id="f-name" class="sw-input" value="${s.name}" placeholder="الاسم">
+                    <input id="f-cat" class="sw-input" value="${s.category}" placeholder="القسم">
+                    <input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice}" placeholder="السعر">
+                    <select id="f-type" class="sw-input">
+                        <option value="1" ${s.priceType == '1' ? 'selected' : ''}>ثابت (1)</option>
+                        <option value="1000" ${s.priceType == '1000' ? 'selected' : ''}>متغير (1000)</option>
+                    </select>
+                    <textarea id="f-desc" class="sw-input" style="height:80px">${s.description || ''}</textarea>`,
+                showDenyButton: true, denyButtonText: 'حذف', confirmButtonText: 'حفظ'
             });
-            if (formValues) {
-                db.collection("services").add({
-                    name: formValues[0],
-                    category: formValues[1],
-                    finalPrice: parseFloat(formValues[2]),
-                    priceType: "fixed",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            if (form) {
+                await db.collection("services").doc(id).update({
+                    name: document.getElementById('f-name').value,
+                    category: document.getElementById('f-cat').value,
+                    finalPrice: parseFloat(document.getElementById('f-price').value),
+                    priceType: document.getElementById('f-type').value,
+                    description: document.getElementById('f-desc').value
                 });
+                Swal.fire('تم التحديث', '', 'success');
+            } else if (Swal.getDenyButton() && Swal.isDenied) {
+                await db.collection("services").doc(id).delete();
+                Swal.fire('حُذفت', '', 'success');
             }
         }
 
-        async function editSrv(id) {
-            const s = (await db.collection("services").doc(id).get()).data();
-            Swal.fire({
-                title: 'تعديل',
+        async function addSrvManual() {
+            const { value: res } = await Swal.fire({
+                title: 'إضافة خدمة',
                 background: '#0d0d0d', color: '#fff',
-                html: `<input id="en" class="swal-custom-field" value="${s.name}"><input id="ep" type="number" class="swal-custom-field" value="${s.finalPrice}">`,
-                showDenyButton: true, denyButtonText: 'حذف',
-                confirmButtonText: 'حفظ'
-            }).then(r => {
-                if(r.isConfirmed) db.collection("services").doc(id).update({ name: document.getElementById('en').value, finalPrice: parseFloat(document.getElementById('ep').value)});
-                else if(r.isDenied) db.collection("services").doc(id).delete();
+                html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="اسم القسم"><input id="add-p" type="number" class="sw-input" placeholder="السعر"><select id="add-t" class="sw-input"><option value="1000">1000</option><option value="1">1</option></select><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea>`,
+                preConfirm: () => ({ n: document.getElementById('add-n').value, c: document.getElementById('add-c').value, p: document.getElementById('add-p').value, t: document.getElementById('add-t').value, d: document.getElementById('add-d').value })
             });
+            if(res && res.n) {
+                await db.collection("services").add({ name: res.n, category: res.c, finalPrice: parseFloat(res.p), priceType: res.t, description: res.d, catOrder: 99, srvOrder: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                Swal.fire('تمت الإضافة', '', 'success');
+            }
         }
 
-        function loadOrders() {
-            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
-                const b = document.getElementById('orders-rows'); b.innerHTML = "";
-                snap.forEach(doc => {
-                    const o = doc.data();
-                    b.innerHTML += `<tr><td><b>${o.serviceName}</b></td><td>${o.username}</td><td><code class="id-txt">${o.target}</code></td><td><span class="badge ${o.status==='مكتمل'?'bg-success':'bg-pending'}">${o.status||'انتظار'}</span></td><td><select onchange="db.collection('orders').doc('${doc.id}').update({status:this.value})" style="background:#000; color:#fff;"><option value="">تحديث</option><option value="مكتمل">مكتمل</option><option value="ملغي">ملغي</option></select></td></tr>`;
-                });
-            });
+        async function updateCatOrder(name, current) {
+            const { value: num } = await Swal.fire({ title: 'ترتيب القسم', input: 'number', inputValue: current });
+            if(num) {
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", name).get();
+                snap.forEach(doc => batch.update(doc.ref, { catOrder: parseInt(num) }));
+                await batch.commit();
+            }
         }
 
-        function loadUsers() {
+        async function updateSrvOrder(id, current) {
+            const { value: num } = await Swal.fire({ title: 'ترتيب الخدمة', input: 'number', inputValue: current });
+            if(num) await db.collection("services").doc(id).update({ srvOrder: parseInt(num) });
+        }
+
+        async function renameCatGroup(old) {
+            const { value: n } = await Swal.fire({ title: 'اسم القسم', input: 'text', inputValue: old });
+            if(n && n !== old) {
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", old).get();
+                snap.forEach(doc => batch.update(doc.ref, { category: n }));
+                await batch.commit();
+            }
+        }
+
+        /* --- إدارة المستخدمين والأرصدة --- */
+        function loadUsersData() {
             db.collection("users").onSnapshot(snap => {
-                const b = document.getElementById('users-rows'); b.innerHTML = "";
+                const area = document.getElementById('users-list-area');
+                area.innerHTML = "";
                 snap.forEach(doc => {
                     const u = doc.data();
-                    b.innerHTML += `<tr><td><b>${u.username}</b></td><td style="color:var(--p)">${(u.balance || 0).toFixed(2)} د.ل</td><td>${u.discount || 0}%</td><td><button onclick="manageBalance('${doc.id}', 'add')" class="btn btn-p" style="padding:5px">+</button></td></tr>`;
+                    const userId = doc.id;
+                    const row = document.createElement('div');
+                    row.className = 'user-row';
+                    row.innerHTML = `
+                        <div class="user-meta">
+                            <div class="user-main-text">
+                                <b>${u.username || 'بدون اسم'}</b>
+                                <span>${u.email || 'لا يوجد بريد'}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="user-balance">
+                                <b>${(u.balance || 0).toFixed(2)} د.ل</b>
+                                <small>الرصيد الحالي</small>
+                            </div>
+                            <button class="btn btn-p btn-sm" onclick="adjustBalance('${userId}', 'add')"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="adjustBalance('${userId}', 'sub')"><i class="fa fa-minus"></i></button>
+                        </div>
+                    `;
+                    area.appendChild(row);
                 });
             });
         }
 
-        async function manageBalance(id, type) {
-            const { value: amt } = await Swal.fire({ title: 'شحن رصيد', input: 'number', background: '#0d0d0d', color: '#fff' });
-            if(amt) {
-                const ref = db.collection("users").doc(id);
-                const cur = (await ref.get()).data().balance || 0;
-                await ref.update({ balance: cur + parseFloat(amt) });
+        async function adjustBalance(id, action) {
+            const { value: amount } = await Swal.fire({
+                title: action === 'add' ? 'إضافة رصيد' : 'خصم رصيد',
+                input: 'number',
+                inputPlaceholder: 'أدخل المبلغ...',
+                background: '#0d0d0d', color: '#fff',
+                showCancelButton: true
+            });
+
+            if (amount) {
+                const userRef = db.collection("users").doc(id);
+                const val = parseFloat(amount);
+                
+                await db.runTransaction(async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists) return;
+                    const newBalance = action === 'add' ? (userDoc.data().balance || 0) + val : (userDoc.data().balance || 0) - val;
+                    transaction.update(userRef, { balance: newBalance });
+                });
+                
+                Swal.fire('تم التحديث', `الرصيد الجديد جاهز`, 'success');
             }
         }
 
-        function loadFinance() {
-            db.collection("deposits").where("status", "==", "قيد المراجعة").onSnapshot(snap => {
-                const b = document.getElementById('finance-rows'); b.innerHTML = "";
+        /* --- نظام الإشعارات --- */
+        async function sendGlobalNotification() {
+            const text = document.getElementById('notif-text').value;
+            if(!text) return;
+            await db.collection("notifications").add({ message: text, active: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('notif-text').value = "";
+            Swal.fire('تم البث', '', 'success');
+        }
+
+        function loadNotifHistory() {
+            db.collection("notifications").orderBy("createdAt", "desc").limit(3).onSnapshot(snap => {
+                const h = document.getElementById('notif-history');
+                h.innerHTML = "";
                 snap.forEach(doc => {
-                    const d = doc.data();
-                    b.innerHTML += `<tr><td>${d.username}</td><td>${d.amount} د.ل</td><td>${d.senderPhone}</td><td><button class="btn btn-p" onclick="approveF('${doc.id}','${d.uid}',${d.amount})">موافقة</button></td></tr>`;
+                    const n = doc.data();
+                    h.innerHTML += `<div class="form-card" style="padding:10px; margin-bottom:5px; font-size:11px;">${n.message} <button class="btn btn-danger btn-sm" style="float:left" onclick="deleteNotif('${doc.id}')">X</button></div>`;
+                });
+            });
+        }
+        async function deleteNotif(id) { await db.collection("notifications").doc(id).delete(); }
+
+        /* --- نظام API --- */
+        async function fetchExternalAPI() {
+            const url = document.getElementById('api-url').value;
+            const key = document.getElementById('api-key').value;
+            const profit = parseFloat(document.getElementById('api-profit').value) || 0;
+            Swal.fire({ title: 'جاري الجلب...', didOpen: () => Swal.showLoading() });
+            try {
+                const res = await fetch(`${url}?key=${key}&action=services`);
+                const data = await res.json();
+                let html = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>`;
+                data.forEach(s => {
+                    const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit/100))).toFixed(2);
+                    html += `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b><br><small>${s.category}</small></td><td style="color:var(--p)">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${s.name.replace(/'/g,"")}','${s.category.replace(/'/g,"")}',${final})">إضافة</button></td></tr>`;
+                });
+                document.getElementById('api-results-box').innerHTML = html + `</tbody></table></div>`;
+                Swal.close();
+            } catch (e) { Swal.fire('خطأ', 'فشل الربط', 'error'); }
+        }
+
+        async function importFromAPI(eid, n, c, p) {
+            await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: p, priceType: "1000", catOrder: 99, srvOrder: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            Swal.fire({ icon: 'success', title: 'تم', toast: true, position: 'top-end', timer: 1000 });
+        }
+
+        /* --- الطلبات --- */
+        function loadAdminOrders() {
+            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
+                const rows = document.getElementById('admin-orders-rows');
+                rows.innerHTML = "";
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    rows.innerHTML += `<tr><td><b>${o.serviceName}</b></td><td>${o.username}</td><td><span class="id-badge">${o.target}</span></td><td>${o.status || 'معلق'}</td><td><button class="btn btn-outline btn-sm" onclick="changeStatus('${doc.id}')"><i class="fa fa-sync"></i></button></td></tr>`;
                 });
             });
         }
 
-        async function approveF(id, uid, amt) {
-            const uRef = db.collection("users").doc(uid);
-            await db.runTransaction(async (t) => {
-                const u = await t.get(uRef);
-                t.update(uRef, { balance: (u.data().balance || 0) + amt });
-                t.update(db.collection("deposits").doc(id), { status: "مكتمل" });
-            });
-            Swal.fire("تم الشحن");
+        async function changeStatus(id) {
+            const { value: st } = await Swal.fire({ title: 'تحديث الحالة', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'ملغي': 'ملغي', 'قيد التنفيذ': 'قيد التنفيذ' } });
+            if(st) await db.collection("orders").doc(id).update({ status: st });
         }
 
-        window.onload = loadServices;
+        window.onload = () => { loadMasterData(); loadAdminOrders(); loadNotifHistory(); loadUsersData(); };
     </script>
 </body>
 </html>
