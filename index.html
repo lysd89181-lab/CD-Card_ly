@@ -649,7 +649,6 @@
         // ============================================================
         async function fetchServices() {
             try {
-                // التعديل 1: ترتيب الخدمات حسب catOrder (الموجود في Firebase)
                 db.collection("services").orderBy("catOrder", "asc").onSnapshot(snap => {
                     srvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     
@@ -717,8 +716,8 @@
             
             toggleDrop('drop-srvs');
             
-            // التعديل 2: تأمين الكمية للسعر الثابت (fixed)
-            if (curSrv.priceType === "fixed") {
+            // [MODIFIED LOGIC] - قفل خانة الكمية إذا كان السعر لكل قطعة واحدة (1)
+            if (curSrv.priceType === "fixed" || curSrv.priceType === "1") {
                 if(qtyInput) {
                     qtyInput.readOnly = true;
                     qtyInput.value = 1;
@@ -726,6 +725,7 @@
             } else {
                 if(qtyInput) {
                     qtyInput.readOnly = false;
+                    // إذا كان 1000 أو غيره نضع القيمة الافتراضية
                     if (qtyInput.value == 1) qtyInput.value = 1000;
                 }
             }
@@ -741,7 +741,8 @@
             if (uData.discount > 0) { price -= price * (uData.discount / 100); }
             
             let total = 0;
-            if (curSrv.priceType === "fixed") total = price;
+            // الحساب بناءً على نوع السعر
+            if (curSrv.priceType === "fixed" || curSrv.priceType === "1") total = price;
             else if (curSrv.priceType === "1000") total = (q / 1000) * price;
             else total = q * price;
             
