@@ -2,12 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#39ff14">
     <title>CD-CARD Ultimate Admin | محمد</title>
     
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     
+    <!-- Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,151 +20,394 @@
         :root {
             --p: #39ff14; --bg: #050505; --card: #0d0d0d; --border: #1a1a1a;
             --text: #ffffff; --muted: #888888; --danger: #ff003c; --accent: #0088ff;
+            --gold: #ffd700; --purple: #a855f7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 100px; direction: rtl; }
 
-        /* Navigation */
+        /* ========== Navigation ========== */
         .admin-nav {
             position: sticky; top: 0; background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(10px); z-index: 2000; border-bottom: 1px solid var(--border);
             display: flex; justify-content: center; gap: 8px; padding: 12px; overflow-x: auto;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
+        .admin-nav::-webkit-scrollbar { display: none; }
 
         .nav-link {
             padding: 10px 15px; color: var(--muted); cursor: pointer; font-weight: 700;
             font-size: 13px; border-radius: 10px; transition: 0.3s; white-space: nowrap;
+            display: flex; align-items: center; gap: 6px; border: 1px solid transparent;
         }
-
         .nav-link.active { color: var(--p); background: rgba(57, 255, 20, 0.1); border: 1px solid rgba(57, 255, 20, 0.2); }
+        .nav-link:hover { color: #fff; }
 
         .container { max-width: 1100px; margin: 25px auto; padding: 0 15px; }
 
         .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ========== Page Head ========== */
         .page-head { 
             display: flex; justify-content: space-between; align-items: center; 
             margin-bottom: 20px; border-right: 4px solid var(--p); padding-right: 15px;
+            flex-wrap: wrap; gap: 10px;
         }
+        .page-head h2 { font-size: 1.3rem; }
 
-        /* Category Card Styles */
-        .cat-box { background: var(--card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
-        .cat-top { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border-bottom: 1px solid #151515; }
+        /* ========== Cards ========== */
+        .cat-box { background: var(--card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; transition: 0.2s; }
+        .cat-box:hover { border-color: #333; }
+        .cat-top { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border-bottom: 1px solid #151515; cursor: pointer; }
         .cat-info-side { display: flex; align-items: center; gap: 12px; }
 
         .order-circle {
             background: #1a1a1a; border: 1px solid #333; color: var(--p);
             width: 35px; height: 35px; border-radius: 8px; display: flex;
             align-items: center; justify-content: center; font-weight: 900;
-            cursor: pointer; font-size: 14px;
+            cursor: pointer; font-size: 14px; transition: 0.2s;
         }
-        .order-circle:hover { background: var(--p); color: #000; }
+        .order-circle:hover { background: var(--p); color: #000; border-color: var(--p); }
 
-        .cat-title { font-size: 15px; font-weight: 700; cursor: pointer; color: #fff; }
+        .cat-title { font-size: 15px; font-weight: 700; color: #fff; }
         .cat-body { display: none; background: #070707; }
         .cat-body.open { display: block; }
 
-        /* Service & User Row */
-        .srv-row, .user-row { display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid #111; justify-content: space-between; gap: 10px; }
-        .srv-row:hover, .user-row:hover { background: #0c0c0c; }
-        .srv-meta, .user-meta { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .srv-main-text b, .user-main-text b { font-size: 13px; color: #fff; display: block; }
-        .srv-main-text span, .user-main-text span { color: var(--muted); font-size: 10px; display: block; }
+        /* ========== Service Row ========== */
+        .srv-row { 
+            display: flex; align-items: center; padding: 12px 18px; 
+            border-bottom: 1px solid #111; justify-content: space-between; 
+            gap: 10px; transition: 0.2s; flex-wrap: wrap;
+        }
+        .srv-row:hover { background: #0c0c0c; }
+        .srv-row:last-child { border-bottom: none; }
 
-        .srv-pricing, .user-balance { background: #151515; padding: 5px 10px; border-radius: 8px; border: 1px solid #222; text-align: center; min-width: 90px; }
-        .srv-pricing b, .user-balance b { color: var(--p); font-size: 13px; }
-        .user-balance b { color: #00d4ff; }
-        .srv-pricing small, .user-balance small { display: block; font-size: 9px; color: #666; }
+        .srv-meta { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
+        .srv-main-text b { font-size: 13px; color: #fff; display: block; }
+        .srv-main-text span { color: var(--muted); font-size: 10px; display: block; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
 
-        /* UI Buttons */
-        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: 0.3s; }
+        .srv-pricing { 
+            background: #151515; padding: 5px 10px; border-radius: 8px; 
+            border: 1px solid #222; text-align: center; min-width: 90px; 
+        }
+        .srv-pricing b { color: var(--p); font-size: 13px; display: block; }
+        .srv-pricing small { display: block; font-size: 9px; color: #666; margin-top: 2px; }
+
+        .srv-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* ========== User Row ========== */
+        .user-row { 
+            display: flex; align-items: center; padding: 12px 18px; 
+            border-bottom: 1px solid #111; justify-content: space-between; 
+            gap: 10px; transition: 0.2s; background: var(--card); 
+            border-radius: 10px; margin-bottom: 8px; border: 1px solid #1a1a1a;
+        }
+        .user-row:hover { background: #0c0c0c; }
+
+        .user-meta { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%; 
+            background: linear-gradient(135deg, var(--p), #00ff88);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; color: #000; font-size: 16px;
+        }
+        .user-main-text b { font-size: 13px; color: #fff; display: block; }
+        .user-main-text span { color: var(--muted); font-size: 10px; display: block; }
+
+        .user-balance { 
+            background: #151515; padding: 5px 10px; border-radius: 8px; 
+            border: 1px solid #222; text-align: center; min-width: 90px; 
+        }
+        .user-balance b { color: var(--accent); font-size: 13px; }
+        .user-balance small { display: block; font-size: 9px; color: #666; }
+
+        .user-badge {
+            padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;
+        }
+        .user-badge.vip { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .user-badge.admin { background: rgba(168,85,247,0.2); color: var(--purple); }
+        .user-badge.banned { background: rgba(255,0,60,0.2); color: var(--danger); }
+
+        /* ========== Buttons ========== */
+        .btn { 
+            padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; 
+            font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; 
+            gap: 6px; transition: 0.3s; white-space: nowrap; 
+        }
+        .btn:active { transform: scale(0.95); }
         .btn-p { background: var(--p); color: #000; }
+        .btn-p:hover { box-shadow: 0 0 20px rgba(57,255,20,0.3); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: #fff; }
         .btn-danger { background: rgba(255, 0, 60, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: rgba(255, 0, 60, 0.2); }
+        .btn-accent { background: rgba(0,136,255,0.1); color: var(--accent); border: 1px solid var(--accent); }
         .btn-sm { padding: 5px 10px; font-size: 10px; }
+        .btn-xs { padding: 3px 8px; font-size: 9px; border-radius: 6px; }
+        .btn-full { width: 100%; justify-content: center; margin-top: 10px; height: 45px; }
 
-        /* Inputs & Forms */
-        .form-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .sw-input, .api-input { width: 100%; padding: 10px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; margin-top: 8px; text-align: right; outline: none; }
-        .sw-input:focus { border-color: var(--p); }
+        /* ========== Inputs ========== */
+        .form-card { 
+            background: var(--card); padding: 20px; border-radius: 12px; 
+            border: 1px solid var(--border); margin-bottom: 20px; 
+        }
+        .form-card h3 { margin-bottom: 15px; font-size: 14px; color: var(--p); }
 
-        .scroll-box { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
+        .sw-input, .api-input, .form-select { 
+            width: 100%; padding: 12px; background: #000; border: 1px solid #222; 
+            color: #fff; border-radius: 8px; margin-top: 8px; text-align: right; 
+            outline: none; font-family: 'Cairo', sans-serif; font-size: 13px;
+            transition: 0.3s;
+        }
+        .sw-input:focus, .api-input:focus, .form-select:focus { border-color: var(--p); box-shadow: 0 0 10px rgba(57,255,20,0.1); }
+        .form-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; }
+        textarea.sw-input { resize: vertical; min-height: 60px; }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+
+        /* ========== Table ========== */
+        .scroll-box { 
+            background: var(--card); border-radius: 12px; border: 1px solid var(--border); 
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
         table { width: 100%; border-collapse: collapse; text-align: right; min-width: 700px; }
-        th { padding: 12px; background: #0f0f0f; color: var(--muted); font-size: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #111; font-size: 13px; }
+        th { padding: 12px; background: #0f0f0f; color: var(--muted); font-size: 11px; font-weight: 700; white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid #111; font-size: 12px; white-space: nowrap; }
+        tr:hover td { background: #0a0a0a; }
 
-        .id-badge { font-family: monospace; color: var(--accent); background: rgba(0, 136, 255, 0.1); padding: 2px 5px; border-radius: 4px; font-size: 10px; }
+        .id-badge { 
+            font-family: monospace; color: var(--accent); 
+            background: rgba(0, 136, 255, 0.1); padding: 2px 6px; 
+            border-radius: 4px; font-size: 10px; 
+        }
+        .status-badge {
+            padding: 4px 10px; border-radius: 15px; font-size: 10px; font-weight: 700;
+        }
+        .status-badge.completed { background: rgba(57,255,20,0.15); color: var(--p); }
+        .status-badge.pending { background: rgba(255,215,0,0.15); color: var(--gold); }
+        .status-badge.failed { background: rgba(255,0,60,0.15); color: var(--danger); }
 
+        /* ========== Search Bar ========== */
+        .search-bar {
+            display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .search-bar input {
+            flex: 1; min-width: 200px; padding: 10px 15px; background: #000;
+            border: 1px solid #222; color: #fff; border-radius: 8px; outline: none;
+        }
+        .search-bar input:focus { border-color: var(--p); }
+
+        /* ========== Filter Pills ========== */
+        .filter-pills {
+            display: flex; gap: 8px; overflow-x: auto; margin-bottom: 15px;
+            scrollbar-width: none; padding: 4px 0;
+        }
+        .filter-pills::-webkit-scrollbar { display: none; }
+        .filter-pill {
+            padding: 8px 16px; border-radius: 20px; background: #111;
+            border: 1px solid #222; white-space: nowrap; font-size: 12px;
+            cursor: pointer; transition: 0.2s; color: var(--muted);
+        }
+        .filter-pill.active { background: rgba(57,255,20,0.15); color: var(--p); border-color: var(--p); }
+        .filter-pill:hover { border-color: #555; }
+
+        /* ========== Stats Mini ========== */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px; margin-bottom: 20px;
+        }
+        .stat-mini {
+            background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 15px; text-align: center;
+        }
+        .stat-mini b { font-size: 1.5rem; color: var(--p); display: block; }
+        .stat-mini small { color: var(--muted); font-size: 10px; }
+
+        /* ========== Loading ========== */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+            background-size: 200% 100%; animation: shimmer 1.5s infinite;
+            height: 60px; border-radius: 8px; margin-bottom: 10px;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .admin-nav { justify-content: flex-start; padding: 8px 10px; gap: 4px; }
+            .nav-link { font-size: 11px; padding: 8px 10px; }
+            .page-head { flex-direction: column; align-items: flex-start; }
+            .page-head h2 { font-size: 1.1rem; }
+            .srv-row, .user-row { flex-direction: column; align-items: flex-start; }
+            .srv-actions { width: 100%; justify-content: flex-end; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ============================================================ -->
+    <!-- شريط التنقل العلوي -->
+    <!-- ============================================================ -->
     <nav class="admin-nav">
-        <div class="nav-link active" onclick="showView('services', this)"><i class="fa fa-layer-group"></i> المتجر والترتيب</div>
-        <div class="nav-link" onclick="showView('api', this)"><i class="fa fa-plug"></i> جلب API</div>
-        <div class="nav-link" onclick="showView('notif', this)"><i class="fa fa-bell"></i> الإشعارات</div>
-        <div class="nav-link" onclick="showView('orders', this)"><i class="fa fa-shopping-cart"></i> الطلبات</div>
-        <div class="nav-link" onclick="showView('users', this)"><i class="fa fa-users"></i> المستخدمين</div>
+        <div class="nav-link active" onclick="showView('services', this)">
+            <i class="fa fa-layer-group"></i> المتجر والترتيب
+        </div>
+        <div class="nav-link" onclick="showView('api', this)">
+            <i class="fa fa-plug"></i> جلب API
+        </div>
+        <div class="nav-link" onclick="showView('notif', this)">
+            <i class="fa fa-bell"></i> الإشعارات
+        </div>
+        <div class="nav-link" onclick="showView('orders', this)">
+            <i class="fa fa-shopping-cart"></i> الطلبات
+        </div>
+        <div class="nav-link" onclick="showView('users', this)">
+            <i class="fa fa-users"></i> المستخدمين
+        </div>
+        <div class="nav-link" onclick="showView('coupons', this)">
+            <i class="fa fa-ticket-alt"></i> الكوبونات
+        </div>
+        <div class="nav-link" onclick="showView('settings', this)">
+            <i class="fa fa-cog"></i> إعدادات
+        </div>
     </nav>
 
     <div class="container">
 
+        <!-- ============================================================ -->
+        <!-- 1️⃣ قسم إدارة المتجر والترتيب -->
+        <!-- ============================================================ -->
         <section id="view-services" class="view-section active">
             <div class="page-head">
-                <h2>إدارة المحتوى والترتيب</h2>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-danger" onclick="clearEntireStore()">
-                        <i class="fa fa-trash-alt"></i> مسح المتجر كلياً
+                <h2><i class="fa fa-layer-group" style="color:var(--p); margin-left:8px;"></i> إدارة المحتوى والترتيب</h2>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-danger btn-sm" onclick="clearEntireStore()">
+                        <i class="fa fa-trash-alt"></i> مسح المتجر
                     </button>
-                    <button class="btn btn-p" onclick="addSrvManual()">
-                        <i class="fa fa-plus-circle"></i> إضافة خدمة يدوية
+                    <button class="btn btn-outline btn-sm" onclick="addCategoryManually()">
+                        <i class="fa fa-folder-plus"></i> قسم جديد
+                    </button>
+                    <button class="btn btn-p btn-sm" onclick="addServiceManually()">
+                        <i class="fa fa-plus-circle"></i> خدمة جديدة
                     </button>
                 </div>
             </div>
-            <div id="master-services-list"></div>
+
+            <!-- بحث وفلترة -->
+            <div class="search-bar">
+                <input type="text" id="service-search" placeholder="🔍 بحث عن خدمة أو قسم..." oninput="filterServices()">
+            </div>
+            <div class="filter-pills">
+                <span class="filter-pill active" onclick="filterServicesByCat('all', this)">الكل</span>
+            </div>
+
+            <!-- عرض الخدمات -->
+            <div id="master-services-list">
+                <div class="loading-shimmer"></div>
+                <div class="loading-shimmer"></div>
+                <div class="loading-shimmer"></div>
+            </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- 2️⃣ قسم جلب API -->
+        <!-- ============================================================ -->
         <section id="view-api" class="view-section">
-            <div class="page-head"><h2>سحب خدمات API</h2></div>
-            <div class="form-card">
-                <label style="font-size: 11px; color: var(--muted);">رابط المزود</label>
-                <input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2">
-                <label style="font-size: 11px; color: var(--muted); margin-top: 10px; display: block;">API KEY</label>
-                <input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a">
-                <label style="font-size: 11px; color: var(--muted); margin-top: 10px; display: block;">نسبة الربح المضافة (%)</label>
-                <input type="number" id="api-profit" class="api-input" value="10">
-                <button class="btn btn-p" style="width:100%; margin-top:15px; height:45px;" onclick="fetchExternalAPI()">
-                    <i class="fa fa-sync"></i> فحص وجلب الخدمات
+            <div class="page-head">
+                <h2><i class="fa fa-plug" style="color:var(--p); margin-left:8px;"></i> سحب خدمات من مزود API</h2>
+            </div>
+            <div class="form-card" style="border-right: 4px solid var(--accent);">
+                <h3>إعدادات المزود</h3>
+                <div class="input-group">
+                    <label>🔗 رابط API</label>
+                    <input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2">
+                </div>
+                <div class="input-group">
+                    <label>🔑 API Key</label>
+                    <input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a">
+                </div>
+                <div class="input-group">
+                    <label>💰 نسبة الربح المضافة (%)</label>
+                    <input type="number" id="api-profit" class="api-input" value="10">
+                </div>
+                <div class="input-group">
+                    <label>📂 القسم الافتراضي للخدمات المستوردة</label>
+                    <input type="text" id="api-default-cat" class="api-input" value="خدمات مستوردة">
+                </div>
+                <div class="input-group">
+                    <label>💲 نوع التسعير الافتراضي</label>
+                    <select id="api-price-type" class="form-select">
+                        <option value="1000">متغير (لكل 1000)</option>
+                        <option value="1">ثابت (لكل 1)</option>
+                    </select>
+                </div>
+                <button class="btn btn-p btn-full" onclick="fetchExternalAPI()">
+                    <i class="fa fa-sync"></i> فحص وجلب الخدمات من المزود
                 </button>
             </div>
             <div id="api-results-box"></div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- 3️⃣ قسم الإشعارات -->
+        <!-- ============================================================ -->
         <section id="view-notif" class="view-section">
-            <div class="page-head"><h2>إرسال إشعارات للمستخدمين</h2></div>
-            <div class="form-card" style="border-right: 4px solid var(--accent);">
-                <label>نص الإشعار</label>
-                <textarea id="notif-text" class="sw-input" style="height:80px;" placeholder="اكتب التنبيه هنا..."></textarea>
-                <button class="btn btn-p" style="width:100%; margin-top:15px;" onclick="sendGlobalNotification()">
+            <div class="page-head">
+                <h2><i class="fa fa-bell" style="color:var(--p); margin-left:8px;"></i> إرسال إشعارات</h2>
+            </div>
+            <div class="form-card" style="border-right: 4px solid var(--gold);">
+                <h3>📢 بث إشعار جديد</h3>
+                <div class="input-group">
+                    <label>نص الإشعار</label>
+                    <textarea id="notif-text" class="sw-input" style="height:100px;" placeholder="اكتب نص الإشعار هنا..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>الفئة المستهدفة</label>
+                    <select id="notif-target" class="form-select">
+                        <option value="all">جميع المستخدمين</option>
+                        <option value="vip">VIP فقط</option>
+                        <option value="normal">المستخدمين العاديين فقط</option>
+                    </select>
+                </div>
+                <button class="btn btn-p btn-full" onclick="sendGlobalNotification()">
                     <i class="fa fa-paper-plane"></i> بث الإشعار الآن
                 </button>
             </div>
-            <div id="notif-history"></div>
+            <div class="form-card">
+                <h3>📋 آخر الإشعارات المرسلة</h3>
+                <div id="notif-history"></div>
+            </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- 4️⃣ قسم الطلبات -->
+        <!-- ============================================================ -->
         <section id="view-orders" class="view-section">
-            <div class="page-head"><h2>سجل الطلبات</h2></div>
+            <div class="page-head">
+                <h2><i class="fa fa-shopping-cart" style="color:var(--p); margin-left:8px;"></i> سجل الطلبات</h2>
+            </div>
+            <div class="filter-pills">
+                <span class="filter-pill active" onclick="filterOrders('all', this)">الكل</span>
+                <span class="filter-pill" onclick="filterOrders('مكتمل', this)">مكتمل</span>
+                <span class="filter-pill" onclick="filterOrders('قيد التنفيذ', this)">قيد التنفيذ</span>
+                <span class="filter-pill" onclick="filterOrders('فاشل', this)">فاشل</span>
+                <span class="filter-pill" onclick="filterOrders('ملغي', this)">ملغي</span>
+            </div>
             <div class="scroll-box">
                 <table>
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>الخدمة</th>
                             <th>الزبون</th>
+                            <th>الكمية</th>
+                            <th>المبلغ</th>
                             <th>الهدف</th>
                             <th>الحالة</th>
+                            <th>التاريخ</th>
                             <th>تحكم</th>
                         </tr>
                     </thead>
@@ -169,15 +416,90 @@
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- 5️⃣ قسم المستخدمين -->
+        <!-- ============================================================ -->
         <section id="view-users" class="view-section">
-            <div class="page-head"><h2>إدارة المستخدمين والأرصدة</h2></div>
+            <div class="page-head">
+                <h2><i class="fa fa-users" style="color:var(--p); margin-left:8px;"></i> إدارة المستخدمين</h2>
+                <button class="btn btn-p btn-sm" onclick="addUserManually()">
+                    <i class="fa fa-user-plus"></i> إضافة مستخدم
+                </button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="user-search" placeholder="🔍 بحث بالاسم أو الإيميل..." oninput="filterUsers()">
+            </div>
+            <div class="filter-pills">
+                <span class="filter-pill active" onclick="filterUsersBy('all', this)">الكل</span>
+                <span class="filter-pill" onclick="filterUsersBy('admin', this)">مدراء</span>
+                <span class="filter-pill" onclick="filterUsersBy('vip', this)">VIP</span>
+                <span class="filter-pill" onclick="filterUsersBy('banned', this)">محظورين</span>
+            </div>
             <div id="users-list-area"></div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 6️⃣ قسم الكوبونات -->
+        <!-- ============================================================ -->
+        <section id="view-coupons" class="view-section">
+            <div class="page-head">
+                <h2><i class="fa fa-ticket-alt" style="color:var(--p); margin-left:8px;"></i> إدارة الكوبونات</h2>
+                <button class="btn btn-p btn-sm" onclick="showAddCouponForm()">
+                    <i class="fa fa-plus-circle"></i> كوبون جديد
+                </button>
+            </div>
+            <div id="coupons-list-area">
+                <div class="loading-shimmer"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7️⃣ قسم الإعدادات -->
+        <!-- ============================================================ -->
+        <section id="view-settings" class="view-section">
+            <div class="page-head">
+                <h2><i class="fa fa-cog" style="color:var(--p); margin-left:8px;"></i> إعدادات الموقع</h2>
+            </div>
+            <div class="form-card" style="border-right: 4px solid var(--p);">
+                <h3>⚙️ الإعدادات العامة</h3>
+                <div class="input-group">
+                    <label>🔧 وضع الصيانة</label>
+                    <select id="set-maintenance" class="form-select">
+                        <option value="false">معطل</option>
+                        <option value="true">مفعل</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>💰 الحد الأدنى للإيداع</label>
+                    <input type="number" id="set-min-deposit" class="sw-input" value="1">
+                </div>
+                <div class="input-group">
+                    <label>📢 نص الشريط الإخباري</label>
+                    <input type="text" id="set-news" class="sw-input" value="">
+                </div>
+                <div class="input-group">
+                    <label>📞 رقم واتساب الدعم</label>
+                    <input type="text" id="set-whatsapp" class="sw-input" value="218912377291">
+                </div>
+                <div class="input-group">
+                    <label>🎯 نسبة الـ Affiliate (%)</label>
+                    <input type="number" id="set-affiliate" class="sw-input" value="5">
+                </div>
+                <button class="btn btn-p btn-full" onclick="saveSettings()">
+                    <i class="fa fa-save"></i> حفظ الإعدادات
+                </button>
+            </div>
         </section>
 
     </div>
 
+    <!-- ============================================================ -->
+    <!-- JavaScript - المنطق الكامل -->
+    <!-- ============================================================ -->
     <script>
-        // تكوين Firebase محمد
+        // ============================================================
+        // 🔥 Firebase Init
+        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
             authDomain: "cd-card-87365.firebaseapp.com",
@@ -186,260 +508,1078 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        function showView(v, el) {
+        // ============================================================
+        // 📦 Globals
+        // ============================================================
+        let allServicesData = [];
+        let allUsersData = [];
+        let allOrdersData = [];
+        let allCouponsData = [];
+        let currentOrderFilter = 'all';
+        let currentUserFilter = 'all';
+        let currentServiceSearch = '';
+
+        // ============================================================
+        // 🧭 Navigation
+        // ============================================================
+        function showView(viewName, el) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('view-'+v).classList.add('active');
-            el.classList.add('active');
-            if(v==='services') loadMasterData();
-            if(v==='orders') loadAdminOrders();
-            if(v==='notif') loadNotifHistory();
-            if(v==='users') loadUsersData();
-        }
+            const view = document.getElementById('view-' + viewName);
+            if (view) view.classList.add('active');
+            if (el) el.classList.add('active');
 
-        /* --- إدارة المتجر --- */
-        function loadMasterData() {
-            db.collection("services").onSnapshot(snap => {
-                const area = document.getElementById('master-services-list');
-                area.innerHTML = "";
-                const cats = {};
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const c = d.category || "غير مصنف";
-                    if(!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] };
-                    cats[c].items.push({id: doc.id, ...d});
-                });
-                const sortedCats = Object.values(cats).sort((a,b) => a.order - b.order);
-                sortedCats.forEach(cat => {
-                    const box = document.createElement('div');
-                    box.className = 'cat-box';
-                    const sortedItems = cat.items.sort((a,b) => (a.srvOrder || 0) - (b.srvOrder || 0));
-                    const itemsHtml = sortedItems.map(s => `
-                        <div class="srv-row">
-                            <div class="srv-meta">
-                                <div class="order-circle" style="width:25px; height:25px; font-size:10px;" onclick="updateSrvOrder('${s.id}', ${s.srvOrder || 0})">${s.srvOrder || 0}</div>
-                                <div class="srv-main-text"><b>${s.name}</b><span>${s.description || 'لا يوجد وصف'}</span></div>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <div class="srv-pricing"><b>${s.finalPrice} د.ل</b><small>${s.priceType == '1' ? 'ثابت' : 'متغير'}</small></div>
-                                <button class="btn btn-outline btn-sm" onclick="fullEditService('${s.id}')"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteServiceDirect('${s.id}')"><i class="fa fa-trash"></i></button>
-                            </div>
-                        </div>`).join('');
-                    box.innerHTML = `
-                        <div class="cat-top">
-                            <div class="cat-info-side">
-                                <div class="order-circle" onclick="updateCatOrder('${cat.name}', ${cat.order})">${cat.order}</div>
-                                <span class="cat-title" onclick="toggleCat(this)">${cat.name}</span>
-                            </div>
-                            <div class="cat-actions" style="display:flex; gap:5px;">
-                                <button class="btn btn-outline btn-sm" onclick="renameCatGroup('${cat.name}')"><i class="fa fa-pen"></i> الاسم</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteCategoryGroup('${cat.name}')"><i class="fa fa-trash"></i> حذف القسم</button>
-                                <button class="btn btn-outline btn-sm" onclick="toggleCat(this)"><i class="fa fa-chevron-down"></i></button>
-                            </div>
-                        </div>
-                        <div class="cat-body">${itemsHtml}</div>`;
-                    area.appendChild(box);
-                });
-            });
-        }
-
-        function toggleCat(el) { el.closest('.cat-box').querySelector('.cat-body').classList.toggle('open'); }
-
-        async function clearEntireStore() {
-            const confirm = await Swal.fire({
-                title: 'حذف المتجر بالكامل؟',
-                text: "سيتم حذف جميع الأقسام والخدمات، لا يمكن التراجع!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ff003c',
-                confirmButtonText: 'نعم، مسح الكل'
-            });
-            if(confirm.isConfirmed) {
-                const snap = await db.collection("services").get();
-                const batch = db.batch();
-                snap.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
-                Swal.fire('تم تصفير المتجر', '', 'success');
+            // تحميل البيانات حسب القسم
+            switch(viewName) {
+                case 'services': loadMasterData(); break;
+                case 'orders': loadAdminOrders(); break;
+                case 'notif': loadNotifHistory(); break;
+                case 'users': loadUsersData(); break;
+                case 'coupons': loadCouponsData(); break;
+                case 'settings': loadSettingsData(); break;
+                case 'api': break;
             }
         }
 
-        async function deleteServiceDirect(id) {
-            await db.collection("services").doc(id).delete();
-            Swal.fire({ icon: 'success', title: 'تم الحذف', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+        // ============================================================
+        // 1️⃣ إدارة المتجر والترتيب - الوظائف الكاملة
+        // ============================================================
+        function loadMasterData() {
+            db.collection("services").onSnapshot(snap => {
+                allServicesData = [];
+                snap.forEach(doc => allServicesData.push({ id: doc.id, ...doc.data() }));
+                renderServices();
+            });
         }
 
-        async function deleteCategoryGroup(catName) {
-            const confirm = await Swal.fire({ title: 'حذف قسم كامل؟', text: `سيتم حذف قسم "${catName}" نهائياً!`, icon: 'warning', showCancelButton: true });
+        function renderServices(searchTerm = '') {
+            const area = document.getElementById('master-services-list');
+            if (!area) return;
+
+            // فلترة بالبحث
+            let filtered = [...allServicesData];
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(s => 
+                    (s.name || '').toLowerCase().includes(term) || 
+                    (s.category || '').toLowerCase().includes(term) ||
+                    (s.description || '').toLowerCase().includes(term)
+                );
+            }
+
+            // تجميع حسب الأقسام
+            const cats = {};
+            filtered.forEach(d => {
+                const c = d.category || "غير مصنف";
+                if (!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] };
+                cats[c].items.push(d);
+            });
+
+            // ترتيب الأقسام
+            const sortedCats = Object.values(cats).sort((a, b) => a.order - b.order);
+
+            // تحديث أزرار الفلترة
+            updateCategoryFilters(Object.keys(cats));
+
+            if (sortedCats.length === 0) {
+                area.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--muted);">
+                        <i class="fa fa-box-open" style="font-size:3rem; display:block; margin-bottom:15px;"></i>
+                        <p>لا توجد خدمات. ابدأ بإضافة قسم أو خدمة جديدة.</p>
+                    </div>`;
+                return;
+            }
+
+            area.innerHTML = sortedCats.map(cat => {
+                const sortedItems = cat.items.sort((a, b) => (a.srvOrder || 0) - (b.srvOrder || 0));
+                const itemsHtml = sortedItems.map(s => {
+                    const priceLabel = s.priceType == '1' ? 'ثابت' : 'متغير';
+                    const estimatedTime = s.estimatedTime || 'غير محدد';
+                    return `
+                    <div class="srv-row">
+                        <div class="srv-meta">
+                            <div class="order-circle" style="width:28px; height:28px; font-size:10px;" 
+                                 onclick="updateServiceOrder('${s.id}', ${s.srvOrder || 0})" 
+                                 title="ترتيب الخدمة">
+                                ${s.srvOrder || 0}
+                            </div>
+                            <div class="srv-main-text">
+                                <b>${s.name || 'بدون اسم'}</b>
+                                <span>${s.description || 'لا يوجد وصف'} | ⏱ ${estimatedTime}</span>
+                            </div>
+                        </div>
+                        <div class="srv-actions">
+                            <div class="srv-pricing">
+                                <b>${(s.finalPrice || 0).toFixed(2)} د.ل</b>
+                                <small>${priceLabel} | ${s.priceType == '1000' ? '/1000' : '/1'}</small>
+                            </div>
+                            <button class="btn btn-outline btn-xs" onclick="fullEditService('${s.id}')" title="تعديل">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-accent btn-xs" onclick="duplicateService('${s.id}')" title="نسخ">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                            <button class="btn btn-danger btn-xs" onclick="deleteServiceDirect('${s.id}')" title="حذف">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="cat-box" data-category="${cat.name}">
+                    <div class="cat-top" onclick="toggleCatBody(this)">
+                        <div class="cat-info-side">
+                            <div class="order-circle" onclick="event.stopPropagation(); updateCategoryOrder('${cat.name}', ${cat.order})" title="ترتيب القسم">
+                                ${cat.order}
+                            </div>
+                            <span class="cat-title">📁 ${cat.name}</span>
+                            <span style="font-size:10px; color:var(--muted);">(${cat.items.length} خدمات)</span>
+                        </div>
+                        <div style="display:flex; gap:5px;" onclick="event.stopPropagation();">
+                            <button class="btn btn-outline btn-xs" onclick="renameCategory('${cat.name}')" title="تعديل اسم القسم">
+                                <i class="fa fa-pen"></i> الاسم
+                            </button>
+                            <button class="btn btn-outline btn-xs" onclick="editCategoryDetails('${cat.name}')" title="تعديل ترتيب القسم">
+                                <i class="fa fa-sort-numeric-up"></i> الترتيب
+                            </button>
+                            <button class="btn btn-danger btn-xs" onclick="deleteCategory('${cat.name}')" title="حذف القسم">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <i class="fa fa-chevron-down" style="color:var(--muted);"></i>
+                        </div>
+                    </div>
+                    <div class="cat-body">${itemsHtml}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleCatBody(el) {
+            const body = el.closest('.cat-box').querySelector('.cat-body');
+            body.classList.toggle('open');
+            const icon = el.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (icon) {
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            }
+        }
+
+        function updateCategoryFilters(catNames) {
+            const container = document.querySelector('#view-services .filter-pills');
+            if (!container) return;
+            container.innerHTML = '<span class="filter-pill active" onclick="filterServicesByCat(\'all\', this)">الكل</span>';
+            catNames.forEach(name => {
+                container.innerHTML += `<span class="filter-pill" onclick="filterServicesByCat('${name}', this)">${name}</span>`;
+            });
+        }
+
+        function filterServices() {
+            const term = document.getElementById('service-search')?.value || '';
+            renderServices(term);
+        }
+
+        function filterServicesByCat(cat, el) {
+            document.querySelectorAll('#view-services .filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            if (cat === 'all') { renderServices(); return; }
+            
+            const term = document.getElementById('service-search')?.value || '';
+            let filtered = [...allServicesData];
+            if (term) filtered = filtered.filter(s => 
+                (s.name||'').toLowerCase().includes(term.toLowerCase()) ||
+                (s.description||'').toLowerCase().includes(term.toLowerCase())
+            );
+            filtered = filtered.filter(s => s.category === cat);
+            
+            // عرض مباشر بدون إعادة تجميع
+            const area = document.getElementById('master-services-list');
+            area.innerHTML = filtered.map(s => `
+                <div class="srv-row">
+                    <div class="srv-meta">
+                        <div class="srv-main-text"><b>${s.name}</b><span>${s.description||''}</span></div>
+                    </div>
+                    <div class="srv-actions">
+                        <div class="srv-pricing"><b>${(s.finalPrice||0).toFixed(2)} د.ل</b></div>
+                        <button class="btn btn-outline btn-xs" onclick="fullEditService('${s.id}')"><i class="fa fa-edit"></i></button>
+                        <button class="btn btn-danger btn-xs" onclick="deleteServiceDirect('${s.id}')"><i class="fa fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || '<div class="empty-state">لا توجد خدمات في هذا القسم</div>';
+        }
+
+        // تعديل كامل للخدمة
+        async function fullEditService(id) {
+            const doc = await db.collection("services").doc(id).get();
+            const s = doc.data();
+            
+            const { value: formData } = await Swal.fire({
+                title: '✏️ تعديل الخدمة كاملة',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14',
+                confirmButtonText: '💾 حفظ التعديلات',
+                showCancelButton: true,
+                cancelButtonText: 'إلغاء',
+                html: `
+                    <div style="text-align:right;">
+                        <div class="input-group">
+                            <label>📝 اسم الخدمة</label>
+                            <input id="f-name" class="sw-input" value="${s.name || ''}" placeholder="اسم الخدمة">
+                        </div>
+                        <div class="input-group">
+                            <label>📂 القسم</label>
+                            <input id="f-cat" class="sw-input" value="${s.category || ''}" placeholder="اسم القسم">
+                        </div>
+                        <div class="input-group">
+                            <label>📄 الوصف</label>
+                            <textarea id="f-desc" class="sw-input" style="height:80px;" placeholder="وصف الخدمة">${s.description || ''}</textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>💰 السعر النهائي (د.ل)</label>
+                            <input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice || 0}">
+                        </div>
+                        <div class="input-group">
+                            <label>💲 نوع التسعير</label>
+                            <select id="f-type" class="form-select">
+                                <option value="1" ${s.priceType == '1' ? 'selected' : ''}>ثابت - سعر واحد للطلب</option>
+                                <option value="1000" ${s.priceType == '1000' ? 'selected' : ''}>متغير - سعر لكل 1000</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>⏱ الوقت المقدر للتنفيذ</label>
+                            <input id="f-time" class="sw-input" value="${s.estimatedTime || ''}" placeholder="مثال: 5 دقائق - ساعة">
+                        </div>
+                        <div class="input-group">
+                            <label>🔢 الحد الأدنى للطلب</label>
+                            <input id="f-min" type="number" class="sw-input" value="${s.minOrder || 1}">
+                        </div>
+                        <div class="input-group">
+                            <label>🔢 الحد الأقصى للطلب</label>
+                            <input id="f-max" type="number" class="sw-input" value="${s.maxOrder || 10000}">
+                        </div>
+                        <div class="input-group">
+                            <label>🔗 معرف الخدمة عند المزود (External ID)</label>
+                            <input id="f-extid" class="sw-input" value="${s.externalId || ''}">
+                        </div>
+                    </div>`,
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('f-name').value,
+                        category: document.getElementById('f-cat').value,
+                        description: document.getElementById('f-desc').value,
+                        finalPrice: parseFloat(document.getElementById('f-price').value) || 0,
+                        priceType: document.getElementById('f-type').value,
+                        estimatedTime: document.getElementById('f-time').value,
+                        minOrder: parseInt(document.getElementById('f-min').value) || 1,
+                        maxOrder: parseInt(document.getElementById('f-max').value) || 10000,
+                        externalId: document.getElementById('f-extid').value
+                    };
+                }
+            });
+
+            if (formData) {
+                await db.collection("services").doc(id).update(formData);
+                Swal.fire({ icon: 'success', title: '✅ تم تحديث الخدمة', toast: true, position: 'top-end', timer: 2000, showConfirmButton: false });
+            }
+        }
+
+        // إضافة خدمة جديدة يدوياً
+        async function addServiceManually() {
+            const { value: formData } = await Swal.fire({
+                title: '➕ إضافة خدمة جديدة',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14',
+                confirmButtonText: 'إضافة',
+                showCancelButton: true,
+                html: `
+                    <div style="text-align:right;">
+                        <div class="input-group"><label>اسم الخدمة *</label><input id="add-n" class="sw-input" placeholder="اسم الخدمة"></div>
+                        <div class="input-group"><label>القسم *</label><input id="add-c" class="sw-input" placeholder="اسم القسم"></div>
+                        <div class="input-group"><label>الوصف</label><textarea id="add-d" class="sw-input" placeholder="وصف الخدمة"></textarea></div>
+                        <div class="input-group"><label>السعر (د.ل) *</label><input id="add-p" type="number" step="0.01" class="sw-input" placeholder="0.00"></div>
+                        <div class="input-group"><label>نوع التسعير</label><select id="add-t" class="form-select"><option value="1000">متغير /1000</option><option value="1">ثابت /1</option></select></div>
+                        <div class="input-group"><label>الوقت المقدر</label><input id="add-time" class="sw-input" placeholder="مثال: 10 دقائق"></div>
+                    </div>`,
+                preConfirm: () => ({
+                    name: document.getElementById('add-n').value,
+                    category: document.getElementById('add-c').value,
+                    description: document.getElementById('add-d').value,
+                    finalPrice: parseFloat(document.getElementById('add-p').value) || 0,
+                    priceType: document.getElementById('add-t').value,
+                    estimatedTime: document.getElementById('add-time').value
+                })
+            });
+
+            if (formData && formData.name && formData.category) {
+                await db.collection("services").add({
+                    ...formData,
+                    catOrder: 99,
+                    srvOrder: 0,
+                    active: true,
+                    minOrder: 1,
+                    maxOrder: 10000,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                Swal.fire({ icon: 'success', title: '✅ تمت الإضافة', toast: true, position: 'top-end', timer: 2000, showConfirmButton: false });
+            }
+        }
+
+        // إضافة قسم جديد
+        async function addCategoryManually() {
+            const { value: catName } = await Swal.fire({
+                title: '📁 إضافة قسم جديد',
+                text: 'أدخل اسم القسم الجديد',
+                input: 'text',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (catName && catName.trim()) {
+                await db.collection("services").add({
+                    name: 'خدمة افتراضية',
+                    category: catName.trim(),
+                    finalPrice: 0,
+                    priceType: '1000',
+                    description: '',
+                    catOrder: 99,
+                    srvOrder: 0,
+                    active: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                Swal.fire('✅ تم إنشاء القسم', '', 'success');
+            }
+        }
+
+        // ترتيب القسم
+        async function updateCategoryOrder(catName, current) {
+            const { value: newOrder } = await Swal.fire({
+                title: '🔢 ترتيب القسم',
+                text: `الترتيب الحالي: ${current}`,
+                input: 'number',
+                inputValue: current,
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (newOrder !== null && newOrder !== undefined) {
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", catName).get();
+                snap.forEach(doc => batch.update(doc.ref, { catOrder: parseInt(newOrder) }));
+                await batch.commit();
+                Swal.fire({ icon: 'success', title: '✅ تم تحديث الترتيب', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        // ترتيب الخدمة
+        async function updateServiceOrder(srvId, current) {
+            const { value: newOrder } = await Swal.fire({
+                title: '🔢 ترتيب الخدمة',
+                text: `الترتيب الحالي: ${current}`,
+                input: 'number',
+                inputValue: current,
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (newOrder !== null && newOrder !== undefined) {
+                await db.collection("services").doc(srvId).update({ srvOrder: parseInt(newOrder) });
+                Swal.fire({ icon: 'success', title: '✅ تم', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        // إعادة تسمية القسم
+        async function renameCategory(oldName) {
+            const { value: newName } = await Swal.fire({
+                title: '✏️ إعادة تسمية القسم',
+                input: 'text',
+                inputValue: oldName,
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (newName && newName !== oldName) {
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", oldName).get();
+                snap.forEach(doc => batch.update(doc.ref, { category: newName }));
+                await batch.commit();
+                Swal.fire('✅ تمت إعادة التسمية', '', 'success');
+            }
+        }
+
+        // تعديل تفاصيل القسم
+        async function editCategoryDetails(catName) {
+            const { value: newOrder } = await Swal.fire({
+                title: '⚙️ تعديل ترتيب القسم',
+                input: 'number',
+                inputLabel: 'الترتيب الجديد',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (newOrder !== null) {
+                const batch = db.batch();
+                const snap = await db.collection("services").where("category", "==", catName).get();
+                snap.forEach(doc => batch.update(doc.ref, { catOrder: parseInt(newOrder) }));
+                await batch.commit();
+            }
+        }
+
+        // حذف قسم
+        async function deleteCategory(catName) {
+            const confirm = await Swal.fire({
+                title: '🗑️ حذف القسم',
+                text: `سيتم حذف جميع الخدمات داخل قسم "${catName}"`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                cancelButtonColor: '#666',
+                confirmButtonText: 'نعم، احذف',
+                background: '#0d0d0d',
+                color: '#fff'
+            });
             if (confirm.isConfirmed) {
                 const batch = db.batch();
                 const snap = await db.collection("services").where("category", "==", catName).get();
                 snap.forEach(doc => batch.delete(doc.ref));
                 await batch.commit();
+                Swal.fire('✅ تم الحذف', '', 'success');
             }
         }
 
-        async function fullEditService(id) {
+        // نسخ خدمة
+        async function duplicateService(id) {
             const doc = await db.collection("services").doc(id).get();
-            const s = doc.data();
-            const { value: form } = await Swal.fire({
-                title: 'تعديل الخدمة',
-                background: '#0d0d0d', color: '#fff',
-                html: `
-                    <input id="f-name" class="sw-input" value="${s.name}" placeholder="الاسم">
-                    <input id="f-cat" class="sw-input" value="${s.category}" placeholder="القسم">
-                    <input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice}" placeholder="السعر">
-                    <select id="f-type" class="sw-input">
-                        <option value="1" ${s.priceType == '1' ? 'selected' : ''}>ثابت (1)</option>
-                        <option value="1000" ${s.priceType == '1000' ? 'selected' : ''}>متغير (1000)</option>
-                    </select>
-                    <textarea id="f-desc" class="sw-input" style="height:80px">${s.description || ''}</textarea>`,
-                preConfirm: () => ({ name: document.getElementById('f-name').value, cat: document.getElementById('f-cat').value, price: parseFloat(document.getElementById('f-price').value), type: document.getElementById('f-type').value, desc: document.getElementById('f-desc').value })
+            const data = doc.data();
+            const { name, ...rest } = data;
+            await db.collection("services").add({
+                ...rest,
+                name: (name || '') + ' (نسخة)',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            if (form) {
-                await db.collection("services").doc(id).update({ name: form.name, category: form.cat, finalPrice: form.price, priceType: form.type, description: form.desc });
+            Swal.fire({ icon: 'success', title: '✅ تم النسخ', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+        }
+
+        // حذف خدمة
+        async function deleteServiceDirect(id) {
+            const confirm = await Swal.fire({
+                title: 'تأكيد الحذف',
+                text: 'لن تتمكن من التراجع',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                background: '#0d0d0d',
+                color: '#fff'
+            });
+            if (confirm.isConfirmed) {
+                await db.collection("services").doc(id).delete();
+                Swal.fire({ icon: 'success', title: '🗑️ تم الحذف', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
             }
         }
 
-        async function addSrvManual() {
-            const { value: res } = await Swal.fire({
-                title: 'إضافة خدمة جديدة',
-                background: '#0d0d0d', color: '#fff',
-                html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="اسم القسم"><input id="add-p" type="number" class="sw-input" placeholder="السعر"><select id="add-t" class="sw-input"><option value="1000">1000</option><option value="1">1</option></select><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea>`,
-                preConfirm: () => ({ n: document.getElementById('add-n').value, c: document.getElementById('add-c').value, p: document.getElementById('add-p').value, t: document.getElementById('add-t').value, d: document.getElementById('add-d').value })
+        // مسح المتجر كلياً
+        async function clearEntireStore() {
+            const confirm = await Swal.fire({
+                title: '⚠️ مسح المتجر بالكامل',
+                text: 'سيتم حذف جميع الأقسام والخدمات نهائياً!',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                confirmButtonText: 'نعم، امسح الكل',
+                background: '#0d0d0d',
+                color: '#fff'
             });
-            if(res && res.n) {
-                await db.collection("services").add({ name: res.n, category: res.c, finalPrice: parseFloat(res.p), priceType: res.t, description: res.d, catOrder: 99, srvOrder: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            }
-        }
-
-        async function updateCatOrder(name, current) {
-            const { value: num } = await Swal.fire({ title: 'ترتيب القسم', input: 'number', inputValue: current });
-            if(num) {
+            if (confirm.isConfirmed) {
+                const snap = await db.collection("services").get();
                 const batch = db.batch();
-                const snap = await db.collection("services").where("category", "==", name).get();
-                snap.forEach(doc => batch.update(doc.ref, { catOrder: parseInt(num) }));
+                snap.forEach(doc => batch.delete(doc.ref));
                 await batch.commit();
+                Swal.fire('✅ تم تصفير المتجر', '', 'success');
             }
         }
 
-        async function updateSrvOrder(id, current) {
-            const { value: num } = await Swal.fire({ title: 'ترتيب الخدمة', input: 'number', inputValue: current });
-            if(num) await db.collection("services").doc(id).update({ srvOrder: parseInt(num) });
-        }
-
-        async function renameCatGroup(old) {
-            const { value: n } = await Swal.fire({ title: 'إعادة تسمية القسم', input: 'text', inputValue: old });
-            if(n && n !== old) {
-                const batch = db.batch();
-                const snap = await db.collection("services").where("category", "==", old).get();
-                snap.forEach(doc => batch.update(doc.ref, { category: n }));
-                await batch.commit();
-            }
-        }
-
-        /* --- إدارة المستخدمين --- */
-        function loadUsersData() {
-            db.collection("users").onSnapshot(snap => {
-                const area = document.getElementById('users-list-area');
-                area.innerHTML = "";
-                snap.forEach(doc => {
-                    const u = doc.data();
-                    const userId = doc.id;
-                    const row = document.createElement('div');
-                    row.className = 'user-row';
-                    row.innerHTML = `
-                        <div class="user-meta">
-                            <div class="user-main-text"><b>${u.username || 'بدون اسم'}</b><span>${u.email || 'لا يوجد بريد'}</span></div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="user-balance"><b>${(u.balance || 0).toFixed(2)} د.ل</b><small>الرصيد</small></div>
-                            <button class="btn btn-p btn-sm" onclick="adjustBalance('${userId}', 'add')"><i class="fa fa-plus"></i></button>
-                            <button class="btn btn-danger btn-sm" onclick="adjustBalance('${userId}', 'sub')"><i class="fa fa-minus"></i></button>
-                        </div>`;
-                    area.appendChild(row);
-                });
-            });
-        }
-
-        async function adjustBalance(id, action) {
-            const { value: amount } = await Swal.fire({ title: action === 'add' ? 'إضافة رصيد' : 'خصم رصيد', input: 'number', showCancelButton: true });
-            if (amount) {
-                const userRef = db.collection("users").doc(id);
-                const val = parseFloat(amount);
-                await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists) return;
-                    const newBalance = action === 'add' ? (userDoc.data().balance || 0) + val : (userDoc.data().balance || 0) - val;
-                    transaction.update(userRef, { balance: newBalance });
-                });
-            }
-        }
-
-        /* --- نظام الإشعارات --- */
-        async function sendGlobalNotification() {
-            const text = document.getElementById('notif-text').value;
-            if(!text) return;
-            await db.collection("notifications").add({ message: text, active: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('notif-text').value = "";
-            Swal.fire('تم البث', '', 'success');
-        }
-
-        function loadNotifHistory() {
-            db.collection("notifications").orderBy("createdAt", "desc").limit(5).onSnapshot(snap => {
-                const h = document.getElementById('notif-history');
-                h.innerHTML = "";
-                snap.forEach(doc => {
-                    const n = doc.data();
-                    h.innerHTML += `<div class="form-card" style="padding:12px; margin-bottom:8px; font-size:12px;">${n.message} <button class="btn btn-danger btn-sm" style="float:left" onclick="deleteNotif('${doc.id}')"><i class="fa fa-times"></i></button></div>`;
-                });
-            });
-        }
-        async function deleteNotif(id) { await db.collection("notifications").doc(id).delete(); }
-
-        /* --- نظام API (طريقتك الفعالة) --- */
+        // ============================================================
+        // 2️⃣ جلب API
+        // ============================================================
         async function fetchExternalAPI() {
-            const url = document.getElementById('api-url').value;
-            const key = document.getElementById('api-key').value;
+            const url = document.getElementById('api-url').value.trim();
+            const key = document.getElementById('api-key').value.trim();
             const profit = parseFloat(document.getElementById('api-profit').value) || 0;
-            Swal.fire({ title: 'جاري سحب الخدمات...', didOpen: () => Swal.showLoading() });
+            const defaultCat = document.getElementById('api-default-cat').value.trim() || 'خدمات مستوردة';
+            const priceType = document.getElementById('api-price-type').value;
+
+            if (!url || !key) {
+                Swal.fire({ icon: 'error', title: 'يرجى إدخال رابط API والمفتاح', background: '#0d0d0d', color: '#fff' });
+                return;
+            }
+
+            Swal.fire({ 
+                title: '🔄 جاري جلب الخدمات...', 
+                text: 'يرجى الانتظار',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                background: '#0d0d0d',
+                color: '#fff'
+            });
+
             try {
                 const res = await fetch(`${url}?key=${key}&action=services`);
                 const data = await res.json();
-                let html = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>`;
+
+                if (!Array.isArray(data)) {
+                    throw new Error('تنسيق غير متوقع من المزود');
+                }
+
+                let html = `
+                <div class="form-card" style="margin-top:15px;">
+                    <h3>✅ تم العثور على ${data.length} خدمة</h3>
+                    <button class="btn btn-p btn-sm" onclick="importAllServices(${JSON.stringify(data).replace(/"/g, '&quot;')}, '${defaultCat}', '${priceType}', ${profit})" style="margin-bottom:10px;">
+                        <i class="fa fa-download"></i> استيراد الكل
+                    </button>
+                    <div class="scroll-box">
+                        <table>
+                            <thead><tr><th>ID</th><th>الخدمة</th><th>السعر الأصلي</th><th>بعد الربح</th><th>القسم</th><th>إجراء</th></tr></thead>
+                            <tbody>`;
+
                 data.forEach(s => {
-                    const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit/100))).toFixed(2);
-                    html += `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b><br><small>${s.category}</small></td><td style="color:var(--p)">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${s.name.replace(/'/g,"")}','${s.category.replace(/'/g,"")}',${final})">إضافة للمتجر</button></td></tr>`;
+                    const originalRate = parseFloat(s.rate) || 0;
+                    const finalPrice = (originalRate + (originalRate * profit / 100)).toFixed(2);
+                    html += `
+                    <tr>
+                        <td><span class="id-badge">${s.service || '—'}</span></td>
+                        <td><b>${s.name || '—'}</b></td>
+                        <td>${originalRate.toFixed(2)}</td>
+                        <td style="color:var(--p); font-weight:700;">${finalPrice} د.ل</td>
+                        <td>${s.category || defaultCat}</td>
+                        <td>
+                            <button class="btn btn-p btn-xs" onclick="importSingleService('${s.service}', '${(s.name || '').replace(/'/g, "\\'")}', '${(s.category || defaultCat).replace(/'/g, "\\'")}', ${finalPrice}, '${priceType}')">
+                                <i class="fa fa-plus"></i> إضافة
+                            </button>
+                        </td>
+                    </tr>`;
                 });
-                document.getElementById('api-results-box').innerHTML = html + `</tbody></table></div>`;
+
+                html += `</tbody></table></div></div>`;
+                document.getElementById('api-results-box').innerHTML = html;
                 Swal.close();
-            } catch (e) { Swal.fire('خطأ', 'فشل الاتصال بالمزود', 'error'); }
+            } catch (e) {
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: '❌ فشل الاتصال', 
+                    text: e.message,
+                    background: '#0d0d0d',
+                    color: '#fff'
+                });
+            }
         }
 
-        async function importFromAPI(eid, n, c, p) {
-            await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: parseFloat(p), priceType: "1000", catOrder: 99, srvOrder: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            Swal.fire({ icon: 'success', title: 'تمت الإضافة', toast: true, position: 'top-end', timer: 1000, showConfirmButton: false });
+        async function importSingleService(extId, name, category, price, priceType) {
+            await db.collection("services").add({
+                externalId: extId,
+                name: name,
+                category: category,
+                finalPrice: parseFloat(price),
+                priceType: priceType,
+                description: '',
+                estimatedTime: '',
+                catOrder: 99,
+                srvOrder: 0,
+                active: true,
+                minOrder: 1,
+                maxOrder: 10000,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            Swal.fire({ 
+                icon: 'success', 
+                title: '✅ تمت الإضافة', 
+                toast: true, 
+                position: 'top-end', 
+                timer: 1500, 
+                showConfirmButton: false 
+            });
         }
 
-        /* --- الطلبات --- */
-        function loadAdminOrders() {
-            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
-                const rows = document.getElementById('admin-orders-rows');
-                rows.innerHTML = "";
+        async function importAllServices(data, defaultCat, priceType, profit) {
+            Swal.fire({ title: 'جاري الاستيراد...', didOpen: () => Swal.showLoading(), background: '#0d0d0d', color: '#fff' });
+            const batch = db.batch();
+            data.forEach(s => {
+                const originalRate = parseFloat(s.rate) || 0;
+                const finalPrice = originalRate + (originalRate * profit / 100);
+                const ref = db.collection("services").doc();
+                batch.set(ref, {
+                    externalId: s.service || '',
+                    name: s.name || '',
+                    category: s.category || defaultCat,
+                    finalPrice: parseFloat(finalPrice.toFixed(2)),
+                    priceType: priceType,
+                    description: '',
+                    estimatedTime: '',
+                    catOrder: 99,
+                    srvOrder: 0,
+                    active: true,
+                    minOrder: 1,
+                    maxOrder: 10000,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+            await batch.commit();
+            Swal.fire('✅ تم استيراد جميع الخدمات', '', 'success');
+        }
+
+        // ============================================================
+        // 3️⃣ الإشعارات
+        // ============================================================
+        async function sendGlobalNotification() {
+            const text = document.getElementById('notif-text').value.trim();
+            const target = document.getElementById('notif-target').value;
+
+            if (!text) {
+                Swal.fire({ icon: 'warning', title: 'اكتب نص الإشعار', background: '#0d0d0d', color: '#fff' });
+                return;
+            }
+
+            let query = db.collection("users");
+            if (target === 'vip') query = query.where("userLevel", "==", "vip");
+            else if (target === 'normal') query = query.where("userLevel", "==", "user");
+
+            const snap = await query.get();
+            const batch = db.batch();
+            snap.forEach(doc => {
+                batch.update(doc.ref, { 
+                    lastNotification: text, 
+                    notifiedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+            });
+
+            await db.collection("notifications").add({
+                message: text,
+                target: target,
+                active: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            await batch.commit();
+            document.getElementById('notif-text').value = '';
+            Swal.fire(`✅ تم إرسال الإشعار إلى ${snap.size} مستخدم`, '', 'success');
+        }
+
+        function loadNotifHistory() {
+            db.collection("notifications").orderBy("createdAt", "desc").limit(10).onSnapshot(snap => {
+                const area = document.getElementById('notif-history');
+                if (!area) return;
+                area.innerHTML = snap.empty ? 
+                    '<p style="color:var(--muted); text-align:center;">لا توجد إشعارات سابقة</p>' : 
+                    '';
                 snap.forEach(doc => {
-                    const o = doc.data();
-                    rows.innerHTML += `<tr><td><b>${o.serviceName}</b></td><td>${o.username}</td><td><span class="id-badge">${o.target}</span></td><td>${o.status || 'معلق'}</td><td><button class="btn btn-outline btn-sm" onclick="changeStatus('${doc.id}')"><i class="fa fa-sync"></i> الحالة</button></td></tr>`;
+                    const n = doc.data();
+                    area.innerHTML += `
+                        <div style="background:#111; padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <p style="font-size:12px;">${n.message}</p>
+                                <small style="color:var(--muted);">${n.target === 'all' ? 'للجميع' : n.target}</small>
+                            </div>
+                            <button class="btn btn-danger btn-xs" onclick="deleteNotif('${doc.id}')">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>`;
                 });
             });
         }
 
-        async function changeStatus(id) {
-            const { value: st } = await Swal.fire({ title: 'تحديث حالة الطلب', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'ملغي': 'ملغي', 'قيد التنفيذ': 'قيد التنفيذ' } });
-            if(st) await db.collection("orders").doc(id).update({ status: st });
+        async function deleteNotif(id) { 
+            await db.collection("notifications").doc(id).delete(); 
         }
 
-        window.onload = () => { loadMasterData(); loadAdminOrders(); loadNotifHistory(); loadUsersData(); };
+        // ============================================================
+        // 4️⃣ الطلبات
+        // ============================================================
+        function loadAdminOrders() {
+            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snap => {
+                allOrdersData = [];
+                snap.forEach(doc => allOrdersData.push({ id: doc.id, ...doc.data() }));
+                renderOrders();
+            });
+        }
+
+        function filterOrders(status, el) {
+            currentOrderFilter = status;
+            document.querySelectorAll('#view-orders .filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('admin-orders-rows');
+            if (!tbody) return;
+            
+            let filtered = [...allOrdersData];
+            if (currentOrderFilter !== 'all') {
+                filtered = filtered.filter(o => o.status === currentOrderFilter);
+            }
+
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--muted);">لا توجد طلبات</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((o, i) => {
+                const statusClass = o.status === 'مكتمل' ? 'completed' : 
+                                   o.status === 'قيد التنفيذ' ? 'pending' : 'failed';
+                const date = o.createdAt?.toDate ? o.createdAt.toDate() : new Date();
+                return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><b>${o.serviceName || '—'}</b></td>
+                    <td>${o.username || o.uid || '—'}</td>
+                    <td>${o.quantity || 0}</td>
+                    <td style="color:var(--p);">${(o.price || 0).toFixed(2)} د.ل</td>
+                    <td><span class="id-badge">${o.target || o.url || '—'}</span></td>
+                    <td><span class="status-badge ${statusClass}">${o.status || 'معلق'}</span></td>
+                    <td><small>${date.toLocaleDateString('ar-SA')}</small></td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-outline btn-xs" onclick="changeOrderStatus('${o.id}')" title="تغيير الحالة">
+                                <i class="fa fa-sync"></i>
+                            </button>
+                            <button class="btn btn-danger btn-xs" onclick="deleteOrder('${o.id}')" title="حذف">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function changeOrderStatus(orderId) {
+            const { value: status } = await Swal.fire({
+                title: 'تحديث حالة الطلب',
+                input: 'select',
+                inputOptions: {
+                    'مكتمل': '✅ مكتمل',
+                    'قيد التنفيذ': '⏳ قيد التنفيذ',
+                    'ملغي': '❌ ملغي',
+                    'فاشل': '⚠️ فاشل'
+                },
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            });
+            if (status) {
+                await db.collection("orders").doc(orderId).update({ 
+                    status: status,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                Swal.fire({ icon: 'success', title: '✅ تم التحديث', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        async function deleteOrder(id) {
+            const confirm = await Swal.fire({
+                title: 'حذف الطلب؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                background: '#0d0d0d',
+                color: '#fff'
+            });
+            if (confirm.isConfirmed) {
+                await db.collection("orders").doc(id).delete();
+                Swal.fire({ icon: 'success', title: '🗑️ تم', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        // ============================================================
+        // 5️⃣ المستخدمين
+        // ============================================================
+        function loadUsersData() {
+            db.collection("users").onSnapshot(snap => {
+                allUsersData = [];
+                snap.forEach(doc => allUsersData.push({ id: doc.id, ...doc.data() }));
+                renderUsers();
+            });
+        }
+
+        function filterUsersBy(filter, el) {
+            currentUserFilter = filter;
+            document.querySelectorAll('#view-users .filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderUsers();
+        }
+
+        function filterUsers() {
+            renderUsers();
+        }
+
+        function renderUsers() {
+            const area = document.getElementById('users-list-area');
+            if (!area) return;
+
+            let filtered = [...allUsersData];
+            const searchTerm = (document.getElementById('user-search')?.value || '').toLowerCase();
+
+            if (currentUserFilter === 'admin') filtered = filtered.filter(u => u.role === 'admin');
+            else if (currentUserFilter === 'vip') filtered = filtered.filter(u => u.userLevel === 'vip');
+            else if (currentUserFilter === 'banned') filtered = filtered.filter(u => u.isBanned);
+
+            if (searchTerm) {
+                filtered = filtered.filter(u => 
+                    (u.username || '').toLowerCase().includes(searchTerm) ||
+                    (u.email || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (!filtered.length) {
+                area.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);">لا يوجد مستخدمين</div>';
+                return;
+            }
+
+            area.innerHTML = filtered.map(u => {
+                const roleBadge = u.role === 'admin' ? 
+                    '<span class="user-badge admin">مدير</span>' : '';
+                const vipBadge = u.userLevel === 'vip' ? 
+                    '<span class="user-badge vip">VIP</span>' : '';
+                const bannedBadge = u.isBanned ? 
+                    '<span class="user-badge banned">محظور</span>' : '';
+                const initial = (u.username || 'U')[0].toUpperCase();
+                const date = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('ar-SA') : '';
+
+                return `
+                <div class="user-row">
+                    <div class="user-meta">
+                        <div class="user-avatar">${initial}</div>
+                        <div class="user-main-text">
+                            <b>${u.username || 'بدون اسم'} ${roleBadge} ${vipBadge} ${bannedBadge}</b>
+                            <span>${u.email || 'لا يوجد بريد'} | ${date}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <div class="user-balance">
+                            <b>${(u.balance || 0).toFixed(2)} د.ل</b>
+                            <small>الرصيد</small>
+                        </div>
+                        <button class="btn btn-p btn-xs" onclick="adjustUserBalance('${u.id}', 'add')" title="إضافة رصيد">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <button class="btn btn-danger btn-xs" onclick="adjustUserBalance('${u.id}', 'sub')" title="خصم رصيد">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button class="btn btn-outline btn-xs" onclick="editUserFull('${u.id}')" title="تعديل">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button class="btn btn-${u.isBanned ? 'accent' : 'danger'} btn-xs" onclick="toggleUserBan('${u.id}', ${!u.isBanned})" title="${u.isBanned ? 'فك الحظر' : 'حظر'}">
+                            <i class="fa fa-${u.isBanned ? 'unlock' : 'ban'}"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function adjustUserBalance(uid, action) {
+            const { value: amount } = await Swal.fire({
+                title: action === 'add' ? '💰 إضافة رصيد' : '💸 خصم رصيد',
+                input: 'number',
+                inputLabel: 'المبلغ',
+                showCancelButton: true,
+                confirmButtonColor: action === 'add' ? '#39ff14' : '#ff003c',
+                background: '#0d0d0d',
+                color: '#fff',
+                inputValidator: (value) => {
+                    if (!value || parseFloat(value) <= 0) return 'أدخل مبلغ صحيح';
+                }
+            });
+            if (amount) {
+                const ref = db.collection("users").doc(uid);
+                await db.runTransaction(async (transaction) => {
+                    const doc = await transaction.get(ref);
+                    if (!doc.exists) return;
+                    const currentBalance = doc.data().balance || 0;
+                    const val = parseFloat(amount);
+                    const newBalance = action === 'add' ? currentBalance + val : currentBalance - val;
+                    transaction.update(ref, { balance: Math.max(0, newBalance) });
+                });
+                Swal.fire({ icon: 'success', title: '✅ تم', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
+            }
+        }
+
+        async function toggleUserBan(uid, shouldBan) {
+            const confirm = await Swal.fire({
+                title: shouldBan ? '🚫 حظر المستخدم؟' : '🔓 فك الحظر؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: shouldBan ? '#ff003c' : '#39ff14',
+                background: '#0d0d0d',
+                color: '#fff'
+            });
+            if (confirm.isConfirmed) {
+                await db.collection("users").doc(uid).update({ isBanned: shouldBan });
+            }
+        }
+
+        async function editUserFull(uid) {
+            const u = allUsersData.find(x => x.id === uid);
+            if (!u) return;
+            const { value: form } = await Swal.fire({
+                title: '✏️ تعديل المستخدم',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14',
+                showCancelButton: true,
+                html: `
+                    <div class="input-group"><label>الاسم</label><input id="eu-name" class="sw-input" value="${u.username||''}"></div>
+                    <div class="input-group"><label>الإيميل</label><input id="eu-email" class="sw-input" value="${u.email||''}"></div>
+                    <div class="input-group"><label>المستوى</label><select id="eu-level" class="form-select"><option value="user" ${u.userLevel==='user'?'selected':''}>عادي</option><option value="vip" ${u.userLevel==='vip'?'selected':''}>VIP</option><option value="admin" ${u.role==='admin'?'selected':''}>مدير</option></select></div>`,
+                preConfirm: () => ({
+                    username: document.getElementById('eu-name').value,
+                    email: document.getElementById('eu-email').value,
+                    userLevel: document.getElementById('eu-level').value,
+                    role: document.getElementById('eu-level').value === 'admin' ? 'admin' : 'user'
+                })
+            });
+            if (form) {
+                await db.collection("users").doc(uid).update(form);
+                Swal.fire('✅ تم التحديث', '', 'success');
+            }
+        }
+
+        async function addUserManually() {
+            const { value: form } = await Swal.fire({
+                title: '➕ إضافة مستخدم',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14',
+                showCancelButton: true,
+                html: `
+                    <div class="input-group"><label>الاسم</label><input id="nu-name" class="sw-input"></div>
+                    <div class="input-group"><label>الإيميل</label><input id="nu-email" type="email" class="sw-input"></div>
+                    <div class="input-group"><label>كلمة المرور</label><input id="nu-pass" type="password" class="sw-input"></div>`,
+                preConfirm: () => ({
+                    username: document.getElementById('nu-name').value,
+                    email: document.getElementById('nu-email').value,
+                    password: document.getElementById('nu-pass').value
+                })
+            });
+            if (form && form.email && form.password) {
+                try {
+                    const cred = await auth.createUserWithEmailAndPassword(form.email, form.password);
+                    await db.collection("users").doc(cred.user.uid).set({
+                        username: form.username,
+                        email: form.email,
+                        role: 'user',
+                        userLevel: 'user',
+                        balance: 0,
+                        points: 0,
+                        isBanned: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    Swal.fire('✅ تم إنشاء المستخدم', '', 'success');
+                } catch(e) {
+                    Swal.fire('❌ ' + e.message, '', 'error');
+                }
+            }
+        }
+
+        // ============================================================
+        // 6️⃣ الكوبونات
+        // ============================================================
+        function loadCouponsData() {
+            db.collection("coupons").onSnapshot(snap => {
+                allCouponsData = [];
+                snap.forEach(doc => allCouponsData.push({ id: doc.id, ...doc.data() }));
+                renderCoupons();
+            });
+        }
+
+        function renderCoupons() {
+            const area = document.getElementById('coupons-list-area');
+            if (!area) return;
+            if (!allCouponsData.length) {
+                area.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);">لا توجد كوبونات</div>';
+                return;
+            }
+            area.innerHTML = allCouponsData.map(c => `
+                <div class="user-row">
+                    <div>
+                        <b style="color:var(--gold); font-size:1.2rem;">${c.code}</b><br>
+                        <small style="color:var(--muted);">خصم ${c.discount}% | استخدام ${c.used||0}/${c.maxUses||0}</small>
+                    </div>
+                    <button class="btn btn-danger btn-xs" onclick="deleteCoupon('${c.id}')"><i class="fa fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function showAddCouponForm() {
+            Swal.fire({
+                title: '🎫 كوبون جديد',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14',
+                confirmButtonText: 'إنشاء',
+                showCancelButton: true,
+                html: `
+                    <div class="input-group"><label>الكود</label><input id="c-code" class="sw-input"></div>
+                    <div class="input-group"><label>نسبة الخصم</label><input id="c-discount" type="number" class="sw-input"></div>
+                    <div class="input-group"><label>الحد الأقصى للاستخدام</label><input id="c-max" type="number" class="sw-input" value="100"></div>`,
+                preConfirm: () => ({
+                    code: document.getElementById('c-code').value,
+                    discount: parseInt(document.getElementById('c-discount').value),
+                    maxUses: parseInt(document.getElementById('c-max').value)
+                })
+            }).then(async (res) => {
+                if (res.isConfirmed && res.value.code) {
+                    await db.collection("coupons").add({
+                        ...res.value,
+                        used: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            });
+        }
+
+        async function deleteCoupon(id) {
+            await db.collection("coupons").doc(id).delete();
+        }
+
+        // ============================================================
+        // 7️⃣ الإعدادات
+        // ============================================================
+        async function loadSettingsData() {
+            const doc = await db.collection("settings").doc("app_config").get();
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('set-maintenance').value = data.maintenanceMode ? 'true' : 'false';
+                document.getElementById('set-min-deposit').value = data.minDeposit || 1;
+                document.getElementById('set-news').value = data.newsTicker || '';
+                document.getElementById('set-whatsapp').value = data.supportWhatsApp || '';
+                document.getElementById('set-affiliate').value = data.affiliatePercent || 5;
+            }
+        }
+
+        async function saveSettings() {
+            await db.collection("settings").doc("app_config").set({
+                maintenanceMode: document.getElementById('set-maintenance').value === 'true',
+                minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1,
+                newsTicker: document.getElementById('set-news').value,
+                supportWhatsApp: document.getElementById('set-whatsapp').value,
+                affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 5,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            Swal.fire('✅ تم حفظ الإعدادات', '', 'success');
+        }
+
+        // ============================================================
+        // 🚀 بدء التطبيق
+        // ============================================================
+        window.onload = () => {
+            loadMasterData();
+            loadAdminOrders();
+            loadNotifHistory();
+            loadUsersData();
+            loadCouponsData();
+            loadSettingsData();
+            console.log('🔥 CD-CARD Ultimate Admin | محمد | جميع الأنظمة نشطة');
+        };
     </script>
 </body>
 </html>
