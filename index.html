@@ -6,12 +6,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#050505">
+    <title>CD-CARD | Premium Services</title>
     
-    <title>CD-CARD | Enterprise v9.5 Custom</title>
-    
+    <!-- أيقونات SVG مخصّصة (من SVGrepo أو Font Awesome كبديل) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- الخطوط -->
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- Firebase + SweetAlert2 -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -19,7 +22,7 @@
 
     <style>
         /* ============================================================
-        [01] THEME ENGINE - نظام الألوان والهوية البصرية
+        [1] الأساسيات
         ============================================================ */
         :root {
             --primary-neon: #39ff14; 
@@ -32,18 +35,21 @@
             --border-color: #1a1a1a;
             --text-main: #ffffff;
             --text-dim: #888888;
-            --font-arabic: 'Almarai', 'Cairo', sans-serif;
-            --font-quran: 'Amiri', serif;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             --danger: #ff3131;
             --gold: #ffd700;
             --blue-accent: #0088ff;
+            --font-primary: 'Almarai', 'Cairo', sans-serif;
+            --font-quran: 'Amiri', serif;
+            --transition-fast: 0.2s;
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            font-family: var(--font-arabic); 
-            -webkit-tap-highlight-color: transparent; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-primary);
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -53,9 +59,10 @@
             overflow-x: hidden;
             background-image: radial-gradient(circle at 50% -10%, #151515 0%, #050505 100%);
             min-height: 100vh;
+            padding-bottom: 120px;
         }
 
-        small, .neon-small, .stat-lbl, .field-label, .q-label, .category-tag, span.small-txt, .timer-label {
+        small, .neon-small, .stat-lbl, .field-label {
             color: var(--neon-yellow) !important;
             font-weight: 800 !important;
             font-size: 11px !important;
@@ -64,146 +71,329 @@
             text-shadow: 0 0 8px var(--yellow-glow);
         }
 
-        .stat-num, .price-val, .val-total, .number-font, input {
-            font-family: Arial, Helvetica, sans-serif !important; 
+        .stat-num, .price-val, .val-total, input {
+            font-family: Arial, Helvetica, sans-serif !important;
             letter-spacing: 0;
         }
 
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
 
         /* ============================================================
-        [02] FAST LOADER & AD NOTICE
+        [2] المحمّل (Loader)
         ============================================================ */
         #loader-screen {
-            position: fixed; inset: 0; background: #000; z-index: 100000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             transition: 0.5s opacity ease;
         }
         .loader-logo {
-            color: var(--primary-neon); font-size: 38px; font-weight: 900; 
-            margin-bottom: 20px; text-shadow: 0 0 20px var(--primary-glow);
+            color: var(--primary-neon);
+            font-size: 38px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--primary-glow);
         }
         .loader-progress-container {
-            width: 120px; height: 4px; background: #111; border-radius: 10px; overflow: hidden;
+            width: 120px;
+            height: 4px;
+            background: #111;
+            border-radius: 10px;
+            overflow: hidden;
         }
         .loader-progress-fill {
-            width: 0%; height: 100%; background: var(--primary-neon); 
+            width: 0%;
+            height: 100%;
+            background: var(--primary-neon);
             box-shadow: 0 0 15px var(--primary-neon);
+            transition: width 0.3s;
         }
 
+        /* ============================================================
+        [3] نافذة الإعلان (Ad Notice)
+        ============================================================ */
         #ad-notice-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(15px); z-index: 99999;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
-            opacity: 0; visibility: hidden; transition: 0.6s ease;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.6s ease;
         }
-        #ad-notice-overlay.active { opacity: 1; visibility: visible; }
-        
+        #ad-notice-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
         .ad-notice-card {
-            background: var(--bg-card); border: 2px solid var(--neon-yellow);
-            border-radius: 35px; padding: 40px; width: 100%; max-width: 450px;
-            text-align: center; box-shadow: 0 0 40px rgba(204, 255, 0, 0.15);
-            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--bg-card);
+            border: 2px solid var(--neon-yellow);
+            border-radius: 35px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(204, 255, 0, 0.15);
+            transform: scale(0.8);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #ad-notice-overlay.active .ad-notice-card { transform: scale(1); }
-
-        .ad-timer-display { margin-top: 20px; margin-bottom: 20px; }
+        #ad-notice-overlay.active .ad-notice-card {
+            transform: scale(1);
+        }
+        .ad-timer-display {
+            margin: 20px 0;
+        }
         .skip-btn {
-            background: transparent; border: 1px solid var(--neon-yellow);
-            color: var(--neon-yellow); padding: 12px 35px; border-radius: 50px;
-            font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s;
+            background: transparent;
+            border: 1px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .skip-btn:hover { background: var(--neon-yellow); color: #000; }
+        .skip-btn:hover {
+            background: var(--neon-yellow);
+            color: #000;
+        }
 
         /* ============================================================
-        [03] LAYOUT & NAVIGATION
+        [4] الهيدر والتنقل
         ============================================================ */
-        .app-container { padding: 20px 15px 140px; max-width: 600px; margin: 0 auto; }
-
         .glass-header {
-            position: sticky; top: 0; z-index: 1000;
-            background: var(--bg-glass); backdrop-filter: blur(40px);
-            padding: 18px 20px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: blur(40px);
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
         }
-
         .logo-img {
-            width: 42px; height: 42px; border-radius: 12px;
-            border: 1px solid var(--primary-neon); box-shadow: 0 0 15px var(--primary-glow);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--primary-neon);
+            box-shadow: 0 0 15px var(--primary-glow);
+            object-fit: cover;
         }
 
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9998; display: none; backdrop-filter: blur(12px); }
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9998;
+            display: none;
+            backdrop-filter: blur(12px);
+        }
         .main-sidebar {
-            position: fixed; top: 0; right: -100%; width: 310px; height: 100vh;
-            background: #060606; z-index: 9999; transition: var(--transition);
-            border-left: 1px solid var(--border-color); padding: 50px 0; overflow-y: auto;
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 310px;
+            height: 100vh;
+            background: #060606;
+            z-index: 9999;
+            transition: var(--transition-smooth);
+            border-left: 1px solid var(--border-color);
+            padding: 50px 0;
+            overflow-y: auto;
         }
-        .sidebar-active .main-sidebar { right: 0; }
-        .sidebar-active .sidebar-overlay { display: block; }
-
+        .sidebar-active .main-sidebar {
+            right: 0;
+        }
+        .sidebar-active .sidebar-overlay {
+            display: block;
+        }
         .nav-link {
-            padding: 20px 35px; display: flex; align-items: center; gap: 18px;
-            color: var(--text-dim); text-decoration: none; font-weight: 700;
-            transition: var(--transition); border-right: 4px solid transparent;
+            padding: 20px 35px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition-fast);
+            border-right: 4px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
         }
-        .nav-link.active { color: var(--primary-neon); background: rgba(57,255,20,0.06); border-right-color: var(--primary-neon); }
-        .nav-link i { font-size: 20px; width: 30px; text-align: center; }
+        .nav-link i {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
+        .nav-link.active {
+            color: var(--primary-neon);
+            background: rgba(57,255,20,0.06);
+            border-right-color: var(--primary-neon);
+        }
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+        }
 
         /* ============================================================
-        [04] STATS & CARDS SYSTEM
+        [5] الحاوية الرئيسية
         ============================================================ */
-        .stats-vertical-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
-        .stat-row {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            padding: 24px; border-radius: 24px; display: flex;
-            justify-content: space-between; align-items: center;
+        .app-container {
+            padding: 20px 15px 140px;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        .stat-num { font-size: 24px; font-weight: 900; color: #fff; }
-        .stat-num.neon { color: var(--primary-neon); text-shadow: 0 0 15px var(--primary-glow); }
+
+        /* ============================================================
+        [6] الإحصائيات والبطاقات
+        ============================================================ */
+        .stats-vertical-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+        .stat-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-row:active {
+            transform: scale(0.98);
+            background: #111;
+        }
+        .stat-num {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+        }
+        .stat-num.neon {
+            color: var(--primary-neon);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
 
         .premium-card {
-            background: var(--bg-card); border-radius: 30px;
-            padding: 28px; border: 1px solid var(--border-color); margin-bottom: 25px;
-            position: relative; animation: fadeInUp 0.5s ease;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            position: relative;
+            animation: fadeInUp 0.5s ease;
         }
 
+        /* ============================================================
+        [7] صندوق تفاصيل الخدمة
+        ============================================================ */
         .desc-box {
             background: rgba(204, 255, 0, 0.03);
             border: 1px solid var(--neon-yellow);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 25px;
-            display: none; 
+            display: none;
             animation: fadeInUp 0.4s ease;
             box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
         }
-        .desc-box.active { display: block; }
-        .desc-title { color: var(--neon-yellow); font-weight: 900; margin-bottom: 8px; display: block; }
-        .desc-text { color: #ddd; font-size: 13px; line-height: 1.6; }
+        .desc-box.active {
+            display: block;
+        }
+        .desc-title {
+            color: var(--neon-yellow);
+            font-weight: 900;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .desc-text {
+            color: #ddd;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
 
         .detail-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { color: var(--text-dim); font-size: 12px; }
-        .detail-value { color: #fff; font-weight: 700; font-size: 13px; }
-        .detail-value.green { color: var(--primary-neon); }
-        .detail-value.blue { color: var(--blue-accent); }
-        .detail-value.gold { color: var(--gold); }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+        .detail-value {
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .detail-value.green {
+            color: var(--primary-neon);
+        }
+        .detail-value.blue {
+            color: var(--blue-accent);
+        }
+        .detail-value.gold {
+            color: var(--gold);
+        }
 
         /* ============================================================
-        [05] INPUTS & DROPDOWNS
+        [8] الحقول والأزرار
         ============================================================ */
-        .input-wrapper { position: relative; margin-bottom: 24px; }
-        
-        .main-input {
-            width: 100%; background: #000; border: 1px solid #1a1a1a;
-            padding: 20px 24px; border-radius: 18px; color: #fff;
-            font-size: 15px; outline: none; transition: var(--transition);
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 24px;
         }
-        .main-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 25px var(--primary-glow); }
-        
+        .main-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #1a1a1a;
+            padding: 20px 24px;
+            border-radius: 18px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition-fast);
+        }
+        .main-input:focus {
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
         .main-input[readonly] {
             background-color: #0d0d0d !important;
             border-color: var(--neon-yellow) !important;
@@ -213,33 +403,54 @@
         }
 
         .select-btn {
-            background: #000; border: 1px solid #1a1a1a;
-            padding: 16px 24px; border-radius: 18px; display: flex;
-            justify-content: space-between; align-items: center; cursor: pointer;
+            background: #000;
+            border: 1px solid #1a1a1a;
+            padding: 16px 24px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
             min-height: 64px;
+            transition: var(--transition-fast);
+        }
+        .select-btn:active {
+            transform: scale(0.98);
         }
 
         .dropdown-panel {
-            position: absolute; top: 105%; left: 0; right: 0; background: #0a0a0a;
-            border: 1px solid #222; border-radius: 20px; z-index: 600;
-            max-height: 350px; overflow-y: auto; display: none;
+            position: absolute;
+            top: 105%;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 20px;
+            z-index: 600;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
             box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
-        .dropdown-panel.show { display: block; animation: fadeInUp 0.4s ease; }
-        
-        .drop-item { 
-            padding: 18px 24px; 
-            border-bottom: 1px solid #111; 
-            font-size: 14px; 
-            color: #ddd; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
+        .dropdown-panel.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+        .drop-item {
+            padding: 18px 24px;
+            border-bottom: 1px solid #111;
+            font-size: 14px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             cursor: pointer;
             transition: 0.2s;
         }
-        .drop-item:hover { background: rgba(57, 255, 20, 0.05); color: #fff; }
-
+        .drop-item:hover {
+            background: rgba(57, 255, 20, 0.05);
+            color: #fff;
+        }
         .drop-item img, .selected-img {
             width: 32px;
             height: 32px;
@@ -249,74 +460,322 @@
         }
 
         .action-btn {
-            width: 100%; padding: 22px; background: var(--primary-neon);
-            color: #000; border: none; border-radius: 22px; font-weight: 900;
-            font-size: 18px; cursor: pointer; transition: var(--transition);
-            box-shadow: 0 12px 30px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 14px;
+            width: 100%;
+            padding: 22px;
+            background: var(--primary-neon);
+            color: #000;
+            border: none;
+            border-radius: 22px;
+            font-weight: 900;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            box-shadow: 0 12px 30px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* ============================================================
-        [06] WALLET GUIDE STEPS & QURAN & VIDEOS
+        [9] المحفظة والإيداعات
         ============================================================ */
         .wallet-guide {
-            margin-top: 25px; background: rgba(57, 255, 20, 0.03);
-            border-radius: 24px; padding: 25px; border: 1px dashed var(--primary-neon);
+            margin-top: 25px;
+            background: rgba(57, 255, 20, 0.03);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px dashed var(--primary-neon);
         }
-        .step-item { display: flex; gap: 15px; margin-bottom: 18px; align-items: flex-start; }
+        .step-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 18px;
+            align-items: flex-start;
+        }
         .step-idx {
-            background: var(--primary-neon); color: #000; min-width: 26px; height: 26px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; flex-shrink: 0;
+            background: var(--primary-neon);
+            color: #000;
+            min-width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 13px;
+            flex-shrink: 0;
             box-shadow: 0 0 10px var(--primary-glow);
         }
-        .step-desc { color: #eee; font-size: 13px; line-height: 1.6; }
-
-        .channel-card {
-            background: #0a0a0a; border: 1px solid var(--border-color); padding: 22px;
-            border-radius: 24px; margin-bottom: 15px; display: flex;
-            justify-content: space-between; align-items: center; text-decoration: none;
-            transition: 0.3s;
+        .step-desc {
+            color: #eee;
+            font-size: 13px;
+            line-height: 1.6;
         }
-        .channel-card:active { transform: scale(0.98); background: #111; }
-        .channel-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
+        /* ============================================================
+        [10] الطلبات والتذاكر
+        ============================================================ */
+        .order-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+        .status-badge.completed {
+            background: rgba(57,255,20,0.15);
+            color: var(--primary-neon);
+        }
+        .status-badge.pending {
+            background: rgba(255,215,0,0.15);
+            color: var(--gold);
+        }
+        .status-badge.failed {
+            background: rgba(255,49,49,0.15);
+            color: var(--danger);
+        }
+        .order-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 11px;
+            color: #aaa;
+        }
+        .order-info span {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .ticket-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        .admin-reply {
+            background: #111;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--primary-neon);
+            margin-top: 10px;
+        }
+
+        /* ============================================================
+        [11] قنوات التواصل
+        ============================================================ */
+        .channel-card {
+            background: #0a0a0a;
+            border: 1px solid var(--border-color);
+            padding: 22px;
+            border-radius: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            transition: 0.3s;
+            color: var(--text-main);
+        }
+        .channel-card:active {
+            transform: scale(0.98);
+            background: #111;
+        }
+        .channel-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* ============================================================
+        [12] الفيديوهات
+        ============================================================ */
         .video-card {
-            background: #0f0f0f; border: 1px solid #222; border-radius: 20px;
-            padding: 15px; margin-bottom: 15px;
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
         .video-frame {
-            width: 100%; height: 200px; border-radius: 15px; border: 1px solid var(--primary-neon);
+            width: 100%;
+            height: 200px;
+            border-radius: 15px;
+            border: 1px solid var(--primary-neon);
             margin-bottom: 10px;
         }
 
+        /* ============================================================
+        [13] القرآن
+        ============================================================ */
         .quran-box-container {
-            background: #080808; border: 2px solid var(--primary-neon);
-            border-radius: 35px; padding: 40px 30px; text-align: center; margin-top: 60px;
+            background: #080808;
+            border: 2px solid var(--primary-neon);
+            border-radius: 35px;
+            padding: 40px 30px;
+            text-align: center;
+            margin-top: 60px;
             box-shadow: 0 0 30px var(--primary-glow);
         }
-        .ayah-content { font-family: var(--font-quran); font-size: 22px; line-height: 2.6; color: #fff; }
-
-        .pane { display: none; }
-        .pane.active { display: block; animation: fadeInUp 0.7s ease; }
-
-        .toast {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: #111; border: 1px solid var(--primary-neon); color: #fff;
-            padding: 16px 35px; border-radius: 60px; z-index: 100001; transition: 0.6s; font-size: 14px; font-weight: 800;
+        .ayah-content {
+            font-family: var(--font-quran);
+            font-size: 22px;
+            line-height: 2.6;
+            color: #fff;
         }
-        .toast.active { transform: translateX(-50%) translateY(0); }
 
+        /* ============================================================
+        [14] نظام الصفحات
+        ============================================================ */
+        .pane {
+            display: none;
+        }
+        .pane.active {
+            display: block;
+            animation: fadeInUp 0.7s ease;
+        }
+
+        /* ============================================================
+        [15] الإشعارات السفلية (Toast)
+        ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111;
+            border: 1px solid var(--primary-neon);
+            color: #fff;
+            padding: 16px 35px;
+            border-radius: 60px;
+            z-index: 100001;
+            transition: 0.6s;
+            font-size: 14px;
+            font-weight: 800;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .toast.active {
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.error {
+            border-color: var(--danger);
+            background: #1a0000;
+        }
+
+        /* ============================================================
+        [16] الشريط السفلي
+        ============================================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 15px;
+            z-index: 900;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #666;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .bottom-nav-item.active {
+            color: var(--primary-neon);
+        }
+        .bottom-nav-item i {
+            font-size: 18px;
+        }
+        .bottom-nav-item:active {
+            transform: scale(0.9);
+        }
+
+        /* ============================================================
+        [17] حالة فارغة
+        ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            display: block;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ============================================================
+        [18] تحسينات للجوال
+        ============================================================ */
+        @media (min-width: 768px) {
+            .bottom-nav {
+                display: none;
+            }
+            .app-container {
+                padding-bottom: 40px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ============================================================
+    [A] شاشة التحميل
+    ============================================================ -->
     <div id="loader-screen">
         <div class="loader-logo">CD-CARD</div>
         <div class="loader-progress-container">
             <div class="loader-progress-fill" id="loader-bar"></div>
         </div>
-        <div style="margin-top:20px;"><small>PREMIUM DIGITAL SERVICES</small></div>
+        <div style="margin-top:20px;">
+            <small>PREMIUM DIGITAL SERVICES</small>
+        </div>
     </div>
 
+    <!-- ============================================================
+    [B] نافذة الإعلان
+    ============================================================ -->
     <div id="ad-notice-overlay">
         <div class="ad-notice-card">
             <div style="background:rgba(204,255,0,0.1); width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
@@ -331,9 +790,15 @@
         </div>
     </div>
 
+    <!-- ============================================================
+    [C] شريط الإشعارات
+    ============================================================ -->
     <div class="toast" id="main-toast"></div>
-    <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
+    <!-- ============================================================
+    [D] القائمة الجانبية
+    ============================================================ -->
+    <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
     <aside class="main-sidebar">
         <div style="padding: 0 40px 50px;">
             <div style="color: var(--primary-neon); font-size: 30px; font-weight: 900;">CD-CARD</div>
@@ -341,89 +806,122 @@
         </div>
         <nav>
             <a href="#" onclick="showPane('store')" class="nav-link active" id="nav-store">
-                <i class="fa-solid fa-house"></i> <span>المتجر</span>
+                <i class="fa-solid fa-house"></i>
+                <span>المتجر</span>
             </a>
             <a href="#" onclick="showPane('orders')" class="nav-link" id="nav-orders">
-                <i class="fa-solid fa-layer-group"></i> <span>طلباتي</span>
+                <i class="fa-solid fa-list-check"></i>
+                <span>طلباتي</span>
             </a>
             <a href="#" onclick="showPane('wallet')" class="nav-link" id="nav-wallet">
-                <i class="fa-solid fa-wallet"></i> <span>المحفظة</span>
+                <i class="fa-solid fa-wallet"></i>
+                <span>المحفظة</span>
+            </a>
+            <a href="#" onclick="showPane('coupons')" class="nav-link" id="nav-coupons">
+                <i class="fa-solid fa-ticket-alt"></i>
+                <span>الكوبونات</span>
+            </a>
+            <a href="#" onclick="showPane('affiliate')" class="nav-link" id="nav-affiliate">
+                <i class="fa-solid fa-users"></i>
+                <span>التسويق بالعمولة</span>
+            </a>
+            <a href="#" onclick="showPane('tickets')" class="nav-link" id="nav-tickets">
+                <i class="fa-solid fa-headset"></i>
+                <span>تذاكر الدعم</span>
             </a>
             <a href="#" onclick="showPane('tutorials')" class="nav-link" id="nav-tutorials">
-                <i class="fa-brands fa-youtube" style="color: #ff0000;"></i> <span>شروحات الموقع</span>
+                <i class="fa-brands fa-youtube" style="color: #ff0000;"></i>
+                <span>شروحات الموقع</span>
             </a>
             <a href="#" onclick="showPane('web')" class="nav-link" id="nav-web">
-                <i class="fa-solid fa-code"></i> <span>برمجة المواقع</span>
-            </a>
-            <a href="#" onclick="showPane('account')" class="nav-link" id="nav-account">
-                <i class="fa-solid fa-user-gear"></i> <span>الحساب</span>
-            </a>
-            <a href="#" onclick="showPane('support')" class="nav-link" id="nav-support">
-                <i class="fa-solid fa-headset"></i> <span>الدعم الفني</span>
+                <i class="fa-solid fa-code"></i>
+                <span>برمجة المواقع</span>
             </a>
             <a href="#" onclick="showPane('channels')" class="nav-link" id="nav-channels">
-                <i class="fa-solid fa-bullhorn"></i> <span>قنواتنا</span>
+                <i class="fa-solid fa-bullhorn"></i>
+                <span>قنواتنا</span>
+            </a>
+            <a href="#" onclick="showPane('account')" class="nav-link" id="nav-account">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>الحساب</span>
+            </a>
+            <a href="#" onclick="showPane('support')" class="nav-link" id="nav-support">
+                <i class="fa-solid fa-phone"></i>
+                <span>تواصل معنا</span>
             </a>
         </nav>
     </aside>
 
+    <!-- ============================================================
+    [E] الهيدر الرئيسي
+    ============================================================ -->
     <header class="glass-header">
         <div style="display: flex; align-items: center; gap: 15px;" onclick="toggleSidebar(true)">
-            <div style="background:#111; padding:12px; border-radius:15px;"><i class="fa-solid fa-bars-staggered" style="color: var(--primary-neon);"></i></div>
+            <div style="background:#111; padding:12px; border-radius:15px;">
+                <i class="fa-solid fa-bars-staggered" style="color: var(--primary-neon);"></i>
+            </div>
             <span style="font-weight:900; color:var(--primary-neon); font-size:24px;">CD-CARD</span>
         </div>
-        <img src="cd.jpg" class="logo-img">
+        <img src="cd.jpg" class="logo-img" alt="CD-CARD Logo" onerror="this.style.display='none'">
     </header>
 
+    <!-- ============================================================
+    [F] المحتوى الرئيسي
+    ============================================================ -->
     <div class="app-container">
 
+        <!-- ============================================================
+        [F1] المتجر
+        ============================================================ -->
         <section id="pane-store" class="pane active">
             <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:30px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <small>أهلاً بك مجدداً</small>
-                    <div id="u-display-name" style="font-size:26px; font-weight:900; color:#fff; margin-top:5px;">...</div>
+                    <div id="u-display-name" style="font-size:26px; font-weight:900; color:#fff; margin-top:5px;">جاري التحميل...</div>
                 </div>
                 <i class="fa-solid fa-circle-check" style="color:var(--primary-neon); font-size:32px;"></i>
             </div>
 
             <div class="stats-vertical-list">
                 <div class="stat-row">
-                    <span class="stat-lbl">رصيدك الحالي</span>
+                    <span class="stat-lbl">💎 رصيدك الحالي</span>
                     <div class="stat-num neon" id="u-balance">0.00</div>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-lbl">إجمالي المصاريف</span>
+                    <span class="stat-lbl">📊 إجمالي مصاريفك</span>
                     <div class="stat-num" id="u-spent">0.00</div>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-lbl">نسبة الخصم</span>
+                    <span class="stat-lbl">🎫 نسبة خصمك</span>
                     <div class="stat-num neon" id="u-discount">0%</div>
                 </div>
             </div>
 
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;"><i class="fa-solid fa-cart-plus"></i> إنشاء طلب جديد</div>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">
+                    <i class="fa-solid fa-cart-plus"></i> إنشاء طلب جديد
+                </div>
                 
                 <div class="input-wrapper">
-                    <label class="field-label">تصنيف الخدمة</label>
+                    <label class="field-label">📂 تصنيف الخدمة</label>
                     <div class="select-btn" onclick="toggleDrop('drop-cats')">
                         <div id="label-cat-container" style="display:flex; align-items:center; gap:12px;">
-                            <img src="cd.jpg" class="selected-img" id="cat-img" style="display:none;">
+                            <img src="cd.jpg" class="selected-img" id="cat-img" style="display:none;" onerror="this.src='cd.jpg'">
                             <span id="label-cat">اختر التصنيف...</span>
                         </div>
-                        <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-caret-down" style="color:var(--text-dim);"></i>
                     </div>
                     <div class="dropdown-panel" id="drop-cats"></div>
                 </div>
 
                 <div class="input-wrapper">
-                    <label class="field-label">نوع الخدمة</label>
+                    <label class="field-label">📋 نوع الخدمة</label>
                     <div class="select-btn" onclick="toggleDrop('drop-srvs')">
                         <div id="label-srv-container" style="display:flex; align-items:center; gap:12px;">
-                            <img src="cd.jpg" class="selected-img" id="srv-img" style="display:none;">
+                            <img src="cd.jpg" class="selected-img" id="srv-img" style="display:none;" onerror="this.src='cd.jpg'">
                             <span id="label-srv">حدد التصنيف أولاً</span>
                         </div>
-                        <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-caret-down" style="color:var(--text-dim);"></i>
                     </div>
                     <div class="dropdown-panel" id="drop-srvs"></div>
                 </div>
@@ -454,27 +952,31 @@
                             <span class="detail-value" id="detail-max">—</span>
                         </div>
                     </div>
-                    <div style="margin-top:10px;"><small>ضمان الجودة 100%</small></div>
+                    <div style="margin-top:10px;">
+                        <small>ضمان الجودة 100%</small>
+                    </div>
                 </div>
 
                 <div class="input-wrapper">
-                    <label class="field-label">الرابط / اليوزر</label>
+                    <label class="field-label">🔗 الرابط / اليوزر</label>
                     <input type="text" class="main-input" id="field-link" placeholder="أدخل الرابط المستهدف">
                 </div>
 
                 <div class="input-wrapper">
-                    <label class="field-label">الكمية <span id="qty-hint" style="font-size:9px;"></span></label>
+                    <label class="field-label">🔢 الكمية <span id="qty-hint" style="font-size:9px; color:var(--neon-yellow);"></span></label>
                     <input type="number" class="main-input" id="field-qty" value="1000" oninput="recalc()" required>
                 </div>
 
                 <div style="background:#000; padding:30px; border-radius:30px; text-align:center; border:1px solid #1a1a1a; margin-bottom:30px;">
-                    <small>إجمالي المبلغ</small>
+                    <small>💰 إجمالي المبلغ</small>
                     <div style="color:#fff; font-size:45px; font-weight:900;">
                         <span id="val-total">0.00</span> <small style="font-size:18px;">LYD</small>
                     </div>
                 </div>
 
-                <button class="action-btn" id="btn-order" onclick="submitOrder()">إتمام عملية الشراء</button>
+                <button class="action-btn" id="btn-order" onclick="submitOrder()">
+                    <i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء
+                </button>
             </div>
 
             <div class="quran-box-container">
@@ -485,9 +987,195 @@
             </div>
         </section>
 
+        <!-- ============================================================
+        [F2] طلباتي
+        ============================================================ -->
+        <section id="pane-orders" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:20px;">
+                    <i class="fa-solid fa-layer-group"></i> سجل طلباتي
+                </div>
+                <div id="orders-list">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>جاري تحميل الطلبات...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F3] المحفظة
+        ============================================================ -->
+        <section id="pane-wallet" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:20px;">
+                    <i class="fa-solid fa-wallet"></i> شحن الرصيد
+                </div>
+                <div style="border-radius:20px; overflow:hidden; border:1px solid #222; margin-bottom:20px;">
+                    <img src="lb.jpg" style="width:100%;" alt="شحن" onerror="this.style.display='none'">
+                </div>
+                
+                <div class="stat-row" style="margin-bottom:12px;">
+                    <div>
+                        <small>📱 مدار</small>
+                        <div style="font-weight:800; color:#fff;">0912377291</div>
+                    </div>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyText('0912377291')"></i>
+                </div>
+                <div class="stat-row" style="margin-bottom:25px;">
+                    <div>
+                        <small>📱 ليبيانا</small>
+                        <div style="font-weight:800; color:#fff;">0920414760</div>
+                    </div>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer;" onclick="copyText('0920414760')"></i>
+                </div>
+
+                <div class="wallet-guide">
+                    <div style="margin-bottom:15px;"><small>📋 خطوات الشحن</small></div>
+                    <div class="step-item">
+                        <div class="step-idx">1</div>
+                        <div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-idx">2</div>
+                        <div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:25px;">
+                    <div class="input-wrapper">
+                        <label class="field-label">📞 الرقم المحول منه</label>
+                        <input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="field-label">💵 القيمة المحولة (د.ل)</label>
+                        <input type="number" id="field-dep-amt" class="main-input" placeholder="0.00">
+                    </div>
+                    <button class="action-btn" onclick="requestDeposit()">
+                        <i class="fa-solid fa-paper-plane"></i> إرسال التبليغ الآن
+                    </button>
+                </div>
+            </div>
+
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:15px; font-size:16px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> سجل الإيداعات
+                </div>
+                <div id="deposits-history">
+                    <div class="empty-state"><p>جاري التحميل...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F4] الكوبونات
+        ============================================================ -->
+        <section id="pane-coupons" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:20px;">
+                    <i class="fa-solid fa-ticket-alt"></i> الكوبونات والخصومات
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <input type="text" id="coupon-code-input" class="main-input" placeholder="🎫 أدخل كود الكوبون" style="flex:1;">
+                    <button class="action-btn" style="width:auto; padding:16px 24px; font-size:14px;" onclick="applyCoupon()">
+                        <i class="fa-solid fa-check"></i> تفعيل
+                    </button>
+                </div>
+                <div id="coupon-result" style="text-align:center; margin-bottom:15px;"></div>
+
+                <div class="stat-row" style="margin-bottom:15px;">
+                    <span class="stat-lbl">⭐ نقاطك الحالية</span>
+                    <div class="stat-num neon" id="u-points">0</div>
+                </div>
+                <button class="action-btn" style="background:var(--gold); color:#000; box-shadow:0 12px 30px rgba(255,215,0,0.3);" onclick="convertPointsToBalance()">
+                    <i class="fa-solid fa-exchange-alt"></i> تحويل النقاط لرصيد (100 نقطة = 1 د.ل)
+                </button>
+
+                <div style="margin-top:25px;">
+                    <div style="font-weight:800; color:#fff; margin-bottom:15px;">🎫 الكوبونات المتاحة</div>
+                    <div id="available-coupons-list">
+                        <div class="empty-state"><p>جاري التحميل...</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F5] التسويق بالعمولة
+        ============================================================ -->
+        <section id="pane-affiliate" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:20px;">
+                    <i class="fa-solid fa-users"></i> نظام التسويق بالعمولة
+                </div>
+                
+                <div class="stat-row" style="margin-bottom:15px;">
+                    <span class="stat-lbl">💰 أرباح العمولة</span>
+                    <div class="stat-num neon" id="u-affiliate-earnings">0.00</div>
+                </div>
+                <div class="stat-row" style="margin-bottom:15px;">
+                    <span class="stat-lbl">👥 عدد المسجلين عبرك</span>
+                    <div class="stat-num" id="u-affiliate-count">0</div>
+                </div>
+                <div class="stat-row" style="margin-bottom:20px;">
+                    <span class="stat-lbl">📊 نسبة العمولة</span>
+                    <div class="stat-num neon" id="u-affiliate-percent">5%</div>
+                </div>
+
+                <div style="background:#000; border:1px dashed var(--primary-neon); border-radius:16px; padding:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; word-break:break-all;">
+                    <code id="affiliate-link-text" style="color:var(--primary-neon); font-size:12px; font-family:monospace;">جاري التحميل...</code>
+                    <i class="fa-solid fa-copy" style="color:var(--primary-neon); cursor:pointer; font-size:18px;" onclick="copyText(document.getElementById('affiliate-link-text').innerText)"></i>
+                </div>
+                <small>انسخ رابطك الخاص وشاركه مع أصدقائك لتربح نسبة من مشترياتهم</small>
+
+                <button class="action-btn" style="margin-top:20px; background:var(--gold); color:#000; box-shadow:0 12px 30px rgba(255,215,0,0.3);" onclick="withdrawAffiliate()">
+                    <i class="fa-solid fa-money-bill-wave"></i> سحب أرباح العمولة
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F6] تذاكر الدعم
+        ============================================================ -->
+        <section id="pane-tickets" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:20px;">
+                    <i class="fa-solid fa-headset"></i> تذاكر الدعم الفني
+                </div>
+                
+                <div class="input-wrapper">
+                    <label class="field-label">📝 عنوان التذكرة</label>
+                    <input type="text" id="ticket-subject" class="main-input" placeholder="موضوع المشكلة">
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">📄 وصف المشكلة</label>
+                    <textarea id="ticket-message" class="main-input" rows="4" style="resize:none;" placeholder="اشرح مشكلتك بالتفصيل..."></textarea>
+                </div>
+                <button class="action-btn" onclick="createTicket()">
+                    <i class="fa-solid fa-paper-plane"></i> إرسال التذكرة
+                </button>
+            </div>
+
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:15px; font-size:16px;">
+                    <i class="fa-solid fa-list-check"></i> تذاكري السابقة
+                </div>
+                <div id="tickets-list">
+                    <div class="empty-state"><p>جاري التحميل...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F7] شروحات
+        ============================================================ -->
         <section id="pane-tutorials" class="pane">
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:22px;"><i class="fa-brands fa-youtube"></i> شروحات الفيديو</div>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px; font-size:22px;">
+                    <i class="fa-brands fa-youtube"></i> شروحات الفيديو
+                </div>
                 <div class="video-card">
                     <iframe class="video-frame" src="https://www.youtube.com/embed/Ev50veF7X7k" frameborder="0" allowfullscreen></iframe>
                     <div style="text-align:center;"><small>شرح طريقة إنشاء حساب جديد</small></div>
@@ -499,411 +1187,755 @@
             </div>
         </section>
 
-        <section id="pane-account" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:22px;"><i class="fa-solid fa-id-card"></i> معلومات الحساب</div>
-                <div class="stats-vertical-list">
-                    <div class="stat-row"><span class="stat-lbl">اسم المستخدم</span><div class="stat-num neon" id="acc-username">...</div></div>
-                    <div class="stat-row" onclick="copyToClipboard(uData.uid)"><span class="stat-lbl">المعرف الرقمي</span><div style="display:flex;align-items:center;gap:10px;"><div class="stat-num" id="acc-uid" style="font-size:14px;color:#aaa;">...</div><i class="fa-solid fa-copy" style="color:var(--primary-neon);font-size:14px;"></i></div></div>
-                    <div class="stat-row"><span class="stat-lbl">رابط الـ API</span><div class="stat-num neon" style="font-size:12px;">https://cdcard.ly/api/v1</div></div>
-                    <div class="stat-row"><span class="stat-lbl">مفتاح الـ API</span><div class="stat-num neon" id="acc-api-key" style="font-size:12px;">...</div></div>
-                </div>
-                <button class="action-btn" style="margin-top:30px;background:#ff3131;color:#fff;box-shadow:0 12px 30px rgba(255,49,49,0.3);" onclick="auth.signOut()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </section>
-
+        <!-- ============================================================
+        [F8] برمجة المواقع
+        ============================================================ -->
         <section id="pane-web" class="pane">
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;"><i class="fa-solid fa-code"></i> طلب إنشاء موقع</div>
-                <div style="background:rgba(57,255,20,0.05); border:1px dashed var(--primary-neon); padding:20px; border-radius:20px; margin-bottom:25px;">
-                    <div><span style="font-weight:800;">سعر الموقع:</span><span style="color:var(--primary-neon);font-weight:900;font-size:20px;">70 د.ل</span></div>
-                    <small>تجديد شهري 30 د.ل</small>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:20px; font-size:22px;">
+                    <i class="fa-solid fa-code"></i> طلب إنشاء موقع
                 </div>
-                <div class="input-wrapper"><label class="field-label">الاسم</label><input class="main-input" id="web-name"></div>
-                <div class="input-wrapper"><label class="field-label">اسم الموقع</label><input class="main-input" id="web-site-name"></div>
-                <div class="input-wrapper"><label class="field-label">كلمة السر</label><input type="password" class="main-input" id="web-pass"></div>
-                <div class="input-wrapper"><label class="field-label">تفاصيل</label><textarea class="main-input" id="web-details" rows="4" style="resize:none;"></textarea></div>
-                <button class="action-btn" onclick="submitWebProject()"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+                <div style="background:rgba(57,255,20,0.05); border:1px dashed var(--primary-neon); padding:20px; border-radius:20px; margin-bottom:25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:800; color:#fff;">سعر إنشاء الموقع:</span>
+                        <span style="color:var(--primary-neon); font-weight:900; font-size:20px;">70 د.ل</span>
+                    </div>
+                    <div style="margin-top:10px; border-top:1px solid #222; padding-top:10px;">
+                        <small>ملاحظة هامة:</small>
+                        <div style="color:#ddd; font-size:13px; margin-top:5px;">تجديد الاشتراك الشهري للموقع بقيمة <b>30 د.ل</b> فقط.</div>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">الاسم الكامل</label>
+                    <input type="text" class="main-input" id="web-name" placeholder="أدخل اسمك بالكامل">
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">اسم الموقع المطلوب</label>
+                    <input type="text" class="main-input" id="web-site-name" placeholder="مثال: متجر الهيبة">
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">كلمة السر الخاصة بالموقع</label>
+                    <input type="password" class="main-input" id="web-pass" placeholder="اختر كلمة سر قوية">
+                </div>
+                <div class="input-wrapper">
+                    <label class="field-label">تفاصيل إضافية عن الموقع</label>
+                    <textarea class="main-input" id="web-details" rows="4" style="resize:none;" placeholder="اكتب هنا نوع الموقع، الألوان المفضلة، الأقسام..."></textarea>
+                </div>
+                <button class="action-btn" onclick="submitWebProject()">
+                    <i class="fa-solid fa-paper-plane"></i> إرسال الطلب للمراجعة
+                </button>
             </div>
         </section>
 
+        <!-- ============================================================
+        [F9] قنواتنا
+        ============================================================ -->
         <section id="pane-channels" class="pane">
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px;">قنواتنا الرسمية</div>
-                <a href="https://www.tiktok.com/@cd_card" target="_blank" class="channel-card"><div style="display:flex;align-items:center;gap:20px;"><div class="channel-icon" style="background:rgba(255,255,255,0.1);color:#fff;"><i class="fa-brands fa-tiktok"></i></div><div><div style="font-weight:800;">تيك توك</div><small>CD_CARD</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
-                <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card"><div style="display:flex;align-items:center;gap:20px;"><div class="channel-icon" style="background:rgba(24,119,242,0.1);color:#1877f2;"><i class="fa-brands fa-facebook"></i></div><div><div style="font-weight:800;">فيسبوك</div><small>الصفحة الرسمية</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">
+                    <i class="fa-solid fa-bullhorn"></i> قنواتنا الرسمية
+                </div>
+                <div style="margin-top:25px; display:grid; gap:15px;">
+                    <a href="https://www.tiktok.com/@cd_card" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(255,255,255,0.1); color:#fff;">
+                                <i class="fa-brands fa-tiktok"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">تيك توك</div>
+                                <small>CD_CARD الرسمي</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+                    <a href="https://www.facebook.com/share/17wHuQCocu/" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(24,119,242,0.1); color:#1877f2;">
+                                <i class="fa-brands fa-facebook"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">فيسبوك</div>
+                                <small>تابع الصفحة الرسمية</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
+                </div>
             </div>
         </section>
 
+        <!-- ============================================================
+        [F10] الحساب
+        ============================================================ -->
+        <section id="pane-account" class="pane">
+            <div class="premium-card">
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:22px;">
+                    <i class="fa-solid fa-id-card"></i> معلومات الحساب
+                </div>
+                <div class="stats-vertical-list">
+                    <div class="stat-row">
+                        <span class="stat-lbl">اسم المستخدم</span>
+                        <div class="stat-num neon" id="acc-username">...</div>
+                    </div>
+                    <div class="stat-row" style="cursor: pointer;" onclick="copyText(userData.uid)">
+                        <span class="stat-lbl">المعرف الرقمي (ID)</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="stat-num" id="acc-uid" style="font-size: 14px; color: #aaa;">...</div>
+                            <i class="fa-solid fa-copy" style="color: var(--primary-neon); font-size: 14px;"></i>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-lbl">مستوى العضوية</span>
+                        <div class="stat-num neon" id="acc-level">عادي</div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-lbl">مفتاح الـ API الخاص بك</span>
+                        <div class="stat-num neon" id="acc-api-key" style="font-size: 12px;">...</div>
+                    </div>
+                </div>
+                <button class="action-btn" style="margin-top: 30px; background: #ff3131; color: #fff; box-shadow: 0 12px 30px rgba(255, 49, 49, 0.3);" onclick="auth.signOut()">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        [F11] تواصل معنا
+        ============================================================ -->
         <section id="pane-support" class="pane">
             <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px;">الدعم المباشر</div>
-                <a href="https://wa.me/2181923772910" target="_blank" class="channel-card"><div style="display:flex;align-items:center;gap:20px;"><div class="channel-icon" style="background:rgba(37,211,102,0.1);color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div><div><div style="font-weight:800;">واتساب</div><small>01923772910</small></div></div><i class="fa-solid fa-chevron-left" style="color:#333;"></i></a>
-            </div>
-        </section>
-
-        <section id="pane-wallet" class="pane">
-            <div class="premium-card">
-                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:25px;">شحن الرصيد</div>
-                <div style="border-radius:20px;overflow:hidden;border:1px solid #222;margin-bottom:20px;"><img src="lb.jpg" style="width:100%;"></div>
-                <div class="stat-row" style="margin-bottom:12px;"><div><small>مدار</small><div style="font-weight:800;color:#fff;">0912377291</div></div><i class="fa-solid fa-copy" style="color:var(--primary-neon);cursor:pointer;" onclick="copyToClipboard('0912377291')"></i></div>
-                <div class="stat-row" style="margin-bottom:25px;"><div><small>ليبيانا</small><div style="font-weight:800;color:#fff;">0920414760</div></div><i class="fa-solid fa-copy" style="color:var(--primary-neon);cursor:pointer;" onclick="copyToClipboard('0920414760')"></i></div>
-                <div class="wallet-guide">
-                    <div style="margin-bottom:15px;"><small>خطوات الشحن</small></div>
-                    <div class="step-item"><div class="step-idx">1</div><div class="step-desc">قم بتحويل الرصيد إلى أحد الأرقام الموضحة أعلاه.</div></div>
-                    <div class="step-item"><div class="step-idx">2</div><div class="step-desc">بعد نجاح عملية التحويل، قم بملء البيانات بالأسفل.</div></div>
+                <div style="font-weight:900; color:var(--primary-neon); margin-bottom:30px; font-size:20px;">
+                    <i class="fa-solid fa-phone"></i> تواصل معنا
                 </div>
-                <div style="margin-top:25px;">
-                    <div class="input-wrapper"><label class="field-label">الرقم المحول منه</label><input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx"></div>
-                    <div class="input-wrapper"><label class="field-label">القيمة المحولة (د.ل)</label><input type="number" id="field-dep-amt" class="main-input" placeholder="0.00"></div>
-                    <button class="action-btn" onclick="requestDeposit()">إرسال التبليغ الآن</button>
+                <div style="margin-top:25px; display:grid; gap:15px;">
+                    <a href="https://wa.me/2181923772910" target="_blank" class="channel-card">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="channel-icon" style="background:rgba(37,211,102,0.1); color:#25d366;">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:800; color:#fff;">الواتساب المباشر</div>
+                                <small>01923772910</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#333;"></i>
+                    </a>
                 </div>
             </div>
         </section>
 
     </div>
 
+    <!-- ============================================================
+    [G] الشريط السفلي للجوال
+    ============================================================ -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-item active" data-page="store" onclick="showPane('store')">
+            <i class="fa-solid fa-house"></i>
+            <span>المتجر</span>
+        </div>
+        <div class="bottom-nav-item" data-page="orders" onclick="showPane('orders')">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>طلباتي</span>
+        </div>
+        <div class="bottom-nav-item" data-page="wallet" onclick="showPane('wallet')">
+            <i class="fa-solid fa-wallet"></i>
+            <span>محفظة</span>
+        </div>
+        <div class="bottom-nav-item" data-page="coupons" onclick="showPane('coupons')">
+            <i class="fa-solid fa-ticket-alt"></i>
+            <span>كوبونات</span>
+        </div>
+        <div class="bottom-nav-item" data-page="account" onclick="showPane('account')">
+            <i class="fa-solid fa-user"></i>
+            <span>حسابي</span>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+    [H] الجافاسكريبت - المنطق الكامل
+    ============================================================ -->
     <script>
-        // ============================================================
-        // [01] LOADER SYSTEM
-        // ============================================================
-        let loaderProgress = 0;
-        const loaderBar = document.getElementById('loader-bar');
-        const loaderScreen = document.getElementById('loader-screen');
-        const loaderInterval = setInterval(() => {
-            loaderProgress += 5;
-            if(loaderBar) loaderBar.style.width = loaderProgress + '%';
-            if (loaderProgress >= 100) {
-                clearInterval(loaderInterval);
+        // --- Firebase Init ---
+        firebase.initializeApp({
+            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
+            authDomain: "cd-card-87365.firebaseapp.com",
+            projectId: "cd-card-87365",
+            appId: "1:397926299412:web:efbe9ae9aae29df368f401"
+        });
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // --- Globals ---
+        let userData = {
+            uid: '', email: '', username: '', balance: 0, totalSpent: 0,
+            discount: 0, points: 0, apiKey: '', userLevel: 'user',
+            affiliateEarnings: 0, affiliateCount: 0, affiliatePercent: 5,
+            referredBy: null, lastNotification: '', notifiedAt: null
+        };
+        let services = [];
+        let currentService = null;
+        let allCoupons = [];
+        let appliedCouponDiscount = 0;
+
+        const catIcons = {
+            "تيك توك": "tiktok.jpg", "انستجرام": "Instagram.jpg", "فيسبوك": "Facebook.jpg",
+            "فيس بوك": "Facebook.jpg", "سناب": "Snapchat.jpg", "سناب شات": "Snapchat.jpg",
+            "يوتيوب": "yotuop.jpg", "يتيوب": "yotuop.jpg", "تويتر": "twiter.jpg",
+            "تليجرام": "teli.jpg", "واتساب": "watsap.jpg", "ببجي": "popgi.jpg",
+            "شاهد": "shahed.jpg", "توثيق": "tawtheg.jpg", "بينانس": "binns.jpg"
+        };
+
+        function getCatIcon(c) {
+            if (!c) return 'cd.jpg';
+            for (let k in catIcons) { if (c.includes(k)) return catIcons[k]; }
+            return 'cd.jpg';
+        }
+
+        // --- Loader ---
+        let lp = 0;
+        const lb = document.getElementById('loader-bar');
+        const ls = document.getElementById('loader-screen');
+        const li = setInterval(() => {
+            lp += 5;
+            if (lb) lb.style.width = lp + '%';
+            if (lp >= 100) {
+                clearInterval(li);
                 setTimeout(() => {
-                    if(loaderScreen) loaderScreen.style.opacity = '0';
+                    if (ls) ls.style.opacity = '0';
                     setTimeout(() => {
-                        if(loaderScreen) loaderScreen.style.display = 'none';
-                        initAdProcess(); 
+                        if (ls) ls.style.display = 'none';
+                        initAd();
                     }, 500);
                 }, 100);
             }
         }, 100);
 
-        // ============================================================
-        // [02] AD NOTIFICATION LOGIC
-        // ============================================================
-        let adSeconds = 10;
-        let adTimer;
-        function initAdProcess() {
+        // --- Ad ---
+        let adSec = 10, adTimer;
+        function initAd() {
             const overlay = document.getElementById('ad-notice-overlay');
             const label = document.getElementById('ad-countdown-lbl');
-            if(overlay) overlay.classList.add('active');
+            if (overlay) overlay.classList.add('active');
             adTimer = setInterval(() => {
-                adSeconds--;
-                if(label) label.innerHTML = `<small>سيختفي الإشعار بعد ${adSeconds} ثوانٍ</small>`;
-                if (adSeconds <= 0) { closeAdNotice(); }
+                adSec--;
+                if (label) label.innerHTML = `<small>سيختفي الإشعار بعد ${adSec} ثوانٍ</small>`;
+                if (adSec <= 0) closeAdNotice();
             }, 1000);
         }
         function closeAdNotice() {
             clearInterval(adTimer);
             const overlay = document.getElementById('ad-notice-overlay');
-            if(overlay) overlay.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
         }
 
-        // ============================================================
-        // [03] FIREBASE CORE
-        // ============================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyARNJOPAycWU3YJdZSBN1d9uoLrvso3i4Y",
-            authDomain: "cd-card-87365.firebaseapp.com",
-            projectId: "cd-card-87365",
-            appId: "1:397926299412:web:efbe9ae9aae29df368f401"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        const PROVIDER_API_URL = "https://libyaplus1.com/api/v2";
-        const PROVIDER_API_KEY = "958c5695446fccb28ab7b8090d5e271a";
-
-        let uData = { balance: 0, totalSpent: 0, discount: 0, uid: "", email: "", username: "", apiKey: "", points: 0, userLevel: "user", affiliateEarnings: 0, affiliateCount: 0, affiliatePercent: 5, referredBy: null };
-        let srvs = [];
-        let curSrv = null;
-        let allCoupons = [];
-        let appliedCouponDiscount = 0;
-        let currentCatIcon = "cd.jpg";
-
-        const localIcons = {
-            "فيس بوك": "Facebook.jpg", "فيسبوك": "Facebook.jpg",
-            "انستجرام": "Instagram.jpg", "انستغرام": "Instagram.jpg",
-            "نتفلكس": "Netflix.jpg", "نيتفلكس": "Netflix.jpg",
-            "سناب شات": "Snapchat.jpg", "سناب": "Snapchat.jpg",
-            "تيك توك": "tiktok.jpg", "تيكتوك": "tiktok.jpg",
-            "وتساب": "watsap.jpg", "واتساب": "watsap.jpg",
-            "يتيوب": "yotuop.jpg", "يوتيوب": "yotuop.jpg",
-            "بينانس": "binns.jpg", "باينانس": "binns.jpg",
-            "فاير": "frii.jpg", "جي بي": "shats.jpg", "شات": "shats.jpg",
-            "توثيق": "tawtheg.jpg", "كات": "capcat.jpg", "كاب كات": "capcat.jpg",
-            "تليجرام": "teli.jpg", "تيلغرام": "teli.jpg",
-            "تويتر": "twiter.jpg", "شاهد": "shahed.jpg",
-            "ببجي": "popgi.jpg", "بوبجي": "popgi.jpg"
-        };
-
-        function getCatIcon(c) { if(!c) return "cd.jpg"; for(let k in localIcons) { if(c.includes(k)) return localIcons[k]; } return "cd.jpg"; }
-
+        // --- Auth ---
         auth.onAuthStateChanged(u => {
-            if (u) { uData.email = u.email; syncSystem(u.uid); } 
-            else { window.location.href = "login.html"; }
+            if (u) {
+                userData.email = u.email;
+                syncUser(u.uid);
+            } else {
+                window.location.href = 'login.html';
+            }
         });
 
-        async function syncSystem(uid) {
-            db.collection("users").doc(uid).onSnapshot(doc => {
+        async function syncUser(uid) {
+            db.collection('users').doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    uData = { uid: uid, email: uData.email, ...data };
-                    if (!data.apiKey) {
-                        const newKey = btoa(uid + Date.now()).substring(0, 32);
-                        db.collection("users").doc(uid).update({ apiKey: newKey });
+                    const d = doc.data();
+                    userData = { ...userData, uid, ...d };
+                    if (!d.apiKey) {
+                        const k = btoa(uid + Date.now()).substring(0, 32);
+                        db.collection('users').doc(uid).update({ apiKey: k });
                     }
-                    document.getElementById('u-display-name').innerText = uData.username || "شريك النجاح";
-                    document.getElementById('u-balance').innerText = (uData.balance || 0).toFixed(2);
-                    document.getElementById('u-spent').innerText = (uData.totalSpent || 0).toFixed(2);
-                    document.getElementById('u-discount').innerText = (uData.discount || 0) + "%";
-                    document.getElementById('acc-username').innerText = uData.username || "غير معرف";
-                    document.getElementById('acc-uid').innerText = uid;
-                    document.getElementById('acc-api-key').innerText = data.apiKey || "...";
-                    if(curSrv) recalc(); 
+                    updateAllUI();
+                    loadOrders();
+                    loadDeposits();
+                    loadTickets();
+                    loadCoupons();
+                    checkNotifications();
                 }
             });
-            fetchServices();
+            loadServices();
         }
 
-        // ============================================================
-        // [04] SERVICES - جلب كل الخدمات بدون فلتر active
-        // ============================================================
-        async function fetchServices() {
-            try {
-                db.collection("services").onSnapshot(snap => {
-                    srvs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.name && s.name !== 'خدمة افتراضية' && (s.finalPrice || 0) > 0);
-                    srvs.sort((a, b) => (a.catOrder || 99) - (b.catOrder || 99));
-                    console.log('✅ خدمات:', srvs.length);
-                    
-                    const cats = [];
-                    srvs.forEach(s => { const c = s.category || "عام"; if (!cats.includes(c)) cats.push(c); });
+        function updateAllUI() {
+            document.getElementById('u-display-name').innerText = userData.username || 'مستخدم';
+            document.getElementById('u-balance').innerText = (userData.balance || 0).toFixed(2);
+            document.getElementById('u-spent').innerText = (userData.totalSpent || 0).toFixed(2);
+            document.getElementById('u-discount').innerText = (userData.discount || 0) + '%';
+            document.getElementById('u-points').innerText = userData.points || 0;
+            document.getElementById('acc-username').innerText = userData.username || '—';
+            document.getElementById('acc-uid').innerText = userData.uid || '—';
+            document.getElementById('acc-level').innerText = userData.userLevel === 'vip' ? '⭐ VIP' : '👤 عادي';
+            document.getElementById('acc-api-key').innerText = userData.apiKey || '—';
+            document.getElementById('u-affiliate-earnings').innerText = (userData.affiliateEarnings || 0).toFixed(2);
+            document.getElementById('u-affiliate-count').innerText = userData.affiliateCount || 0;
+            document.getElementById('u-affiliate-percent').innerText = (userData.affiliatePercent || 5) + '%';
+            document.getElementById('affiliate-link-text').innerText = 'https://cdcard.ly/ref/' + userData.uid;
+            if (currentService) recalc();
+        }
 
-                    const dropCats = document.getElementById('drop-cats');
-                    if(dropCats) {
-                        dropCats.innerHTML = cats.map(c => {
-                            let iconSrc = getCatIcon(c);
-                            return `<div class="drop-item" onclick="selectCat('${c.replace(/'/g, "\\'")}', '${iconSrc}')"><img src="${iconSrc}" onerror="this.src='cd.jpg'"><span>${c}</span></div>`;
-                        }).join('');
+        // --- Notifications ---
+        function checkNotifications() {
+            if (!userData.uid) return;
+            db.collection('notifications')
+                .where('active', '==', true)
+                .orderBy('createdAt', 'desc')
+                .limit(3)
+                .onSnapshot(snap => {
+                    snap.forEach(doc => {
+                        const n = doc.data();
+                        const nTime = n.createdAt?.toDate?.() || new Date();
+                        const lastTime = userData.notifiedAt?.toDate?.() || new Date(0);
+                        if (n.message !== userData.lastNotification || nTime > lastTime) {
+                            Swal.fire({
+                                title: '📢 إشعار جديد',
+                                text: n.message,
+                                icon: 'info',
+                                background: '#0d0d0d',
+                                color: '#fff',
+                                confirmButtonColor: '#39ff14',
+                                confirmButtonText: 'حسناً',
+                                timer: 8000,
+                                timerProgressBar: true
+                            });
+                            db.collection('users').doc(userData.uid).update({
+                                lastNotification: n.message,
+                                notifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    });
+                });
+        }
+
+        // --- Services ---
+        function loadServices() {
+            db.collection('services').onSnapshot(snap => {
+                services = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (d.name && d.name !== 'خدمة افتراضية' && (d.finalPrice || 0) > 0) {
+                        services.push({ id: doc.id, ...d });
                     }
                 });
-            } catch(e) { console.error("Error:", e); }
+                services.sort((a, b) => (a.catOrder || 99) - (b.catOrder || 99));
+                const cats = [];
+                services.forEach(s => {
+                    const c = s.category || 'عام';
+                    if (!cats.includes(c)) cats.push(c);
+                });
+                const dc = document.getElementById('drop-cats');
+                if (dc) {
+                    dc.innerHTML = cats.map(c => {
+                        const icon = getCatIcon(c);
+                        return `<div class="drop-item" onclick="selectCat('${c.replace(/'/g, "\\'")}', '${icon}')"><img src="${icon}" onerror="this.src='cd.jpg'"><span>${c}</span></div>`;
+                    }).join('');
+                }
+            });
         }
 
         function selectCat(c, icon) {
-            currentCatIcon = icon;
-            const catImg = document.getElementById('cat-img');
-            if(catImg) { catImg.src = icon; catImg.style.display = 'inline-block'; }
+            document.getElementById('cat-img').src = icon;
+            document.getElementById('cat-img').style.display = 'inline-block';
             document.getElementById('label-cat').innerText = c;
-            curSrv = null;
-            document.getElementById('label-srv').innerText = 'اختر الخدمة الآن...';
-            const srvImg = document.getElementById('srv-img');
-            if(srvImg) srvImg.style.display = 'none';
+            currentService = null;
+            document.getElementById('label-srv').innerText = 'اختر الخدمة...';
+            document.getElementById('srv-img').style.display = 'none';
             document.getElementById('srv-desc-box').classList.remove('active');
-            document.getElementById('val-total').innerText = "0.00";
+            document.getElementById('val-total').innerText = '0.00';
             document.getElementById('qty-hint').innerText = '';
-
-            const filtered = srvs.filter(s => s.category === c).sort((a,b) => (a.srvOrder||0) - (b.srvOrder||0));
-            const dropSrvs = document.getElementById('drop-srvs');
-            if(dropSrvs) {
-                dropSrvs.innerHTML = filtered.map(s => {
-                    return `<div class="drop-item" onclick="selectSrv('${s.id}', '${icon}')"><img src="${icon}" onerror="this.src='cd.jpg'"><span>${s.name}</span></div>`;
-                }).join('');
-            }
+            const filtered = services.filter(s => s.category === c).sort((a, b) => (a.srvOrder || 0) - (b.srvOrder || 0));
+            document.getElementById('drop-srvs').innerHTML = filtered.map(s => {
+                return `<div class="drop-item" onclick="selectSrv('${s.id}', '${icon}')"><img src="${icon}" onerror="this.src='cd.jpg'"><span>${s.name}</span></div>`;
+            }).join('');
             toggleDrop('drop-cats');
         }
 
         function selectSrv(id, icon) {
-            curSrv = srvs.find(s => s.id === id);
-            if(!curSrv) return;
-            
-            const srvImg = document.getElementById('srv-img');
-            if(srvImg) { srvImg.src = icon; srvImg.style.display = 'inline-block'; }
-            document.getElementById('label-srv').innerText = curSrv.name;
-            
+            currentService = services.find(s => s.id === id);
+            if (!currentService) return;
+            document.getElementById('srv-img').src = icon;
+            document.getElementById('srv-img').style.display = 'inline-block';
+            document.getElementById('label-srv').innerText = currentService.name;
             document.getElementById('srv-desc-box').classList.add('active');
-            document.getElementById('srv-desc-text').innerText = curSrv.description || "خدمة ممتازة وفورية بجودة عالية تم فحصها من قبل فريق CD-CARD.";
-            
-            // ✨ تفاصيل الخدمة الجديدة
-            document.getElementById('detail-time').innerText = curSrv.estimatedTime || 'غير محدد';
-            
-            if (curSrv.priceType === '1' || curSrv.priceType === 'fixed') {
-                document.getElementById('detail-type').innerText = 'سعر ثابت (لكل طلب)';
-            } else {
-                document.getElementById('detail-type').innerText = 'سعر متغير (لكل 1000)';
-            }
-            
-            document.getElementById('detail-price').innerText = (curSrv.finalPrice || 0).toFixed(2) + ' د.ل';
-            document.getElementById('detail-min').innerText = curSrv.minOrder || 1;
-            document.getElementById('detail-max').innerText = curSrv.maxOrder || 10000;
-            
+            document.getElementById('srv-desc-text').innerText = currentService.description || 'خدمة ممتازة وفورية بجودة عالية.';
+            document.getElementById('detail-time').innerText = currentService.estimatedTime || 'غير محدد';
+            document.getElementById('detail-type').innerText = (currentService.priceType === '1' || currentService.priceType === 'fixed') ? 'سعر ثابت' : 'متغير /1000';
+            document.getElementById('detail-price').innerText = (currentService.finalPrice || 0).toFixed(2) + ' د.ل';
+            document.getElementById('detail-min').innerText = currentService.minOrder || 1;
+            document.getElementById('detail-max').innerText = currentService.maxOrder || 10000;
             const qtyInput = document.getElementById('field-qty');
-            if (curSrv.priceType === "fixed" || curSrv.priceType === "1") {
-                if(qtyInput) { qtyInput.readOnly = true; qtyInput.value = 1; }
+            if (currentService.priceType === '1' || currentService.priceType === 'fixed') {
+                qtyInput.readOnly = true;
+                qtyInput.value = 1;
                 document.getElementById('qty-hint').innerText = '(الكمية ثابتة)';
             } else {
-                if(qtyInput) { qtyInput.readOnly = false; if (qtyInput.value == 1) qtyInput.value = 1000; }
+                qtyInput.readOnly = false;
+                if (qtyInput.value == 1) qtyInput.value = 1000;
                 document.getElementById('qty-hint').innerText = '';
             }
-            
             toggleDrop('drop-srvs');
             recalc();
         }
 
         function recalc() {
-            if (!curSrv) return;
-            const qtyField = document.getElementById('field-qty');
-            const q = parseFloat(qtyField ? qtyField.value : 0) || 0;
-            let price = parseFloat(curSrv.finalPrice) || 0;
-            
-            if (uData.discount > 0) { price -= price * (uData.discount / 100); }
-            if (appliedCouponDiscount > 0) { price -= price * (appliedCouponDiscount / 100); }
-            
-            let total = 0;
-            if (curSrv.priceType === "fixed" || curSrv.priceType === "1") total = price;
-            else if (curSrv.priceType === "1000") total = (q / 1000) * price;
-            else total = q * price;
-            
+            if (!currentService) return;
+            const q = parseFloat(document.getElementById('field-qty').value) || 0;
+            let price = parseFloat(currentService.finalPrice) || 0;
+            if (userData.discount > 0) price -= price * (userData.discount / 100);
+            if (appliedCouponDiscount > 0) price -= price * (appliedCouponDiscount / 100);
+            let total = (currentService.priceType === '1' || currentService.priceType === 'fixed') ? price : (q / 1000) * price;
             document.getElementById('val-total').innerText = total.toFixed(2);
         }
 
-        // ============================================================
-        // [05] ORDER SUBMISSION
-        // ============================================================
+        function toggleDrop(id) {
+            const el = document.getElementById(id);
+            document.querySelectorAll('.dropdown-panel').forEach(d => { if (d.id !== id) d.classList.remove('show'); });
+            if (el) el.classList.toggle('show');
+        }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.select-btn') && !e.target.closest('.dropdown-panel')) {
+                document.querySelectorAll('.dropdown-panel').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        // --- Orders ---
         async function submitOrder() {
-            const linkField = document.getElementById('field-link');
-            const qtyField = document.getElementById('field-qty');
-            const totalField = document.getElementById('val-total');
+            const link = document.getElementById('field-link').value.trim();
+            const qty = parseFloat(document.getElementById('field-qty').value) || 0;
+            const total = parseFloat(document.getElementById('val-total').innerText) || 0;
             const btn = document.getElementById('btn-order');
-
-            const link = linkField ? linkField.value : "";
-            const qty = parseFloat(qtyField ? qtyField.value : 0);
-            const total = parseFloat(totalField ? totalField.innerText : 0);
-
-            if (!curSrv) { notify("يرجى اختيار خدمة أولاً"); return; }
-            if (!link) { notify("يرجى إدخال الرابط أو اليوزر"); return; }
-            if (qty <= 0) { notify("الكمية غير صالحة"); return; }
-            if (uData.balance < total) { notify("عذراً، رصيدك غير كافٍ"); return; }
-
-            const min = curSrv.minOrder || 1;
-            const max = curSrv.maxOrder || 10000;
-            if (qty < min || qty > max) { notify(`الكمية يجب أن تكون بين ${min} و ${max}`); return; }
-
+            if (!currentService) return toast('⚠️ اختر خدمة', 'error');
+            if (!link) return toast('⚠️ أدخل الرابط', 'error');
+            if (qty <= 0) return toast('⚠️ كمية خطأ', 'error');
+            if (userData.balance < total) return toast('⚠️ رصيد غير كاف', 'error');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...';
             try {
-                if(btn) { btn.disabled = true; btn.innerText = "جاري المعالجة..."; }
-
-                let providerOrderId = null;
-                if (curSrv.externalId) {
-                    try {
-                        const params = new URLSearchParams({ key: PROVIDER_API_KEY, action: 'add', service: curSrv.externalId, link: link, quantity: qty });
-                        const response = await fetch(PROVIDER_API_URL + "?" + params.toString());
-                        const result = await response.json();
-                        providerOrderId = result.order || null;
-                    } catch(e) {}
-                }
-
-                await db.collection("orders").add({
-                    uid: uData.uid, username: uData.username || uData.email,
-                    serviceId: curSrv.id, serviceName: curSrv.name,
+                await db.collection('orders').add({
+                    uid: userData.uid, username: userData.username || userData.email,
+                    serviceId: currentService.id, serviceName: currentService.name,
                     url: link, target: link, quantity: qty, price: total,
-                    status: providerOrderId ? "مكتمل" : "قيد التنفيذ",
-                    providerOrderId: providerOrderId || "manual",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    status: 'قيد التنفيذ', createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                await db.collection("users").doc(uData.uid).update({
+                await db.collection('users').doc(userData.uid).update({
                     balance: firebase.firestore.FieldValue.increment(-total),
                     totalSpent: firebase.firestore.FieldValue.increment(total),
                     points: firebase.firestore.FieldValue.increment(Math.floor(total))
                 });
-
-                if (uData.referredBy) {
-                    const commissionAmount = total * ((uData.affiliatePercent || 5) / 100);
-                    await db.collection("users").doc(uData.referredBy).update({ affiliateEarnings: firebase.firestore.FieldValue.increment(commissionAmount) });
+                if (userData.referredBy) {
+                    const comm = total * ((userData.affiliatePercent || 5) / 100);
+                    await db.collection('users').doc(userData.referredBy).update({
+                        affiliateEarnings: firebase.firestore.FieldValue.increment(comm)
+                    });
                 }
-                
+                await db.collection('activity_logs').add({
+                    uid: userData.uid,
+                    username: userData.username || userData.email,
+                    action: `طلب ${currentService.name} بقيمة ${total.toFixed(2)} د.ل`,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                toast('✅ تم الطلب');
+                document.getElementById('field-link').value = '';
                 appliedCouponDiscount = 0;
-                notify("تم استلام طلبك بنجاح!");
-                if(linkField) linkField.value = "";
-                
-            } catch (error) { notify("حدث خطأ أثناء الطلب"); }
-            finally {
-                if(btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> إتمام عملية الشراء`; }
+                document.getElementById('coupon-result').innerHTML = '';
+                loadOrders();
+            } catch (e) {
+                toast('❌ خطأ', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> إتمام الشراء';
             }
         }
 
-        // [06] DEPOSITS & PROJECTS
+        function loadOrders() {
+            if (!userData.uid) return;
+            db.collection('orders')
+                .where('uid', '==', userData.uid)
+                .orderBy('createdAt', 'desc')
+                .limit(30)
+                .onSnapshot(snap => {
+                    const el = document.getElementById('orders-list');
+                    if (!el) return;
+                    if (snap.empty) {
+                        el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا طلبات</p></div>';
+                        return;
+                    }
+                    el.innerHTML = snap.docs.map(d => {
+                        const o = d.data();
+                        const cls = o.status === 'مكتمل' ? 'completed' : o.status === 'قيد التنفيذ' ? 'pending' : 'failed';
+                        const dt = o.createdAt?.toDate?.().toLocaleDateString('ar-SA') || '';
+                        return `<div class="order-card"><div class="order-header"><span style="font-weight:700;">${o.serviceName||''}</span><span class="status-badge ${cls}">${o.status||'?'}</span></div><div class="order-info"><div>الكمية: <span>${o.quantity||0}</span></div><div>المبلغ: <span style="color:var(--primary-neon);">${(o.price||0).toFixed(2)}</span></div><div>التاريخ: <span>${dt}</span></div></div></div>`;
+                    }).join('');
+                });
+        }
+
+        // --- Deposits ---
         async function requestDeposit() {
-            const phoneField = document.getElementById('field-dep-phone');
-            const amtField = document.getElementById('field-dep-amt');
-            const phone = phoneField ? phoneField.value : "";
-            const amt = parseFloat(amtField ? amtField.value : 0);
-            if(!phone || !amt) { notify("يرجى إدخال البيانات كاملة"); return; }
-            try {
-                await db.collection("deposits").add({
-                    uid: uData.uid, username: uData.username || uData.email,
-                    amount: amt, senderPhone: phone, status: "قيد المراجعة",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                notify("تم إرسال طلب الشحن بنجاح!");
-                if(phoneField) phoneField.value = ""; if(amtField) amtField.value = "";
-            } catch(e) { notify("حدث خطأ في النظام"); }
+            const phone = document.getElementById('field-dep-phone').value.trim();
+            const amt = parseFloat(document.getElementById('field-dep-amt').value) || 0;
+            if (!phone) return toast('⚠️ أدخل رقمك', 'error');
+            if (!amt || amt <= 0) return toast('⚠️ مبلغ خطأ', 'error');
+            await db.collection('deposits').add({
+                uid: userData.uid,
+                username: userData.username || userData.email,
+                senderPhone: phone,
+                amount: amt,
+                status: 'قيد المراجعة',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await db.collection('activity_logs').add({
+                uid: userData.uid,
+                username: userData.username || userData.email,
+                action: `طلب إيداع ${amt} د.ل`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            toast('✅ تم الإرسال');
+            document.getElementById('field-dep-phone').value = '';
+            document.getElementById('field-dep-amt').value = '';
+            loadDeposits();
         }
 
+        function loadDeposits() {
+            if (!userData.uid) return;
+            db.collection('deposits')
+                .where('uid', '==', userData.uid)
+                .orderBy('createdAt', 'desc')
+                .limit(15)
+                .onSnapshot(snap => {
+                    const el = document.getElementById('deposits-history');
+                    if (!el) return;
+                    if (snap.empty) {
+                        el.innerHTML = '<div class="empty-state"><p>لا إيداعات</p></div>';
+                        return;
+                    }
+                    el.innerHTML = snap.docs.map(d => {
+                        const x = d.data();
+                        const cls = x.status === 'مكتمل' ? 'completed' : 'pending';
+                        const dt = x.createdAt?.toDate?.().toLocaleDateString('ar-SA') || '';
+                        return `<div class="order-card"><div class="order-header"><span style="color:var(--primary-neon);font-weight:700;">${x.amount.toFixed(2)} د.ل</span><span class="status-badge ${cls}">${x.status||'؟'}</span></div><div class="order-info"><div>من: <span>${x.senderPhone||''}</span></div><div>التاريخ: <span>${dt}</span></div></div></div>`;
+                    }).join('');
+                });
+        }
+
+        // --- Coupons ---
+        function loadCoupons() {
+            db.collection('coupons').onSnapshot(snap => {
+                allCoupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAvailCoupons();
+            });
+        }
+
+        function renderAvailCoupons() {
+            const el = document.getElementById('available-coupons-list');
+            if (!el) return;
+            const avail = allCoupons.filter(c => (c.used || 0) < (c.maxUses || 100));
+            if (!avail.length) {
+                el.innerHTML = '<div class="empty-state"><p>لا كوبونات متاحة</p></div>';
+                return;
+            }
+            el.innerHTML = avail.map(c => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span style="color:var(--gold);font-weight:900;">${c.code}</span>
+                        <span style="color:var(--primary-neon);">${c.discount}%</span>
+                    </div>
+                    <div class="order-info">
+                        <div>استخدام: <span>${c.used||0}/${c.maxUses||100}</span></div>
+                        <div>ينتهي: <span>${c.expiry||'مفتوح'}</span></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function applyCoupon() {
+            const code = document.getElementById('coupon-code-input').value.trim().toUpperCase();
+            const res = document.getElementById('coupon-result');
+            if (!code) return toast('⚠️ أدخل الكود', 'error');
+            const c = allCoupons.find(x => x.code.toUpperCase() === code);
+            if (!c) { res.innerHTML = '<small style="color:var(--danger);">❌ غير صالح</small>'; return; }
+            if ((c.used || 0) >= (c.maxUses || 100)) { res.innerHTML = '<small style="color:var(--danger);">❌ منتهي</small>'; return; }
+            if (c.expiry && new Date(c.expiry) < new Date()) { res.innerHTML = '<small style="color:var(--danger);">❌ منتهي الصلاحية</small>'; return; }
+            appliedCouponDiscount = c.discount;
+            res.innerHTML = `<small style="color:var(--primary-neon);">✅ خصم ${c.discount}%</small>`;
+            await db.collection('coupons').doc(c.id).update({ used: firebase.firestore.FieldValue.increment(1) });
+            if (currentService) recalc();
+            toast(`🎉 تم التفعيل`);
+        }
+
+        async function convertPointsToBalance() {
+            if ((userData.points || 0) < 100) return toast('⚠️ تحتاج 100 نقطة', 'error');
+            const pts = Math.floor(userData.points / 100) * 100;
+            const bal = pts / 100;
+            Swal.fire({
+                title: 'تحويل النقاط',
+                text: `تحويل ${pts} نقطة = ${bal} د.ل`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#39ff14'
+            }).then(async r => {
+                if (r.isConfirmed) {
+                    await db.collection('users').doc(userData.uid).update({
+                        points: firebase.firestore.FieldValue.increment(-pts),
+                        balance: firebase.firestore.FieldValue.increment(bal)
+                    });
+                    toast('✅ تم');
+                }
+            });
+        }
+
+        // --- Affiliate ---
+        async function withdrawAffiliate() {
+            const amt = userData.affiliateEarnings || 0;
+            if (amt <= 0) return toast('⚠️ لا أرباح', 'error');
+            Swal.fire({
+                title: 'سحب أرباح العمولة',
+                text: `سحب ${amt.toFixed(2)} د.ل`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم',
+                background: '#0d0d0d',
+                color: '#fff',
+                confirmButtonColor: '#ffd700'
+            }).then(async r => {
+                if (r.isConfirmed) {
+                    await db.collection('users').doc(userData.uid).update({
+                        balance: firebase.firestore.FieldValue.increment(amt),
+                        affiliateEarnings: 0
+                    });
+                    toast('✅ تم السحب');
+                }
+            });
+        }
+
+        // --- Tickets ---
+        async function createTicket() {
+            const sub = document.getElementById('ticket-subject').value.trim();
+            const msg = document.getElementById('ticket-message').value.trim();
+            if (!sub || !msg) return toast('⚠️ املأ الحقول', 'error');
+            await db.collection('tickets').add({
+                uid: userData.uid,
+                username: userData.username || userData.email,
+                email: userData.email,
+                subject: sub,
+                message: msg,
+                status: 'مفتوح',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await db.collection('activity_logs').add({
+                uid: userData.uid,
+                username: userData.username || userData.email,
+                action: `تذكرة دعم: ${sub}`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            toast('✅ تم الإرسال');
+            document.getElementById('ticket-subject').value = '';
+            document.getElementById('ticket-message').value = '';
+            loadTickets();
+        }
+
+        function loadTickets() {
+            if (!userData.uid) return;
+            db.collection('tickets')
+                .where('uid', '==', userData.uid)
+                .orderBy('createdAt', 'desc')
+                .limit(20)
+                .onSnapshot(snap => {
+                    const el = document.getElementById('tickets-list');
+                    if (!el) return;
+                    if (snap.empty) {
+                        el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا تذاكر</p></div>';
+                        return;
+                    }
+                    el.innerHTML = snap.docs.map(d => {
+                        const t = d.data();
+                        const cls = t.status === 'مغلق' ? 'completed' : 'pending';
+                        const dt = t.createdAt?.toDate?.().toLocaleDateString('ar-SA') || '';
+                        return `<div class="ticket-card"><div class="order-header"><span style="font-weight:700;">${t.subject}</span><span class="status-badge ${cls}">${t.status}</span></div><p style="color:#aaa;font-size:12px;">${(t.message||'').substring(0,120)}</p>${t.reply?`<div class="admin-reply"><small style="color:var(--primary-neon);">✅ رد الإدارة:</small><p style="color:#fff;font-size:11px;">${t.reply}</p></div>`:''}<small style="display:block;margin-top:8px;">${dt}</small></div>`;
+                    }).join('');
+                });
+        }
+
+        // --- Web Projects ---
         async function submitWebProject() {
-            const n = document.getElementById('web-name'); const s = document.getElementById('web-site-name');
-            const p = document.getElementById('web-pass'); const d = document.getElementById('web-details');
-            const name = n ? n.value : ""; const site = s ? s.value : "";
-            const pass = p ? p.value : ""; const info = d ? d.value : "";
-            if(!name || !site || !pass) { notify("يرجى ملء جميع الحقول المطلوبة"); return; }
-            try {
-                await db.collection("web_orders").add({
-                    userId: uData.uid, userName: name, websiteName: site, password: pass,
-                    details: info, status: "pending", price: 70, renewal: 30,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                notify("تم إرسال طلب البرمجة للمراجعة!");
-            } catch(e) { notify("فشل في إرسال طلب البرمجة"); }
+            const n = document.getElementById('web-name').value.trim();
+            const s = document.getElementById('web-site-name').value.trim();
+            const p = document.getElementById('web-pass').value.trim();
+            const d = document.getElementById('web-details').value.trim();
+            if (!n || !s || !p) return toast('⚠️ املأ الحقول', 'error');
+            await db.collection('web_orders').add({
+                userId: userData.uid,
+                userName: n,
+                websiteName: s,
+                password: p,
+                details: d,
+                status: 'pending',
+                price: 70,
+                renewal: 30,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await db.collection('activity_logs').add({
+                uid: userData.uid,
+                username: userData.username || userData.email,
+                action: `طلب موقع: ${s}`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            toast('✅ تم الإرسال');
+            document.getElementById('web-name').value = '';
+            document.getElementById('web-site-name').value = '';
+            document.getElementById('web-pass').value = '';
+            document.getElementById('web-details').value = '';
         }
 
-        // [07] UTILS
+        // --- Utils ---
         function showPane(id) {
             document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            const target = document.getElementById('pane-'+id); if(target) target.classList.add('active');
-            const navLink = document.getElementById('nav-'+id); if(navLink) navLink.classList.add('active');
-            toggleSidebar(false); window.scrollTo(0,0);
+            document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
+            const target = document.getElementById('pane-' + id);
+            if (target) target.classList.add('active');
+            const nl = document.getElementById('nav-' + id);
+            if (nl) nl.classList.add('active');
+            const bni = document.querySelector(`.bottom-nav-item[data-page="${id}"]`);
+            if (bni) bni.classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo(0, 0);
         }
-        function toggleSidebar(s) { document.body.classList.toggle('sidebar-active', s); }
-        function toggleDrop(id) { 
-            const p = document.getElementById(id);
-            document.querySelectorAll('.dropdown-panel').forEach(x => { if(x.id !== id) x.classList.remove('show'); });
-            if(p) p.classList.toggle('show'); 
-        }
-        function notify(m) { 
-            const t = document.getElementById('main-toast'); 
-            if(t) { t.innerText = m; t.classList.add('active'); setTimeout(()=>t.classList.remove('active'), 3500); }
-        }
-        function copyToClipboard(t) { navigator.clipboard.writeText(t); notify("تم النسخ إلى الحافظة"); }
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.select-btn') && !e.target.closest('.dropdown-panel')) {
-                document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('show'));
-            }
-        });
 
-        window.onload = () => {
-            console.log('🔥 CD-CARD Custom v9.5 - شكل قديم + تفاصيل جديدة');
-            console.log('✅ جميع الخدمات تظهر مباشرة من لوحة التحكم');
-        };
+        function toggleSidebar(s) {
+            document.body.classList.toggle('sidebar-active', s);
+        }
+
+        function toast(msg, type = '') {
+            const t = document.getElementById('main-toast');
+            if (t) {
+                t.innerText = msg;
+                t.className = 'toast ' + type + ' active';
+                setTimeout(() => t.classList.remove('active'), 3000);
+            }
+        }
+
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt).then(() => toast('✅ تم النسخ')).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = txt;
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                toast('✅ تم النسخ');
+            });
+        }
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        console.log('🔥 CD-CARD Index Ready - Full Features Active');
     </script>
 </body>
-</html>
+    </html>
