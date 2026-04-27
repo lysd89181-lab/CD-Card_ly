@@ -1452,7 +1452,7 @@
                 </div>
                 <div class="affiliate-link-box">
                     <code id="affiliate-link-text">...</code>
-                    <i class="fa-solid fa-copy copy-icon" onclick="copyText(document.getElementById('affiliate-link-text').innerText)"></i>
+                    <i class="fa-solid fa-copy copy-icon" onclick="copyAffiliateLink()"></i>
                 </div>
                 <button class="action-btn gold" onclick="withdrawAffiliate()">
                     <i class="fa-solid fa-money-bill-wave"></i> سحب الأرباح
@@ -1915,7 +1915,7 @@
             document.getElementById('acc-api-key').innerText = userData.apiKey || '—';
             document.getElementById('u-affiliate-earnings').innerText = (userData.affiliateEarnings || 0).toFixed(2);
             document.getElementById('u-affiliate-count').innerText = userData.affiliateCount || 0;
-            document.getElementById('affiliate-link-text').innerText = 'https://cdcard.ly/ref/' + userData.uid;
+            document.getElementById('affiliate-link-text').innerText = window.location.origin + window.location.pathname + '?ref=' + userData.uid;
             if (currentService) recalc();
         }
 
@@ -2199,6 +2199,24 @@
         }
 
         // AFFILIATE
+        async function copyAffiliateLink() {
+            const link = document.getElementById('affiliate-link-text').innerText;
+            try {
+                await navigator.clipboard.writeText(link);
+                showNotification('✅ نسخ', 'تم نسخ رابط التسويق بنجاح', 'link');
+                toast('✅ تم نسخ رابط التسويق');
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = link;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('✅ نسخ', 'تم نسخ رابط التسويق بنجاح', 'link');
+                toast('✅ تم نسخ رابط التسويق');
+            }
+        }
+
         async function withdrawAffiliate() {
             const amt = userData.affiliateEarnings || 0;
             if (amt <= 0) return toast('⚠️ لا توجد أرباح', 'error');
