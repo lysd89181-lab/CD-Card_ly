@@ -988,8 +988,8 @@
                     <input type="text" id="set-whatsapp" class="sw-input" value="218912377291">
                 </div>
                 <div class="input-group">
-                    <label><i class="fa-solid fa-handshake"></i> نسبة الأفلييت</label>
-                    <input type="number" id="set-affiliate" class="sw-input" value="5">
+                    <label><i class="fa-solid fa-handshake"></i> نسبة الأفلييت (%)</label>
+                    <input type="number" id="set-affiliate" class="sw-input" value="3">
                 </div>
                 <button class="btn btn-p btn-full" onclick="saveSettings()">
                     <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
@@ -2133,7 +2133,7 @@
                 document.getElementById('set-min-deposit').value = d.minDeposit || 1;
                 document.getElementById('set-news').value = d.newsTicker || '';
                 document.getElementById('set-whatsapp').value = d.supportWhatsApp || '';
-                document.getElementById('set-affiliate').value = d.affiliatePercent || 5;
+                document.getElementById('set-affiliate').value = d.affiliatePercent || 3;
             }
         }
 
@@ -2143,7 +2143,7 @@
                 minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1,
                 newsTicker: document.getElementById('set-news').value,
                 supportWhatsApp: document.getElementById('set-whatsapp').value,
-                affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 5,
+                affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 3,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }, {
                 merge: true
@@ -2172,4 +2172,4 @@
         });
     </script>
 </body>
-                    </html>
+    </html>
