@@ -439,6 +439,11 @@
             color: var(--accent);
             border: 1px solid var(--accent);
         }
+        .btn-gold {
+            background: rgba(255,215,0,0.15);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+        }
         .btn-sm {
             padding: 5px 10px;
             font-size: 10px;
@@ -597,61 +602,6 @@
             padding: 20px;
         }
 
-        /* PASTE BUTTON */
-        .paste-btn {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(57,255,20,0.1);
-            border: 1px solid var(--p);
-            color: var(--p);
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-        }
-        .paste-btn:hover {
-            background: rgba(57,255,20,0.2);
-        }
-        .paste-btn:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-        .input-with-paste {
-            position: relative;
-        }
-        .input-with-paste input {
-            padding-left: 80px;
-        }
-
-        /* COPY NUMBER BUTTON */
-        .copy-number-btn {
-            background: rgba(57,255,20,0.1);
-            border: 1px solid var(--p);
-            color: var(--p);
-            padding: 4px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-            margin-right: 8px;
-        }
-        .copy-number-btn:hover {
-            background: rgba(57,255,20,0.2);
-        }
-        .copy-number-btn:active {
-            transform: scale(0.95);
-        }
-
         /* AYAH BOX */
         .ayah-box {
             background: linear-gradient(135deg, #0a0a0a, #0d0d0d);
@@ -680,17 +630,79 @@
             font-weight: 700;
         }
 
-        /* COUPON PRICE DISPLAY */
-        .price-before {
-            text-decoration: line-through;
-            color: var(--danger);
-            font-size: 12px;
-            margin-left: 8px;
+        /* BULK EDIT MODAL */
+        .bulk-edit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .price-after {
+        .bulk-edit-overlay.active {
+            display: flex;
+        }
+        .bulk-edit-modal {
+            background: var(--card);
+            border: 2px solid var(--p);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .bulk-edit-modal h2 {
             color: var(--p);
-            font-weight: 900;
-            font-size: 16px;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .bulk-service-row {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .bulk-service-row .srv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bulk-service-row .srv-header b {
+            color: var(--p);
+            font-size: 14px;
+        }
+        .bulk-service-row .srv-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .bulk-service-row .srv-fields input,
+        .bulk-service-row .srv-fields select,
+        .bulk-service-row .srv-fields textarea {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 1px solid #222;
+            color: #fff;
+            border-radius: 8px;
+            font-family: 'Cairo';
+            font-size: 12px;
+            outline: none;
+        }
+        .bulk-service-row .srv-fields textarea {
+            grid-column: span 2;
+            resize: vertical;
+            min-height: 50px;
+        }
+        .bulk-service-row .srv-fields input:focus,
+        .bulk-service-row .srv-fields select:focus,
+        .bulk-service-row .srv-fields textarea:focus {
+            border-color: var(--p);
         }
 
         @media (max-width: 768px) {
@@ -716,6 +728,12 @@
                 width: 100%;
                 justify-content: flex-end;
             }
+            .bulk-service-row .srv-fields {
+                grid-template-columns: 1fr;
+            }
+            .bulk-service-row .srv-fields textarea {
+                grid-column: span 1;
+            }
         }
     </style>
 </head>
@@ -732,6 +750,20 @@
         </div>
         <div class="admin-notif-close" onclick="hideAdminNotification()">
             <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <!-- Bulk Edit Overlay -->
+    <div class="bulk-edit-overlay" id="bulk-edit-overlay">
+        <div class="bulk-edit-modal" id="bulk-edit-modal">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2 id="bulk-edit-title"><i class="fas fa-layer-group"></i> تعديل جماعي</h2>
+                <button class="btn btn-danger btn-sm" onclick="closeBulkEdit()"><i class="fas fa-times"></i> إغلاق</button>
+            </div>
+            <div id="bulk-edit-content"></div>
+            <button class="btn btn-p btn-full" style="margin-top:20px;" onclick="saveBulkEdit()">
+                <i class="fas fa-save"></i> حفظ جميع التعديلات
+            </button>
         </div>
     </div>
 
@@ -775,6 +807,7 @@
                     <button class="btn btn-danger btn-sm" onclick="clearEntireStore()"><i class="fa-solid fa-trash-can"></i> مسح المتجر</button>
                     <button class="btn btn-outline btn-sm" onclick="addCategoryManually()"><i class="fa-solid fa-folder-plus"></i> قسم جديد</button>
                     <button class="btn btn-p btn-sm" onclick="addServiceManually()"><i class="fa-solid fa-circle-plus"></i> خدمة جديدة</button>
+                    <button class="btn btn-gold btn-sm" onclick="openBulkEdit()"><i class="fa-solid fa-pen-to-square"></i> تعديل جماعي</button>
                 </div>
             </div>
             <div id="master-services-list">
@@ -863,12 +896,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>الخدمة/القسم</th>
-                            <th>معرف المستخدم</th>
-                            <th>اسم المستخدم</th>
+                            <th>الخدمة</th>
+                            <th>المستخدم</th>
                             <th>الكمية</th>
                             <th>المبلغ</th>
-                            <th>الرابط المستهدف</th>
+                            <th>الرابط</th>
                             <th>الحالة</th>
                             <th>التاريخ</th>
                             <th>تحكم</th>
@@ -876,7 +908,7 @@
                     </thead>
                     <tbody id="admin-orders-rows">
                         <tr>
-                            <td colspan="10" class="loading-text">
+                            <td colspan="9" class="loading-text">
                                 <div class="loading-spinner"></div>
                                 <p>جاري تحميل الطلبات...</p>
                             </td>
@@ -1046,42 +1078,27 @@
         let allCouponsData = [];
         let allTicketsData = [];
         let allDepositsData = [];
-
-        // Notification timeout
+        let bulkEditData = {};
         let adminNotificationTimeout = null;
 
         // ============================================================
-        // ADMIN NOTIFICATION SYSTEM (مثل الواتساب - 5 ثواني)
+        // ADMIN NOTIFICATION SYSTEM
         // ============================================================
         function showAdminNotification(title, message, icon) {
             const toast = document.getElementById('admin-notification-toast');
             const titleEl = document.getElementById('admin-notif-title');
             const messageEl = document.getElementById('admin-notif-message');
             const iconEl = toast.querySelector('.admin-notif-icon i');
-
             if (titleEl) titleEl.innerText = title || 'إشعار';
             if (messageEl) messageEl.innerText = message || '';
-            if (iconEl) {
-                iconEl.className = 'fa-solid fa-' + (icon || 'bell');
-            }
-
-            if (toast) {
-                toast.classList.remove('hide');
-                toast.classList.add('show');
-            }
-
+            if (iconEl) iconEl.className = 'fa-solid fa-' + (icon || 'bell');
+            if (toast) { toast.classList.remove('hide'); toast.classList.add('show'); }
             clearTimeout(adminNotificationTimeout);
-            adminNotificationTimeout = setTimeout(() => {
-                hideAdminNotification();
-            }, 5000);
+            adminNotificationTimeout = setTimeout(() => { hideAdminNotification(); }, 5000);
         }
-
         function hideAdminNotification() {
             const toast = document.getElementById('admin-notification-toast');
-            if (toast) {
-                toast.classList.remove('show');
-                toast.classList.add('hide');
-            }
+            if (toast) { toast.classList.remove('show'); toast.classList.add('hide'); }
             clearTimeout(adminNotificationTimeout);
         }
 
@@ -1093,7 +1110,6 @@
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + viewName).classList.add('active');
             if (element) element.classList.add('active');
-
             if (viewName === 'services') loadMasterData();
             if (viewName === 'orders') loadAdminOrders();
             if (viewName === 'notif') loadNotifHistory();
@@ -1120,14 +1136,12 @@
             if (!area) return;
             area.innerHTML = "";
             if (!allServicesData.length) { area.innerHTML = '<div class="loading-text"><p>لا توجد خدمات</p></div>'; return; }
-
             const cats = {};
             allServicesData.forEach(d => {
                 const c = d.category || "غير مصنف";
                 if (!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] };
                 cats[c].items.push(d);
             });
-
             Object.values(cats).sort((a, b) => a.order - b.order).forEach(cat => {
                 const box = document.createElement('div');
                 box.className = 'cat-box';
@@ -1139,6 +1153,7 @@
                         </div>
                         <div style="display:flex;gap:5px;" onclick="event.stopPropagation();">
                             <button class="btn btn-outline btn-xs" onclick="renameCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn btn-gold btn-xs" onclick="openBulkEdit('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-layer-group"></i> تعديل جماعي</button>
                             <button class="btn btn-danger btn-xs" onclick="deleteCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trash-can"></i></button>
                             <i class="fa-solid fa-chevron-down" style="color:var(--muted);"></i>
                         </div>
@@ -1167,27 +1182,146 @@
             if (icon) { icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up'); }
         }
 
+        // ============================================================
+        // BULK EDIT - التعديل الجماعي
+        // ============================================================
+        function openBulkEdit(catName) {
+            const overlay = document.getElementById('bulk-edit-overlay');
+            const title = document.getElementById('bulk-edit-title');
+            const content = document.getElementById('bulk-edit-content');
+            
+            const services = allServicesData.filter(s => (s.category || 'غير مصنف') === (catName || 'غير مصنف'));
+            
+            if (!catName) {
+                // فتح لكل الخدمات
+                title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - جميع الخدمات';
+                bulkEditData = { services: allServicesData };
+            } else {
+                title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - ' + catName;
+                bulkEditData = { services: services };
+            }
+            
+            let html = '';
+            bulkEditData.services.forEach((s, i) => {
+                html += `
+                <div class="bulk-service-row">
+                    <div class="srv-header">
+                        <b>${s.name || 'بدون اسم'}</b>
+                        <small style="color:var(--muted);">ID: ${s.id}</small>
+                    </div>
+                    <div class="srv-fields">
+                        <input type="text" placeholder="اسم الخدمة" value="${s.name||''}" data-field="name" data-id="${s.id}">
+                        <input type="text" placeholder="القسم" value="${s.category||''}" data-field="category" data-id="${s.id}">
+                        <input type="number" step="0.01" placeholder="السعر (د.ل)" value="${s.finalPrice||0}" data-field="finalPrice" data-id="${s.id}">
+                        <select data-field="priceType" data-id="${s.id}">
+                            <option value="1000" ${s.priceType=='1000'?'selected':''}>متغير (لكل 1000)</option>
+                            <option value="1" ${s.priceType=='1'?'selected':''}>ثابت (لكل 1)</option>
+                        </select>
+                        <input type="text" placeholder="وقت التنفيذ" value="${s.estimatedTime||''}" data-field="estimatedTime" data-id="${s.id}">
+                        <input type="number" placeholder="الحد الأدنى" value="${s.minOrder||1}" data-field="minOrder" data-id="${s.id}">
+                        <input type="number" placeholder="الحد الأقصى" value="${s.maxOrder||10000}" data-field="maxOrder" data-id="${s.id}">
+                        <input type="text" placeholder="معرف المزود (External ID)" value="${s.externalId||''}" data-field="externalId" data-id="${s.id}">
+                        <textarea placeholder="الوصف" data-field="description" data-id="${s.id}">${s.description||''}</textarea>
+                    </div>
+                </div>`;
+            });
+            
+            content.innerHTML = html || '<p style="color:var(--muted);text-align:center;">لا توجد خدمات في هذا القسم</p>';
+            overlay.classList.add('active');
+        }
+
+        function closeBulkEdit() {
+            document.getElementById('bulk-edit-overlay').classList.remove('active');
+            bulkEditData = {};
+        }
+
+        async function saveBulkEdit() {
+            const inputs = document.querySelectorAll('#bulk-edit-content [data-field]');
+            const updates = {};
+            
+            inputs.forEach(input => {
+                const id = input.dataset.id;
+                const field = input.dataset.field;
+                const value = input.value;
+                
+                if (!updates[id]) updates[id] = {};
+                
+                if (field === 'finalPrice' || field === 'minOrder' || field === 'maxOrder') {
+                    updates[id][field] = parseFloat(value) || 0;
+                } else {
+                    updates[id][field] = value;
+                }
+            });
+            
+            const batch = db.batch();
+            Object.keys(updates).forEach(id => {
+                batch.update(db.collection("services").doc(id), updates[id]);
+            });
+            
+            try {
+                await batch.commit();
+                showAdminNotification('✅ نجاح', 'تم حفظ جميع التعديلات بنجاح', 'check-circle');
+                closeBulkEdit();
+            } catch(e) {
+                showAdminNotification('❌ خطأ', 'فشل حفظ التعديلات', 'circle-xmark');
+            }
+        }
+
+        // ============================================================
+        // SINGLE SERVICE EDIT
+        // ============================================================
         async function fullEditService(id) {
             const doc = await db.collection("services").doc(id).get();
             const s = doc.data();
             const { value: f } = await Swal.fire({
-                title: '<i class="fa-solid fa-pen-to-square"></i> تعديل الخدمة', background: '#0d0d0d', color: '#fff',
-                confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `<input id="f-name" class="sw-input" value="${s.name||''}" placeholder="اسم الخدمة"><input id="f-cat" class="sw-input" value="${s.category||''}" placeholder="القسم"><textarea id="f-desc" class="sw-input" placeholder="الوصف">${s.description||''}</textarea><input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice||0}" placeholder="السعر"><select id="f-type" class="form-select"><option value="1" ${s.priceType=='1'?'selected':''}>ثابت</option><option value="1000" ${s.priceType=='1000'?'selected':''}>متغير</option></select><input id="f-time" class="sw-input" value="${s.estimatedTime||''}" placeholder="وقت التنفيذ">`,
-                preConfirm: () => ({ name: document.getElementById('f-name').value, category: document.getElementById('f-cat').value, description: document.getElementById('f-desc').value, finalPrice: parseFloat(document.getElementById('f-price').value) || 0, priceType: document.getElementById('f-type').value, estimatedTime: document.getElementById('f-time').value })
+                title: '<i class="fa-solid fa-pen-to-square"></i> تعديل الخدمة',
+                background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
+                html: `
+                    <input id="f-name" class="sw-input" value="${s.name||''}" placeholder="اسم الخدمة">
+                    <input id="f-cat" class="sw-input" value="${s.category||''}" placeholder="القسم">
+                    <textarea id="f-desc" class="sw-input" placeholder="الوصف">${s.description||''}</textarea>
+                    <input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice||0}" placeholder="السعر">
+                    <select id="f-type" class="form-select">
+                        <option value="1" ${s.priceType=='1'?'selected':''}>ثابت</option>
+                        <option value="1000" ${s.priceType=='1000'?'selected':''}>متغير</option>
+                    </select>
+                    <input id="f-time" class="sw-input" value="${s.estimatedTime||''}" placeholder="وقت التنفيذ">
+                    <input id="f-min" type="number" class="sw-input" value="${s.minOrder||1}" placeholder="الحد الأدنى">
+                    <input id="f-max" type="number" class="sw-input" value="${s.maxOrder||10000}" placeholder="الحد الأقصى">
+                    <input id="f-extid" class="sw-input" value="${s.externalId||''}" placeholder="معرف المزود">`,
+                preConfirm: () => ({
+                    name: document.getElementById('f-name').value,
+                    category: document.getElementById('f-cat').value,
+                    description: document.getElementById('f-desc').value,
+                    finalPrice: parseFloat(document.getElementById('f-price').value) || 0,
+                    priceType: document.getElementById('f-type').value,
+                    estimatedTime: document.getElementById('f-time').value,
+                    minOrder: parseInt(document.getElementById('f-min').value) || 1,
+                    maxOrder: parseInt(document.getElementById('f-max').value) || 10000,
+                    externalId: document.getElementById('f-extid').value
+                })
             });
             if (f) { await db.collection("services").doc(id).update(f); showAdminNotification('✅ نجاح', 'تم تحديث الخدمة بنجاح', 'check-circle'); }
         }
 
         async function addServiceManually() {
             const { value: f } = await Swal.fire({
-                title: '<i class="fa-solid fa-circle-plus"></i> إضافة خدمة جديدة', background: '#0d0d0d', color: '#fff',
-                confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="القسم"><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea><input id="add-p" type="number" step="0.01" class="sw-input" placeholder="السعر"><select id="add-t" class="form-select"><option value="1000">متغير</option><option value="1">ثابت</option></select><input id="add-time" class="sw-input" placeholder="وقت التنفيذ">`,
-                preConfirm: () => ({ name: document.getElementById('add-n').value, category: document.getElementById('add-c').value, description: document.getElementById('add-d').value, finalPrice: parseFloat(document.getElementById('add-p').value) || 0, priceType: document.getElementById('add-t').value, estimatedTime: document.getElementById('add-time').value })
+                title: '<i class="fa-solid fa-circle-plus"></i> إضافة خدمة جديدة',
+                background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
+                html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="القسم"><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea><input id="add-p" type="number" step="0.01" class="sw-input" placeholder="السعر"><select id="add-t" class="form-select"><option value="1000">متغير</option><option value="1">ثابت</option></select><input id="add-time" class="sw-input" placeholder="وقت التنفيذ"><input id="add-min" type="number" class="sw-input" value="1" placeholder="الحد الأدنى"><input id="add-max" type="number" class="sw-input" value="10000" placeholder="الحد الأقصى">`,
+                preConfirm: () => ({
+                    name: document.getElementById('add-n').value,
+                    category: document.getElementById('add-c').value,
+                    description: document.getElementById('add-d').value,
+                    finalPrice: parseFloat(document.getElementById('add-p').value) || 0,
+                    priceType: document.getElementById('add-t').value,
+                    estimatedTime: document.getElementById('add-time').value,
+                    minOrder: parseInt(document.getElementById('add-min').value) || 1,
+                    maxOrder: parseInt(document.getElementById('add-max').value) || 10000
+                })
             });
             if (f && f.name && f.category) {
-                await db.collection("services").add({ ...f, catOrder: 99, srvOrder: 0, active: true, minOrder: 1, maxOrder: 10000, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                await db.collection("services").add({ ...f, catOrder: 99, srvOrder: 0, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
                 showAdminNotification('✅ نجاح', 'تمت إضافة الخدمة بنجاح', 'check-circle');
             }
         }
@@ -1210,220 +1344,218 @@
                 const res = await fetch(`${document.getElementById('api-url').value}?key=${document.getElementById('api-key').value}&action=services`);
                 const data = await res.json();
                 const profit = parseFloat(document.getElementById('api-profit').value) || 0;
-                document.getElementById('api-results-box').innerHTML = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر النهائي</th><th>إجراء</th></tr></thead><tbody>${data.map(s => { const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit / 100))).toFixed(2); return `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b></td><td style="color:var(--p);">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${(s.name||'').replace(/'/g, "\\'")}','${(s.category||'').replace(/'/g, "\\'")}',${final})"><i class="fa-solid fa-download"></i> إضافة</button></td></tr>`; }).join('')}</tbody></table></div>`;
+                document.getElementById('api-results-box').innerHTML = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>${data.map(s => { const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit / 100))).toFixed(2); return `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b></td><td style="color:var(--p);">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${(s.name||'').replace(/'/g, "\\'")}','${(s.category||'').replace(/'/g, "\\'")}',${final})"><i class="fa-solid fa-download"></i> إضافة</button></td></tr>`; }).join('')}</tbody></table></div>`;
                 Swal.close();
-            } catch (e) { Swal.fire('خطأ', 'فشل جلب الخدمات من API', 'error'); }
+            } catch (e) { Swal.fire('خطأ', 'فشل جلب الخدمات', 'error'); }
         }
-        async function importFromAPI(eid, n, c, p) { await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: parseFloat(p), priceType: "1000", catOrder: 99, srvOrder: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ استيراد', 'تم استيراد الخدمة بنجاح', 'download'); }
+        async function importFromAPI(eid, n, c, p) { await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: parseFloat(p), priceType: "1000", catOrder: 99, srvOrder: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ استيراد', 'تم استيراد الخدمة', 'download'); }
 
         // ============================================================
         // NOTIFICATIONS
         // ============================================================
         async function sendGlobalNotification() {
             const text = document.getElementById('notif-text').value.trim();
-            const target = document.getElementById('notif-target').value;
             if (!text) return;
-            let q = db.collection("users");
-            if (target === 'vip') q = q.where("userLevel", "==", "vip");
-            else if (target === 'normal') q = q.where("userLevel", "==", "user");
-            const snap = await q.get();
-            const batch = db.batch();
-            snap.forEach(d => batch.update(d.ref, { lastNotification: text, notifiedAt: firebase.firestore.FieldValue.serverTimestamp() }));
-            await db.collection("notifications").add({ message: text, target: target, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            await batch.commit();
+            await db.collection("notifications").add({ message: text, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('notif-text').value = '';
-            showAdminNotification('📢 بث', `تم إرسال الإشعار إلى ${snap.size} مستخدم`, 'tower-broadcast');
+            showAdminNotification('📢 بث', 'تم إرسال الإشعار', 'tower-broadcast');
         }
         function loadNotifHistory() {
             db.collection("notifications").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
                 const area = document.getElementById('notif-history');
                 if (!area) return;
-                area.innerHTML = snap.empty ? '<p style="color:var(--muted);text-align:center;">لا توجد إشعارات سابقة</p>' : '';
-                snap.forEach(doc => { const n = doc.data(); area.innerHTML += `<div style="background:#111;padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div><span style="color:var(--p);">${n.message}</span><small style="display:block;color:#666;">${n.target||'الكل'}</small></div><button class="btn btn-danger btn-xs" onclick="deleteNotif('${doc.id}')"><i class="fa-solid fa-trash-can"></i></button></div>`; });
+                area.innerHTML = snap.empty ? '<p style="color:var(--muted);text-align:center;">لا توجد إشعارات</p>' : '';
+                snap.forEach(doc => { const n = doc.data(); area.innerHTML += `<div style="background:#111;padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;">${n.message} <button class="btn btn-danger btn-xs" onclick="db.collection('notifications').doc('${doc.id}').delete()"><i class="fa-solid fa-trash-can"></i></button></div>`; });
             });
         }
-        async function deleteNotif(id) { await db.collection("notifications").doc(id).delete(); showAdminNotification('🗑️ حذف', 'تم حذف الإشعار', 'trash-can'); }
 
         // ============================================================
-        // ORDERS - جميع الطلبات بدون فلترة + الرابط كامل + نسخ
+        // ORDERS
         // ============================================================
         function loadAdminOrders() {
-            console.log('🔄 جاري جلب جميع الطلبات...');
-            db.collection("orders").orderBy("timestamp", "desc").onSnapshot(function(snap) {
+            db.collection("orders").orderBy("timestamp", "desc").onSnapshot(snap => {
                 allOrdersData = [];
-                snap.forEach(function(doc) {
+                snap.forEach(doc => {
                     const data = doc.data();
                     allOrdersData.push({
                         id: doc.id, ...data,
                         _userId: data.userId || data.uid || '—',
-                        _username: data.username || data.userName || '—',
+                        _username: data.username || '—',
                         _category: data.category || data.serviceName || '—',
-                        _link: data.Link || data.url || data.target || '—',
+                        _link: data.Link || data.url || '—',
                         _totalPrice: data.totalPrice || data.price || 0,
                         _quantity: data.social_share_quantity || data.quantity || 0,
                         _status: data.status || 'pending',
-                        _timestamp: data.timestamp || data.createdAt || null
+                        _timestamp: data.timestamp || null
                     });
                 });
-                console.log('✅ تم جلب ' + allOrdersData.length + ' طلب');
                 renderOrders();
-            }, function(error) {
-                console.error('❌ خطأ في جلب الطلبات:', error);
-                document.getElementById('admin-orders-rows').innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--danger);">❌ فشل جلب الطلبات: ' + error.message + '</td></tr>';
             });
         }
-
         function renderOrders() {
             const tbody = document.getElementById('admin-orders-rows');
             if (!tbody) return;
-            if (allOrdersData.length === 0) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">لا توجد طلبات</td></tr>'; return; }
-            tbody.innerHTML = allOrdersData.map(function(o, i) {
-                const statusClass = o._status === 'مكتمل' || o._status === 'completed' ? 'completed' : o._status === 'قيد التنفيذ' || o._status === 'pending' ? 'pending' : 'failed';
-                let dateText = '';
-                if (o._timestamp && o._timestamp.toDate) { dateText = o._timestamp.toDate().toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-                else if (o._timestamp) { dateText = new Date(o._timestamp).toLocaleDateString('ar-SA'); }
-                else { dateText = '—'; }
-                const fullLink = o._link;
-                const linkDisplay = fullLink.length > 30 ? fullLink.substring(0, 30) + '...' : fullLink;
-                return `<tr><td>${i + 1}</td><td><b>${o._category}</b></td><td><code style="font-size:10px;color:var(--accent);">${o._userId}</code></td><td>${o._username}</td><td>${o._quantity}</td><td style="color:var(--p);font-weight:700;">${parseFloat(o._totalPrice).toFixed(2)} د.ل</td><td class="link-cell"><a href="${fullLink}" target="_blank" title="${fullLink}">${linkDisplay}</a><i class="fa-solid fa-copy" style="color:var(--p);cursor:pointer;margin-right:5px;font-size:10px;" onclick="copyToClipboard('${fullLink.replace(/'/g, "\\'")}')" title="نسخ الرابط"></i></td><td><span class="status-badge ${statusClass}">${o._status}</span></td><td><small>${dateText}</small></td><td><div style="display:flex;gap:5px;"><button class="btn btn-outline btn-xs" onclick="changeOrderStatus('${o.id}')" title="تغيير الحالة"><i class="fa-solid fa-arrows-rotate"></i></button><button class="btn btn-danger btn-xs" onclick="deleteOrder('${o.id}')" title="حذف"><i class="fa-solid fa-trash-can"></i></button></div></td></tr>`;
+            if (!allOrdersData.length) { tbody.innerHTML = '<tr><td colspan="9">لا طلبات</td></tr>'; return; }
+            tbody.innerHTML = allOrdersData.map((o, i) => {
+                const statusClass = o._status==='مكتمل'?'completed':o._status==='قيد التنفيذ'?'pending':'failed';
+                let dateText = o._timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—';
+                return `<tr><td>${i+1}</td><td><b>${o._category}</b></td><td>${o._username}</td><td>${o._quantity}</td><td style="color:var(--p);">${parseFloat(o._totalPrice).toFixed(2)} د.ل</td><td class="link-cell"><a href="${o._link}" target="_blank">رابط</a></td><td><span class="status-badge ${statusClass}">${o._status}</span></td><td><small>${dateText}</small></td><td><button class="btn btn-outline btn-xs" onclick="changeOrderStatus('${o.id}')"><i class="fa-solid fa-arrows-rotate"></i></button></td></tr>`;
             }).join('');
         }
-
         async function changeOrderStatus(orderId) {
-            const { value: status } = await Swal.fire({ title: 'تحديث حالة الطلب', input: 'select', inputOptions: { 'مكتمل': '✅ مكتمل', 'قيد التنفيذ': '⏳ قيد التنفيذ', 'ملغي': '❌ ملغي', 'فاشل': '⚠️ فاشل' }, background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14' });
+            const { value: status } = await Swal.fire({ title: 'الحالة', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'قيد التنفيذ': 'قيد التنفيذ', 'ملغي': 'ملغي' }, background: '#0d0d0d', color: '#fff' });
             if (status) {
-                await db.collection("orders").doc(orderId).update({ status: status, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                // ⭐ Telegram Notification
+                await db.collection("orders").doc(orderId).update({ status, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
                 const now = new Date().toLocaleString('ar-SA');
                 await sendTelegram(`✅ <b>تم تحديث طلب!</b>\n🆔 رقم الطلب: ${orderId}\n📌 الحالة الجديدة: ${status}\n⏰ الوقت: ${now}`);
                 showAdminNotification('✅ تحديث', 'تم تغيير حالة الطلب', 'check-circle');
             }
         }
 
-        async function deleteOrder(id) { if ((await Swal.fire({ title: '<i class="fa-solid fa-triangle-exclamation"></i> حذف الطلب؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff003c', background: '#0d0d0d', color: '#fff' })).isConfirmed) { await db.collection("orders").doc(id).delete(); showAdminNotification('🗑️ حذف', 'تم حذف الطلب', 'trash-can'); } }
-
-        function copyToClipboard(text) {
-            if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(() => { showAdminNotification('📋 نسخ', 'تم نسخ النص إلى الحافظة', 'clipboard'); }); }
-            else { const ta = document.createElement('textarea'); ta.value = text; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showAdminNotification('📋 نسخ', 'تم نسخ النص إلى الحافظة', 'clipboard'); }
-        }
-
         // ============================================================
-        // USERS - جميع المستخدمين
+        // USERS
         // ============================================================
         function loadUsersData() {
-            console.log('🔄 جاري جلب جميع المستخدمين...');
-            db.collection("users").onSnapshot(function(snap) {
+            db.collection("users").onSnapshot(snap => {
                 allUsersData = [];
-                snap.forEach(function(doc) {
+                snap.forEach(doc => {
                     const data = doc.data();
-                    allUsersData.push({ id: doc.id, ...data, _username: data.username || 'بدون اسم', _email: data.email || '', _balance: data.balance || 0, _role: data.role || 'user', _userLevel: data.userLevel || 'user', _isBanned: data.isBanned || false, _timestamp: data.timestamp || data.createdAt || null });
+                    allUsersData.push({ id: doc.id, ...data, _username: data.username || 'بدون اسم', _email: data.email || '', _balance: data.balance || 0, _role: data.role || 'user', _userLevel: data.userLevel || 'user', _isBanned: data.isBanned || false, _timestamp: data.timestamp || null });
                 });
-                console.log('✅ تم جلب ' + allUsersData.length + ' مستخدم');
                 renderUsers();
-            }, function(error) { console.error('❌ خطأ في جلب المستخدمين:', error); document.getElementById('users-list-area').innerHTML = '<div class="loading-text"><p style="color:var(--danger);">❌ فشل جلب المستخدمين: ' + error.message + '</p></div>'; });
+            });
         }
-
         function renderUsers() {
             const area = document.getElementById('users-list-area');
             if (!area) return;
-            area.innerHTML = "";
-            if (allUsersData.length === 0) { area.innerHTML = '<div class="loading-text"><p>لا يوجد مستخدمين</p></div>'; return; }
-            allUsersData.forEach(function(u) {
-                const userId = u.id;
+            area.innerHTML = allUsersData.length ? '' : '<div class="loading-text"><p>لا يوجد مستخدمين</p></div>';
+            allUsersData.forEach(u => {
                 const initial = (u._username || 'U')[0].toUpperCase();
-                let dateText = '';
-                if (u._timestamp && u._timestamp.toDate) { dateText = u._timestamp.toDate().toLocaleDateString('ar-SA'); }
-                else if (u._timestamp) { dateText = new Date(u._timestamp).toLocaleDateString('ar-SA'); }
-                else { dateText = '—'; }
-                const roleBadge = u._role === 'admin' ? '<span class="user-badge admin">مدير</span>' : '';
-                const vipBadge = u._userLevel === 'vip' ? '<span class="user-badge vip">VIP</span>' : '';
-                const bannedBadge = u._isBanned ? '<span class="user-badge banned">محظور</span>' : '';
+                let dateText = u._timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—';
                 const row = document.createElement('div');
                 row.className = 'user-row';
-                row.innerHTML = `<div class="user-meta"><div class="user-avatar">${initial}</div><div class="user-main-text"><b>${u._username} ${roleBadge} ${vipBadge} ${bannedBadge}</b><span>${u._email} | ${dateText}</span></div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="user-balance"><b>${u._balance.toFixed(2)} د.ل</b><small>الرصيد</small></div><button class="btn btn-p btn-xs" onclick="adjustUserBalance('${userId}','add')"><i class="fa-solid fa-plus"></i></button><button class="btn btn-danger btn-xs" onclick="adjustUserBalance('${userId}','sub')"><i class="fa-solid fa-minus"></i></button><button class="btn btn-outline btn-xs" onclick="editUserFull('${userId}')"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-${u._isBanned?'accent':'danger'} btn-xs" onclick="toggleUserBan('${userId}',${!u._isBanned})"><i class="fa-solid fa-${u._isBanned?'lock-open':'ban'}"></i></button></div>`;
+                row.innerHTML = `<div class="user-meta"><div class="user-avatar">${initial}</div><div class="user-main-text"><b>${u._username}</b><span>${u._email} | ${dateText}</span></div></div><div style="display:flex;align-items:center;gap:8px;"><div class="user-balance"><b>${u._balance.toFixed(2)} د.ل</b></div><button class="btn btn-p btn-xs" onclick="adjustUserBalance('${u.id}','add')"><i class="fa-solid fa-plus"></i></button><button class="btn btn-danger btn-xs" onclick="adjustUserBalance('${u.id}','sub')"><i class="fa-solid fa-minus"></i></button><button class="btn btn-outline btn-xs" onclick="editUserFull('${u.id}')"><i class="fa-solid fa-pen-to-square"></i></button></div>`;
                 area.appendChild(row);
             });
         }
-
         async function adjustUserBalance(uid, action) {
-            const { value: amount } = await Swal.fire({ title: action === 'add' ? '<i class="fa-solid fa-circle-plus"></i> إضافة رصيد' : '<i class="fa-solid fa-circle-minus"></i> خصم رصيد', input: 'number', inputPlaceholder: 'المبلغ', showCancelButton: true, confirmButtonColor: action === 'add' ? '#39ff14' : '#ff003c', background: '#0d0d0d', color: '#fff' });
-            if (amount) { const ref = db.collection("users").doc(uid); await db.runTransaction(async function(transaction) { const doc = await transaction.get(ref); if (!doc.exists) return; const cur = doc.data().balance || 0; const val = parseFloat(amount); transaction.update(ref, { balance: Math.max(0, action === 'add' ? cur + val : cur - val) }); }); showAdminNotification('💰 رصيد', `تم ${action === 'add' ? 'إضافة' : 'خصم'} ${amount} د.ل`, 'money-bill-wave'); }
+            const { value: amount } = await Swal.fire({ title: action==='add'?'إضافة':'خصم', input: 'number', showCancelButton: true, confirmButtonColor: action==='add'?'#39ff14':'#ff003c', background: '#0d0d0d', color: '#fff' });
+            if (amount) { const ref = db.collection("users").doc(uid); await db.runTransaction(async t => { const doc = await t.get(ref); if (!doc.exists) return; const cur = doc.data().balance || 0; t.update(ref, { balance: Math.max(0, action==='add'?cur+parseFloat(amount):cur-parseFloat(amount)) }); }); showAdminNotification('💰 رصيد', `تم ${action==='add'?'إضافة':'خصم'} ${amount} د.ل`, 'money-bill-wave'); }
         }
-
-        async function toggleUserBan(uid, shouldBan) { if ((await Swal.fire({ title: shouldBan ? '<i class="fa-solid fa-ban"></i> حظر المستخدم؟' : '<i class="fa-solid fa-lock-open"></i> فك الحظر؟', icon: 'warning', showCancelButton: true, confirmButtonColor: shouldBan ? '#ff003c' : '#39ff14', background: '#0d0d0d', color: '#fff' })).isConfirmed) { await db.collection("users").doc(uid).update({ isBanned: shouldBan }); showAdminNotification(shouldBan ? '🚫 حظر' : '🔓 فك حظر', shouldBan ? 'تم حظر المستخدم' : 'تم فك حظر المستخدم', shouldBan ? 'ban' : 'lock-open'); } }
-
-        async function editUserFull(uid) { const u = allUsersData.find(x => x.id === uid); if (!u) return; const { value: form } = await Swal.fire({ title: '<i class="fa-solid fa-pen-to-square"></i> تعديل بيانات المستخدم', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="eu-name" class="sw-input" value="${u._username}" placeholder="الاسم"><input id="eu-email" class="sw-input" value="${u._email}" placeholder="الإيميل"><select id="eu-level" class="form-select"><option value="user" ${u._userLevel==='user'?'selected':''}>عادي</option><option value="vip" ${u._userLevel==='vip'?'selected':''}>VIP</option><option value="admin" ${u._role==='admin'?'selected':''}>مدير</option></select>`, preConfirm: () => ({ username: document.getElementById('eu-name').value, email: document.getElementById('eu-email').value, userLevel: document.getElementById('eu-level').value, role: document.getElementById('eu-level').value === 'admin' ? 'admin' : 'user' }) }); if (form) { await db.collection("users").doc(uid).update(form); showAdminNotification('✅ تحديث', 'تم تحديث بيانات المستخدم', 'check-circle'); } }
-
-        async function addUserManually() { const { value: form } = await Swal.fire({ title: '<i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="nu-name" class="sw-input" placeholder="الاسم"><input id="nu-email" type="email" class="sw-input" placeholder="الإيميل"><input id="nu-pass" type="password" class="sw-input" placeholder="كلمة المرور">`, preConfirm: () => ({ username: document.getElementById('nu-name').value, email: document.getElementById('nu-email').value, password: document.getElementById('nu-pass').value }) }); if (form && form.email && form.password) { try { const cred = await auth.createUserWithEmailAndPassword(form.email, form.password); await db.collection("users").doc(cred.user.uid).set({ username: form.username, email: form.email, role: 'user', userLevel: 'user', balance: 0, points: 0, isBanned: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ نجاح', 'تم إضافة المستخدم بنجاح', 'user-plus'); } catch (e) { Swal.fire('<i class="fa-solid fa-circle-exclamation"></i> خطأ', e.message, 'error'); } } }
+        async function editUserFull(uid) {
+            const u = allUsersData.find(x => x.id === uid);
+            if (!u) return;
+            const { value: form } = await Swal.fire({
+                title: 'تعديل', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
+                html: `<input id="eu-name" class="sw-input" value="${u._username}"><input id="eu-email" class="sw-input" value="${u._email}"><select id="eu-level" class="form-select"><option value="user" ${u._userLevel==='user'?'selected':''}>عادي</option><option value="vip" ${u._userLevel==='vip'?'selected':''}>VIP</option><option value="admin" ${u._role==='admin'?'selected':''}>مدير</option></select>`,
+                preConfirm: () => ({ username: document.getElementById('eu-name').value, email: document.getElementById('eu-email').value, userLevel: document.getElementById('eu-level').value, role: document.getElementById('eu-level').value==='admin'?'admin':'user' })
+            });
+            if (form) { await db.collection("users").doc(uid).update(form); showAdminNotification('✅ تحديث', 'تم تحديث بيانات المستخدم', 'check-circle'); }
+        }
+        async function addUserManually() {
+            const { value: form } = await Swal.fire({
+                title: 'إضافة', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
+                html: `<input id="nu-name" class="sw-input" placeholder="الاسم"><input id="nu-email" type="email" class="sw-input" placeholder="الإيميل"><input id="nu-pass" type="password" class="sw-input" placeholder="كلمة المرور">`,
+                preConfirm: () => ({ username: document.getElementById('nu-name').value, email: document.getElementById('nu-email').value, password: document.getElementById('nu-pass').value })
+            });
+            if (form && form.email && form.password) {
+                try {
+                    const cred = await auth.createUserWithEmailAndPassword(form.email, form.password);
+                    await db.collection("users").doc(cred.user.uid).set({ username: form.username, email: form.email, role: 'user', userLevel: 'user', balance: 0, points: 0, isBanned: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    showAdminNotification('✅ نجاح', 'تم إضافة المستخدم', 'user-plus');
+                } catch (e) { Swal.fire('خطأ', e.message, 'error'); }
+            }
+        }
 
         // ============================================================
         // TICKETS
         // ============================================================
-        function loadAdminTickets() { db.collection("tickets").orderBy("timestamp", "desc").onSnapshot(snap => { allTicketsData = []; snap.forEach(doc => allTicketsData.push({ id: doc.id, ...doc.data() })); renderAdminTickets(); }); }
-        function renderAdminTickets() { const area = document.getElementById('tickets-admin-list'); if (!area) return; area.innerHTML = allTicketsData.length === 0 ? '<div class="loading-text"><p>لا توجد تذاكر</p></div>' : ''; allTicketsData.forEach(t => { const date = t.timestamp?.toDate?.().toLocaleDateString('ar-SA') || ''; const cls = t.status === 'مغلق' ? 'completed' : 'pending'; area.innerHTML += `<div class="form-card" style="padding:12px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${t.subject}</b><span class="status-badge ${cls}">${t.status||'مفتوح'}</span></div><p style="font-size:12px;color:#aaa;">${(t.message||'').substring(0,150)}</p><small>${t.username||''} | ${t.email||''} | ${date}</small><div style="margin-top:10px;display:flex;gap:8px;"><button class="btn btn-outline btn-xs" onclick="replyToTicket('${t.id}')"><i class="fa-solid fa-reply"></i> رد</button><button class="btn btn-p btn-xs" onclick="closeTicketAdmin('${t.id}')"><i class="fa-solid fa-circle-check"></i> إغلاق</button><button class="btn btn-danger btn-xs" onclick="deleteTicketAdmin('${t.id}')"><i class="fa-solid fa-trash-can"></i></button></div>${t.reply?`<div style="background:#111;padding:10px;border-radius:8px;margin-top:8px;border:1px solid var(--p);"><small style="color:var(--p);"><i class="fa-solid fa-reply"></i> ✅ تم الرد:</small><p style="color:#fff;font-size:11px;">${t.reply}</p></div>`:''}</div>`; }); }
-        async function replyToTicket(id) { const { value: r } = await Swal.fire({ title: '<i class="fa-solid fa-reply"></i> الرد على التذكرة', input: 'textarea', showCancelButton: true, confirmButtonText: 'إرسال الرد', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14' }); if (r) { await db.collection("tickets").doc(id).update({ reply: r, status: 'مغلق', timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ رد', 'تم إرسال الرد وإغلاق التذكرة', 'reply'); } }
-        async function closeTicketAdmin(id) { await db.collection("tickets").doc(id).update({ status: 'مغلق', timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('🔒 إغلاق', 'تم إغلاق التذكرة', 'circle-check'); }
-        async function deleteTicketAdmin(id) { if ((await Swal.fire({ title: '<i class="fa-solid fa-triangle-exclamation"></i> حذف التذكرة؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff003c', background: '#0d0d0d', color: '#fff' })).isConfirmed) { await db.collection("tickets").doc(id).delete(); showAdminNotification('🗑️ حذف', 'تم حذف التذكرة', 'trash-can'); } }
+        function loadAdminTickets() {
+            db.collection("tickets").orderBy("timestamp", "desc").onSnapshot(snap => {
+                const area = document.getElementById('tickets-admin-list');
+                if (!area) return;
+                area.innerHTML = snap.docs.map(d => {
+                    const t = d.data();
+                    return `<div class="form-card"><b>${t.subject}</b><p>${t.message}</p><small>${t.username} | ${t.email}</small><br><button class="btn btn-p btn-sm" onclick="replyToTicket('${d.id}')">رد</button> <button class="btn btn-outline btn-sm" onclick="closeTicketAdmin('${d.id}')">إغلاق</button></div>`;
+                }).join('') || '<p>لا تذاكر</p>';
+            });
+        }
+        async function replyToTicket(id) { const { value: r } = await Swal.fire({ title: 'الرد', input: 'textarea', background: '#0d0d0d', color: '#fff' }); if (r) await db.collection("tickets").doc(id).update({ reply: r, status: 'مغلق' }); }
+        async function closeTicketAdmin(id) { await db.collection("tickets").doc(id).update({ status: 'مغلق' }); }
 
         // ============================================================
         // COUPONS
         // ============================================================
-        function loadAdminCoupons() { db.collection("coupons").onSnapshot(snap => { allCouponsData = []; snap.forEach(doc => allCouponsData.push({ id: doc.id, ...doc.data() })); renderAdminCoupons(); }); }
-        function renderAdminCoupons() { const area = document.getElementById('coupons-admin-list'); if (!area) return; area.innerHTML = allCouponsData.length === 0 ? '<div class="loading-text"><p>لا توجد كوبونات</p></div>' : ''; allCouponsData.forEach(c => { area.innerHTML += `<div class="form-card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div><b style="color:var(--gold);"><i class="fa-solid fa-ticket"></i> ${c.code}</b><div style="margin-top:5px;"><span class="price-before">السعر الأصلي</span><span class="price-after">خصم ${c.discount}%</span></div><small style="color:#888;">مستخدم: ${c.used||0}/${c.maxUses||100}</small></div><button class="btn btn-danger btn-xs" onclick="deleteCouponAdmin('${c.id}')"><i class="fa-solid fa-trash-can"></i></button></div>`; }); }
-        function showAddCouponForm() { Swal.fire({ title: '<i class="fa-solid fa-ticket"></i> كوبون جديد', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="c-code" class="sw-input" placeholder="كود الكوبون"><input id="c-discount" type="number" class="sw-input" placeholder="نسبة الخصم %"><input id="c-max" type="number" class="sw-input" value="100" placeholder="الحد الأقصى للاستخدام"><input id="c-expiry" type="date" class="sw-input">`, preConfirm: () => ({ code: document.getElementById('c-code').value, discount: parseInt(document.getElementById('c-discount').value), maxUses: parseInt(document.getElementById('c-max').value), expiry: document.getElementById('c-expiry').value }) }).then(async r => { if (r.isConfirmed && r.value.code) { await db.collection("coupons").add({ ...r.value, used: 0, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('🎫 كوبون', 'تم إنشاء الكوبون بنجاح', 'ticket'); } }); }
-        async function deleteCouponAdmin(id) { if ((await Swal.fire({ title: '<i class="fa-solid fa-triangle-exclamation"></i> حذف الكوبون؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff003c', background: '#0d0d0d', color: '#fff' })).isConfirmed) { await db.collection("coupons").doc(id).delete(); showAdminNotification('🗑️ حذف', 'تم حذف الكوبون', 'trash-can'); } }
+        function loadAdminCoupons() {
+            db.collection("coupons").onSnapshot(snap => {
+                const area = document.getElementById('coupons-admin-list');
+                if (!area) return;
+                area.innerHTML = snap.docs.map(d => `<div>${d.data().code} - ${d.data().discount}% <button class="btn btn-danger btn-sm" onclick="db.collection('coupons').doc('${d.id}').delete()">حذف</button></div>`).join('') || '<p>لا كوبونات</p>';
+            });
+        }
+        function showAddCouponForm() {
+            Swal.fire({ title: 'كوبون', html: `<input id="c-code" class="sw-input" placeholder="الكود"><input id="c-discount" type="number" class="sw-input" placeholder="الخصم">`, background: '#0d0d0d', color: '#fff' }).then(r => { if (r.isConfirmed) db.collection("coupons").add({ code: document.getElementById('c-code').value, discount: parseInt(document.getElementById('c-discount').value), used: 0, maxUses: 100 }); });
+        }
 
         // ============================================================
-        // DEPOSITS - سجل الإيداعات مع إشعار تيليجرام
+        // DEPOSITS
         // ============================================================
         function loadAdminDeposits() {
             db.collection("deposits").orderBy("timestamp", "desc").onSnapshot(snap => {
                 allDepositsData = [];
                 snap.forEach(doc => allDepositsData.push({ id: doc.id, ...doc.data() }));
                 renderAdminDeposits();
-            }, function(error) { console.error('خطأ في جلب الإيداعات:', error); document.getElementById('admin-deposits-rows').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);">❌ فشل جلب الإيداعات</td></tr>'; });
+            });
         }
-
         function renderAdminDeposits() {
             const tbody = document.getElementById('admin-deposits-rows');
             if (!tbody) return;
-            if (allDepositsData.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">لا توجد إيداعات</td></tr>'; return; }
-            tbody.innerHTML = allDepositsData.map(function(d, i) {
-                const statusClass = d.status === 'مكتمل' ? 'completed' : 'pending';
-                const dateText = d.timestamp?.toDate?.().toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) || '—';
-                return `<tr><td>${i + 1}</td><td><b>${d.username||'—'}</b></td><td>${d.senderPhone||'—'}</td><td style="color:var(--p);font-weight:700;">${parseFloat(d.amount||0).toFixed(2)} د.ل</td><td><span class="status-badge ${statusClass}">${d.status||'قيد المراجعة'}</span></td><td><small>${dateText}</small></td><td><div style="display:flex;gap:5px;"><button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d.uid}','${d.amount||0}')" title="قبول"><i class="fa-solid fa-circle-check"></i></button><button class="btn btn-danger btn-xs" onclick="rejectDeposit('${d.id}')" title="رفض"><i class="fa-solid fa-circle-xmark"></i></button></div></td></tr>`;
+            if (!allDepositsData.length) { tbody.innerHTML = '<tr><td colspan="7">لا إيداعات</td></tr>'; return; }
+            tbody.innerHTML = allDepositsData.map((d, i) => {
+                const statusClass = d.status==='مكتمل'?'completed':'pending';
+                const dateText = d.timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—';
+                return `<tr><td>${i+1}</td><td><b>${d.username||'—'}</b></td><td>${d.senderPhone||'—'}</td><td style="color:var(--p);">${parseFloat(d.amount||0).toFixed(2)} د.ل</td><td><span class="status-badge ${statusClass}">${d.status||'?'}</span></td><td><small>${dateText}</small></td><td><button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d.uid}','${d.amount||0}')"><i class="fa-solid fa-circle-check"></i></button></td></tr>`;
             }).join('');
         }
-
         async function approveDeposit(depId, uid, amount) {
             const amt = parseFloat(amount);
             if (amt <= 0) return;
             await db.collection("deposits").doc(depId).update({ status: 'مكتمل', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
             await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) });
-            // ⭐ Telegram Notification
             const now = new Date().toLocaleString('ar-SA');
-            await sendTelegram(`✅ <b>تم تأكيد إيداع!</b>\n👤 المستخدم: ${uid}\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n⏰ الوقت: ${now}\n📌 الحالة: مكتمل`);
+            await sendTelegram(`✅ <b>تم تأكيد إيداع!</b>\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n👤 المستخدم: ${uid}\n⏰ الوقت: ${now}`);
             showAdminNotification('✅ إيداع', `تم قبول الإيداع وإضافة ${amt.toFixed(2)} د.ل`, 'check-circle');
-        }
-
-        async function rejectDeposit(depId) {
-            if ((await Swal.fire({ title: '<i class="fa-solid fa-circle-xmark"></i> رفض الإيداع؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff003c', background: '#0d0d0d', color: '#fff' })).isConfirmed) {
-                await db.collection("deposits").doc(depId).update({ status: 'مرفوض', rejectedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                showAdminNotification('❌ رفض', 'تم رفض الإيداع', 'circle-xmark');
-            }
         }
 
         // ============================================================
         // SETTINGS
         // ============================================================
-        async function loadSettingsData() { const doc = await db.collection("settings").doc("app_config").get(); if (doc.exists) { const d = doc.data(); document.getElementById('set-maintenance').value = d.maintenanceMode ? 'true' : 'false'; document.getElementById('set-min-deposit').value = d.minDeposit || 1; document.getElementById('set-news').value = d.newsTicker || ''; document.getElementById('set-whatsapp').value = d.supportWhatsApp || ''; document.getElementById('set-affiliate').value = d.affiliatePercent || 3; } }
-        async function saveSettings() { await db.collection("settings").doc("app_config").set({ maintenanceMode: document.getElementById('set-maintenance').value === 'true', minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1, newsTicker: document.getElementById('set-news').value, supportWhatsApp: document.getElementById('set-whatsapp').value, affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 3, timestamp: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); showAdminNotification('💾 حفظ', 'تم حفظ الإعدادات بنجاح', 'floppy-disk'); }
+        async function loadSettingsData() {
+            const doc = await db.collection("settings").doc("app_config").get();
+            if (doc.exists) {
+                document.getElementById('set-maintenance').value = doc.data().maintenanceMode ? 'true' : 'false';
+                document.getElementById('set-min-deposit').value = doc.data().minDeposit || 1;
+                document.getElementById('set-news').value = doc.data().newsTicker || '';
+                document.getElementById('set-whatsapp').value = doc.data().supportWhatsApp || '';
+                document.getElementById('set-affiliate').value = doc.data().affiliatePercent || 3;
+            }
+        }
+        async function saveSettings() {
+            await db.collection("settings").doc("app_config").set({
+                maintenanceMode: document.getElementById('set-maintenance').value === 'true',
+                minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1,
+                newsTicker: document.getElementById('set-news').value,
+                supportWhatsApp: document.getElementById('set-whatsapp').value,
+                affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 3,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            showAdminNotification('💾 حفظ', 'تم حفظ الإعدادات بنجاح', 'floppy-disk');
+        }
 
         // ============================================================
         // INIT
         // ============================================================
         window.onload = function() {
-            console.log('🔥 CD-CARD Admin Panel - All Systems Ready');
             loadMasterData();
             loadAdminOrders();
             loadNotifHistory();
@@ -1434,7 +1566,7 @@
             loadSettingsData();
         };
 
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
-    </html>
+</html>
