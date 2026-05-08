@@ -66,7 +66,6 @@
             to { transform: translateY(-100%); opacity: 0; }
         }
 
-        /* NOTIFICATION TOAST LIKE WHATSAPP */
         .admin-notification-toast {
             position: fixed;
             top: 20px;
@@ -134,7 +133,6 @@
             color: var(--danger);
         }
 
-        /* NAVIGATION */
         .admin-nav {
             position: sticky;
             top: 0;
@@ -180,7 +178,6 @@
             transform: scale(0.95);
         }
 
-        /* CONTAINER */
         .container {
             max-width: 1100px;
             margin: 25px auto;
@@ -194,7 +191,6 @@
             display: block;
         }
 
-        /* PAGE HEAD */
         .page-head {
             display: flex;
             justify-content: space-between;
@@ -210,7 +206,6 @@
             color: #fff;
         }
 
-        /* CATEGORY BOX */
         .cat-box {
             background: var(--card);
             border-radius: 12px;
@@ -264,7 +259,6 @@
             display: block;
         }
 
-        /* SERVICE ROW */
         .srv-row {
             display: flex;
             align-items: center;
@@ -318,7 +312,6 @@
             flex-wrap: wrap;
         }
 
-        /* USER ROW */
         .user-row {
             display: flex;
             align-items: center;
@@ -402,7 +395,6 @@
             color: var(--danger);
         }
 
-        /* BUTTONS */
         .btn {
             padding: 8px 15px;
             border-radius: 8px;
@@ -460,7 +452,6 @@
             height: 45px;
         }
 
-        /* FORMS */
         .form-card {
             background: var(--card);
             padding: 20px;
@@ -512,7 +503,6 @@
             font-weight: 700;
         }
 
-        /* TABLE */
         .scroll-box {
             background: var(--card);
             border-radius: 12px;
@@ -586,7 +576,6 @@
             text-decoration: underline;
         }
 
-        /* LOADING */
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -602,35 +591,6 @@
             padding: 20px;
         }
 
-        /* AYAH BOX */
-        .ayah-box {
-            background: linear-gradient(135deg, #0a0a0a, #0d0d0d);
-            border: 2px solid var(--p);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 25px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(57,255,20,0.1);
-        }
-        .ayah-box .ayah-icon {
-            font-size: 40px;
-            color: var(--p);
-            margin-bottom: 15px;
-        }
-        .ayah-box .ayah-text {
-            font-family: 'Amiri', 'Cairo', serif;
-            font-size: 22px;
-            line-height: 2.4;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .ayah-box .ayah-source {
-            color: var(--p);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        /* BULK EDIT MODAL */
         .bulk-edit-overlay {
             position: fixed;
             inset: 0;
@@ -705,6 +665,33 @@
             border-color: var(--p);
         }
 
+        .ayah-box {
+            background: linear-gradient(135deg, #0a0a0a, #0d0d0d);
+            border: 2px solid var(--p);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 25px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(57,255,20,0.1);
+        }
+        .ayah-box .ayah-icon {
+            font-size: 40px;
+            color: var(--p);
+            margin-bottom: 15px;
+        }
+        .ayah-box .ayah-text {
+            font-family: 'Amiri', 'Cairo', serif;
+            font-size: 22px;
+            line-height: 2.4;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .ayah-box .ayah-source {
+            color: var(--p);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
         @media (max-width: 768px) {
             .admin-nav {
                 justify-content: flex-start;
@@ -739,21 +726,15 @@
 </head>
 <body>
 
-    <!-- Notification Toast Like WhatsApp -->
     <div class="admin-notification-toast" id="admin-notification-toast">
-        <div class="admin-notif-icon">
-            <i class="fas fa-bell"></i>
-        </div>
+        <div class="admin-notif-icon"><i class="fas fa-bell"></i></div>
         <div class="admin-notif-content">
             <div class="admin-notif-title" id="admin-notif-title">إشعار</div>
             <div class="admin-notif-message" id="admin-notif-message">رسالة الإشعار</div>
         </div>
-        <div class="admin-notif-close" onclick="hideAdminNotification()">
-            <i class="fas fa-times"></i>
-        </div>
+        <div class="admin-notif-close" onclick="hideAdminNotification()"><i class="fas fa-times"></i></div>
     </div>
 
-    <!-- Bulk Edit Overlay -->
     <div class="bulk-edit-overlay" id="bulk-edit-overlay">
         <div class="bulk-edit-modal" id="bulk-edit-modal">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -761,40 +742,20 @@
                 <button class="btn btn-danger btn-sm" onclick="closeBulkEdit()"><i class="fas fa-times"></i> إغلاق</button>
             </div>
             <div id="bulk-edit-content"></div>
-            <button class="btn btn-p btn-full" style="margin-top:20px;" onclick="saveBulkEdit()">
-                <i class="fas fa-save"></i> حفظ جميع التعديلات
-            </button>
+            <button class="btn btn-p btn-full" style="margin-top:20px;" onclick="saveBulkEdit()"><i class="fas fa-save"></i> حفظ جميع التعديلات</button>
         </div>
     </div>
 
     <nav class="admin-nav">
-        <div class="nav-link active" data-view="services" onclick="switchView('services', this)">
-            <i class="fa-solid fa-layer-group"></i> المتجر والترتيب
-        </div>
-        <div class="nav-link" data-view="api" onclick="switchView('api', this)">
-            <i class="fa-solid fa-plug"></i> جلب API
-        </div>
-        <div class="nav-link" data-view="notif" onclick="switchView('notif', this)">
-            <i class="fa-solid fa-bell"></i> الإشعارات
-        </div>
-        <div class="nav-link" data-view="orders" onclick="switchView('orders', this)">
-            <i class="fa-solid fa-cart-shopping"></i> الطلبات
-        </div>
-        <div class="nav-link" data-view="users" onclick="switchView('users', this)">
-            <i class="fa-solid fa-users"></i> المستخدمين
-        </div>
-        <div class="nav-link" data-view="tickets" onclick="switchView('tickets', this)">
-            <i class="fa-solid fa-headset"></i> التذاكر
-        </div>
-        <div class="nav-link" data-view="coupons" onclick="switchView('coupons', this)">
-            <i class="fa-solid fa-ticket"></i> الكوبونات
-        </div>
-        <div class="nav-link" data-view="deposits" onclick="switchView('deposits', this)">
-            <i class="fa-solid fa-money-bill-wave"></i> الإيداعات
-        </div>
-        <div class="nav-link" data-view="settings" onclick="switchView('settings', this)">
-            <i class="fa-solid fa-gear"></i> إعدادات
-        </div>
+        <div class="nav-link active" data-view="services" onclick="switchView('services', this)"><i class="fa-solid fa-layer-group"></i> المتجر والترتيب</div>
+        <div class="nav-link" data-view="api" onclick="switchView('api', this)"><i class="fa-solid fa-plug"></i> جلب API</div>
+        <div class="nav-link" data-view="notif" onclick="switchView('notif', this)"><i class="fa-solid fa-bell"></i> الإشعارات</div>
+        <div class="nav-link" data-view="orders" onclick="switchView('orders', this)"><i class="fa-solid fa-cart-shopping"></i> الطلبات</div>
+        <div class="nav-link" data-view="users" onclick="switchView('users', this)"><i class="fa-solid fa-users"></i> المستخدمين</div>
+        <div class="nav-link" data-view="tickets" onclick="switchView('tickets', this)"><i class="fa-solid fa-headset"></i> التذاكر</div>
+        <div class="nav-link" data-view="coupons" onclick="switchView('coupons', this)"><i class="fa-solid fa-ticket"></i> الكوبونات</div>
+        <div class="nav-link" data-view="deposits" onclick="switchView('deposits', this)"><i class="fa-solid fa-money-bill-wave"></i> الإيداعات</div>
+        <div class="nav-link" data-view="settings" onclick="switchView('settings', this)"><i class="fa-solid fa-gear"></i> إعدادات</div>
     </nav>
 
     <div class="container">
@@ -810,235 +771,82 @@
                     <button class="btn btn-gold btn-sm" onclick="openBulkEdit()"><i class="fa-solid fa-pen-to-square"></i> تعديل جماعي</button>
                 </div>
             </div>
-            <div id="master-services-list">
-                <div class="loading-text">
-                    <div class="loading-spinner"></div>
-                    <p>جاري تحميل الخدمات...</p>
-                </div>
-            </div>
+            <div id="master-services-list"><div class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الخدمات...</p></div></div>
         </section>
 
         <!-- API -->
         <section id="view-api" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-plug" style="color:var(--p); margin-left:8px;"></i> سحب خدمات API</h2>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-plug" style="color:var(--p); margin-left:8px;"></i> سحب خدمات API</h2></div>
             <div class="form-card" style="border-right:4px solid var(--accent);">
                 <h3>إعدادات المزود</h3>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-link"></i> رابط API</label>
-                    <input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-key"></i> API Key</label>
-                    <input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-percent"></i> نسبة الربح (%)</label>
-                    <input type="number" id="api-profit" class="api-input" value="10">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-folder"></i> القسم الافتراضي</label>
-                    <input type="text" id="api-default-cat" class="api-input" value="خدمات مستوردة">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-tag"></i> نوع التسعير</label>
-                    <select id="api-price-type" class="form-select">
-                        <option value="1000">متغير</option>
-                        <option value="1">ثابت</option>
-                    </select>
-                </div>
-                <button class="btn btn-p btn-full" onclick="fetchExternalAPI()">
-                    <i class="fa-solid fa-arrows-rotate"></i> فحص وجلب الخدمات
-                </button>
+                <div class="input-group"><label><i class="fa-solid fa-link"></i> رابط API</label><input type="text" id="api-url" class="api-input" value="https://libyaplus1.com/api/v2"></div>
+                <div class="input-group"><label><i class="fa-solid fa-key"></i> API Key</label><input type="text" id="api-key" class="api-input" value="958c5695446fccb28ab7b8090d5e271a"></div>
+                <div class="input-group"><label><i class="fa-solid fa-percent"></i> نسبة الربح (%)</label><input type="number" id="api-profit" class="api-input" value="10"></div>
+                <div class="input-group"><label><i class="fa-solid fa-folder"></i> القسم الافتراضي</label><input type="text" id="api-default-cat" class="api-input" value="خدمات مستوردة"></div>
+                <div class="input-group"><label><i class="fa-solid fa-tag"></i> نوع التسعير</label><select id="api-price-type" class="form-select"><option value="1000">متغير</option><option value="1">ثابت</option></select></div>
+                <button class="btn btn-p btn-full" onclick="fetchExternalAPI()"><i class="fa-solid fa-arrows-rotate"></i> فحص وجلب الخدمات</button>
             </div>
             <div id="api-results-box"></div>
         </section>
 
         <!-- NOTIFICATIONS -->
         <section id="view-notif" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-bell" style="color:var(--p); margin-left:8px;"></i> إرسال إشعارات</h2>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-bell" style="color:var(--p); margin-left:8px;"></i> إرسال إشعارات</h2></div>
             <div class="form-card" style="border-right:4px solid var(--gold);">
                 <h3><i class="fa-solid fa-tower-broadcast"></i> بث إشعار جديد</h3>
-                <div class="input-group">
-                    <label>نص الإشعار</label>
-                    <textarea id="notif-text" class="sw-input" style="height:100px;" placeholder="اكتب التنبيه هنا..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label>الفئة المستهدفة</label>
-                    <select id="notif-target" class="form-select">
-                        <option value="all">الكل</option>
-                        <option value="vip">VIP</option>
-                        <option value="normal">عادي</option>
-                    </select>
-                </div>
-                <button class="btn btn-p btn-full" onclick="sendGlobalNotification()">
-                    <i class="fa-solid fa-paper-plane"></i> بث الإشعار
-                </button>
+                <div class="input-group"><label>نص الإشعار</label><textarea id="notif-text" class="sw-input" style="height:100px;" placeholder="اكتب التنبيه هنا..."></textarea></div>
+                <div class="input-group"><label>الفئة المستهدفة</label><select id="notif-target" class="form-select"><option value="all">الكل</option><option value="vip">VIP</option><option value="normal">عادي</option></select></div>
+                <button class="btn btn-p btn-full" onclick="sendGlobalNotification()"><i class="fa-solid fa-paper-plane"></i> بث الإشعار</button>
             </div>
-            <div class="form-card">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> آخر الإشعارات</h3>
-                <div id="notif-history">
-                    <div class="loading-text"><p>جاري التحميل...</p></div>
-                </div>
-            </div>
+            <div class="form-card"><h3><i class="fa-solid fa-clock-rotate-left"></i> آخر الإشعارات</h3><div id="notif-history"><div class="loading-text"><p>جاري التحميل...</p></div></div></div>
         </section>
 
-        <!-- ORDERS - جميع الطلبات -->
+        <!-- ORDERS -->
         <section id="view-orders" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-cart-shopping" style="color:var(--p); margin-left:8px;"></i> جميع الطلبات</h2>
-            </div>
-            <div class="scroll-box">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الخدمة</th>
-                            <th>المستخدم</th>
-                            <th>الكمية</th>
-                            <th>المبلغ</th>
-                            <th>الرابط</th>
-                            <th>الحالة</th>
-                            <th>التاريخ</th>
-                            <th>تحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-orders-rows">
-                        <tr>
-                            <td colspan="9" class="loading-text">
-                                <div class="loading-spinner"></div>
-                                <p>جاري تحميل الطلبات...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-cart-shopping" style="color:var(--p); margin-left:8px;"></i> جميع الطلبات</h2></div>
+            <div class="scroll-box"><table><thead><tr><th>#</th><th>الخدمة</th><th>المستخدم</th><th>الكمية</th><th>المبلغ</th><th>الرابط</th><th>الحالة</th><th>التاريخ</th><th>تحكم</th></tr></thead><tbody id="admin-orders-rows"><tr><td colspan="9" class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الطلبات...</p></td></tr></tbody></table></div>
         </section>
 
-        <!-- USERS - جميع المستخدمين -->
+        <!-- USERS -->
         <section id="view-users" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-users" style="color:var(--p); margin-left:8px;"></i> جميع المستخدمين</h2>
-                <button class="btn btn-p btn-sm" onclick="addUserManually()">
-                    <i class="fa-solid fa-user-plus"></i> إضافة مستخدم
-                </button>
-            </div>
-            <div id="users-list-area">
-                <div class="loading-text">
-                    <div class="loading-spinner"></div>
-                    <p>جاري تحميل المستخدمين...</p>
-                </div>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-users" style="color:var(--p); margin-left:8px;"></i> جميع المستخدمين</h2><button class="btn btn-p btn-sm" onclick="addUserManually()"><i class="fa-solid fa-user-plus"></i> إضافة مستخدم</button></div>
+            <div id="users-list-area"><div class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل المستخدمين...</p></div></div>
         </section>
 
         <!-- TICKETS -->
         <section id="view-tickets" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-headset" style="color:var(--p); margin-left:8px;"></i> تذاكر الدعم</h2>
-            </div>
-            <div id="tickets-admin-list">
-                <div class="loading-text">
-                    <div class="loading-spinner"></div>
-                    <p>جاري تحميل التذاكر...</p>
-                </div>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-headset" style="color:var(--p); margin-left:8px;"></i> تذاكر الدعم</h2></div>
+            <div id="tickets-admin-list"><div class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل التذاكر...</p></div></div>
         </section>
 
         <!-- COUPONS -->
         <section id="view-coupons" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-ticket" style="color:var(--p); margin-left:8px;"></i> الكوبونات</h2>
-                <button class="btn btn-p btn-sm" onclick="showAddCouponForm()">
-                    <i class="fa-solid fa-circle-plus"></i> كوبون جديد
-                </button>
-            </div>
-            <div id="coupons-admin-list">
-                <div class="loading-text">
-                    <div class="loading-spinner"></div>
-                    <p>جاري تحميل الكوبونات...</p>
-                </div>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-ticket" style="color:var(--p); margin-left:8px;"></i> الكوبونات</h2><button class="btn btn-p btn-sm" onclick="showAddCouponForm()"><i class="fa-solid fa-circle-plus"></i> كوبون جديد</button></div>
+            <div id="coupons-admin-list"><div class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الكوبونات...</p></div></div>
         </section>
 
         <!-- DEPOSITS -->
         <section id="view-deposits" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-money-bill-wave" style="color:var(--p); margin-left:8px;"></i> سجل الإيداعات</h2>
-            </div>
-            <div class="scroll-box">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>المستخدم</th>
-                            <th>رقم الهاتف</th>
-                            <th>المبلغ</th>
-                            <th>الحالة</th>
-                            <th>التاريخ</th>
-                            <th>تحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-deposits-rows">
-                        <tr>
-                            <td colspan="7" class="loading-text">
-                                <div class="loading-spinner"></div>
-                                <p>جاري تحميل الإيداعات...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-money-bill-wave" style="color:var(--p); margin-left:8px;"></i> سجل الإيداعات</h2></div>
+            <div class="scroll-box"><table><thead><tr><th>#</th><th>المستخدم</th><th>رقم الهاتف</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>تحكم</th></tr></thead><tbody id="admin-deposits-rows"><tr><td colspan="7" class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الإيداعات...</p></td></tr></tbody></table></div>
         </section>
 
         <!-- SETTINGS -->
         <section id="view-settings" class="view-section">
-            <div class="page-head">
-                <h2><i class="fa-solid fa-gear" style="color:var(--p); margin-left:8px;"></i> إعدادات الموقع</h2>
-            </div>
+            <div class="page-head"><h2><i class="fa-solid fa-gear" style="color:var(--p); margin-left:8px;"></i> إعدادات الموقع</h2></div>
             <div class="form-card" style="border-right:4px solid var(--p);">
                 <h3><i class="fa-solid fa-sliders"></i> الإعدادات العامة</h3>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-screwdriver-wrench"></i> وضع الصيانة</label>
-                    <select id="set-maintenance" class="form-select">
-                        <option value="false">معطل</option>
-                        <option value="true">مفعل</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-coins"></i> الحد الأدنى للإيداع</label>
-                    <input type="number" id="set-min-deposit" class="sw-input" value="1">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-newspaper"></i> الشريط الإخباري</label>
-                    <input type="text" id="set-news" class="sw-input">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-brands fa-whatsapp"></i> واتساب الدعم</label>
-                    <input type="text" id="set-whatsapp" class="sw-input" value="218912377291">
-                </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-handshake"></i> نسبة الأفلييت (%)</label>
-                    <input type="number" id="set-affiliate" class="sw-input" value="3">
-                </div>
-                <button class="btn btn-p btn-full" onclick="saveSettings()">
-                    <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
-                </button>
+                <div class="input-group"><label><i class="fa-solid fa-screwdriver-wrench"></i> وضع الصيانة</label><select id="set-maintenance" class="form-select"><option value="false">معطل</option><option value="true">مفعل</option></select></div>
+                <div class="input-group"><label><i class="fa-solid fa-coins"></i> الحد الأدنى للإيداع</label><input type="number" id="set-min-deposit" class="sw-input" value="1"></div>
+                <div class="input-group"><label><i class="fa-solid fa-newspaper"></i> الشريط الإخباري</label><input type="text" id="set-news" class="sw-input"></div>
+                <div class="input-group"><label><i class="fa-brands fa-whatsapp"></i> واتساب الدعم</label><input type="text" id="set-whatsapp" class="sw-input" value="218912377291"></div>
+                <div class="input-group"><label><i class="fa-solid fa-handshake"></i> نسبة الأفلييت (%)</label><input type="number" id="set-affiliate" class="sw-input" value="3"></div>
+                <button class="btn btn-p btn-full" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات</button>
             </div>
-            
-            <!-- آية الكرسي كاملة -->
             <div class="ayah-box">
-                <div class="ayah-icon">
-                    <i class="fa-solid fa-mosque"></i>
-                </div>
-                <div class="ayah-text">
-                    اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ
-                </div>
-                <div class="ayah-source">
-                    <i class="fa-solid fa-book-quran"></i> سورة البقرة - الآية 255
-                </div>
+                <div class="ayah-icon"><i class="fa-solid fa-mosque"></i></div>
+                <div class="ayah-text">اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ</div>
+                <div class="ayah-source"><i class="fa-solid fa-book-quran"></i> سورة البقرة - الآية 255</div>
             </div>
         </section>
 
@@ -1057,19 +865,10 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // ⭐ TELEGRAM CONFIG
+        // TELEGRAM
         const TELEGRAM_BOT_TOKEN = "8505632393:AAEQwA5RzNI50HVv3ZHz-rKHEzFMMmDlLJE";
         const TELEGRAM_CHAT_ID = "7737867483";
-
-        async function sendTelegram(msg) {
-            try {
-                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: "HTML" })
-                });
-            } catch(e) { console.log("Telegram error:", e); }
-        }
+        async function sendTelegram(msg){try{await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:msg,parse_mode:"HTML"})});}catch(e){}}
 
         // GLOBALS
         let allServicesData = [];
@@ -1081,9 +880,6 @@
         let bulkEditData = {};
         let adminNotificationTimeout = null;
 
-        // ============================================================
-        // ADMIN NOTIFICATION SYSTEM
-        // ============================================================
         function showAdminNotification(title, message, icon) {
             const toast = document.getElementById('admin-notification-toast');
             const titleEl = document.getElementById('admin-notif-title');
@@ -1102,9 +898,6 @@
             clearTimeout(adminNotificationTimeout);
         }
 
-        // ============================================================
-        // VIEW SWITCHER
-        // ============================================================
         function switchView(viewName, element) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
@@ -1120,9 +913,7 @@
             if (viewName === 'settings') loadSettingsData();
         }
 
-        // ============================================================
         // SERVICES
-        // ============================================================
         function loadMasterData() {
             db.collection("services").onSnapshot(snap => {
                 allServicesData = [];
@@ -1130,202 +921,58 @@
                 renderServices();
             });
         }
-
         function renderServices() {
             const area = document.getElementById('master-services-list');
             if (!area) return;
             area.innerHTML = "";
             if (!allServicesData.length) { area.innerHTML = '<div class="loading-text"><p>لا توجد خدمات</p></div>'; return; }
             const cats = {};
-            allServicesData.forEach(d => {
-                const c = d.category || "غير مصنف";
-                if (!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] };
-                cats[c].items.push(d);
-            });
+            allServicesData.forEach(d => { const c = d.category || "غير مصنف"; if (!cats[c]) cats[c] = { name: c, order: d.catOrder || 99, items: [] }; cats[c].items.push(d); });
             Object.values(cats).sort((a, b) => a.order - b.order).forEach(cat => {
                 const box = document.createElement('div');
                 box.className = 'cat-box';
-                box.innerHTML = `
-                    <div class="cat-top" onclick="toggleCatBody(this)">
-                        <div class="cat-info-side">
-                            <div class="order-circle" onclick="event.stopPropagation();updateCatOrder('${cat.name.replace(/'/g, "\\'")}',${cat.order})">${cat.order}</div>
-                            <span class="cat-title"><i class="fa-solid fa-folder"></i> ${cat.name} (${cat.items.length})</span>
-                        </div>
-                        <div style="display:flex;gap:5px;" onclick="event.stopPropagation();">
-                            <button class="btn btn-outline btn-xs" onclick="renameCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn btn-gold btn-xs" onclick="openBulkEdit('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-layer-group"></i> تعديل جماعي</button>
-                            <button class="btn btn-danger btn-xs" onclick="deleteCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trash-can"></i></button>
-                            <i class="fa-solid fa-chevron-down" style="color:var(--muted);"></i>
-                        </div>
-                    </div>
-                    <div class="cat-body">${cat.items.sort((a,b)=>(a.srvOrder||0)-(b.srvOrder||0)).map(s => `
-                        <div class="srv-row">
-                            <div class="srv-meta">
-                                <div class="order-circle" style="width:25px;height:25px;font-size:10px;" onclick="updateSrvOrder('${s.id}',${s.srvOrder||0})">${s.srvOrder||0}</div>
-                                <div class="srv-main-text"><b>${s.name||''}</b><span>${s.description||''} | <i class="fa-solid fa-clock"></i> ${s.estimatedTime||'غير محدد'}</span></div>
-                            </div>
-                            <div class="srv-actions">
-                                <div class="srv-pricing"><b>${(s.finalPrice||0).toFixed(2)} د.ل</b><small>${s.priceType==='1'?'ثابت':'متغير'}</small></div>
-                                <button class="btn btn-outline btn-xs" onclick="fullEditService('${s.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button class="btn btn-accent btn-xs" onclick="duplicateService('${s.id}')"><i class="fa-solid fa-copy"></i></button>
-                                <button class="btn btn-danger btn-xs" onclick="deleteServiceDirect('${s.id}')"><i class="fa-solid fa-trash-can"></i></button>
-                            </div>
-                        </div>`).join('')}</div>`;
+                box.innerHTML = `<div class="cat-top" onclick="toggleCatBody(this)"><div class="cat-info-side"><div class="order-circle" onclick="event.stopPropagation();updateCatOrder('${cat.name.replace(/'/g, "\\'")}',${cat.order})">${cat.order}</div><span class="cat-title"><i class="fa-solid fa-folder"></i> ${cat.name} (${cat.items.length})</span></div><div style="display:flex;gap:5px;" onclick="event.stopPropagation();"><button class="btn btn-outline btn-xs" onclick="renameCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-gold btn-xs" onclick="openBulkEdit('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-layer-group"></i> تعديل جماعي</button><button class="btn btn-danger btn-xs" onclick="deleteCategory('${cat.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trash-can"></i></button><i class="fa-solid fa-chevron-down" style="color:var(--muted);"></i></div></div><div class="cat-body">${cat.items.sort((a,b)=>(a.srvOrder||0)-(b.srvOrder||0)).map(s => `<div class="srv-row"><div class="srv-meta"><div class="order-circle" style="width:25px;height:25px;font-size:10px;" onclick="updateSrvOrder('${s.id}',${s.srvOrder||0})">${s.srvOrder||0}</div><div class="srv-main-text"><b>${s.name||''}</b><span>${s.description||''} | <i class="fa-solid fa-clock"></i> ${s.estimatedTime||'غير محدد'}</span></div></div><div class="srv-actions"><div class="srv-pricing"><b>${(s.finalPrice||0).toFixed(2)} د.ل</b><small>${s.priceType==='1'?'ثابت':'متغير'}</small></div><button class="btn btn-outline btn-xs" onclick="fullEditService('${s.id}')"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-accent btn-xs" onclick="duplicateService('${s.id}')"><i class="fa-solid fa-copy"></i></button><button class="btn btn-danger btn-xs" onclick="deleteServiceDirect('${s.id}')"><i class="fa-solid fa-trash-can"></i></button></div></div>`).join('')}</div>`;
                 area.appendChild(box);
             });
         }
+        function toggleCatBody(el) { const body = el.closest('.cat-box').querySelector('.cat-body'); if (body) body.classList.toggle('open'); const icon = el.querySelector('.fa-chevron-down, .fa-chevron-up'); if (icon) { icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up'); } }
 
-        function toggleCatBody(el) {
-            const body = el.closest('.cat-box').querySelector('.cat-body');
-            if (body) body.classList.toggle('open');
-            const icon = el.querySelector('.fa-chevron-down, .fa-chevron-up');
-            if (icon) { icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up'); }
-        }
-
-        // ============================================================
-        // BULK EDIT - التعديل الجماعي
-        // ============================================================
+        // BULK EDIT
         function openBulkEdit(catName) {
             const overlay = document.getElementById('bulk-edit-overlay');
             const title = document.getElementById('bulk-edit-title');
             const content = document.getElementById('bulk-edit-content');
-            
             const services = allServicesData.filter(s => (s.category || 'غير مصنف') === (catName || 'غير مصنف'));
-            
-            if (!catName) {
-                // فتح لكل الخدمات
-                title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - جميع الخدمات';
-                bulkEditData = { services: allServicesData };
-            } else {
-                title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - ' + catName;
-                bulkEditData = { services: services };
-            }
-            
+            if (!catName) { title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - جميع الخدمات'; bulkEditData = { services: allServicesData }; }
+            else { title.innerHTML = '<i class="fa-solid fa-layer-group"></i> تعديل جماعي - ' + catName; bulkEditData = { services: services }; }
             let html = '';
             bulkEditData.services.forEach((s, i) => {
-                html += `
-                <div class="bulk-service-row">
-                    <div class="srv-header">
-                        <b>${s.name || 'بدون اسم'}</b>
-                        <small style="color:var(--muted);">ID: ${s.id}</small>
-                    </div>
-                    <div class="srv-fields">
-                        <input type="text" placeholder="اسم الخدمة" value="${s.name||''}" data-field="name" data-id="${s.id}">
-                        <input type="text" placeholder="القسم" value="${s.category||''}" data-field="category" data-id="${s.id}">
-                        <input type="number" step="0.01" placeholder="السعر (د.ل)" value="${s.finalPrice||0}" data-field="finalPrice" data-id="${s.id}">
-                        <select data-field="priceType" data-id="${s.id}">
-                            <option value="1000" ${s.priceType=='1000'?'selected':''}>متغير (لكل 1000)</option>
-                            <option value="1" ${s.priceType=='1'?'selected':''}>ثابت (لكل 1)</option>
-                        </select>
-                        <input type="text" placeholder="وقت التنفيذ" value="${s.estimatedTime||''}" data-field="estimatedTime" data-id="${s.id}">
-                        <input type="number" placeholder="الحد الأدنى" value="${s.minOrder||1}" data-field="minOrder" data-id="${s.id}">
-                        <input type="number" placeholder="الحد الأقصى" value="${s.maxOrder||10000}" data-field="maxOrder" data-id="${s.id}">
-                        <input type="text" placeholder="معرف المزود (External ID)" value="${s.externalId||''}" data-field="externalId" data-id="${s.id}">
-                        <textarea placeholder="الوصف" data-field="description" data-id="${s.id}">${s.description||''}</textarea>
-                    </div>
-                </div>`;
+                html += `<div class="bulk-service-row"><div class="srv-header"><b>${s.name || 'بدون اسم'}</b><small style="color:var(--muted);">ID: ${s.id}</small></div><div class="srv-fields"><input type="text" placeholder="اسم الخدمة" value="${s.name||''}" data-field="name" data-id="${s.id}"><input type="text" placeholder="القسم" value="${s.category||''}" data-field="category" data-id="${s.id}"><input type="number" step="0.01" placeholder="السعر (د.ل)" value="${s.finalPrice||0}" data-field="finalPrice" data-id="${s.id}"><select data-field="priceType" data-id="${s.id}"><option value="1000" ${s.priceType=='1000'?'selected':''}>متغير (لكل 1000)</option><option value="1" ${s.priceType=='1'?'selected':''}>ثابت (لكل 1)</option></select><input type="text" placeholder="وقت التنفيذ" value="${s.estimatedTime||''}" data-field="estimatedTime" data-id="${s.id}"><input type="number" placeholder="الحد الأدنى" value="${s.minOrder||1}" data-field="minOrder" data-id="${s.id}"><input type="number" placeholder="الحد الأقصى" value="${s.maxOrder||10000}" data-field="maxOrder" data-id="${s.id}"><input type="text" placeholder="معرف المزود (External ID)" value="${s.externalId||''}" data-field="externalId" data-id="${s.id}"><textarea placeholder="الوصف" data-field="description" data-id="${s.id}">${s.description||''}</textarea></div></div>`;
             });
-            
             content.innerHTML = html || '<p style="color:var(--muted);text-align:center;">لا توجد خدمات في هذا القسم</p>';
             overlay.classList.add('active');
         }
-
-        function closeBulkEdit() {
-            document.getElementById('bulk-edit-overlay').classList.remove('active');
-            bulkEditData = {};
-        }
-
+        function closeBulkEdit() { document.getElementById('bulk-edit-overlay').classList.remove('active'); bulkEditData = {}; }
         async function saveBulkEdit() {
             const inputs = document.querySelectorAll('#bulk-edit-content [data-field]');
             const updates = {};
-            
-            inputs.forEach(input => {
-                const id = input.dataset.id;
-                const field = input.dataset.field;
-                const value = input.value;
-                
-                if (!updates[id]) updates[id] = {};
-                
-                if (field === 'finalPrice' || field === 'minOrder' || field === 'maxOrder') {
-                    updates[id][field] = parseFloat(value) || 0;
-                } else {
-                    updates[id][field] = value;
-                }
-            });
-            
+            inputs.forEach(input => { const id = input.dataset.id; const field = input.dataset.field; const value = input.value; if (!updates[id]) updates[id] = {}; if (field === 'finalPrice' || field === 'minOrder' || field === 'maxOrder') { updates[id][field] = parseFloat(value) || 0; } else { updates[id][field] = value; } });
             const batch = db.batch();
-            Object.keys(updates).forEach(id => {
-                batch.update(db.collection("services").doc(id), updates[id]);
-            });
-            
-            try {
-                await batch.commit();
-                showAdminNotification('✅ نجاح', 'تم حفظ جميع التعديلات بنجاح', 'check-circle');
-                closeBulkEdit();
-            } catch(e) {
-                showAdminNotification('❌ خطأ', 'فشل حفظ التعديلات', 'circle-xmark');
-            }
+            Object.keys(updates).forEach(id => { batch.update(db.collection("services").doc(id), updates[id]); });
+            try { await batch.commit(); showAdminNotification('✅ نجاح', 'تم حفظ جميع التعديلات بنجاح', 'check-circle'); closeBulkEdit(); } catch(e) { showAdminNotification('❌ خطأ', 'فشل حفظ التعديلات', 'circle-xmark'); }
         }
 
-        // ============================================================
-        // SINGLE SERVICE EDIT
-        // ============================================================
+        // SINGLE SERVICE
         async function fullEditService(id) {
             const doc = await db.collection("services").doc(id).get();
             const s = doc.data();
-            const { value: f } = await Swal.fire({
-                title: '<i class="fa-solid fa-pen-to-square"></i> تعديل الخدمة',
-                background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `
-                    <input id="f-name" class="sw-input" value="${s.name||''}" placeholder="اسم الخدمة">
-                    <input id="f-cat" class="sw-input" value="${s.category||''}" placeholder="القسم">
-                    <textarea id="f-desc" class="sw-input" placeholder="الوصف">${s.description||''}</textarea>
-                    <input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice||0}" placeholder="السعر">
-                    <select id="f-type" class="form-select">
-                        <option value="1" ${s.priceType=='1'?'selected':''}>ثابت</option>
-                        <option value="1000" ${s.priceType=='1000'?'selected':''}>متغير</option>
-                    </select>
-                    <input id="f-time" class="sw-input" value="${s.estimatedTime||''}" placeholder="وقت التنفيذ">
-                    <input id="f-min" type="number" class="sw-input" value="${s.minOrder||1}" placeholder="الحد الأدنى">
-                    <input id="f-max" type="number" class="sw-input" value="${s.maxOrder||10000}" placeholder="الحد الأقصى">
-                    <input id="f-extid" class="sw-input" value="${s.externalId||''}" placeholder="معرف المزود">`,
-                preConfirm: () => ({
-                    name: document.getElementById('f-name').value,
-                    category: document.getElementById('f-cat').value,
-                    description: document.getElementById('f-desc').value,
-                    finalPrice: parseFloat(document.getElementById('f-price').value) || 0,
-                    priceType: document.getElementById('f-type').value,
-                    estimatedTime: document.getElementById('f-time').value,
-                    minOrder: parseInt(document.getElementById('f-min').value) || 1,
-                    maxOrder: parseInt(document.getElementById('f-max').value) || 10000,
-                    externalId: document.getElementById('f-extid').value
-                })
-            });
+            const { value: f } = await Swal.fire({ title: '<i class="fa-solid fa-pen-to-square"></i> تعديل الخدمة', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="f-name" class="sw-input" value="${s.name||''}" placeholder="اسم الخدمة"><input id="f-cat" class="sw-input" value="${s.category||''}" placeholder="القسم"><textarea id="f-desc" class="sw-input" placeholder="الوصف">${s.description||''}</textarea><input id="f-price" type="number" step="0.01" class="sw-input" value="${s.finalPrice||0}" placeholder="السعر"><select id="f-type" class="form-select"><option value="1" ${s.priceType=='1'?'selected':''}>ثابت</option><option value="1000" ${s.priceType=='1000'?'selected':''}>متغير</option></select><input id="f-time" class="sw-input" value="${s.estimatedTime||''}" placeholder="وقت التنفيذ"><input id="f-min" type="number" class="sw-input" value="${s.minOrder||1}" placeholder="الحد الأدنى"><input id="f-max" type="number" class="sw-input" value="${s.maxOrder||10000}" placeholder="الحد الأقصى"><input id="f-extid" class="sw-input" value="${s.externalId||''}" placeholder="معرف المزود">`, preConfirm: () => ({ name: document.getElementById('f-name').value, category: document.getElementById('f-cat').value, description: document.getElementById('f-desc').value, finalPrice: parseFloat(document.getElementById('f-price').value) || 0, priceType: document.getElementById('f-type').value, estimatedTime: document.getElementById('f-time').value, minOrder: parseInt(document.getElementById('f-min').value) || 1, maxOrder: parseInt(document.getElementById('f-max').value) || 10000, externalId: document.getElementById('f-extid').value }) });
             if (f) { await db.collection("services").doc(id).update(f); showAdminNotification('✅ نجاح', 'تم تحديث الخدمة بنجاح', 'check-circle'); }
         }
-
         async function addServiceManually() {
-            const { value: f } = await Swal.fire({
-                title: '<i class="fa-solid fa-circle-plus"></i> إضافة خدمة جديدة',
-                background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="القسم"><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea><input id="add-p" type="number" step="0.01" class="sw-input" placeholder="السعر"><select id="add-t" class="form-select"><option value="1000">متغير</option><option value="1">ثابت</option></select><input id="add-time" class="sw-input" placeholder="وقت التنفيذ"><input id="add-min" type="number" class="sw-input" value="1" placeholder="الحد الأدنى"><input id="add-max" type="number" class="sw-input" value="10000" placeholder="الحد الأقصى">`,
-                preConfirm: () => ({
-                    name: document.getElementById('add-n').value,
-                    category: document.getElementById('add-c').value,
-                    description: document.getElementById('add-d').value,
-                    finalPrice: parseFloat(document.getElementById('add-p').value) || 0,
-                    priceType: document.getElementById('add-t').value,
-                    estimatedTime: document.getElementById('add-time').value,
-                    minOrder: parseInt(document.getElementById('add-min').value) || 1,
-                    maxOrder: parseInt(document.getElementById('add-max').value) || 10000
-                })
-            });
-            if (f && f.name && f.category) {
-                await db.collection("services").add({ ...f, catOrder: 99, srvOrder: 0, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                showAdminNotification('✅ نجاح', 'تمت إضافة الخدمة بنجاح', 'check-circle');
-            }
+            const { value: f } = await Swal.fire({ title: '<i class="fa-solid fa-circle-plus"></i> إضافة خدمة جديدة', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="add-n" class="sw-input" placeholder="اسم الخدمة"><input id="add-c" class="sw-input" placeholder="القسم"><textarea id="add-d" class="sw-input" placeholder="الوصف"></textarea><input id="add-p" type="number" step="0.01" class="sw-input" placeholder="السعر"><select id="add-t" class="form-select"><option value="1000">متغير</option><option value="1">ثابت</option></select><input id="add-time" class="sw-input" placeholder="وقت التنفيذ"><input id="add-min" type="number" class="sw-input" value="1" placeholder="الحد الأدنى"><input id="add-max" type="number" class="sw-input" value="10000" placeholder="الحد الأقصى">`, preConfirm: () => ({ name: document.getElementById('add-n').value, category: document.getElementById('add-c').value, description: document.getElementById('add-d').value, finalPrice: parseFloat(document.getElementById('add-p').value) || 0, priceType: document.getElementById('add-t').value, estimatedTime: document.getElementById('add-time').value, minOrder: parseInt(document.getElementById('add-min').value) || 1, maxOrder: parseInt(document.getElementById('add-max').value) || 10000 }) });
+            if (f && f.name && f.category) { await db.collection("services").add({ ...f, catOrder: 99, srvOrder: 0, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ نجاح', 'تمت إضافة الخدمة بنجاح', 'check-circle'); }
         }
-
         async function deleteServiceDirect(id) { if ((await Swal.fire({ title: '<i class="fa-solid fa-triangle-exclamation"></i> تأكيد الحذف', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff003c', background: '#0d0d0d', color: '#fff' })).isConfirmed) { await db.collection("services").doc(id).delete(); showAdminNotification('🗑️ حذف', 'تم حذف الخدمة', 'trash-can'); } }
         async function duplicateService(id) { const d = (await db.collection("services").doc(id).get()).data(); const { name, ...r } = d; await db.collection("services").add({ ...r, name: (name || '') + ' (نسخة)', timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ نسخ', 'تم نسخ الخدمة بنجاح', 'copy'); }
         async function updateCatOrder(name, current) { const { value: n } = await Swal.fire({ title: 'ترتيب القسم', input: 'number', inputValue: current, background: '#0d0d0d', color: '#fff' }); if (n !== null) { const b = db.batch(); (await db.collection("services").where("category", "==", name).get()).forEach(d => b.update(d.ref, { catOrder: parseInt(n) })); await b.commit(); } }
@@ -1335,60 +982,21 @@
         async function clearEntireStore() { if ((await Swal.fire({ title: '<i class="fa-solid fa-skull"></i> مسح المتجر بالكامل', icon: 'error', showCancelButton: true, background: '#0d0d0d', color: '#fff' })).isConfirmed) { const b = db.batch(); (await db.collection("services").get()).forEach(d => b.delete(d.ref)); await b.commit(); showAdminNotification('🗑️ مسح كامل', 'تم مسح جميع الخدمات', 'trash-can'); } }
         async function addCategoryManually() { const { value: n } = await Swal.fire({ title: 'اسم القسم الجديد', input: 'text', background: '#0d0d0d', color: '#fff' }); if (n) { await db.collection("services").add({ name: 'خدمة افتراضية', category: n, finalPrice: 0, priceType: '1000', catOrder: 99, srvOrder: 0, active: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ إضافة', 'تم إنشاء القسم الجديد', 'folder-plus'); } }
 
-        // ============================================================
         // API
-        // ============================================================
         async function fetchExternalAPI() {
             Swal.fire({ title: '<i class="fa-solid fa-spinner fa-spin"></i> جاري جلب الخدمات...', didOpen: () => Swal.showLoading(), background: '#0d0d0d', color: '#fff' });
-            try {
-                const res = await fetch(`${document.getElementById('api-url').value}?key=${document.getElementById('api-key').value}&action=services`);
-                const data = await res.json();
-                const profit = parseFloat(document.getElementById('api-profit').value) || 0;
-                document.getElementById('api-results-box').innerHTML = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>${data.map(s => { const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit / 100))).toFixed(2); return `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b></td><td style="color:var(--p);">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${(s.name||'').replace(/'/g, "\\'")}','${(s.category||'').replace(/'/g, "\\'")}',${final})"><i class="fa-solid fa-download"></i> إضافة</button></td></tr>`; }).join('')}</tbody></table></div>`;
-                Swal.close();
-            } catch (e) { Swal.fire('خطأ', 'فشل جلب الخدمات', 'error'); }
-        }
+            try { const res = await fetch(`${document.getElementById('api-url').value}?key=${document.getElementById('api-key').value}&action=services`); const data = await res.json(); const profit = parseFloat(document.getElementById('api-profit').value) || 0; document.getElementById('api-results-box').innerHTML = `<div class="scroll-box"><table><thead><tr><th>ID</th><th>الخدمة</th><th>السعر</th><th>إجراء</th></tr></thead><tbody>${data.map(s => { const final = (parseFloat(s.rate) + (parseFloat(s.rate) * (profit / 100))).toFixed(2); return `<tr><td><span class="id-badge">${s.service}</span></td><td><b>${s.name}</b></td><td style="color:var(--p);">${final} د.ل</td><td><button class="btn btn-p btn-sm" onclick="importFromAPI('${s.service}','${(s.name||'').replace(/'/g, "\\'")}','${(s.category||'').replace(/'/g, "\\'")}',${final})"><i class="fa-solid fa-download"></i> إضافة</button></td></tr>`; }).join('')}</tbody></table></div>`; Swal.close(); } catch (e) { Swal.fire('خطأ', 'فشل جلب الخدمات', 'error'); } }
         async function importFromAPI(eid, n, c, p) { await db.collection("services").add({ externalId: eid, name: n, category: c, finalPrice: parseFloat(p), priceType: "1000", catOrder: 99, srvOrder: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ استيراد', 'تم استيراد الخدمة', 'download'); }
 
-        // ============================================================
         // NOTIFICATIONS
-        // ============================================================
-        async function sendGlobalNotification() {
-            const text = document.getElementById('notif-text').value.trim();
-            if (!text) return;
-            await db.collection("notifications").add({ message: text, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('notif-text').value = '';
-            showAdminNotification('📢 بث', 'تم إرسال الإشعار', 'tower-broadcast');
-        }
-        function loadNotifHistory() {
-            db.collection("notifications").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
-                const area = document.getElementById('notif-history');
-                if (!area) return;
-                area.innerHTML = snap.empty ? '<p style="color:var(--muted);text-align:center;">لا توجد إشعارات</p>' : '';
-                snap.forEach(doc => { const n = doc.data(); area.innerHTML += `<div style="background:#111;padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;">${n.message} <button class="btn btn-danger btn-xs" onclick="db.collection('notifications').doc('${doc.id}').delete()"><i class="fa-solid fa-trash-can"></i></button></div>`; });
-            });
-        }
+        async function sendGlobalNotification() { const text = document.getElementById('notif-text').value.trim(); if (!text) return; await db.collection("notifications").add({ message: text, active: true, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); document.getElementById('notif-text').value = ''; showAdminNotification('📢 بث', 'تم إرسال الإشعار', 'tower-broadcast'); }
+        function loadNotifHistory() { db.collection("notifications").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => { const area = document.getElementById('notif-history'); if (!area) return; area.innerHTML = snap.empty ? '<p style="color:var(--muted);text-align:center;">لا توجد إشعارات</p>' : ''; snap.forEach(doc => { const n = doc.data(); area.innerHTML += `<div style="background:#111;padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;">${n.message} <button class="btn btn-danger btn-xs" onclick="db.collection('notifications').doc('${doc.id}').delete()"><i class="fa-solid fa-trash-can"></i></button></div>`; }); }); }
 
-        // ============================================================
         // ORDERS
-        // ============================================================
         function loadAdminOrders() {
             db.collection("orders").orderBy("timestamp", "desc").onSnapshot(snap => {
                 allOrdersData = [];
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    allOrdersData.push({
-                        id: doc.id, ...data,
-                        _userId: data.userId || data.uid || '—',
-                        _username: data.username || '—',
-                        _category: data.category || data.serviceName || '—',
-                        _link: data.Link || data.url || '—',
-                        _totalPrice: data.totalPrice || data.price || 0,
-                        _quantity: data.social_share_quantity || data.quantity || 0,
-                        _status: data.status || 'pending',
-                        _timestamp: data.timestamp || null
-                    });
-                });
+                snap.forEach(doc => { const data = doc.data(); allOrdersData.push({ id: doc.id, ...data, _userId: data.userId || data.uid || '—', _username: data.username || '—', _category: data.category || data.serviceName || '—', _link: data.Link || data.url || '—', _totalPrice: data.totalPrice || data.price || 0, _quantity: data.social_share_quantity || data.quantity || 0, _status: data.status || 'pending', _timestamp: data.timestamp || null }); });
                 renderOrders();
             });
         }
@@ -1404,24 +1012,14 @@
         }
         async function changeOrderStatus(orderId) {
             const { value: status } = await Swal.fire({ title: 'الحالة', input: 'select', inputOptions: { 'مكتمل': 'مكتمل', 'قيد التنفيذ': 'قيد التنفيذ', 'ملغي': 'ملغي' }, background: '#0d0d0d', color: '#fff' });
-            if (status) {
-                await db.collection("orders").doc(orderId).update({ status, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                const now = new Date().toLocaleString('ar-SA');
-                await sendTelegram(`✅ <b>تم تحديث طلب!</b>\n🆔 رقم الطلب: ${orderId}\n📌 الحالة الجديدة: ${status}\n⏰ الوقت: ${now}`);
-                showAdminNotification('✅ تحديث', 'تم تغيير حالة الطلب', 'check-circle');
-            }
+            if (status) { await db.collection("orders").doc(orderId).update({ status, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); const now = new Date().toLocaleString('ar-SA'); await sendTelegram(`✅ <b>تم تحديث طلب!</b>\n🆔 رقم الطلب: ${orderId}\n📌 الحالة الجديدة: ${status}\n⏰ الوقت: ${now}`); showAdminNotification('✅ تحديث', 'تم تغيير حالة الطلب', 'check-circle'); }
         }
 
-        // ============================================================
         // USERS
-        // ============================================================
         function loadUsersData() {
             db.collection("users").onSnapshot(snap => {
                 allUsersData = [];
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    allUsersData.push({ id: doc.id, ...data, _username: data.username || 'بدون اسم', _email: data.email || '', _balance: data.balance || 0, _role: data.role || 'user', _userLevel: data.userLevel || 'user', _isBanned: data.isBanned || false, _timestamp: data.timestamp || null });
-                });
+                snap.forEach(doc => { const data = doc.data(); allUsersData.push({ id: doc.id, ...data, _username: data.username || 'بدون اسم', _email: data.email || '', _balance: data.balance || 0, _role: data.role || 'user', _userLevel: data.userLevel || 'user', _isBanned: data.isBanned || false, _timestamp: data.timestamp || null }); });
                 renderUsers();
             });
         }
@@ -1438,123 +1036,106 @@
                 area.appendChild(row);
             });
         }
-        async function adjustUserBalance(uid, action) {
-            const { value: amount } = await Swal.fire({ title: action==='add'?'إضافة':'خصم', input: 'number', showCancelButton: true, confirmButtonColor: action==='add'?'#39ff14':'#ff003c', background: '#0d0d0d', color: '#fff' });
-            if (amount) { const ref = db.collection("users").doc(uid); await db.runTransaction(async t => { const doc = await t.get(ref); if (!doc.exists) return; const cur = doc.data().balance || 0; t.update(ref, { balance: Math.max(0, action==='add'?cur+parseFloat(amount):cur-parseFloat(amount)) }); }); showAdminNotification('💰 رصيد', `تم ${action==='add'?'إضافة':'خصم'} ${amount} د.ل`, 'money-bill-wave'); }
-        }
-        async function editUserFull(uid) {
-            const u = allUsersData.find(x => x.id === uid);
-            if (!u) return;
-            const { value: form } = await Swal.fire({
-                title: 'تعديل', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `<input id="eu-name" class="sw-input" value="${u._username}"><input id="eu-email" class="sw-input" value="${u._email}"><select id="eu-level" class="form-select"><option value="user" ${u._userLevel==='user'?'selected':''}>عادي</option><option value="vip" ${u._userLevel==='vip'?'selected':''}>VIP</option><option value="admin" ${u._role==='admin'?'selected':''}>مدير</option></select>`,
-                preConfirm: () => ({ username: document.getElementById('eu-name').value, email: document.getElementById('eu-email').value, userLevel: document.getElementById('eu-level').value, role: document.getElementById('eu-level').value==='admin'?'admin':'user' })
-            });
-            if (form) { await db.collection("users").doc(uid).update(form); showAdminNotification('✅ تحديث', 'تم تحديث بيانات المستخدم', 'check-circle'); }
-        }
-        async function addUserManually() {
-            const { value: form } = await Swal.fire({
-                title: 'إضافة', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
-                html: `<input id="nu-name" class="sw-input" placeholder="الاسم"><input id="nu-email" type="email" class="sw-input" placeholder="الإيميل"><input id="nu-pass" type="password" class="sw-input" placeholder="كلمة المرور">`,
-                preConfirm: () => ({ username: document.getElementById('nu-name').value, email: document.getElementById('nu-email').value, password: document.getElementById('nu-pass').value })
-            });
-            if (form && form.email && form.password) {
-                try {
-                    const cred = await auth.createUserWithEmailAndPassword(form.email, form.password);
-                    await db.collection("users").doc(cred.user.uid).set({ username: form.username, email: form.email, role: 'user', userLevel: 'user', balance: 0, points: 0, isBanned: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                    showAdminNotification('✅ نجاح', 'تم إضافة المستخدم', 'user-plus');
-                } catch (e) { Swal.fire('خطأ', e.message, 'error'); }
-            }
-        }
+        async function adjustUserBalance(uid, action) { const { value: amount } = await Swal.fire({ title: action==='add'?'إضافة':'خصم', input: 'number', showCancelButton: true, confirmButtonColor: action==='add'?'#39ff14':'#ff003c', background: '#0d0d0d', color: '#fff' }); if (amount) { const ref = db.collection("users").doc(uid); await db.runTransaction(async t => { const doc = await t.get(ref); if (!doc.exists) return; const cur = doc.data().balance || 0; t.update(ref, { balance: Math.max(0, action==='add'?cur+parseFloat(amount):cur-parseFloat(amount)) }); }); showAdminNotification('💰 رصيد', `تم ${action==='add'?'إضافة':'خصم'} ${amount} د.ل`, 'money-bill-wave'); } }
+        async function editUserFull(uid) { const u = allUsersData.find(x => x.id === uid); if (!u) return; const { value: form } = await Swal.fire({ title: 'تعديل', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="eu-name" class="sw-input" value="${u._username}"><input id="eu-email" class="sw-input" value="${u._email}"><select id="eu-level" class="form-select"><option value="user" ${u._userLevel==='user'?'selected':''}>عادي</option><option value="vip" ${u._userLevel==='vip'?'selected':''}>VIP</option><option value="admin" ${u._role==='admin'?'selected':''}>مدير</option></select>`, preConfirm: () => ({ username: document.getElementById('eu-name').value, email: document.getElementById('eu-email').value, userLevel: document.getElementById('eu-level').value, role: document.getElementById('eu-level').value==='admin'?'admin':'user' }) }); if (form) { await db.collection("users").doc(uid).update(form); showAdminNotification('✅ تحديث', 'تم تحديث بيانات المستخدم', 'check-circle'); } }
+        async function addUserManually() { const { value: form } = await Swal.fire({ title: 'إضافة', background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true, html: `<input id="nu-name" class="sw-input" placeholder="الاسم"><input id="nu-email" type="email" class="sw-input" placeholder="الإيميل"><input id="nu-pass" type="password" class="sw-input" placeholder="كلمة المرور">`, preConfirm: () => ({ username: document.getElementById('nu-name').value, email: document.getElementById('nu-email').value, password: document.getElementById('nu-pass').value }) }); if (form && form.email && form.password) { try { const cred = await auth.createUserWithEmailAndPassword(form.email, form.password); await db.collection("users").doc(cred.user.uid).set({ username: form.username, email: form.email, role: 'user', userLevel: 'user', balance: 0, points: 0, isBanned: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showAdminNotification('✅ نجاح', 'تم إضافة المستخدم', 'user-plus'); } catch (e) { Swal.fire('خطأ', e.message, 'error'); } } }
 
-        // ============================================================
         // TICKETS
-        // ============================================================
-        function loadAdminTickets() {
-            db.collection("tickets").orderBy("timestamp", "desc").onSnapshot(snap => {
-                const area = document.getElementById('tickets-admin-list');
-                if (!area) return;
-                area.innerHTML = snap.docs.map(d => {
-                    const t = d.data();
-                    return `<div class="form-card"><b>${t.subject}</b><p>${t.message}</p><small>${t.username} | ${t.email}</small><br><button class="btn btn-p btn-sm" onclick="replyToTicket('${d.id}')">رد</button> <button class="btn btn-outline btn-sm" onclick="closeTicketAdmin('${d.id}')">إغلاق</button></div>`;
-                }).join('') || '<p>لا تذاكر</p>';
-            });
-        }
+        function loadAdminTickets() { db.collection("tickets").orderBy("timestamp", "desc").onSnapshot(snap => { const area = document.getElementById('tickets-admin-list'); if (!area) return; area.innerHTML = snap.docs.map(d => { const t = d.data(); return `<div class="form-card"><b>${t.subject}</b><p>${t.message}</p><small>${t.username} | ${t.email}</small><br><button class="btn btn-p btn-sm" onclick="replyToTicket('${d.id}')">رد</button> <button class="btn btn-outline btn-sm" onclick="closeTicketAdmin('${d.id}')">إغلاق</button></div>`; }).join('') || '<p>لا تذاكر</p>'; }); }
         async function replyToTicket(id) { const { value: r } = await Swal.fire({ title: 'الرد', input: 'textarea', background: '#0d0d0d', color: '#fff' }); if (r) await db.collection("tickets").doc(id).update({ reply: r, status: 'مغلق' }); }
         async function closeTicketAdmin(id) { await db.collection("tickets").doc(id).update({ status: 'مغلق' }); }
 
-        // ============================================================
-        // COUPONS
-        // ============================================================
+        // ✅ COUPONS - FIXED
         function loadAdminCoupons() {
             db.collection("coupons").onSnapshot(snap => {
-                const area = document.getElementById('coupons-admin-list');
-                if (!area) return;
-                area.innerHTML = snap.docs.map(d => `<div>${d.data().code} - ${d.data().discount}% <button class="btn btn-danger btn-sm" onclick="db.collection('coupons').doc('${d.id}').delete()">حذف</button></div>`).join('') || '<p>لا كوبونات</p>';
+                allCouponsData = [];
+                snap.forEach(doc => allCouponsData.push({ id: doc.id, ...doc.data() }));
+                renderAdminCoupons();
+            }, error => {
+                console.error("خطأ في جلب الكوبونات:", error);
             });
+        }
+        function renderAdminCoupons() {
+            const area = document.getElementById('coupons-admin-list');
+            if (!area) return;
+            if (allCouponsData.length === 0) {
+                area.innerHTML = '<div class="loading-text"><p>لا توجد كوبونات</p></div>';
+                return;
+            }
+            area.innerHTML = allCouponsData.map(c => `
+                <div class="form-card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <b style="color:var(--gold);">${c.code || ''}</b>
+                        <span style="color:var(--muted);"> | خصم ${c.discount || 0}% | ${c.used || 0}/${c.maxUses || 100}</span>
+                        ${c.expiry ? `<br><small style="color:#666;">ينتهي: ${c.expiry}</small>` : ''}
+                    </div>
+                    <button class="btn btn-danger btn-xs" onclick="deleteCouponAdmin('${c.id}')">
+                        <i class="fa-solid fa-trash-can"></i> حذف
+                    </button>
+                </div>
+            `).join('');
         }
         function showAddCouponForm() {
-            Swal.fire({ title: 'كوبون', html: `<input id="c-code" class="sw-input" placeholder="الكود"><input id="c-discount" type="number" class="sw-input" placeholder="الخصم">`, background: '#0d0d0d', color: '#fff' }).then(r => { if (r.isConfirmed) db.collection("coupons").add({ code: document.getElementById('c-code').value, discount: parseInt(document.getElementById('c-discount').value), used: 0, maxUses: 100 }); });
-        }
-
-        // ============================================================
-        // DEPOSITS
-        // ============================================================
-        function loadAdminDeposits() {
-            db.collection("deposits").orderBy("timestamp", "desc").onSnapshot(snap => {
-                allDepositsData = [];
-                snap.forEach(doc => allDepositsData.push({ id: doc.id, ...doc.data() }));
-                renderAdminDeposits();
+            Swal.fire({
+                title: '<i class="fa-solid fa-ticket"></i> كوبون جديد',
+                background: '#0d0d0d', color: '#fff', confirmButtonColor: '#39ff14', showCancelButton: true,
+                confirmButtonText: 'إنشاء',
+                html: `
+                    <input id="c-code" class="sw-input" placeholder="كود الكوبون">
+                    <input id="c-discount" type="number" class="sw-input" placeholder="نسبة الخصم %">
+                    <input id="c-max" type="number" class="sw-input" value="100" placeholder="الحد الأقصى للاستخدام">
+                    <input id="c-expiry" type="date" class="sw-input">`,
+                preConfirm: () => ({
+                    code: document.getElementById('c-code').value,
+                    discount: parseInt(document.getElementById('c-discount').value) || 0,
+                    maxUses: parseInt(document.getElementById('c-max').value) || 100,
+                    expiry: document.getElementById('c-expiry').value
+                })
+            }).then(async r => {
+                if (r.isConfirmed && r.value.code) {
+                    await db.collection("coupons").add({
+                        ...r.value,
+                        used: 0,
+                        active: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showAdminNotification('🎫 كوبون', 'تم إنشاء الكوبون بنجاح', 'ticket');
+                }
             });
         }
-        function renderAdminDeposits() {
-            const tbody = document.getElementById('admin-deposits-rows');
-            if (!tbody) return;
-            if (!allDepositsData.length) { tbody.innerHTML = '<tr><td colspan="7">لا إيداعات</td></tr>'; return; }
-            tbody.innerHTML = allDepositsData.map((d, i) => {
-                const statusClass = d.status==='مكتمل'?'completed':'pending';
-                const dateText = d.timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—';
-                return `<tr><td>${i+1}</td><td><b>${d.username||'—'}</b></td><td>${d.senderPhone||'—'}</td><td style="color:var(--p);">${parseFloat(d.amount||0).toFixed(2)} د.ل</td><td><span class="status-badge ${statusClass}">${d.status||'?'}</span></td><td><small>${dateText}</small></td><td><button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d.uid}','${d.amount||0}')"><i class="fa-solid fa-circle-check"></i></button></td></tr>`;
-            }).join('');
-        }
-        async function approveDeposit(depId, uid, amount) {
-            const amt = parseFloat(amount);
-            if (amt <= 0) return;
-            await db.collection("deposits").doc(depId).update({ status: 'مكتمل', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
-            await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) });
-            const now = new Date().toLocaleString('ar-SA');
-            await sendTelegram(`✅ <b>تم تأكيد إيداع!</b>\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n👤 المستخدم: ${uid}\n⏰ الوقت: ${now}`);
-            showAdminNotification('✅ إيداع', `تم قبول الإيداع وإضافة ${amt.toFixed(2)} د.ل`, 'check-circle');
-        }
-
-        // ============================================================
-        // SETTINGS
-        // ============================================================
-        async function loadSettingsData() {
-            const doc = await db.collection("settings").doc("app_config").get();
-            if (doc.exists) {
-                document.getElementById('set-maintenance').value = doc.data().maintenanceMode ? 'true' : 'false';
-                document.getElementById('set-min-deposit').value = doc.data().minDeposit || 1;
-                document.getElementById('set-news').value = doc.data().newsTicker || '';
-                document.getElementById('set-whatsapp').value = doc.data().supportWhatsApp || '';
-                document.getElementById('set-affiliate').value = doc.data().affiliatePercent || 3;
+        async function deleteCouponAdmin(id) {
+            const confirm = await Swal.fire({
+                title: '<i class="fa-solid fa-triangle-exclamation"></i> حذف الكوبون؟',
+                text: 'لن تتمكن من التراجع عن هذا الإجراء',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                cancelButtonColor: '#666',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                background: '#0d0d0d',
+                color: '#fff'
+            });
+            if (confirm.isConfirmed) {
+                try {
+                    await db.collection("coupons").doc(id).delete();
+                    showAdminNotification('🗑️ حذف', 'تم حذف الكوبون بنجاح', 'trash-can');
+                } catch(e) {
+                    showAdminNotification('❌ خطأ', 'فشل حذف الكوبون', 'circle-xmark');
+                }
             }
         }
-        async function saveSettings() {
-            await db.collection("settings").doc("app_config").set({
-                maintenanceMode: document.getElementById('set-maintenance').value === 'true',
-                minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1,
-                newsTicker: document.getElementById('set-news').value,
-                supportWhatsApp: document.getElementById('set-whatsapp').value,
-                affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 3,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-            showAdminNotification('💾 حفظ', 'تم حفظ الإعدادات بنجاح', 'floppy-disk');
-        }
 
-        // ============================================================
+        // DEPOSITS
+        function loadAdminDeposits() { db.collection("deposits").orderBy("timestamp", "desc").onSnapshot(snap => { allDepositsData = []; snap.forEach(doc => allDepositsData.push({ id: doc.id, ...doc.data() })); renderAdminDeposits(); }); }
+        function renderAdminDeposits() { const tbody = document.getElementById('admin-deposits-rows'); if (!tbody) return; if (!allDepositsData.length) { tbody.innerHTML = '<tr><td colspan="7">لا إيداعات</td></tr>'; return; } tbody.innerHTML = allDepositsData.map((d, i) => { const statusClass = d.status==='مكتمل'?'completed':'pending'; const dateText = d.timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—'; return `<tr><td>${i+1}</td><td><b>${d.username||'—'}</b></td><td>${d.senderPhone||'—'}</td><td style="color:var(--p);">${parseFloat(d.amount||0).toFixed(2)} د.ل</td><td><span class="status-badge ${statusClass}">${d.status||'?'}</span></td><td><small>${dateText}</small></td><td><button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d.uid}','${d.amount||0}')"><i class="fa-solid fa-circle-check"></i></button></td></tr>`; }).join(''); }
+        async function approveDeposit(depId, uid, amount) { const amt = parseFloat(amount); if (amt <= 0) return; await db.collection("deposits").doc(depId).update({ status: 'مكتمل', approvedAt: firebase.firestore.FieldValue.serverTimestamp() }); await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) }); const now = new Date().toLocaleString('ar-SA'); await sendTelegram(`✅ <b>تم تأكيد إيداع!</b>\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n👤 المستخدم: ${uid}\n⏰ الوقت: ${now}`); showAdminNotification('✅ إيداع', `تم قبول الإيداع وإضافة ${amt.toFixed(2)} د.ل`, 'check-circle'); }
+
+        // SETTINGS
+        async function loadSettingsData() { const doc = await db.collection("settings").doc("app_config").get(); if (doc.exists) { document.getElementById('set-maintenance').value = doc.data().maintenanceMode ? 'true' : 'false'; document.getElementById('set-min-deposit').value = doc.data().minDeposit || 1; document.getElementById('set-news').value = doc.data().newsTicker || ''; document.getElementById('set-whatsapp').value = doc.data().supportWhatsApp || ''; document.getElementById('set-affiliate').value = doc.data().affiliatePercent || 3; } }
+        async function saveSettings() { await db.collection("settings").doc("app_config").set({ maintenanceMode: document.getElementById('set-maintenance').value === 'true', minDeposit: parseInt(document.getElementById('set-min-deposit').value) || 1, newsTicker: document.getElementById('set-news').value, supportWhatsApp: document.getElementById('set-whatsapp').value, affiliatePercent: parseInt(document.getElementById('set-affiliate').value) || 3, timestamp: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); showAdminNotification('💾 حفظ', 'تم حفظ الإعدادات بنجاح', 'floppy-disk'); }
+
         // INIT
-        // ============================================================
         window.onload = function() {
             loadMasterData();
             loadAdminOrders();
@@ -1565,8 +1146,7 @@
             loadAdminDeposits();
             loadSettingsData();
         };
-
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
-</html>
+                    </html>
