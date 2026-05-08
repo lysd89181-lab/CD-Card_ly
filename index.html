@@ -72,6 +72,7 @@
         @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px var(--primary-glow); } 50% { box-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow); } }
 
         #loader-screen { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s opacity ease; }
         .loader-logo { color: var(--primary-neon); font-size: 38px; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 20px var(--primary-glow); }
@@ -124,7 +125,6 @@
 
         .premium-card { background: var(--bg-card); border-radius: 30px; padding: 28px; border: 1px solid var(--border-color); margin-bottom: 25px; animation: fadeInUp 0.5s ease; }
 
-        /* التعديل الجديد: مربعات منفصلة للقراءة فقط */
         .service-info-box {
             background: #0a0a0a;
             border: 1px solid var(--border-color);
@@ -201,6 +201,40 @@
         .total-box .big-amount { color: #fff; font-size: 45px; font-weight: 900; }
         .total-box .currency { font-size: 18px; color: var(--gold); }
 
+        .price-breakdown {
+            background: rgba(57,255,20,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+        .price-breakdown.active { display: block; }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .price-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .price-label { color: var(--text-dim); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .price-value { font-weight: 700; font-size: 14px; color: #fff; }
+        .price-value.discount { color: var(--danger); text-decoration: line-through; }
+        .price-value.final { color: var(--primary-neon); font-weight: 900; font-size: 16px; }
+        .discount-badge {
+            background: rgba(255,49,49,0.15);
+            color: var(--danger);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .order-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 10px; }
         .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .order-name { font-weight: 700; color: #fff; }
@@ -265,6 +299,11 @@
         .empty-state { text-align: center; padding: 40px 20px; color: #555; }
         .empty-state p { font-size: 14px; }
 
+        .stat-row.discount-active {
+            border-color: var(--danger) !important;
+            animation: glowPulse 2s infinite;
+        }
+
         @media (min-width: 768px) { .bottom-nav { display: none; } .app-container { padding-bottom: 40px; } }
     </style>
 </head>
@@ -320,14 +359,16 @@
             <div class="stats-vertical-list">
                 <div class="stat-row"><span class="stat-lbl"><i class="fas fa-coins"></i> رصيدك</span><div class="stat-num neon" id="u-balance">0.00</div></div>
                 <div class="stat-row"><span class="stat-lbl"><i class="fas fa-chart-bar"></i> مصاريفك</span><div class="stat-num" id="u-spent">0.00</div></div>
-                <div class="stat-row"><span class="stat-lbl"><i class="fas fa-tag"></i> خصمك</span><div class="stat-num neon" id="u-discount">0%</div></div>
+                <div class="stat-row" id="discount-stat-row">
+                    <span class="stat-lbl"><i class="fas fa-tag"></i> خصمك</span>
+                    <div class="stat-num neon" id="u-discount">0%</div>
+                </div>
             </div>
             <div class="premium-card">
                 <div style="font-weight:900;color:var(--primary-neon);margin-bottom:30px;font-size:20px;"><i class="fas fa-cart-plus"></i> إنشاء طلب جديد</div>
                 <div class="input-wrapper"><label class="field-label"><i class="fas fa-folder"></i> التصنيف</label><div class="select-btn" onclick="toggleDrop('drop-cats')"><div id="label-cat-container" class="selected-content"><img src="cd.jpg" id="cat-img" style="display:none;"><span id="label-cat">اختر التصنيف...</span></div><i class="fas fa-caret-down" style="color:var(--text-dim);"></i></div><div class="dropdown-panel" id="drop-cats"></div></div>
                 <div class="input-wrapper"><label class="field-label"><i class="fas fa-list"></i> الخدمة</label><div class="select-btn" onclick="toggleDrop('drop-srvs')"><div id="label-srv-container" class="selected-content"><img src="cd.jpg" id="srv-img" style="display:none;"><span id="label-srv">حدد التصنيف أولاً</span></div><i class="fas fa-caret-down" style="color:var(--text-dim);"></i></div><div class="dropdown-panel" id="drop-srvs"></div></div>
 
-                <!-- التعديل الجديد: تفاصيل الخدمة في مربعات منفصلة للقراءة فقط -->
                 <div id="service-details-container" style="display: none; margin-top: 20px;">
                     <div class="desc-box-readonly active" id="srv-desc-box-new">
                         <span class="desc-title"><i class="fas fa-circle-info"></i> تفاصيل الخدمة</span>
@@ -357,6 +398,25 @@
                     <div class="service-info-box">
                         <div class="service-info-label"><i class="fas fa-arrow-up"></i> الحد الأقصى</div>
                         <div class="service-info-value" id="detail-max-new">—</div>
+                    </div>
+
+                    <!-- مربع تفصيل السعر -->
+                    <div class="price-breakdown" id="price-breakdown-box">
+                        <div style="font-weight:900;color:var(--neon-yellow);margin-bottom:15px;font-size:13px;">
+                            <i class="fas fa-calculator"></i> تفصيل السعر
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label"><i class="fas fa-tag"></i> السعر الأصلي</span>
+                            <span class="price-value" id="original-price-display">0.00 د.ل</span>
+                        </div>
+                        <div class="price-row" id="discount-row-display" style="display:none;">
+                            <span class="price-label"><i class="fas fa-percent"></i> الخصم <span class="discount-badge" id="discount-percent-badge">0%</span></span>
+                            <span class="price-value discount" id="discount-amount-display">0.00 د.ل</span>
+                        </div>
+                        <div class="price-row" style="border-top: 1px solid var(--primary-neon); margin-top: 5px; padding-top: 15px;">
+                            <span class="price-label" style="color:var(--primary-neon);font-weight:900;"><i class="fas fa-money-bill-wave"></i> السعر النهائي</span>
+                            <span class="price-value final" id="final-price-display">0.00 د.ل</span>
+                        </div>
                     </div>
                 </div>
 
@@ -541,7 +601,22 @@
             document.getElementById('u-display-name').innerText=userData.username||'مستخدم';
             document.getElementById('u-balance').innerText=(userData.balance||0).toFixed(2);
             document.getElementById('u-spent').innerText=(userData.totalSpent||0).toFixed(2);
-            document.getElementById('u-discount').innerText=((userData.discount||0)+couponDisc)+'%';
+            
+            // تحديث نسبة الخصم مع تأثير بصري
+            const totalDisc = (userData.discount||0) + couponDisc;
+            document.getElementById('u-discount').innerText = totalDisc + '%';
+            
+            const discountRow = document.getElementById('discount-stat-row');
+            if (totalDisc > 0) {
+                discountRow.classList.add('discount-active');
+                document.getElementById('u-discount').style.color = '#ff3131';
+                document.getElementById('u-discount').style.textShadow = '0 0 15px rgba(255,49,49,0.5)';
+            } else {
+                discountRow.classList.remove('discount-active');
+                document.getElementById('u-discount').style.color = '';
+                document.getElementById('u-discount').style.textShadow = '';
+            }
+            
             document.getElementById('u-points').innerText=userData.points||0;
             document.getElementById('acc-username').innerText=userData.username||'—';
             document.getElementById('acc-uid').innerText=userData.uid||'—';
@@ -554,7 +629,24 @@
         }
 
         function loadServices(){db.collection('services').onSnapshot(snap=>{services=[];snap.forEach(doc=>{const d=doc.data();if(d.name&&d.name!=='خدمة افتراضية'&&(d.finalPrice||0)>0)services.push({id:doc.id,...d});});services.sort((a,b)=>(a.catOrder||99)-(b.catOrder||99));const cats=[];services.forEach(s=>{const c=s.category||'عام';if(!cats.includes(c))cats.push(c);});const dc=document.getElementById('drop-cats');if(dc)dc.innerHTML=cats.map(c=>'<div class="drop-item" onclick="selectCat(\''+c.replace(/'/g,"\\'")+'\',\''+getCatIcon(c)+'\')"><img src="'+getCatIcon(c)+'" onerror="this.src=\'cd.jpg\'"><span>'+c+'</span></div>').join('');});}
-        function selectCat(c,icon){document.getElementById('cat-img').src=icon;document.getElementById('cat-img').style.display='inline-block';document.getElementById('label-cat').innerText=c;curSrv=null;document.getElementById('label-srv').innerText='اختر الخدمة...';document.getElementById('srv-img').style.display='none';document.getElementById('service-details-container').style.display='none';document.getElementById('val-total').innerText='0.00';document.getElementById('qty-hint').innerText='';document.getElementById('discount-display').innerHTML='';const filtered=services.filter(s=>s.category===c).sort((a,b)=>(a.srvOrder||0)-(b.srvOrder||0));document.getElementById('drop-srvs').innerHTML=filtered.map(s=>'<div class="drop-item" onclick="selectSrv(\''+s.id+'\',\''+icon+'\')"><img src="'+icon+'" onerror="this.src=\'cd.jpg\'"><span>'+s.name+'</span></div>').join('');toggleDrop('drop-cats');}
+        
+        function selectCat(c,icon){
+            document.getElementById('cat-img').src=icon;
+            document.getElementById('cat-img').style.display='inline-block';
+            document.getElementById('label-cat').innerText=c;
+            curSrv=null;
+            document.getElementById('label-srv').innerText='اختر الخدمة...';
+            document.getElementById('srv-img').style.display='none';
+            document.getElementById('service-details-container').style.display='none';
+            document.getElementById('val-total').innerText='0.00';
+            document.getElementById('qty-hint').innerText='';
+            document.getElementById('discount-display').innerHTML='';
+            document.getElementById('price-breakdown-box').classList.remove('active');
+            const filtered=services.filter(s=>s.category===c).sort((a,b)=>(a.srvOrder||0)-(b.srvOrder||0));
+            document.getElementById('drop-srvs').innerHTML=filtered.map(s=>'<div class="drop-item" onclick="selectSrv(\''+s.id+'\',\''+icon+'\')"><img src="'+icon+'" onerror="this.src=\'cd.jpg\'"><span>'+s.name+'</span></div>').join('');
+            toggleDrop('drop-cats');
+        }
+        
         function selectSrv(id,icon){
             curSrv=services.find(s=>s.id===id);
             if(!curSrv)return;
@@ -562,7 +654,6 @@
             document.getElementById('srv-img').style.display='inline-block';
             document.getElementById('label-srv').innerText=curSrv.name;
             
-            // إظهار الحاوية الجديدة للتفاصيل
             document.getElementById('service-details-container').style.display='block';
             document.getElementById('srv-desc-text-new').innerText=curSrv.description||'خدمة ممتازة.';
             document.getElementById('detail-time-new').innerText=curSrv.estimatedTime||'غير محدد';
@@ -584,7 +675,62 @@
             toggleDrop('drop-srvs');
             recalc();
         }
-        function recalc(){if(!curSrv)return;const q=parseFloat(document.getElementById('field-qty').value)||0;let basePrice=parseFloat(curSrv.finalPrice)||0;let effectivePrice=basePrice;let totalDiscount=(userData.discount||0)+couponDisc;if(totalDiscount>0)effectivePrice=basePrice-(basePrice*totalDiscount/100);let total=(curSrv.priceType==='1'||curSrv.priceType==='fixed')?effectivePrice:(q/1000)*effectivePrice;document.getElementById('val-total').innerText=total.toFixed(2);const dd=document.getElementById('discount-display');if(dd){if(totalDiscount>0)dd.innerHTML='<span class="price-before-discount">'+basePrice.toFixed(2)+' د.ل</span> <span class="price-after-discount">'+effectivePrice.toFixed(2)+' د.ل</span>';else dd.innerHTML='';}}
+        
+        function recalc(){
+            if(!curSrv)return;
+            const q=parseFloat(document.getElementById('field-qty').value)||0;
+            let basePrice=parseFloat(curSrv.finalPrice)||0;
+            let totalDiscount=(userData.discount||0)+couponDisc;
+            let effectivePrice=basePrice;
+            
+            if(totalDiscount>0) {
+                effectivePrice=basePrice-(basePrice*totalDiscount/100);
+            }
+            
+            let total;
+            if(curSrv.priceType==='1'||curSrv.priceType==='fixed') {
+                total=effectivePrice;
+            } else {
+                total=(q/1000)*effectivePrice;
+            }
+            
+            document.getElementById('val-total').innerText=total.toFixed(2);
+            
+            // عرض تفصيل السعر
+            updatePriceBreakdown(basePrice, effectivePrice, totalDiscount);
+            
+            const dd=document.getElementById('discount-display');
+            if(dd){
+                if(totalDiscount>0) {
+                    dd.innerHTML='<span class="price-before-discount">'+basePrice.toFixed(2)+' د.ل</span> <span class="price-after-discount">'+effectivePrice.toFixed(2)+' د.ل</span>';
+                } else {
+                    dd.innerHTML='';
+                }
+            }
+        }
+        
+        function updatePriceBreakdown(basePrice, effectivePrice, totalDiscount) {
+            const breakdownBox = document.getElementById('price-breakdown-box');
+            const discountRow = document.getElementById('discount-row-display');
+            
+            if (!breakdownBox) return;
+            
+            breakdownBox.classList.add('active');
+            
+            document.getElementById('original-price-display').innerText = basePrice.toFixed(2) + ' د.ل';
+            
+            if (totalDiscount > 0) {
+                discountRow.style.display = 'flex';
+                const discountAmount = basePrice - effectivePrice;
+                document.getElementById('discount-amount-display').innerText = discountAmount.toFixed(2) + ' د.ل';
+                document.getElementById('discount-percent-badge').innerText = totalDiscount + '%';
+            } else {
+                discountRow.style.display = 'none';
+            }
+            
+            document.getElementById('final-price-display').innerText = effectivePrice.toFixed(2) + ' د.ل';
+        }
+        
         function toggleDrop(id){const el=document.getElementById(id);document.querySelectorAll('.dropdown-panel').forEach(d=>{if(d.id!==id)d.classList.remove('show');});if(el)el.classList.toggle('show');}
         document.addEventListener('click',e=>{if(!e.target.closest('.select-btn')&&!e.target.closest('.dropdown-panel'))document.querySelectorAll('.dropdown-panel').forEach(d=>d.classList.remove('show'));});
         async function pasteLink(){try{const text=await navigator.clipboard.readText();if(text)document.getElementById('field-link').value=text;}catch(e){}}
@@ -638,7 +784,7 @@
         function toast(msg,type){const t=document.getElementById('main-toast');if(t){t.innerText=msg;t.className='toast '+(type||'')+' active';setTimeout(()=>t.classList.remove('active'),3000);}}
         function copyText(txt){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('✅ تم النسخ'));}else{const ta=document.createElement('textarea');ta.value=txt;ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ تم النسخ');}}
         document.addEventListener('contextmenu',e=>e.preventDefault());
-        console.log('🔥 CD-CARD Ready - UI Separated');
+        console.log('🔥 CD-CARD Ready - Full Discount System Active');
     </script>
 </body>
-                                                                                                                                   </html>
+</html>
