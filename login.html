@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>بوابة الوصول الذكية | CD-CARD</title>
+    <title>بوابة الوصول الذكية | Media Plus</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -14,79 +14,234 @@
 
     <style>
         /* ================================================================
-           ULTRA-PROFESSIONAL AUTH CSS
+           MEDIA PLUS - ULTRA-PROFESSIONAL AUTH CSS
            ================================================================
         */
         :root {
-            --p: #39ff14; --s: #00e5ff; --bg: #030303;
-            --card: rgba(10, 10, 10, 0.98); --border: #1e1e1e;
-            --text: #ffffff; --muted: #777; --danger: #ff003c;
+            --p: #2196F3; --s: #64B5F6; --bg: #f8fafc;
+            --card: #ffffff; --border: #e2e8f0;
+            --text: #1e293b; --muted: #94a3b8; --danger: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
+            background-image: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 50%, #f8fafc 100%);
+        }
 
         /* خلفية النيون المتحركة */
-        .bg-glow { position: absolute; width: 300px; height: 300px; background: var(--p); filter: blur(150px); opacity: 0.1; z-index: 0; animation: float 10s infinite alternate; }
-        @keyframes float { from { transform: translate(-50%, -50%); } to { transform: translate(50%, 50%); } }
+        .bg-glow { 
+            position: absolute; 
+            width: 300px; 
+            height: 300px; 
+            background: var(--p); 
+            filter: blur(150px); 
+            opacity: 0.08; 
+            z-index: 0; 
+            animation: float 10s infinite alternate; 
+        }
+        @keyframes float { 
+            from { transform: translate(-50%, -50%); } 
+            to { transform: translate(50%, 50%); } 
+        }
 
         .auth-container { width: 100%; max-width: 480px; padding: 25px; z-index: 10; }
 
         .auth-card {
-            background: var(--card); border-radius: 35px; border: 1px solid var(--border);
-            padding: 45px 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(25px); position: relative;
+            background: var(--card); 
+            border-radius: 35px; 
+            border: 1px solid var(--border);
+            padding: 45px 35px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            backdrop-filter: blur(25px); 
+            position: relative;
         }
 
         .auth-header { text-align: center; margin-bottom: 30px; }
-        .logo-box { width: 80px; height: 80px; margin: 0 auto 15px; border: 2px solid var(--p); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--p); background: #000; transform: rotate(-5deg); }
+        .logo-box { 
+            width: 80px; 
+            height: 80px; 
+            margin: 0 auto 15px; 
+            border: 2px solid var(--p); 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 0 20px rgba(33,150,243,0.2); 
+            background: #f0f7ff; 
+            transform: rotate(-5deg);
+            overflow: hidden;
+        }
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 18px;
+        }
         .logo-box i { font-size: 35px; color: var(--p); }
 
-        .auth-header h2 { font-family: 'Orbitron'; font-size: 24px; color: var(--p); }
+        .auth-header h2 { 
+            font-family: 'Orbitron'; 
+            font-size: 24px; 
+            color: var(--p);
+            text-shadow: 0 2px 10px rgba(33,150,243,0.1);
+        }
         .auth-header p { color: var(--muted); font-size: 12px; }
 
         /* ميزات الخانات الجديدة */
         .input-group { position: relative; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; margin-right: 5px; }
+        .input-group label { 
+            display: block; 
+            font-size: 12px; 
+            font-weight: 700; 
+            color: var(--muted); 
+            margin-bottom: 8px; 
+            margin-right: 5px; 
+        }
         
         .input-wrapper { position: relative; }
-        .input-wrapper i.main-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--p); font-size: 16px; }
-        .input-wrapper i.toggle-pass { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); cursor: pointer; transition: 0.3s; }
+        .input-wrapper i.main-icon { 
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: var(--p); 
+            font-size: 16px; 
+        }
+        .input-wrapper i.toggle-pass { 
+            position: absolute; 
+            left: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: var(--muted); 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
         .input-wrapper i.toggle-pass:hover { color: var(--p); }
 
         .input-wrapper input {
-            width: 100%; background: #080808; border: 1px solid var(--border);
-            padding: 14px 45px 14px 45px; border-radius: 12px; color: #fff;
-            font-family: 'Cairo'; font-size: 14px; transition: 0.4s ease;
+            width: 100%; 
+            background: #f8fafc; 
+            border: 1px solid var(--border);
+            padding: 14px 45px 14px 45px; 
+            border-radius: 12px; 
+            color: var(--text);
+            font-family: 'Cairo'; 
+            font-size: 14px; 
+            transition: 0.4s ease;
         }
-        .input-wrapper input:focus { border-color: var(--p); box-shadow: 0 0 10px rgba(57,255,20,0.1); outline: none; background: #000; }
+        .input-wrapper input:focus { 
+            border-color: var(--p); 
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.1); 
+            outline: none; 
+            background: #fff; 
+        }
 
         /* قوة كلمة المرور */
-        .pass-strength { height: 4px; width: 100%; background: #1a1a1a; margin-top: 8px; border-radius: 2px; overflow: hidden; display: none; }
+        .pass-strength { 
+            height: 4px; 
+            width: 100%; 
+            background: #e2e8f0; 
+            margin-top: 8px; 
+            border-radius: 2px; 
+            overflow: hidden; 
+            display: none; 
+        }
         .pass-bar { height: 100%; width: 0%; transition: 0.5s; }
 
         /* خيارات إضافية (تذكرني + نسيت كلمة المرور) */
-        .extra-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 12px; }
-        .remember-me { display: flex; align-items: center; gap: 8px; color: var(--muted); cursor: pointer; }
+        .extra-options { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+            font-size: 12px; 
+        }
+        .remember-me { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: var(--muted); 
+            cursor: pointer; 
+        }
         .remember-me input { accent-color: var(--p); }
-        .forgot-link { color: var(--p); text-decoration: none; font-weight: 700; }
+        .forgot-link { 
+            color: var(--p); 
+            text-decoration: none; 
+            font-weight: 700; 
+        }
 
         .btn-auth {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: var(--p); color: #000; font-family: 'Cairo'; font-weight: 900;
-            font-size: 16px; cursor: pointer; transition: 0.4s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: none;
+            background: linear-gradient(135deg, #2196F3, #1976D2); 
+            color: #fff; 
+            font-family: 'Cairo'; 
+            font-weight: 900;
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: 0.4s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            box-shadow: 0 8px 25px rgba(33,150,243,0.3);
         }
-        .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(57,255,20,0.3); }
+        .btn-auth:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 12px 30px rgba(33,150,243,0.4); 
+        }
 
-        .toggle-mode { text-align: center; margin-top: 25px; font-size: 13px; color: var(--muted); }
-        .toggle-mode span { color: var(--p); font-weight: 900; cursor: pointer; margin-right: 5px; }
+        .toggle-mode { 
+            text-align: center; 
+            margin-top: 25px; 
+            font-size: 13px; 
+            color: var(--muted); 
+        }
+        .toggle-mode span { 
+            color: var(--p); 
+            font-weight: 900; 
+            cursor: pointer; 
+            margin-right: 5px; 
+        }
 
-        #status-msg { padding: 10px; border-radius: 10px; font-size: 12px; margin-bottom: 15px; display: none; text-align: center; }
-        .msg-error { background: rgba(255,0,60,0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .msg-success { background: rgba(0,255,136,0.1); color: var(--p); border: 1px solid var(--p); }
+        #status-msg { 
+            padding: 10px; 
+            border-radius: 10px; 
+            font-size: 12px; 
+            margin-bottom: 15px; 
+            display: none; 
+            text-align: center; 
+        }
+        .msg-error { 
+            background: rgba(239,68,68,0.1); 
+            color: var(--danger); 
+            border: 1px solid var(--danger); 
+        }
+        .msg-success { 
+            background: rgba(33,150,243,0.1); 
+            color: var(--p); 
+            border: 1px solid var(--p); 
+        }
 
-        .loader { width: 18px; height: 18px; border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        .loader { 
+            width: 18px; 
+            height: 18px; 
+            border: 2px solid #fff; 
+            border-top: 2px solid transparent; 
+            border-radius: 50%; 
+            animation: spin 0.8s linear infinite; 
+            display: none; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -101,9 +256,11 @@
             <div id="status-msg"></div>
 
             <div class="auth-header">
-                <div class="logo-box"><i class="fa fa-shield-halved"></i></div>
+                <div class="logo-box">
+                    <img src="mp.jpg" alt="Media Plus" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa fa-shield-halved\'></i>';">
+                </div>
                 <h2 id="form-title">تسجيل الدخول</h2>
-                <p id="form-sub">أدخل بياناتك للوصول إلى حسابك في CD-CARD</p>
+                <p id="form-sub">أدخل بياناتك للوصول إلى حسابك في Media Plus</p>
             </div>
 
             <form id="auth-form" onsubmit="handleAuth(event)">
@@ -119,7 +276,7 @@
                 <div class="input-group">
                     <label>البريد الإلكتروني</label>
                     <div class="input-wrapper">
-                        <input type="email" id="u-email" required placeholder="admin@cdcard.ly">
+                        <input type="email" id="u-email" required placeholder="admin@mediaplus.ly">
                         <i class="fa fa-at main-icon"></i>
                     </div>
                 </div>
@@ -195,9 +352,9 @@
             if (/[0-9]/.test(val)) score += 30;
 
             bar.style.width = score + "%";
-            if (score <= 40) bar.style.background = "#ff003c";
-            else if (score <= 70) bar.style.background = "#ffa600";
-            else bar.style.background = "#39ff14";
+            if (score <= 40) bar.style.background = "#ef4444";
+            else if (score <= 70) bar.style.background = "#f59e0b";
+            else bar.style.background = "#2196F3";
         }
 
         // 3. التبديل بين الأنماط
@@ -282,4 +439,3 @@
     </script>
 </body>
 </html>
-
