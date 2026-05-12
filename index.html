@@ -689,14 +689,13 @@
             
             const priceDisplay = document.getElementById('detail-price-new');
             if (priceDisplay) {
-                const originalSpan = document.getElementById('service-original-price-display');
-                const finalSpan = document.getElementById('service-final-price-display');
-                if (originalSpan && finalSpan) {
-                    originalSpan.innerHTML = `<span class="original-price-strikethrough">${markedUpPrice.toFixed(2)} د.ل</span>`;
-                    finalSpan.innerHTML = `<span class="discount-flag"><i class="fas fa-tag"></i> خصم</span> <strong style="color:var(--primary-blue);">${baseServicePrice.toFixed(2)} د.ل</strong>`;
-                } else {
-                    priceDisplay.innerHTML = `<span class="original-price-strikethrough">${markedUpPrice.toFixed(2)} د.ل</span> <span class="discount-flag"><i class="fas fa-tag"></i> خصم</span> <strong style="color:var(--primary-blue);">${baseServicePrice.toFixed(2)} د.ل</strong>`;
-                }
+                priceDisplay.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+                        <span class="original-price-strikethrough">${markedUpPrice.toFixed(2)} د.ل</span>
+                        <span class="discount-flag"><i class="fas fa-tag"></i> وفر 30%</span>
+                        <strong style="color:var(--primary-blue); font-size: 16px;">${baseServicePrice.toFixed(2)} د.ل</strong>
+                    </div>
+                `;
             }
             
             const q=document.getElementById('field-qty');
@@ -738,12 +737,9 @@
             
             const dd=document.getElementById('discount-display');
             if(dd){
-                if(userDiscountPercent > 0) {
-                    const originalTotal = curSrv.priceType==='1'||curSrv.priceType==='fixed' ? markedUpPrice : (q/1000) * markedUpPrice;
-                    dd.innerHTML='<span class="original-price-strikethrough">'+originalTotal.toFixed(2)+' د.ل</span> <span class="discount-flag"><i class="fas fa-tag"></i> خصم</span>';
-                } else {
-                    dd.innerHTML='';
-                }
+                const originalTotal = curSrv.priceType==='1'||curSrv.priceType==='fixed' ? markedUpPrice : (q/1000) * markedUpPrice;
+                const savedAmount = originalTotal - total;
+                dd.innerHTML='<span class="original-price-strikethrough">'+originalTotal.toFixed(2)+' د.ل</span> <span class="discount-flag"><i class="fas fa-tag"></i> وفر '+savedAmount.toFixed(2)+' د.ل</span>';
             }
         }
         
@@ -764,6 +760,25 @@
             markupRow.style.display = 'flex';
             const markupAmount = (markedUpPrice - basePrice) * multiplier;
             document.getElementById('markup-amount-display').innerText = markupAmount.toFixed(2) + ' د.ل';
+            
+            // إزالة الصف القديم إذا موجود
+            const oldOriginalRow = document.getElementById('original-total-row');
+            if (oldOriginalRow) {
+                oldOriginalRow.remove();
+            }
+            
+            // إضافة صف السعر الأصلي (المشطوب)
+            const finalPriceRow = document.getElementById('final-price-display').parentElement;
+            if (finalPriceRow) {
+                const originalRow = document.createElement('div');
+                originalRow.className = 'price-row';
+                originalRow.id = 'original-total-row';
+                originalRow.innerHTML = `
+                    <span class="price-label"><i class="fas fa-tag"></i> السعر الأصلي (قبل الخصم)</span>
+                    <span class="price-value discount" id="original-total-display">${(markedUpPrice * multiplier).toFixed(2)} د.ل</span>
+                `;
+                finalPriceRow.parentNode.insertBefore(originalRow, finalPriceRow);
+            }
             
             if (userDiscount > 0) {
                 userDiscountRow.style.display = 'flex';
@@ -811,7 +826,7 @@
         function toast(msg,type){const t=document.getElementById('main-toast');if(t){t.innerText=msg;t.className='toast '+(type||'')+' active';setTimeout(()=>t.classList.remove('active'),3000);}}
         function copyText(txt){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('✅ تم النسخ'));}else{const ta=document.createElement('textarea');ta.value=txt;ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ تم النسخ');}}
         document.addEventListener('contextmenu',e=>e.preventDefault());
-        console.log('🔥 Media Plus Ready - Light Blue & White Theme');
+        console.log('🔥 Media Plus Ready - Light Blue & White Theme with 30% Markup');
     </script>
 </body>
-    </html>
+                                                                              </html>
