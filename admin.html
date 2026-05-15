@@ -218,6 +218,34 @@
             color: var(--text);
         }
 
+        /* فلتر الإيداعات */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .filter-tab.active {
+            background: var(--p);
+            color: #fff;
+            border-color: var(--p);
+        }
+        .filter-tab:hover {
+            border-color: var(--p);
+        }
+
         .cat-box {
             background: var(--card);
             border-radius: 12px;
@@ -535,7 +563,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: right;
-            min-width: 800px;
+            min-width: 900px;
         }
         th {
             padding: 12px;
@@ -580,6 +608,24 @@
         .status-badge.failed {
             background: rgba(239,68,68,0.15);
             color: var(--danger);
+        }
+        .provider-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .provider-badge.libyana {
+            background: rgba(33,150,243,0.1);
+            color: #2196F3;
+        }
+        .provider-badge.almadar {
+            background: rgba(139,92,246,0.1);
+            color: #8b5cf6;
+        }
+        .provider-badge.unknown {
+            background: rgba(148,163,184,0.1);
+            color: #94a3b8;
         }
         .link-cell {
             max-width: 200px;
@@ -853,7 +899,17 @@
         <!-- DEPOSITS -->
         <section id="view-deposits" class="view-section">
             <div class="page-head"><h2><i class="fa-solid fa-money-bill-wave" style="color:var(--p); margin-left:8px;"></i> سجل الإيداعات</h2></div>
-            <div class="scroll-box"><table><thead><tr><th>#</th><th>المستخدم</th><th>رقم الهاتف</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>تحكم</th></tr></thead><tbody id="admin-deposits-rows"><tr><td colspan="7" class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الإيداعات...</p></td></tr></tbody></table></div>
+            
+            <!-- ✅ فلتر الإيداعات الجديد -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterDeposits('all', this)">الكل</div>
+                <div class="filter-tab" onclick="filterDeposits('Libyana', this)"><i class="fa-solid fa-sim-card"></i> ليبيانا</div>
+                <div class="filter-tab" onclick="filterDeposits('Almadar', this)"><i class="fa-solid fa-sim-card"></i> المدار</div>
+                <div class="filter-tab" onclick="filterDeposits('pending', this)"><i class="fa-solid fa-clock"></i> قيد المراجعة</div>
+                <div class="filter-tab" onclick="filterDeposits('unknown', this)"><i class="fa-solid fa-circle-question"></i> غير معروف</div>
+            </div>
+
+            <div class="scroll-box"><table><thead><tr><th>#</th><th>المزود</th><th>المستخدم المطابق</th><th>رقم الهاتف</th><th>المبلغ</th><th>الحالة</th><th>آلي؟</th><th>التاريخ</th><th>تحكم</th></tr></thead><tbody id="admin-deposits-rows"><tr><td colspan="9" class="loading-text"><div class="loading-spinner"></div><p>جاري تحميل الإيداعات...</p></td></tr></tbody></table></div>
         </section>
 
         <!-- SETTINGS -->
@@ -902,6 +958,7 @@
         let allCouponsData = [];
         let allTicketsData = [];
         let allDepositsData = [];
+        let currentDepositFilter = 'all';
         let bulkEditData = {};
         let adminNotificationTimeout = null;
 
@@ -1151,10 +1208,133 @@
             }
         }
 
-        // DEPOSITS
-        function loadAdminDeposits() { db.collection("deposits").orderBy("timestamp", "desc").onSnapshot(snap => { allDepositsData = []; snap.forEach(doc => allDepositsData.push({ id: doc.id, ...doc.data() })); renderAdminDeposits(); }); }
-        function renderAdminDeposits() { const tbody = document.getElementById('admin-deposits-rows'); if (!tbody) return; if (!allDepositsData.length) { tbody.innerHTML = '<tr><td colspan="7">لا إيداعات</td></tr>'; return; } tbody.innerHTML = allDepositsData.map((d, i) => { const statusClass = d.status==='مكتمل'?'completed':'pending'; const dateText = d.timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—'; return `<tr><td>${i+1}</td><td><b>${d.username||'—'}</b></td><td>${d.senderPhone||'—'}</td><td style="color:var(--p);">${parseFloat(d.amount||0).toFixed(2)} د.ل</td><td><span class="status-badge ${statusClass}">${d.status||'?'}</span></td><td><small>${dateText}</small></td><td><button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d.uid}','${d.amount||0}')"><i class="fa-solid fa-circle-check"></i></button></td></tr>`; }).join(''); }
-        async function approveDeposit(depId, uid, amount) { const amt = parseFloat(amount); if (amt <= 0) return; await db.collection("deposits").doc(depId).update({ status: 'مكتمل', approvedAt: firebase.firestore.FieldValue.serverTimestamp() }); await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) }); const now = new Date().toLocaleString('ar-SA'); await sendTelegram(`✅ <b>تم تأكيد إيداع!</b>\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n👤 المستخدم: ${uid}\n⏰ الوقت: ${now}`); showAdminNotification('✅ إيداع', `تم قبول الإيداع وإضافة ${amt.toFixed(2)} د.ل`, 'check-circle'); }
+        // ============================================================
+        // ✅ DEPOSITS - النظام الجديد كلياً
+        // ============================================================
+        function loadAdminDeposits() {
+            db.collection("deposits").orderBy("timestamp", "desc").onSnapshot(snap => {
+                allDepositsData = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    allDepositsData.push({
+                        id: doc.id,
+                        ...d,
+                        _phone: d.phone || d.senderPhone || '—',
+                        _amount: d.extractedAmount || d.amount || 0,
+                        _provider: d.provider || 'unknown',
+                        _status: d.status || 'pending',
+                        _matchedUser: d.matchedUser || '—',
+                        _autoProcessed: d.autoProcessed || false,
+                        _timestamp: d.timestamp || null
+                    });
+                });
+                renderAdminDeposits();
+            });
+        }
+        function filterDeposits(filter, element) {
+            currentDepositFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            if (element) element.classList.add('active');
+            renderAdminDeposits();
+        }
+        function renderAdminDeposits() {
+            const tbody = document.getElementById('admin-deposits-rows');
+            if (!tbody) return;
+            
+            let filtered = [...allDepositsData];
+            
+            if (currentDepositFilter === 'Libyana') {
+                filtered = filtered.filter(d => d._provider === 'Libyana');
+            } else if (currentDepositFilter === 'Almadar') {
+                filtered = filtered.filter(d => d._provider === 'Almadar');
+            } else if (currentDepositFilter === 'pending') {
+                filtered = filtered.filter(d => d._status === 'pending' || d._status === 'قيد المراجعة');
+            } else if (currentDepositFilter === 'unknown') {
+                filtered = filtered.filter(d => d._provider === 'unknown' || !d._provider);
+            }
+            
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);">لا توجد إيداعات</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filtered.map((d, i) => {
+                const statusClass = (d._status === 'مكتمل' || d._status === 'completed') ? 'completed' : 'pending';
+                const dateText = d._timestamp?.toDate?.().toLocaleDateString('ar-SA') || '—';
+                let providerLabel = 'غير معروف';
+                let providerClass = 'unknown';
+                if (d._provider === 'Libyana') { providerLabel = 'ليبيانا'; providerClass = 'libyana'; }
+                if (d._provider === 'Almadar') { providerLabel = 'المدار'; providerClass = 'almadar'; }
+                const autoIcon = d._autoProcessed ? '<i class="fa-solid fa-robot" style="color:#2196F3;"></i>' : '<i class="fa-solid fa-user" style="color:#f59e0b;"></i>';
+                
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><span class="provider-badge ${providerClass}">${providerLabel}</span></td>
+                    <td><b>${d._matchedUser !== '—' ? d._matchedUser : '<span style="color:var(--muted);">غير مطابق</span>'}</b></td>
+                    <td>${d._phone}</td>
+                    <td style="color:var(--p);font-weight:900;">${parseFloat(d._amount).toFixed(2)} د.ل</td>
+                    <td><span class="status-badge ${statusClass}">${d._status}</span></td>
+                    <td>${autoIcon}</td>
+                    <td><small>${dateText}</small></td>
+                    <td>
+                        ${d._status !== 'completed' && d._status !== 'مكتمل' ? 
+                            `<button class="btn btn-p btn-xs" onclick="approveDeposit('${d.id}','${d._matchedUser}','${d._amount}')"><i class="fa-solid fa-circle-check"></i> تأكيد</button>` : 
+                            '<span style="color:var(--p);font-size:10px;">مكتمل</span>'}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        async function approveDeposit(depId, matchedUser, amount) {
+            const amt = parseFloat(amount);
+            if (amt <= 0) {
+                showAdminNotification('⚠️ خطأ', 'المبلغ غير صحيح', 'circle-xmark');
+                return;
+            }
+            
+            const confirm = await Swal.fire({
+                title: '<i class="fa-solid fa-circle-check"></i> تأكيد الإيداع',
+                html: `المبلغ: <b style="color:#2196F3;">${amt.toFixed(2)} د.ل</b><br>المستخدم: <b>${matchedUser || 'غير مطابق'}</b>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2196F3',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'نعم، تأكيد',
+                cancelButtonText: 'إلغاء',
+                background: '#ffffff',
+                color: '#1e293b'
+            });
+            
+            if (confirm.isConfirmed) {
+                try {
+                    await db.collection("deposits").doc(depId).update({
+                        status: 'مكتمل',
+                        approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        autoProcessed: false,
+                        manuallyApproved: true
+                    });
+                    
+                    if (matchedUser && matchedUser !== '—') {
+                        const userQuery = await db.collection("users").where("username", "==", matchedUser).limit(1).get();
+                        if (!userQuery.empty) {
+                            const userDoc = userQuery.docs[0];
+                            await db.collection("users").doc(userDoc.id).update({
+                                balance: firebase.firestore.FieldValue.increment(amt)
+                            });
+                            showAdminNotification('✅ نجاح', `تم إضافة ${amt.toFixed(2)} د.ل للمستخدم ${matchedUser}`, 'check-circle');
+                        } else {
+                            showAdminNotification('⚠️ تنبيه', 'تم تأكيد الإيداع لكن المستخدم غير موجود', 'triangle-exclamation');
+                        }
+                    } else {
+                        showAdminNotification('⚠️ تنبيه', 'تم تأكيد الإيداع لكن بدون مستخدم مطابق', 'triangle-exclamation');
+                    }
+                    
+                    const now = new Date().toLocaleString('ar-SA');
+                    await sendTelegram(`✅ <b>تم تأكيد إيداع يدوياً!</b>\n💰 المبلغ: ${amt.toFixed(2)} د.ل\n👤 المستخدم: ${matchedUser || 'غير مطابق'}\n⏰ الوقت: ${now}`);
+                } catch(e) {
+                    showAdminNotification('❌ خطأ', 'فشل تأكيد الإيداع', 'circle-xmark');
+                }
+            }
+        }
 
         // SETTINGS
         async function loadSettingsData() { const doc = await db.collection("settings").doc("app_config").get(); if (doc.exists) { document.getElementById('set-maintenance').value = doc.data().maintenanceMode ? 'true' : 'false'; document.getElementById('set-min-deposit').value = doc.data().minDeposit || 1; document.getElementById('set-news').value = doc.data().newsTicker || ''; document.getElementById('set-whatsapp').value = doc.data().supportWhatsApp || ''; document.getElementById('set-affiliate').value = doc.data().affiliatePercent || 3; } }
@@ -1174,4 +1354,4 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
-    </html>
+</html>
