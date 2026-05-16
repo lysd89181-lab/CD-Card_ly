@@ -339,7 +339,6 @@
             background: #f0f7ff;
         }
 
-        /* نتيجة الفحص */
         .check-result {
             padding: 20px;
             border-radius: 16px;
@@ -496,7 +495,6 @@
             <div class="premium-card"><div style="font-weight:900;color:var(--primary-blue);margin-bottom:20px;"><i class="fas fa-list-check"></i> سجل طلباتي</div><div id="orders-list"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>جاري التحميل...</p></div></div></div>
         </section>
 
-        <!-- ✅ قسم التحويل المباشر - النظام الجديد مع الإشعارات -->
         <section id="pane-wallet" class="pane">
             <div class="premium-card">
                 <div style="font-weight:900;color:var(--primary-blue);margin-bottom:25px;"><i class="fas fa-money-bill-wave"></i> التحويل المباشر</div>
@@ -506,12 +504,12 @@
                 <div class="wallet-guide">
                     <small><i class="fas fa-list-ol"></i> خطوات التحويل</small>
                     <div class="step-item"><div class="step-idx">1</div><div class="step-desc">قم بتحويل المبلغ إلى أحد الأرقام أعلاه</div></div>
-                    <div class="step-item"><div class="step-idx">2</div><div class="step-desc">أدخل رقم هاتفك واضغط "تأكيد التحويل"</div></div>
+                    <div class="step-item"><div class="step-idx">2</div><div class="step-desc">أدخل رقم هاتفك والمبلغ الذي قمت بتحويله</div></div>
                     <div class="step-item"><div class="step-idx">3</div><div class="step-desc">سيتم فحص التحويل وإضافة الرصيد تلقائياً</div></div>
                 </div>
-                <div class="input-wrapper"><label class="field-label"><i class="fas fa-phone"></i> رقم هاتفك</label><input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx"></div>
+                <div class="input-wrapper"><label class="field-label"><i class="fas fa-phone"></i> رقم هاتفك (المرسل)</label><input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx"></div>
+                <div class="input-wrapper"><label class="field-label"><i class="fas fa-money-bill"></i> القيمة المحولة</label><input type="number" id="field-dep-amount" class="main-input" placeholder="أدخل المبلغ الذي قمت بتحويله" step="0.01" min="0"></div>
                 
-                <!-- ✅ صندوق نتيجة الفحص -->
                 <div class="check-result" id="check-result"></div>
                 
                 <button class="action-btn" onclick="checkDeposit()" id="btn-check-deposit"><i class="fas fa-search"></i> تأكيد التحويل</button>
@@ -635,9 +633,6 @@
 
         function loadOrders(){if(!userData.uid)return;db.collection('orders').where('uid','==',userData.uid).orderBy('timestamp','desc').limit(30).onSnapshot(snap=>{const el=document.getElementById('orders-list');if(!el)return;if(snap.empty){el.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد طلبات</p></div>';return;}el.innerHTML=snap.docs.map(d=>{const o=d.data();const cls=o.status==='مكتمل'||o.status==='completed'?'completed':o.status==='قيد التنفيذ'||o.status==='pending'?'pending':'failed';const dt=o.timestamp?.toDate?.().toLocaleDateString('ar-SA')||'';const link=o.Link||o.url||o.target||'—';const shortLink=link.length>30?link.substring(0,30)+'...':link;return'<div class="order-card"><div class="order-header"><span class="order-name">'+(o.serviceName||'—')+'</span><span class="status-badge '+cls+'">'+(o.status||'?')+'</span></div><div class="order-info"><div>الكمية: <span>'+(o.quantity||0)+'</span></div><div>المبلغ: <span style="color:var(--primary-blue);">'+(o.totalPrice||o.price||0).toFixed(2)+' د.ل</span></div><div style="grid-column:span 2;">الرابط: <a href="'+link+'" target="_blank" style="color:var(--primary-blue);">'+shortLink+'</a></div><div>التاريخ: <span>'+dt+'</span></div><div>الحالة: <span>'+(o.status||'—')+'</span></div></div></div>';}).join('');});}
 
-        // ============================================================
-        // ✅ نظام الإيداع التلقائي مع إشعارات نجاح/فشل
-        // ============================================================
         function extractLibyanaInfo(message) {
             const amountMatch = message.match(/تم تحويل (\d+(\.\d+)?) د\.ل/);
             const phoneMatch = message.match(/الرقم (\d+)/);
@@ -660,22 +655,60 @@
         async function findUserByPhone(phoneNumber) {
             if (!phoneNumber) return null;
             const cleanPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
-            const snapshot = await db.collection('users').where('phone', '==', cleanPhone).limit(1).get();
-            if (!snapshot.empty) { const userDoc = snapshot.docs[0]; return { uid: userDoc.id, username: userDoc.data().username }; }
-            const last7 = cleanPhone.slice(-7);
-            const snapshot2 = await db.collection('users').where('phone', '>=', last7).where('phone', '<=', last7 + '\uf8ff').limit(5).get();
-            if (!snapshot2.empty) { const userDoc = snapshot2.docs[0]; return { uid: userDoc.id, username: userDoc.data().username }; }
+            let snapshot = await db.collection('users').where('phone', '==', cleanPhone).limit(1).get();
+            if (!snapshot.empty) { const userDoc = snapshot.docs[0]; return { uid: userDoc.id, username: userDoc.data().username || 'مستخدم' }; }
+            if (cleanPhone.length >= 9) {
+                const last9 = cleanPhone.slice(-9);
+                snapshot = await db.collection('users').where('phone', '==', '09' + last9).limit(1).get();
+                if (!snapshot.empty) { const userDoc = snapshot.docs[0]; return { uid: userDoc.id, username: userDoc.data().username || 'مستخدم' }; }
+                const last7 = cleanPhone.slice(-7);
+                snapshot = await db.collection('users').where('phone', '>=', '09' + last7).where('phone', '<=', '09' + last7 + '\uf8ff').limit(10).get();
+                let matchedUser = null;
+                snapshot.forEach(doc => {
+                    if (matchedUser) return;
+                    const userPhone = (doc.data().phone || '').replace(/[\s\-\(\)]/g, '');
+                    if (userPhone.slice(-7) === last7) { matchedUser = { uid: doc.id, username: doc.data().username || 'مستخدم' }; }
+                });
+                if (matchedUser) return matchedUser;
+            }
             return null;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        function showCheckResult(className, icon, title, message1, message2, message3) {
+            const resultDiv = document.getElementById('check-result');
+            resultDiv.className = `check-result ${className}`;
+            resultDiv.innerHTML = `
+                <span class="big-icon">${escapeHtml(icon)}</span>
+                <strong>${escapeHtml(title)}</strong>
+                ${message1 ? `<br><span>${escapeHtml(message1)}</span>` : ''}
+                ${message2 ? `<br><small>${escapeHtml(message2)}</small>` : ''}
+                ${message3 ? `<br><small style="color:var(--muted);">${escapeHtml(message3)}</small>` : ''}
+            `;
         }
 
         async function checkDeposit() {
             const phone = document.getElementById('field-dep-phone').value.trim();
+            const amountStr = document.getElementById('field-dep-amount').value.trim();
+            const amount = parseFloat(amountStr);
             const resultDiv = document.getElementById('check-result');
             const btn = document.getElementById('btn-check-deposit');
             
             if (!phone) {
-                resultDiv.className = 'check-result error';
-                resultDiv.innerHTML = '<span class="big-icon">❌</span> أدخل رقم هاتفك أولاً';
+                showCheckResult('error', '❌', 'أدخل رقم هاتفك أولاً');
+                return;
+            }
+            if (!amountStr || isNaN(amount) || amount <= 0) {
+                showCheckResult('error', '❌', 'أدخل المبلغ الذي قمت بتحويله');
+                return;
+            }
+            if (!/^09\d{8}$/.test(phone.replace(/[\s\-]/g, ''))) {
+                showCheckResult('error', '❌', 'صيغة رقم الهاتف غير صحيحة');
                 return;
             }
             
@@ -688,53 +721,103 @@
                 const cleanSearchPhone = phone.replace(/[\s\-\(\)]/g, '');
                 const last7Search = cleanSearchPhone.slice(-7);
                 const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-                const snapshot = await db.collection('deposits').where('timestamp', '>=', thirtyMinutesAgo).orderBy('timestamp', 'desc').limit(20).get();
+                const snapshot = await db.collection('deposits')
+                    .where('timestamp', '>=', thirtyMinutesAgo)
+                    .orderBy('timestamp', 'desc')
+                    .limit(30)
+                    .get();
                 
                 let matchedDeposit = null;
                 snapshot.forEach(doc => {
                     if (matchedDeposit) return;
                     const d = doc.data();
                     const info = extractDepositInfo(d);
-                    if (info.phone) {
+                    if (info.phone && info.amount) {
                         const cleanDepPhone = info.phone.replace(/[\s\-\(\)]/g, '');
                         const last7Dep = cleanDepPhone.slice(-7);
-                        if (cleanDepPhone === cleanSearchPhone || last7Dep === last7Search) {
-                            matchedDeposit = { id: doc.id, ...d, extractedAmount: info.amount, extractedPhone: info.phone, provider: info.provider };
+                        const amountTolerance = 0.10;
+                        if ((cleanDepPhone === cleanSearchPhone || last7Dep === last7Search) && Math.abs(info.amount - amount) <= amountTolerance) {
+                            matchedDeposit = { 
+                                id: doc.id, 
+                                ...d, 
+                                extractedAmount: info.amount, 
+                                extractedPhone: info.phone, 
+                                provider: info.provider 
+                            };
                         }
                     }
                 });
                 
                 if (!matchedDeposit) {
-                    resultDiv.className = 'check-result error';
-                    resultDiv.innerHTML = '<span class="big-icon">❌</span> لم يتم اكتشاف أي تحويل من هذا الرقم<br><small>تأكد من إتمام التحويل أولاً ثم حاول مرة أخرى</small><br><small style="color:var(--muted);">تأكد أنك حولت من الرقم المسجل في حسابك</small>';
-                } else if (matchedDeposit.status === 'completed' || matchedDeposit.status === 'مكتمل') {
-                    resultDiv.className = 'check-result success';
-                    resultDiv.innerHTML = `<span class="big-icon">✅</span> تم شحن رصيدك مسبقاً!<br><span class="amount-display">${matchedDeposit.extractedAmount?.toFixed(2) || '—'} د.ل</span><span class="provider-badge-inline provider-${matchedDeposit.provider==='Libyana'?'libyana':'almadar'}">${matchedDeposit.provider}</span>`;
+                    showCheckResult('error', '❌', 
+                        'لم يتم اكتشاف أي تحويل مطابق',
+                        'تأكد من إتمام التحويل ومن تطابق رقم الهاتف والمبلغ',
+                        'قد يستغرق ظهور التحويل دقيقة إلى دقيقتين');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-search"></i> تأكيد التحويل';
+                    return;
+                }
+                
+                if (matchedDeposit.status === 'completed' || matchedDeposit.status === 'مكتمل') {
+                    showCheckResult('success', '✅', 
+                        'تم شحن رصيدك مسبقاً!',
+                        `المبلغ: ${matchedDeposit.extractedAmount?.toFixed(2) || '—'} د.ل`,
+                        `المزود: ${matchedDeposit.provider}`);
                     await syncUser(userData.uid);
+                    loadDeposits();
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-search"></i> تأكيد التحويل';
+                    return;
+                }
+                
+                const user = await findUserByPhone(matchedDeposit.extractedPhone || phone);
+                
+                if (user && matchedDeposit.extractedAmount > 0) {
+                    await db.collection('users').doc(user.uid).update({
+                        balance: firebase.firestore.FieldValue.increment(matchedDeposit.extractedAmount)
+                    });
+                    await db.collection('deposits').doc(matchedDeposit.id).update({
+                        status: 'مكتمل',
+                        extractedAmount: matchedDeposit.extractedAmount,
+                        extractedPhone: matchedDeposit.extractedPhone,
+                        provider: matchedDeposit.provider,
+                        matchedUser: user.username,
+                        matchedUid: user.uid,
+                        autoProcessed: true,
+                        completedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    const now = new Date().toLocaleString('ar-SA');
+                    await sendTelegram(`✅ <b>شحن تلقائي!</b>\n👤 المستخدم: ${user.username}\n💰 المبلغ: ${matchedDeposit.extractedAmount.toFixed(2)} د.ل\n📱 المزود: ${matchedDeposit.provider}\n⏰ الوقت: ${now}`);
+                    
+                    showCheckResult('success', '🎉',
+                        'تم شحن رصيدك بنجاح!',
+                        `المبلغ: ${matchedDeposit.extractedAmount.toFixed(2)} د.ل`,
+                        `المزود: ${matchedDeposit.provider}`,
+                        'تمت إضافة الرصيد إلى حسابك');
+                    await syncUser(userData.uid);
+                    document.getElementById('field-dep-phone').value = '';
+                    document.getElementById('field-dep-amount').value = '';
+                } else if (!user && matchedDeposit.extractedAmount > 0) {
+                    showCheckResult('info', '⏳',
+                        'تم اكتشاف تحويل مطابق',
+                        `المبلغ: ${matchedDeposit.extractedAmount.toFixed(2)} د.ل`,
+                        'لكن رقم الهاتف غير مسجل بحساب. سيتم مراجعة التحويل يدوياً.');
+                    await db.collection('deposits').doc(matchedDeposit.id).update({
+                        status: 'قيد المراجعة',
+                        extractedAmount: matchedDeposit.extractedAmount,
+                        extractedPhone: matchedDeposit.extractedPhone,
+                        provider: matchedDeposit.provider,
+                        autoProcessed: false,
+                        note: 'رقم الهاتف غير مطابق للمستخدم'
+                    });
                 } else {
-                    const user = await findUserByPhone(matchedDeposit.extractedPhone);
-                    if (user && matchedDeposit.extractedAmount > 0) {
-                        await db.collection('users').doc(user.uid).update({ balance: firebase.firestore.FieldValue.increment(matchedDeposit.extractedAmount) });
-                        await db.collection('deposits').doc(matchedDeposit.id).update({ status: 'مكتمل', extractedAmount: matchedDeposit.extractedAmount, extractedPhone: matchedDeposit.extractedPhone, provider: matchedDeposit.provider, matchedUser: user.username, matchedUid: user.uid, autoProcessed: true, completedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                        const now = new Date().toLocaleString('ar-SA');
-                        await sendTelegram(`✅ <b>شحن تلقائي!</b>\n👤 المستخدم: ${user.username}\n💰 المبلغ: ${matchedDeposit.extractedAmount.toFixed(2)} د.ل\n📱 المزود: ${matchedDeposit.provider}\n⏰ الوقت: ${now}`);
-                        resultDiv.className = 'check-result success';
-                        resultDiv.innerHTML = `<span class="big-icon">🎉</span> تم شحن رصيدك بنجاح!<br><span class="amount-display">${matchedDeposit.extractedAmount.toFixed(2)} د.ل</span><span class="provider-badge-inline provider-${matchedDeposit.provider==='Libyana'?'libyana':'almadar'}">${matchedDeposit.provider}</span><br><small>تمت إضافة الرصيد إلى حسابك</small>`;
-                        await syncUser(userData.uid);
-                    } else if (!user && matchedDeposit.extractedAmount > 0) {
-                        resultDiv.className = 'check-result info';
-                        resultDiv.innerHTML = `<span class="big-icon">⏳</span> تم اكتشاف تحويل بقيمة<br><span class="amount-display">${matchedDeposit.extractedAmount.toFixed(2)} د.ل</span><span class="provider-badge-inline provider-${matchedDeposit.provider==='Libyana'?'libyana':'almadar'}">${matchedDeposit.provider}</span><br><small>لكن رقم الهاتف غير مطابق لحسابك. سيتم مراجعة التحويل يدوياً.</small>`;
-                        await db.collection('deposits').doc(matchedDeposit.id).update({ status: 'قيد المراجعة', extractedAmount: matchedDeposit.extractedAmount, extractedPhone: matchedDeposit.extractedPhone, provider: matchedDeposit.provider, autoProcessed: false, note: 'رقم الهاتف غير مطابق للمستخدم' });
-                    } else {
-                        resultDiv.className = 'check-result info';
-                        resultDiv.innerHTML = '<span class="big-icon">⏳</span> تم اكتشاف تحويل وهو قيد المراجعة<br><small>سيتم شحن رصيدك خلال دقائق</small>';
-                    }
+                    showCheckResult('info', '⏳', 'تم اكتشاف تحويل وهو قيد المراجعة', 'سيتم شحن رصيدك خلال دقائق');
                 }
                 loadDeposits();
             } catch (e) {
-                resultDiv.className = 'check-result error';
-                resultDiv.innerHTML = '<span class="big-icon">❌</span> حدث خطأ في الفحص. حاول مرة أخرى.';
                 console.error(e);
+                showCheckResult('error', '❌', 'حدث خطأ في الفحص', 'حاول مرة أخرى');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-search"></i> تأكيد التحويل';
@@ -768,7 +851,7 @@
         function toast(msg,type){const t=document.getElementById('main-toast');if(t){t.innerText=msg;t.className='toast '+(type||'')+' active';setTimeout(()=>t.classList.remove('active'),3000);}}
         function copyText(txt){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('✅ تم النسخ','success'));}else{const ta=document.createElement('textarea');ta.value=txt;ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ تم النسخ','success');}}
         document.addEventListener('contextmenu',e=>e.preventDefault());
-        console.log('🔥 Media Plus - Auto Deposit with Notifications Active');
+        console.log('🔥 Media Plus - Auto Deposit with Dual Verification Active');
     </script>
 </body>
-                                                                                                                                                                                     </html>
+                                                                                                                                                                                                                                                                                                                               </html>
