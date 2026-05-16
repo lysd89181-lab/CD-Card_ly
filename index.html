@@ -200,6 +200,12 @@
             background: #fff;
         }
 
+        .provider-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        .provider-option { flex: 1; padding: 16px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-input); cursor: pointer; text-align: center; font-weight: 700; font-size: 14px; transition: 0.2s; color: var(--text-dim); }
+        .provider-option.active-libyana { border-color: #2196F3; background: rgba(33,150,243,0.08); color: #2196F3; box-shadow: 0 0 15px rgba(33,150,243,0.2); }
+        .provider-option.active-almadar { border-color: #8b5cf6; background: rgba(139,92,246,0.08); color: #8b5cf6; box-shadow: 0 0 15px rgba(139,92,246,0.2); }
+        .provider-option i { font-size: 20px; display: block; margin-bottom: 8px; }
+
         .action-btn { width: 100%; padding: 22px; background: linear-gradient(135deg, #2196F3, #1976D2); color: #fff; border: none; border-radius: 22px; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(33,150,243,0.3); display: flex; align-items: center; justify-content: center; gap: 14px; }
         .action-btn:active { transform: scale(0.96); background: linear-gradient(135deg, #1976D2, #1565C0); }
         .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -499,15 +505,32 @@
             <div class="premium-card">
                 <div style="font-weight:900;color:var(--primary-blue);margin-bottom:25px;"><i class="fas fa-money-bill-wave"></i> التحويل المباشر</div>
                 <div class="wallet-image-container"><img src="lb.jpg" alt="طريقة التحويل" onerror="this.style.display='none';"></div>
-                <div class="number-display-row"><div><div class="number-label"><i class="fas fa-mobile-screen-button"></i> مدار</div><div class="number-text">0912377291</div></div><button class="copy-number-btn" onclick="copyText('0912377291')"><i class="fas fa-copy"></i> نسخ</button></div>
-                <div class="number-display-row" style="margin-bottom:25px;"><div><div class="number-label"><i class="fas fa-mobile-screen-button"></i> ليبيانا</div><div class="number-text">0920414760</div></div><button class="copy-number-btn" onclick="copyText('0920414760')"><i class="fas fa-copy"></i> نسخ</button></div>
+                
+                <div class="provider-toggle">
+                    <div class="provider-option active-libyana" id="provider-libyana" onclick="selectProvider('libyana')">
+                        <i class="fas fa-mobile-screen-button"></i> ليبيانا
+                        <small style="display:block;font-size:10px;color:#64748b;margin-top:4px;">092 / 094</small>
+                    </div>
+                    <div class="provider-option" id="provider-almadar" onclick="selectProvider('almadar')">
+                        <i class="fas fa-sim-card"></i> المدار
+                        <small style="display:block;font-size:10px;color:#64748b;margin-top:4px;">091 / 092</small>
+                    </div>
+                </div>
+
+                <div id="libyana-numbers">
+                    <div class="number-display-row"><div><div class="number-label"><i class="fas fa-mobile-screen-button"></i> ليبيانا (092)</div><div class="number-text">0920414760</div></div><button class="copy-number-btn" onclick="copyText('0920414760')"><i class="fas fa-copy"></i> نسخ</button></div>
+                </div>
+                <div id="almadar-numbers" style="display:none;">
+                    <div class="number-display-row"><div><div class="number-label"><i class="fas fa-mobile-screen-button"></i> مدار</div><div class="number-text">0912377291</div></div><button class="copy-number-btn" onclick="copyText('0912377291')"><i class="fas fa-copy"></i> نسخ</button></div>
+                </div>
+
                 <div class="wallet-guide">
                     <small><i class="fas fa-list-ol"></i> خطوات التحويل</small>
-                    <div class="step-item"><div class="step-idx">1</div><div class="step-desc">قم بتحويل المبلغ إلى أحد الأرقام أعلاه</div></div>
+                    <div class="step-item"><div class="step-idx">1</div><div class="step-desc">اختر المزود (ليبيانا أو المدار) وحول المبلغ للرقم الظاهر</div></div>
                     <div class="step-item"><div class="step-idx">2</div><div class="step-desc">أدخل رقم هاتفك والمبلغ الذي قمت بتحويله</div></div>
-                    <div class="step-item"><div class="step-idx">3</div><div class="step-desc">سيتم فحص التحويل وإضافة الرصيد تلقائياً</div></div>
+                    <div class="step-item"><div class="step-idx">3</div><div class="step-desc">اضغط تأكيد التحويل وسيتم شحن رصيدك تلقائياً</div></div>
                 </div>
-                <div class="input-wrapper"><label class="field-label"><i class="fas fa-phone"></i> رقم هاتفك (المرسل)</label><input type="text" id="field-dep-phone" class="main-input" placeholder="09xxxxxxx"></div>
+                <div class="input-wrapper"><label class="field-label" id="phone-label"><i class="fas fa-phone"></i> رقم هاتفك (ليبيانا: 092xxxxxx)</label><input type="text" id="field-dep-phone" class="main-input" placeholder="092xxxxxx"></div>
                 <div class="input-wrapper"><label class="field-label"><i class="fas fa-money-bill"></i> القيمة المحولة</label><input type="number" id="field-dep-amount" class="main-input" placeholder="أدخل المبلغ الذي قمت بتحويله" step="0.01" min="0"></div>
                 
                 <div class="check-result" id="check-result"></div>
@@ -567,6 +590,7 @@
 
         let userData = {uid:'',email:'',username:'',balance:0,totalSpent:0,discount:0,points:0,apiKey:'',userLevel:'user',affiliateEarnings:0,affiliateCount:0,affiliatePercent:3,referredBy:null,lastNotification:'',notifiedAt:null};
         let services = [], curSrv = null, couponDisc = 0;
+        let selectedProvider = 'libyana';
         const MARKUP_PERCENT = 30;
 
         const catIcons = {"تيك توك":"tiktok.jpg","انستجرام":"Instagram.jpg","فيسبوك":"Facebook.jpg","سناب":"Snapchat.jpg","يوتيوب":"yotuop.jpg","تويتر":"twiter.jpg","تليجرام":"teli.jpg","واتساب":"watsap.jpg","ببجي":"popgi.jpg","شاهد":"shahed.jpg","توثيق":"tawtheg.jpg","بينانس":"binns.jpg"};
@@ -613,6 +637,53 @@
             document.getElementById('u-affiliate-count').innerText=userData.affiliateCount||0;
             document.getElementById('affiliate-link-text').innerText=window.location.origin+window.location.pathname+'?ref='+userData.uid;
             if(curSrv)recalc();
+        }
+
+        function selectProvider(provider) {
+            selectedProvider = provider;
+            const libyanaBtn = document.getElementById('provider-libyana');
+            const almadarBtn = document.getElementById('provider-almadar');
+            const libyanaNums = document.getElementById('libyana-numbers');
+            const almadarNums = document.getElementById('almadar-numbers');
+            const phoneLabel = document.getElementById('phone-label');
+            const phoneInput = document.getElementById('field-dep-phone');
+            
+            if (provider === 'libyana') {
+                libyanaBtn.classList.add('active-libyana');
+                almadarBtn.classList.remove('active-almadar');
+                libyanaNums.style.display = 'block';
+                almadarNums.style.display = 'none';
+                phoneLabel.innerHTML = '<i class="fas fa-phone"></i> رقم هاتفك (ليبيانا: 092xxxxxx / 094xxxxxx)';
+                phoneInput.placeholder = '092xxxxxx';
+            } else {
+                almadarBtn.classList.add('active-almadar');
+                libyanaBtn.classList.remove('active-libyana');
+                almadarNums.style.display = 'block';
+                libyanaNums.style.display = 'none';
+                phoneLabel.innerHTML = '<i class="fas fa-phone"></i> رقم هاتفك (مدار: 218xxxxxxxxx)';
+                phoneInput.placeholder = '21891xxxxxxx';
+            }
+            document.getElementById('field-dep-phone').value = '';
+            document.getElementById('field-dep-amount').value = '';
+            document.getElementById('check-result').className = 'check-result';
+            document.getElementById('check-result').style.display = 'none';
+        }
+
+        function validatePhone(phone, provider) {
+            const clean = phone.replace(/[\s\-\(\)]/g, '');
+            if (provider === 'libyana') {
+                return /^09[24]\d{7}$/.test(clean);
+            } else {
+                return /^2189[12]\d{7}$/.test(clean);
+            }
+        }
+
+        function normalizePhoneForSearch(phone, provider) {
+            const clean = phone.replace(/[\s\-\(\)]/g, '');
+            if (provider === 'almadar' && clean.startsWith('218')) {
+                return '0' + clean.slice(3);
+            }
+            return clean;
         }
 
         function loadServices(){db.collection('services').onSnapshot(snap=>{services=[];snap.forEach(doc=>{const d=doc.data();if(d.name&&d.name!=='خدمة افتراضية'&&(d.finalPrice||0)>0)services.push({id:doc.id,...d});});services.sort((a,b)=>(a.catOrder||99)-(b.catOrder||99));const cats=[];services.forEach(s=>{const c=s.category||'عام';if(!cats.includes(c))cats.push(c);});const dc=document.getElementById('drop-cats');if(dc)dc.innerHTML=cats.map(c=>'<div class="drop-item" onclick="selectCat(\''+c.replace(/'/g,"\\'")+'\',\''+getCatIcon(c)+'\')"><img src="'+getCatIcon(c)+'" onerror="this.src=\'mp.jpg\'"><span>'+c+'</span></div>').join('');});}
@@ -707,8 +778,9 @@
                 showCheckResult('error', '❌', 'أدخل المبلغ الذي قمت بتحويله');
                 return;
             }
-            if (!/^09\d{8}$/.test(phone.replace(/[\s\-]/g, ''))) {
-                showCheckResult('error', '❌', 'صيغة رقم الهاتف غير صحيحة');
+            if (!validatePhone(phone, selectedProvider)) {
+                const msg = selectedProvider === 'libyana' ? 'صيغة رقم ليبيانا: 092xxxxxx أو 094xxxxxx' : 'صيغة رقم المدار: 218xxxxxxxxx';
+                showCheckResult('error', '❌', 'صيغة رقم الهاتف غير صحيحة', msg);
                 return;
             }
             
@@ -719,7 +791,8 @@
             
             try {
                 const cleanSearchPhone = phone.replace(/[\s\-\(\)]/g, '');
-                const last7Search = cleanSearchPhone.slice(-7);
+                const normalizedSearchPhone = normalizePhoneForSearch(cleanSearchPhone, selectedProvider);
+                const last7Search = normalizedSearchPhone.slice(-7);
                 const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
                 const snapshot = await db.collection('deposits')
                     .where('timestamp', '>=', thirtyMinutesAgo)
@@ -731,12 +804,14 @@
                 snapshot.forEach(doc => {
                     if (matchedDeposit) return;
                     const d = doc.data();
+                    if (d.status === 'completed' || d.status === 'مكتمل') return;
                     const info = extractDepositInfo(d);
-                    if (info.phone && info.amount) {
+                    if (info.phone && info.amount && info.provider.toLowerCase() === selectedProvider.toLowerCase()) {
                         const cleanDepPhone = info.phone.replace(/[\s\-\(\)]/g, '');
-                        const last7Dep = cleanDepPhone.slice(-7);
+                        const normalizedDepPhone = normalizePhoneForSearch(cleanDepPhone, selectedProvider);
+                        const last7Dep = normalizedDepPhone.slice(-7);
                         const amountTolerance = 0.10;
-                        if ((cleanDepPhone === cleanSearchPhone || last7Dep === last7Search) && Math.abs(info.amount - amount) <= amountTolerance) {
+                        if (last7Dep === last7Search && Math.abs(info.amount - amount) <= amountTolerance) {
                             matchedDeposit = { 
                                 id: doc.id, 
                                 ...d, 
@@ -751,26 +826,14 @@
                 if (!matchedDeposit) {
                     showCheckResult('error', '❌', 
                         'لم يتم اكتشاف أي تحويل مطابق',
-                        'تأكد من إتمام التحويل ومن تطابق رقم الهاتف والمبلغ',
+                        'تأكد من إتمام التحويل وتطابق رقم الهاتف والمبلغ والمزود',
                         'قد يستغرق ظهور التحويل دقيقة إلى دقيقتين');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-search"></i> تأكيد التحويل';
                     return;
                 }
                 
-                if (matchedDeposit.status === 'completed' || matchedDeposit.status === 'مكتمل') {
-                    showCheckResult('success', '✅', 
-                        'تم شحن رصيدك مسبقاً!',
-                        `المبلغ: ${matchedDeposit.extractedAmount?.toFixed(2) || '—'} د.ل`,
-                        `المزود: ${matchedDeposit.provider}`);
-                    await syncUser(userData.uid);
-                    loadDeposits();
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-search"></i> تأكيد التحويل';
-                    return;
-                }
-                
-                const user = await findUserByPhone(matchedDeposit.extractedPhone || phone);
+                const user = await findUserByPhone(matchedDeposit.extractedPhone || normalizedSearchPhone);
                 
                 if (user && matchedDeposit.extractedAmount > 0) {
                     await db.collection('users').doc(user.uid).update({
@@ -851,7 +914,7 @@
         function toast(msg,type){const t=document.getElementById('main-toast');if(t){t.innerText=msg;t.className='toast '+(type||'')+' active';setTimeout(()=>t.classList.remove('active'),3000);}}
         function copyText(txt){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('✅ تم النسخ','success'));}else{const ta=document.createElement('textarea');ta.value=txt;ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ تم النسخ','success');}}
         document.addEventListener('contextmenu',e=>e.preventDefault());
-        console.log('🔥 Media Plus - Auto Deposit with Dual Verification Active');
+        console.log('🔥 Media Plus - Auto Deposit with Provider Selection Active');
     </script>
 </body>
-                                                                                                                                                                                                                                                                                                                               </html>
+</html>
